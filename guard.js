@@ -1,33 +1,46 @@
-// guard-pro.js — DIGIY PRO access gate (slug-first) -> commencer-a-payer
+// guard-pro.js — DIGIY PRO access gate (slug-first) -> commencer-a-payer (anti-loop)
+// MODULE = RESA
 (() => {
   "use strict";
 
   const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
   const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-  // ✅ À CHANGER PAR MODULE
-  const MODULE_CODE = "RESA-RESTO"; // ex: DRIVER, LOC, RESTO, POS, RESA, BUILD, EXPLORE, FRET_CHAUF, FRET_CLIENT
+  // ✅ MODULE FINAL
+  const MODULE_CODE = "RESA";
 
   const PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
 
+  // --- Query ---
   const qs = new URLSearchParams(location.search);
   const slugQ  = (qs.get("slug")  || "").trim();
   const phoneQ = (qs.get("phone") || "").trim();
 
+  // --- Helpers ---
   function normPhone(p) {
     const d = String(p || "").replace(/[^\d]/g, "");
     return d.length >= 9 ? d : "";
   }
 
+  // ⚠️ slug-safe: pas de slugify violent (on ne doit pas casser un slug existant)
   function normSlug(s) {
     return String(s || "")
       .trim()
       .toLowerCase()
       .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")
+      .replace(/[^a-z0-9\-_]/g, "")
       .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
+      .replace(/^[-_]+|[-_]+$/g, "");
+  }
+
+  function isOnPayPage() {
+    try {
+      const pay = new URL(PAY_URL);
+      return location.origin === pay.origin;
+    } catch (_) {
+      return false;
+    }
   }
 
   async function rpc(name, params) {
@@ -40,7 +53,6 @@
       },
       body: JSON.stringify(params),
     });
-
     const j = await r.json().catch(() => null);
     return { ok: r.ok, status: r.status, data: j };
   }
@@ -49,7 +61,6 @@
     const s = normSlug(slug);
     if (!s) return "";
 
-    // ✅ view publique minimaliste: phone + module + slug
     const url =
       `${SUPABASE_URL}/rest/v1/digiy_subscriptions_public` +
       `?select=phone,slug,module&slug=eq.${encodeURIComponent(s)}&limit=1`;
@@ -67,6 +78,9 @@
   }
 
   function goPay({ phone, slug }) {
+    // ✅ anti-boucle: si déjà sur commencer-a-payer, on stop
+    if (isOnPayPage()) return;
+
     const u = new URL(PAY_URL);
     u.searchParams.set("module", MODULE_CODE);
 
@@ -83,6 +97,9 @@
   }
 
   async function go() {
+    // ✅ guard chargé sur commencer-a-payer ? stop
+    if (isOnPayPage()) return;
+
     const slug = normSlug(slugQ);
     let phone = normPhone(phoneQ);
 
@@ -91,21 +108,23 @@
       phone = normPhone(await resolvePhoneFromSlug(slug));
     }
 
-    // rien -> commencer-a-payer direct
+    // rien -> payer direct
     if (!phone) return goPay({ phone: "", slug });
 
-    // check access (backend truth)
+    // backend truth
     const res = await rpc("digiy_has_access", { p_phone: phone, p_module: MODULE_CODE });
 
-    // digiy_has_access renvoie boolean true/false
-    if (res.ok && res.data === true) return; // ✅ accès OK
+    if (res.ok && res.data === true) {
+      // ✅ accès OK (petit état utile)
+      window.DIGIY_GUARD_ACCESS = { ok: true, phone, slug, module: MODULE_CODE };
+      return;
+    }
 
     // pas accès -> payer
     return goPay({ phone, slug });
   }
 
   go().catch(() => {
-    // en cas de réseau down : on renvoie vers payer (safe)
     goPay({ phone: phoneQ, slug: slugQ });
   });
 })();
