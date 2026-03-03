@@ -5,15 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#061b14"/>
 
-  <title>DIGIY QR PRO — Porte PIN</title>
+  <title>DIGIY PRO-RESA — Porte PIN</title>
 
   <!-- Supabase d'abord -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Optionnel: si tu veux un guard sur cette page, mets-le APRES Supabase.
-       (Ici la page PIN n’en a pas besoin, donc je le laisse commenté.)
-  -->
-  <!-- <script src="./guard-pro.js?v=qrpin-1"></script> -->
 
   <style>
     :root{
@@ -94,11 +89,11 @@
       <div class="brand">
         <div class="ico">🦅</div>
         <div>
-          <div class="t" id="title">PORTE PIN</div>
+          <div class="t" id="title">PORTE PIN — PRO-RESA</div>
           <div class="sub" id="subtitle">Chargement…</div>
         </div>
       </div>
-      <div class="pill" id="modPill">—</div>
+      <div class="pill" id="modPill">PRO-RESA</div>
     </div>
 
     <div class="sep"></div>
@@ -125,10 +120,11 @@
   "use strict";
 
   // =========================
-  // ✅ MODULE QR PRO
+  // ✅ PRO-RESA (PIN ≠ ABONNEMENT)
   // =========================
-  const MODULE_CODE = "QR";          // <- module côté SQL (recommandé: "QR")
-  const NEXT_URL    = "index.html";  // page cockpit après PIN
+  const PIN_MODULE  = "pro_resa";     // module côté RPC PIN (digiy_verify_access)
+  const PAY_MODULE  = "RESA";         // module abonnement (digiy_has_access + pricing)
+  const NEXT_URL    = "cockpit.html"; // après PIN => cockpit direct
 
   // =========================
   // SUPABASE (TES CLÉS)
@@ -137,28 +133,28 @@
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false }
+  });
 
-  // URLs utiles (optionnels)
-  const PAY_URL = "https://commencer-a-payer.digiylyfe.com/?module=QR"; // adapte si besoin
+  // URL ABOS / PAY (tu peux garder ton domaine)
+  const PAY_URL = "https://commencer-a-payer.digiylyfe.com/?module=RESA";
 
   const $ = (id)=>document.getElementById(id);
   const msg = (html)=>{ $("msg").innerHTML = html; };
   const showLinks = ()=>{ $("linksRow").style.display = "flex"; };
 
-  $("modPill").textContent = MODULE_CODE;
-  $("title").textContent = "PORTE PIN — " + MODULE_CODE;
-
   const url = new URL(location.href);
-  const slug = (url.searchParams.get("slug") || "").trim().toLowerCase();
+  const slug = (url.searchParams.get("slug") || "").trim();   // ✅ pas de lowercase
   const debug = url.searchParams.get("debug") === "1";
 
   $("slugBox").textContent = slug || "—";
   $("subtitle").textContent = slug ? "Accès sécurisé — PIN requis" : "SLUG manquant";
 
-  // set Pay link
+  // Pay link: module=RESA + slug si dispo
   try{
     const p = new URL(PAY_URL);
+    p.searchParams.set("module", PAY_MODULE);
     if (slug) p.searchParams.set("slug", slug);
     $("payLink").href = p.toString();
   }catch(_){
@@ -166,7 +162,7 @@
   }
 
   if(!slug){
-    msg(`<span class="bad">❌ SLUG manquant.</span><br>Reviens depuis ton lien QR / cockpit (avec <b>?slug=...</b>).`);
+    msg(`<span class="bad">❌ SLUG manquant.</span><br>Reviens depuis ton lien QR / GO PIN (avec <b>?slug=...</b>).`);
     $("go").disabled = true;
     showLinks();
     return;
@@ -179,7 +175,7 @@
       slug: payload.slug || slug,
       phone: payload.phone || null,
       owner_id: payload.owner_id || null,
-      module: payload.module || MODULE_CODE,
+      module: payload.module || PIN_MODULE,
       ts: Date.now()
     };
 
@@ -191,8 +187,8 @@
       ts: session.ts
     }));
 
-    // ✅ Session module
-    localStorage.setItem("DIGIY_SESSION_" + MODULE_CODE, JSON.stringify(session));
+    // ✅ Session PIN module (pro_resa)
+    localStorage.setItem("DIGIY_SESSION_" + PIN_MODULE, JSON.stringify(session));
   }
 
   async function enter(){
@@ -205,17 +201,17 @@
     $("go").disabled = true;
     msg(`⏳ Vérification…`);
 
-    // ⚠️ RPC attendu côté Supabase:
-    // digiy_verify_access(p_slug text, p_pin text, p_module text) -> json {ok, reason, phone, owner_id, slug, module, modules_active[]}
+    // RPC attendu :
+    // digiy_verify_access(p_slug, p_pin, p_module) -> json {ok, reason, phone, owner_id, slug, module, modules_active[]}
     const { data, error } = await sb.rpc("digiy_verify_access", {
       p_slug: slug,
       p_pin: pin,
-      p_module: MODULE_CODE
+      p_module: PIN_MODULE
     });
 
     if(debug){
-      console.log("[QR PIN] rpc data:", data);
-      console.log("[QR PIN] rpc error:", error);
+      console.log("[PRO-RESA PIN] rpc data:", data);
+      console.log("[PRO-RESA PIN] rpc error:", error);
     }
 
     if(error){
@@ -229,9 +225,9 @@
       $("go").disabled = false;
 
       if(data?.reason === "module_inactive"){
-        msg(`<span class="bad">🔒 Module non actif.</span><br>
-            Ce module n’est pas encore activé pour ce pro.<br>
-            <span style="opacity:.85">Modules actifs: ${(data.modules_active||[]).join(", ")}</span>`);
+        msg(`<span class="bad">🔒 PIN module inactif.</span><br>
+            Ce pro n’a pas le PIN actif pour <b>PRO-RESA</b>.<br>
+            <span style="opacity:.85">Modules PIN actifs: ${(data.modules_active||[]).join(", ")}</span>`);
         showLinks();
         return;
       }
@@ -242,7 +238,7 @@
     }
 
     saveSessions(data);
-    msg(`<span class="ok">✅ Accès validé.</span> Ouverture…`);
+    msg(`<span class="ok">✅ PIN OK.</span> Ouverture du cockpit…`);
 
     setTimeout(()=>{
       const next = new URL(NEXT_URL, location.href);
