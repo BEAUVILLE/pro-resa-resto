@@ -15,210 +15,597 @@
     window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
   </script>
 
-  <!-- Guard après Supabase -->
- <script src="./guard.js?v=universal-2"></script>
+  <!-- Guard universel -->
+  <script src="./guard.js?v=universal-3"></script>
+
   <style>
     :root{
-      --bg:#061b14; --card:#0b2a1f; --line:rgba(255,255,255,.14);
+      --bg:#061b14; --bg2:#0a2b1f; --line:rgba(255,255,255,.14);
       --text:#eafff1; --muted:rgba(234,255,241,.72);
       --gold:#facc15; --ok:#22c55e; --bad:#fb7185; --warn:#f59e0b;
       --shadow:0 18px 55px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
     body{
-      margin:0; min-height:100vh;
+      margin:0; color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto;
-      background:radial-gradient(1200px 800px at 50% 10%, rgba(250,204,21,.08), transparent 60%), var(--bg);
-      color:var(--text);
-    }
-    header{
-      border-bottom:1px solid var(--line);
-      padding:14px 14px;
-    }
-    .wrap{width:min(980px,94vw);margin:0 auto}
-    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    .pill{
-      border:1px solid var(--line);
-      background:rgba(250,204,21,.10);
-      padding:7px 10px;border-radius:999px;
-      font-size:12px;font-weight:900;
-    }
-    .grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow:var(--shadow);
+      background:
+        radial-gradient(circle at top, rgba(250,204,21,.10), transparent 55%),
+        linear-gradient(135deg,var(--bg),var(--bg2));
       padding:16px;
     }
-    h1{margin:0;font-size:16px}
-    .muted{color:var(--muted);font-size:12px}
-    .msg{margin-top:8px;font-size:13px;color:var(--muted)}
-    .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.warn{color:var(--warn)}
-    button,a.btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:8px;
-      padding:11px 12px;border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.02);
-      color:var(--text);text-decoration:none;cursor:pointer;font-weight:900;
+    .wrap{max-width:1140px;margin:0 auto}
+    header{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+      background:linear-gradient(145deg,rgba(11,42,31,.96),rgba(6,35,25,.96));
+      border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow);
+      padding:16px;
     }
-    a.primary{border-color:rgba(250,204,21,.35);background:rgba(250,204,21,.12)}
-    a.primary:hover{background:rgba(250,204,21,.18)}
-    button:hover,a.btn:hover{background:rgba(255,255,255,.05)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .ico{
+      width:48px;height:48px;border-radius:50%;
+      display:grid;place-items:center;
+      background:radial-gradient(circle at 30% 0,var(--gold),transparent 60%);
+      color:#062015;font-weight:1000;border:1px solid rgba(250,204,21,.35);
+    }
+    h1{margin:0;font-size:16px;letter-spacing:.10em}
+    .sub{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.4}
+    .pill{
+      border:1px solid var(--line); background:rgba(250,204,21,.10);
+      padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap;
+    }
+
+    .grid{display:grid;gap:12px;margin-top:12px}
+    @media(min-width:980px){ .grid{grid-template-columns:1.2fr .8fr} }
+
+    .card{
+      background:linear-gradient(145deg,rgba(11,42,31,.92),rgba(6,35,25,.92));
+      border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .title{font-weight:1000;letter-spacing:.08em;font-size:12px;color:rgba(234,255,241,.85)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .btn{
+      flex:1; min-width:210px;
+      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(0,0,0,.18); color:var(--text);
+      font-weight:1000; cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      text-decoration:none;
+    }
+    .btn:hover{border-color:rgba(250,204,21,.55)}
+    .btn.primary{
+      background:linear-gradient(90deg,var(--ok),var(--gold));
+      color:#062015;border:none;
+    }
+    .btn.danger{
+      border-color:rgba(251,113,133,.35);
+      background:rgba(251,113,133,.10);
+    }
+
+    .msg{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5}
+    .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.warn{color:var(--warn)}
     .panel{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
+
+    .kpis{display:grid;gap:10px;margin-top:10px}
+    @media(min-width:520px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+    .kpi{
+      padding:12px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+    }
+    .kpi .k{font-size:12px;color:var(--muted)}
+    .kpi .v{font-size:20px;font-weight:1000;margin-top:6px}
+    .kpi .s{font-size:12px;color:rgba(234,255,241,.78);margin-top:4px}
+
+    select, input, textarea{
+      border-radius:14px;border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18); color:var(--text);
+      padding:10px 12px; outline:none; font-weight:900;
+      width:100%;
+    }
+    textarea{min-height:80px;resize:vertical;font-weight:700}
+
+    .list{margin-top:10px;border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden}
+    .item{
+      padding:12px;border-top:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+    }
+    .item:first-child{border-top:none}
+    .a{font-weight:1000}
+    .b{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+    .badge{
+      font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(250,204,21,.10);
+      white-space:nowrap;
+    }
+    .badge.ok{background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.35)}
+    .badge.bad{background:rgba(251,113,133,.12); border-color:rgba(251,113,133,.35)}
+    .badge.neutral{background:rgba(148,163,184,.10); border-color:rgba(148,163,184,.28)}
+    .tinybtn{
+      padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);color:var(--text);font-weight:1000;cursor:pointer;
+    }
+    .tinybtn:hover{border-color:rgba(250,204,21,.55)}
+
+    .modal{
+      position:fixed; inset:0; display:none;
+      background:rgba(0,0,0,.55);
+      align-items:center; justify-content:center;
+      padding:18px;
+    }
+    .modal .box{
+      width:min(780px,94vw);
+      background:linear-gradient(145deg,rgba(11,42,31,.98),rgba(6,35,25,.98));
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 24px 60px rgba(0,0,0,.65);
+    }
+    label{display:block;font-size:12px;color:var(--muted);margin:6px 0}
+    .fgrid{display:grid;gap:10px;margin-top:10px}
+    @media(min-width:760px){ .fgrid{grid-template-columns:1fr 1fr} }
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .actions button{
+      flex:1; min-width:190px;
+      padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(250,204,21,.12);
+      color:var(--text);font-weight:1000;cursor:pointer;
+    }
+    .actions .primary{
+      background:linear-gradient(90deg,var(--ok),var(--gold));
+      color:#062015;border:none;
+    }
+    .close{
+      margin-top:10px;width:100%;
+      padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);
+      color:var(--text);font-weight:1000;cursor:pointer;
+    }
   </style>
 </head>
 
 <body>
+<div class="wrap">
+
   <header>
-    <div class="wrap row">
+    <div class="brand">
+      <div class="ico">🦅</div>
       <div>
-        <h1 id="h1">📅 DIGIY PRO — Cockpit</h1>
-        <div class="muted">PIN = personne • Abonnement = module</div>
+        <h1 id="title">DIGIY PRO — Cockpit</h1>
+        <div class="sub">
+          SLUG: <b id="slug">—</b> • OWNER: <b id="owner">—</b><br>
+          État: <b id="state">Chargement…</b>
+        </div>
       </div>
-      <div class="pill" id="pill">slug: —</div>
     </div>
+    <div class="pill" id="pill">—</div>
   </header>
 
-  <main class="wrap">
-    <div class="grid">
-
-      <div class="card">
-        <div class="row">
-          <div>
-            <div class="muted">État</div>
-            <div class="msg" id="stateMsg">Chargement…</div>
-          </div>
-          <div class="row">
-            <button id="btnCheck">🔄 Vérifier mon accès</button>
-            <a class="btn" id="btnPin" href="./index.html">🔐 Refaire PIN</a>
-            <a class="btn primary" id="btnPay" href="#" style="display:none">💳 Activer</a>
-          </div>
-        </div>
-
-        <div class="panel muted" id="details"></div>
-      </div>
-
-      <div class="card" id="appCard" style="display:none">
-        <div class="muted" id="appTitle">PRO — UI</div>
-        <div class="msg" id="appMsg">
-          Ici tu poses ton cockpit.
-        </div>
-      </div>
-
+  <div class="card" style="margin-top:12px">
+    <div class="title">🔐 ACCÈS</div>
+    <div class="row">
+      <button class="btn" id="btnCheck">🔄 Vérifier mon accès</button>
+      <a class="btn" id="btnPin" href="./index.html">🔐 Refaire PIN</a>
+      <a class="btn primary" id="btnPay" href="#" style="display:none">💳 Activer</a>
     </div>
-  </main>
+    <div class="msg" id="msg"></div>
+    <div class="panel" style="font-size:12px;color:rgba(234,255,241,.72)" id="details"></div>
+  </div>
+
+  <div class="grid" id="grid" style="display:none">
+
+    <!-- LEFT: RESTO UI -->
+    <div class="card" id="restoCard" style="display:none">
+      <div class="title">🍽️ RESTO — ACTIONS</div>
+      <div class="row">
+        <button class="btn primary" id="btnNew">➕ Nouveau ticket</button>
+        <button class="btn" id="btnPulse">🔔 Inbox</button>
+        <button class="btn" id="btnPrint">🖨️ Imprimer</button>
+      </div>
+
+      <div style="height:10px"></div>
+      <div class="title">🌡️ TEMPÉRATURE RESTO</div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">Tickets ouverts</div><div class="v" id="kOpen">—</div><div class="s">en cours</div></div>
+        <div class="kpi"><div class="k">Prêts</div><div class="v" id="kReady">—</div><div class="s">à servir</div></div>
+        <div class="kpi"><div class="k">Servis</div><div class="v" id="kServed">—</div><div class="s">terminés</div></div>
+        <div class="kpi"><div class="k">CA du jour</div><div class="v" id="kCA">—</div><div class="s">estimé</div></div>
+      </div>
+
+      <div style="height:10px"></div>
+      <div class="row" style="align-items:center">
+        <div class="title" style="flex:1">📋 TICKETS</div>
+        <select id="filter" style="max-width:260px">
+          <option value="all">Tous</option>
+          <option value="open">Ouverts</option>
+          <option value="ready">Prêts</option>
+          <option value="served">Servis</option>
+          <option value="cancelled">Annulés</option>
+        </select>
+        <input id="q" placeholder="Recherche: table / nom / note…" style="max-width:260px">
+      </div>
+
+      <div class="list" id="list"></div>
+
+      <div class="msg" style="margin-top:12px">
+        <b>V1 terrain :</b> tickets stockés localement par slug (ça marche direct).<br>
+        V2 : menu + caisse + paiements + Pulse.
+      </div>
+    </div>
+
+    <!-- RIGHT: Support/outils -->
+    <div class="card" id="sideCard">
+      <div class="title">🛟 SUPPORT</div>
+      <div class="row">
+        <button class="btn" id="btnHelp">💬 WhatsApp Support</button>
+        <button class="btn danger" id="btnLogout">🚪 Déconnexion</button>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="title">🧩 OUTILS</div>
+      <div class="row">
+        <button class="btn" id="btnExport">⬇️ Export JSON</button>
+        <button class="btn danger" id="btnReset">🧹 Reset Démo</button>
+      </div>
+
+      <div class="msg" style="margin-top:12px">
+        <b>Astuce :</b> si tu changes de module, fais PIN une fois par slug, puis cockpit direct.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL NEW TICKET -->
+<div class="modal" id="modalNew">
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div style="font-weight:1000">➕ Nouveau ticket</div>
+      <div class="badge neutral" id="mSlug">—</div>
+    </div>
+
+    <div class="fgrid">
+      <div>
+        <label>Table</label>
+        <input id="table" placeholder="Ex: T1 / Terrasse / VIP">
+      </div>
+      <div>
+        <label>Nom client (option)</label>
+        <input id="client" placeholder="Ex: Mamadou">
+      </div>
+      <div>
+        <label>Total estimé (FCFA)</label>
+        <input id="amount" inputmode="numeric" placeholder="Ex: 7500">
+      </div>
+      <div>
+        <label>Mode</label>
+        <select id="mode">
+          <option value="sur_place">Sur place</option>
+          <option value="a_emporter">À emporter</option>
+          <option value="livraison">Livraison</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:6px">
+      <label>Commande / Note</label>
+      <textarea id="note" placeholder="Ex: 2 thieb, 1 jus, sans piment…"></textarea>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="save">✅ Enregistrer</button>
+      <button id="cancel">Annuler</button>
+    </div>
+
+    <button class="close" id="close">Fermer</button>
+  </div>
+</div>
 
 <script>
   const $ = (id)=>document.getElementById(id);
 
-  function moduleFromSlug(slug){
-    const p = (slug||"").split("-")[0];
-    const map = { resa:"RESA", resto:"RESTO", pos:"POS", loc:"LOC", driver:"DRIVER" };
-    return map[p] || null;
-  }
-
-  function uiCopy(mod){
-    if(mod === "RESA") return {
-      title: "📅 DIGIY PRO-RESA — Cockpit",
-      appTitle: "PRO-RESA — UI",
-      appMsg: "Ici tu poses ton planning, tes réservations, ton inbox, etc. (Le guard te donne l’état, toi tu affiches l’app.)"
-    };
-    if(mod === "RESTO") return {
-      title: "🍽️ DIGIY PRO-RESTO — Cockpit",
-      appTitle: "PRO-RESTO — UI",
-      appMsg: "Ici tu poses tickets, tables, menus, staff, etc. (Le guard te donne l’état, toi tu affiches l’app.)"
-    };
-    if(mod === "POS") return {
-      title: "🧾 DIGIY PRO-POS — Cockpit",
-      appTitle: "PRO-POS — UI",
-      appMsg: "Ici tu poses caisse, commandes, tickets, impressions. (Le guard te donne l’état, toi tu affiches l’app.)"
-    };
-    return {
-      title: "DIGIY PRO — Cockpit",
-      appTitle: "PRO — UI",
-      appMsg: "Ici tu poses ton cockpit."
-    };
-  }
-
-  function setState(text, kind){
-    const el = $("stateMsg");
+  function setMsg(text, kind){
+    const el = $("msg");
     el.className = "msg" + (kind ? (" " + kind) : "");
     el.textContent = text;
   }
 
-  function render(st){
-    const slug = (st?.slug || "").toLowerCase();
-    const mod = (st?.module || moduleFromSlug(slug) || "—");
+  function todayKey(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  function nowISO(){ return new Date().toISOString(); }
+  function uid(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now())); }
+  function load(key){ try{ return JSON.parse(localStorage.getItem(key) || "[]"); }catch(_){ return []; } }
+  function save(key, rows){ localStorage.setItem(key, JSON.stringify(rows)); }
+  function money(v){
+    const n = Number(String(v||"").replace(/[^\d]/g,"")) || 0;
+    return n ? (n.toLocaleString("fr-FR") + " FCFA") : "—";
+  }
+  function badge(st){
+    if(st==="open") return `<span class="badge neutral">OUVERT</span>`;
+    if(st==="ready") return `<span class="badge ok">PRÊT</span>`;
+    if(st==="served") return `<span class="badge ok">SERVI</span>`;
+    if(st==="cancelled") return `<span class="badge bad">ANNULÉ</span>`;
+    return `<span class="badge neutral">${String(st||"—").toUpperCase()}</span>`;
+  }
+  function matches(r, q){
+    q = (q||"").trim().toLowerCase();
+    if(!q) return true;
+    const hay = [r.table,r.client,r.mode,r.note,r.status].filter(Boolean).join(" ").toLowerCase();
+    return hay.includes(q);
+  }
 
-    const copy = uiCopy(mod);
-    $("h1").textContent = copy.title;
-    $("appTitle").textContent = copy.appTitle;
-    $("appMsg").textContent = copy.appMsg;
+  // RESTO storage keys depend on slug
+  let S = { slug:"", owner_id:"", phone:"", module:"" };
+  let KEY = "";
+  let KEY_TABLES = "";
 
-    document.title = copy.title;
+  function renderTickets(){
+    const rows = load(KEY).sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""));
+    const filter = $("filter").value;
+    const q = $("q").value;
 
-    $("pill").textContent = "slug: " + (slug || "—");
-    $("btnPin").href = "./index.html?slug=" + encodeURIComponent(slug || "");
+    const open = rows.filter(r=>r.status==="open");
+    const ready = rows.filter(r=>r.status==="ready");
+    const served = rows.filter(r=>r.status==="served");
+    const day = todayKey();
+    const caDay = rows
+      .filter(r=>r.day_key===day && (r.status==="open" || r.status==="ready" || r.status==="served"))
+      .reduce((sum,r)=> sum + (Number(String(r.amount||"").replace(/[^\d]/g,""))||0), 0);
 
-    $("btnPay").textContent = "💳 Activer " + mod;
+    $("kOpen").textContent = String(open.length);
+    $("kReady").textContent = String(ready.length);
+    $("kServed").textContent = String(served.length);
+    $("kCA").textContent = caDay ? (caDay.toLocaleString("fr-FR")) : "0";
+
+    let view = rows.filter(r=>matches(r,q));
+    if(filter !== "all") view = view.filter(r=>r.status===filter);
+
+    const list = $("list");
+    list.innerHTML = "";
+
+    if(view.length===0){
+      list.innerHTML = `
+        <div class="item">
+          <div>
+            <div class="a">Aucun ticket</div>
+            <div class="b">Clique “Nouveau ticket” pour commencer.</div>
+          </div>
+          <div class="badge neutral">VIDE</div>
+        </div>`;
+      return;
+    }
+
+    for(const r of view){
+      const title = `Table: ${r.table || "—"} • ${r.mode || "—"}`;
+      const sub = [
+        r.client ? `Client: ${r.client}` : null,
+        `Total: ${money(r.amount)}`,
+        r.note ? `Commande: ${r.note}` : null,
+        `Créé: ${new Date(r.created_at).toLocaleString("fr-FR")}`
+      ].filter(Boolean).join("<br>");
+
+      const item = document.createElement("div");
+      item.className = "item";
+      item.innerHTML = `
+        <div style="flex:1">
+          <div class="a">${title}</div>
+          <div class="b">${sub}</div>
+          <div class="row" style="margin-top:10px">
+            <button class="tinybtn" data-act="ready" data-id="${r.id}">🍳 Prêt</button>
+            <button class="tinybtn" data-act="served" data-id="${r.id}">✅ Servi</button>
+            <button class="tinybtn" data-act="cancel" data-id="${r.id}">🧨 Annuler</button>
+            <button class="tinybtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
+          </div>
+        </div>
+        <div>${badge(r.status)}</div>
+      `;
+      list.appendChild(item);
+    }
+  }
+
+  function updateTicket(id, patch){
+    const rows = load(KEY);
+    const i = rows.findIndex(x=>x.id===id);
+    if(i<0) return;
+    rows[i] = { ...rows[i], ...patch, updated_at: nowISO() };
+    save(KEY, rows);
+    renderTickets();
+  }
+  function removeTicket(id){
+    save(KEY, load(KEY).filter(x=>x.id!==id));
+    renderTickets();
+  }
+
+  // modal
+  const modal = $("modalNew");
+  const openModal = ()=>{
+    $("mSlug").textContent = S.slug || "—";
+    modal.style.display = "flex";
+    setTimeout(()=>$("table").focus(), 150);
+  };
+  const closeModal = ()=>{ modal.style.display = "none"; };
+
+  $("btnNew").onclick = openModal;
+  $("cancel").onclick = closeModal;
+  $("close").onclick = closeModal;
+  modal.addEventListener("click",(e)=>{ if(e.target===modal) closeModal(); });
+
+  $("save").onclick = ()=>{
+    const t = {
+      id: uid(),
+      slug: S.slug,
+      owner_id: S.owner_id || null,
+      status: "open",
+      day_key: todayKey(),
+      table: $("table").value.trim(),
+      client: $("client").value.trim(),
+      amount: $("amount").value.trim(),
+      mode: $("mode").value,
+      note: $("note").value.trim(),
+      created_at: nowISO()
+    };
+    const rows = load(KEY);
+    rows.unshift(t);
+    save(KEY, rows);
+
+    ["table","client","amount","note"].forEach(id=>$(id).value="");
+    $("mode").value = "sur_place";
+
+    closeModal();
+    renderTickets();
+  };
+
+  document.addEventListener("click",(e)=>{
+    const b = e.target.closest("[data-act]");
+    if(!b) return;
+    const id = b.getAttribute("data-id");
+    const act = b.getAttribute("data-act");
+    if(act==="ready") return updateTicket(id,{ status:"ready" });
+    if(act==="served") return updateTicket(id,{ status:"served" });
+    if(act==="cancel") return updateTicket(id,{ status:"cancelled" });
+    if(act==="del") return removeTicket(id);
+  });
+
+  $("btnPulse").onclick = ()=>alert("🔔 Inbox: V2 commandes online + notif cuisine.");
+  $("q").oninput = renderTickets;
+  $("filter").onchange = renderTickets;
+
+  $("btnHelp").onclick = ()=>{
+    const num = "221771342889";
+    const txt = encodeURIComponent("DIGIY Support — RESTO PRO. Slug: " + (S.slug||"") + " • Besoin d’aide.");
+    location.href = "https://wa.me/" + num + "?text=" + txt;
+  };
+
+  $("btnLogout").onclick = ()=>{
+    localStorage.removeItem("DIGIY_ACCESS");
+    location.href = "./index.html" + (S.slug ? ("?slug="+encodeURIComponent(S.slug)) : "");
+  };
+
+  $("btnExport").onclick = ()=>{
+    const rows = load(KEY);
+    const blob = new Blob([JSON.stringify(rows,null,2)], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "resto-" + (S.slug||"pro") + ".json";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 800);
+  };
+
+  $("btnReset").onclick = ()=>{
+    if(confirm("Reset démo pour ce slug ?")){
+      localStorage.removeItem(KEY);
+      localStorage.removeItem(KEY_TABLES);
+      renderTickets();
+    }
+  };
+
+  $("btnPrint").onclick = ()=>window.print();
+
+  function renderAccess(st){
+    $("slug").textContent = st?.slug || "—";
+    $("owner").textContent = (readOwnerId() || "—");
+    $("pill").textContent = st?.module ? ("PRO-" + st.module) : "—";
+    $("state").textContent = st?.ok ? "OK" : "KO";
+    $("btnPin").href = "./index.html?slug=" + encodeURIComponent(st?.slug || "");
 
     const lines = [
-      `module=${mod}`,
-      `slug=${slug || "—"}`,
-      `pin_ok=${!!st?.pin_ok}`,
-      `access_ok=${!!st?.access_ok}`,
+      `module=${st?.module}`,
+      `slug=${st?.slug}`,
+      `pin_ok=${st?.pin_ok}`,
+      `access_ok=${st?.access_ok}`,
       `phone=${st?.phone || "—"}`,
       `reason=${st?.reason || "—"}`
     ];
     $("details").textContent = lines.join("  |  ");
 
-    if (!slug){
+    // accès
+    if(!st?.slug){
+      $("grid").style.display = "none";
       $("btnPay").style.display = "none";
-      $("appCard").style.display = "none";
-      setState("⚠️ Slug manquant. Passe par GO PIN / QR.", "warn");
+      setMsg("⚠️ Slug manquant. Passe par GO PIN / QR.", "warn");
       return;
     }
-
-    if (st?.reason === "slug_unknown"){
+    if(st?.reason === "slug_unknown"){
+      $("grid").style.display = "none";
       $("btnPay").style.display = "none";
-      $("appCard").style.display = "none";
-      setState("⚠️ Slug inconnu. Active/valide l’abo test pour créer le slug.", "warn");
+      setMsg("⚠️ Slug inconnu. Crée/valide l’abo test pour générer le slug.", "warn");
       return;
     }
-
-    if (!st?.pin_ok){
+    if(!st?.pin_ok){
+      $("grid").style.display = "none";
       $("btnPay").style.display = "none";
-      $("appCard").style.display = "none";
-      setState("🔐 PIN requis. Clique “Refaire PIN”.", "warn");
+      setMsg("🔐 PIN requis. Clique “Refaire PIN”.", "warn");
       return;
     }
-
-    if (!st?.access_ok){
+    if(!st?.access_ok){
+      $("grid").style.display = "none";
       $("btnPay").href = st?.pay_url || "#";
       $("btnPay").style.display = "inline-flex";
-      $("appCard").style.display = "none";
-      setState(`💳 Abonnement ${mod} inactif. Active pour déverrouiller.`, "bad");
+      setMsg("💳 Abonnement inactif. Active pour déverrouiller.", "bad");
       return;
     }
 
+    // OK => show module UI
     $("btnPay").style.display = "none";
-    $("appCard").style.display = "block";
-    setState("✅ Abonnement OK. Cockpit ouvert.", "ok");
+    $("grid").style.display = "grid";
+    setMsg("✅ Abonnement OK. Cockpit ouvert.", "ok");
+
+    // module switch
+    if(st.module === "RESTO"){
+      $("title").textContent = "🍽️ DIGIY PRO-RESTO — Cockpit";
+      document.title = "🍽️ DIGIY PRO-RESTO — Cockpit";
+      $("restoCard").style.display = "block";
+      // init keys
+      KEY = "DIGIY_RESTO_TICKETS::" + st.slug;
+      KEY_TABLES = "DIGIY_RESTO_TABLES::" + st.slug;
+      renderTickets();
+    } else if(st.module === "RESA"){
+      $("title").textContent = "📅 DIGIY PRO-RESA — Cockpit";
+      document.title = "📅 DIGIY PRO-RESA — Cockpit";
+      $("restoCard").style.display = "none";
+      // tu brancheras ta UI RESA ici
+    } else {
+      $("title").textContent = "DIGIY PRO — Cockpit";
+      document.title = "DIGIY PRO — Cockpit";
+      $("restoCard").style.display = "none";
+    }
+  }
+
+  function readOwnerId(){
+    try{
+      const s = JSON.parse(localStorage.getItem("DIGIY_ACCESS")||"null");
+      return s?.owner_id || "";
+    }catch{ return ""; }
   }
 
   async function boot(){
     const st = await window.DIGIY_GUARD.ready;
-    if (!st?.ok){
-      setState("❌ Guard error: " + (st?.error || "unknown"), "bad");
+    if(!st?.ok){
+      setMsg("❌ Guard error: " + (st?.error || "unknown"), "bad");
       return;
     }
-    render(st);
+    S.slug = st.slug || "";
+    S.phone = st.phone || "";
+    S.module = st.module || "";
+    S.owner_id = readOwnerId() || "";
+    renderAccess(st);
   }
 
   $("btnCheck").addEventListener("click", async ()=>{
     const st = await window.DIGIY_GUARD.refresh();
-    render(st);
+    S.slug = st.slug || "";
+    S.phone = st.phone || "";
+    S.module = st.module || "";
+    S.owner_id = readOwnerId() || "";
+    renderAccess(st);
   });
 
   boot();
