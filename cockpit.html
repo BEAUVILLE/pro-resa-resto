@@ -6,7 +6,9 @@
   <meta name="theme-color" content="#061b14"/>
   <title>DIGIY RESA PRO — Cockpit</title>
 
-  <script src="./guard.js"></script>
+  <!-- ✅ Guard SOFT (page-safe) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-anti-crash-1"></script>
 
   <style>
     :root{
@@ -44,7 +46,6 @@
       border:1px solid var(--line); background:rgba(250,204,21,.10);
       padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap;
     }
-
     .grid{display:grid;gap:12px;margin-top:12px}
     @media(min-width:900px){ .grid{grid-template-columns:1.15fr .85fr} }
 
@@ -158,7 +159,6 @@
 
 <body>
 <div class="wrap">
-
   <div class="top">
     <div class="brand">
       <div class="ico">🦅</div>
@@ -166,7 +166,7 @@
         <h1>📅 RESA PRO — Cockpit</h1>
         <div class="sub">
           SLUG: <b id="slug">—</b> • OWNER: <b id="owner">—</b><br>
-          Statut: <b class="muted" id="stat">session OK</b>
+          Statut: <b class="muted" id="stat">⏳ boot…</b>
         </div>
       </div>
     </div>
@@ -174,8 +174,6 @@
   </div>
 
   <div class="grid">
-
-    <!-- LEFT -->
     <div class="card">
       <div class="title">⚡ ACTIONS RAPIDES</div>
       <div class="row">
@@ -187,26 +185,10 @@
       <div style="height:10px"></div>
       <div class="title">🌡️ TEMPÉRATURE RÉSERVATIONS</div>
       <div class="kpis">
-        <div class="kpi">
-          <div class="k">Aujourd’hui</div>
-          <div class="v" id="kToday">—</div>
-          <div class="s">arrivées / check-in</div>
-        </div>
-        <div class="kpi">
-          <div class="k">En attente</div>
-          <div class="v" id="kPending">—</div>
-          <div class="s">à confirmer</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Confirmées</div>
-          <div class="v" id="kConfirmed">—</div>
-          <div class="s">à préparer</div>
-        </div>
-        <div class="kpi">
-          <div class="k">Terminées</div>
-          <div class="v" id="kDone">—</div>
-          <div class="s">checkout</div>
-        </div>
+        <div class="kpi"><div class="k">Aujourd’hui</div><div class="v" id="kToday">—</div><div class="s">arrivées / check-in</div></div>
+        <div class="kpi"><div class="k">En attente</div><div class="v" id="kPending">—</div><div class="s">à confirmer</div></div>
+        <div class="kpi"><div class="k">Confirmées</div><div class="v" id="kConfirmed">—</div><div class="s">à préparer</div></div>
+        <div class="kpi"><div class="k">Terminées</div><div class="v" id="kDone">—</div><div class="s">checkout</div></div>
       </div>
 
       <div style="height:10px"></div>
@@ -231,12 +213,11 @@
       </div>
     </div>
 
-    <!-- RIGHT -->
     <div class="card">
       <div class="title">🛟 SUPPORT</div>
       <div class="row">
         <button class="btn" id="btnHelp">💬 WhatsApp Support</button>
-        <button class="btn" id="btnLogout">🚪 Déconnexion</button>
+        <button class="btn danger" id="btnLogout">🚪 Déconnexion</button>
       </div>
 
       <div style="height:12px"></div>
@@ -263,11 +244,9 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- MODAL NEW -->
 <div class="modal" id="modalNew">
   <div class="box">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -276,30 +255,12 @@
     </div>
 
     <div class="fgrid">
-      <div>
-        <label>Nom client</label>
-        <input id="client" placeholder="Ex: Astou">
-      </div>
-      <div>
-        <label>Téléphone</label>
-        <input id="phone" placeholder="+221…">
-      </div>
-      <div>
-        <label>Date arrivée (check-in)</label>
-        <input id="start" type="date">
-      </div>
-      <div>
-        <label>Date départ (check-out)</label>
-        <input id="end" type="date">
-      </div>
-      <div>
-        <label>Chambre / Logement</label>
-        <input id="unit" placeholder="Ex: Chambre 2 / Villa A">
-      </div>
-      <div>
-        <label>Montant (FCFA)</label>
-        <input id="amount" inputmode="numeric" placeholder="Ex: 25000">
-      </div>
+      <div><label>Nom client</label><input id="client" placeholder="Ex: Astou"></div>
+      <div><label>Téléphone</label><input id="phone" placeholder="+221…"></div>
+      <div><label>Date arrivée (check-in)</label><input id="start" type="date"></div>
+      <div><label>Date départ (check-out)</label><input id="end" type="date"></div>
+      <div><label>Chambre / Logement</label><input id="unit" placeholder="Ex: Chambre 2 / Villa A"></div>
+      <div><label>Montant (FCFA)</label><input id="amount" inputmode="numeric" placeholder="Ex: 25000"></div>
     </div>
 
     <div style="margin-top:6px">
@@ -317,224 +278,288 @@
 </div>
 
 <script>
-  const s = window.DIGIY_ACCESS || {};
-  const slug = (s.slug || "").toLowerCase();
-  document.getElementById("slug").textContent = s.slug || "—";
-  document.getElementById("owner").textContent = s.owner_id || "—";
+/* =========================
+   ✅ BOOT SESSION (guard-safe)
+   ========================= */
+const STORAGE_SLUG_KEY = "digiy_resa_slug";
+const $ = (id)=>document.getElementById(id);
 
-  const KEY = "DIGIY_RESA_BOOKINGS::" + (slug || "noslug");
+function getSlugFromUrl(){
+  try{ return (new URL(location.href)).searchParams.get("slug") || ""; }catch(_){ return ""; }
+}
 
-  function uid(){
-    return (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now()));
-  }
-  function todayKey(){
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${day}`;
-  }
-  function nowISO(){ return new Date().toISOString(); }
+function setTop(s){
+  $("slug").textContent  = s.slug || "—";
+  $("owner").textContent = s.owner_id || "—";
+  $("stat").textContent  = s.stat || "—";
+}
 
-  function load(){
-    try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }catch(_){ return []; }
-  }
-  function save(rows){ localStorage.setItem(KEY, JSON.stringify(rows)); }
+async function bootSession(){
+  // 1) slug URL or localStorage
+  let slug = (getSlugFromUrl() || "").trim();
+  if(!slug) slug = (localStorage.getItem(STORAGE_SLUG_KEY) || "").trim();
 
-  function money(v){
-    const n = Number(String(v||"").replace(/[^\d]/g,"")) || 0;
-    return n ? (n.toLocaleString("fr-FR") + " FCFA") : "—";
-  }
-  function badge(st){
-    if(st==="pending") return `<span class="badge neutral">EN ATTENTE</span>`;
-    if(st==="confirmed") return `<span class="badge ok">CONFIRMÉE</span>`;
-    if(st==="checked_in") return `<span class="badge ok">CHECK-IN</span>`;
-    if(st==="done") return `<span class="badge ok">TERMINÉE</span>`;
-    if(st==="cancelled") return `<span class="badge bad">ANNULÉE</span>`;
-    return `<span class="badge neutral">${String(st||"—").toUpperCase()}</span>`;
-  }
-
-  function matches(r, q){
-    q = (q||"").trim().toLowerCase();
-    if(!q) return true;
-    const hay = [
-      r.client, r.phone, r.unit, r.note,
-      r.start, r.end, r.status
-    ].filter(Boolean).join(" ").toLowerCase();
-    return hay.includes(q);
-  }
-
-  function render(){
-    const rows = load().sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""));
-    const filter = document.getElementById("filter").value;
-    const q = document.getElementById("q").value;
-
-    const tk = todayKey();
-    const todayArrivals = rows.filter(r => r.start === tk && (r.status==="confirmed" || r.status==="checked_in"));
-    const pending = rows.filter(r => r.status==="pending");
-    const confirmed = rows.filter(r => r.status==="confirmed");
-    const done = rows.filter(r => r.status==="done");
-
-    document.getElementById("kToday").textContent = String(todayArrivals.length);
-    document.getElementById("kPending").textContent = String(pending.length);
-    document.getElementById("kConfirmed").textContent = String(confirmed.length);
-    document.getElementById("kDone").textContent = String(done.length);
-
-    let view = rows.filter(r=>matches(r,q));
-    if(filter !== "all") view = view.filter(r=>r.status===filter);
-
-    const list = document.getElementById("list");
-    list.innerHTML = "";
-
-    if(view.length===0){
-      list.innerHTML = `
-        <div class="item">
-          <div>
-            <div class="a">Aucune réservation</div>
-            <div class="b">Clique “Nouvelle réservation” pour créer ta première.</div>
-          </div>
-          <div class="badge neutral">VIDE</div>
-        </div>`;
-      return;
+  // 2) boot guard (pas de loop)
+  try{
+    if(window.DIGIY_GUARD?.boot){
+      await window.DIGIY_GUARD.boot({ login: "pin.html" }); // page PIN du module
+      await window.DIGIY_GUARD.ready(8000).catch(()=>true);
     }
+  }catch(_){}
 
-    for(const r of view){
-      const title = `${r.client || "—"} • ${r.unit || "—"}`;
-      const sub = [
-        `Tel: ${r.phone || "—"} • Montant: ${money(r.amount)}`,
-        `Dates: ${r.start || "—"} → ${r.end || "—"}`,
-        r.note ? `Note: ${r.note}` : null,
-        `Créée: ${new Date(r.created_at).toLocaleString("fr-FR")}`
-      ].filter(Boolean).join("<br>");
+  // 3) session
+  const sess = window.DIGIY_GUARD?.getSession?.() || {};
+  const s = {
+    slug: (sess.slug || slug || "").trim(),
+    owner_id: sess.owner_id || null,
+    phone: sess.phone || null,
+    stat: (sess.ok ? "✅ session OK" : "⚠️ session partielle")
+  };
 
-      const item = document.createElement("div");
-      item.className = "item";
-      item.innerHTML = `
-        <div style="flex:1">
-          <div class="a">${title}</div>
-          <div class="b">${sub}</div>
-          <div class="row" style="margin-top:10px">
-            <button class="tinybtn" data-act="confirm" data-id="${r.id}">✅ Confirmer</button>
-            <button class="tinybtn" data-act="checkin" data-id="${r.id}">🟢 Check-in</button>
-            <button class="tinybtn" data-act="done" data-id="${r.id}">🏁 Terminer</button>
-            <button class="tinybtn" data-act="cancel" data-id="${r.id}">🧨 Annuler</button>
-            <button class="tinybtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
-          </div>
+  // 4) persist slug
+  if(s.slug){
+    localStorage.setItem(STORAGE_SLUG_KEY, s.slug);
+    try{
+      const u = new URL(location.href);
+      if(!u.searchParams.get("slug")) {
+        u.searchParams.set("slug", s.slug);
+        history.replaceState({}, "", u.toString());
+      }
+    }catch(_){}
+  }else{
+    s.stat = "⚠️ slug manquant (ouvre via GO PIN avec ?slug=...)";
+  }
+
+  // 5) expose (compat)
+  window.DIGIY_ACCESS = { slug: s.slug, owner_id: s.owner_id, phone: s.phone, ts: Date.now() };
+
+  setTop(s);
+  return s;
+}
+
+/* =========================
+   ✅ RESA V1 (localStorage)
+   ========================= */
+function uid(){
+  return (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now()));
+}
+function todayKey(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function nowISO(){ return new Date().toISOString(); }
+
+function money(v){
+  const n = Number(String(v||"").replace(/[^\d]/g,"")) || 0;
+  return n ? (n.toLocaleString("fr-FR") + " FCFA") : "—";
+}
+function badge(st){
+  if(st==="pending") return `<span class="badge neutral">EN ATTENTE</span>`;
+  if(st==="confirmed") return `<span class="badge ok">CONFIRMÉE</span>`;
+  if(st==="checked_in") return `<span class="badge ok">CHECK-IN</span>`;
+  if(st==="done") return `<span class="badge ok">TERMINÉE</span>`;
+  if(st==="cancelled") return `<span class="badge bad">ANNULÉE</span>`;
+  return `<span class="badge neutral">${String(st||"—").toUpperCase()}</span>`;
+}
+function matches(r, q){
+  q = (q||"").trim().toLowerCase();
+  if(!q) return true;
+  const hay = [r.client,r.phone,r.unit,r.note,r.start,r.end,r.status].filter(Boolean).join(" ").toLowerCase();
+  return hay.includes(q);
+}
+
+let KEY = "DIGIY_RESA_BOOKINGS::noslug";
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }catch(_){ return []; }
+}
+function save(rows){ localStorage.setItem(KEY, JSON.stringify(rows)); }
+
+function render(){
+  const rows = load().sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""));
+  const filter = $("filter").value;
+  const q = $("q").value;
+
+  const tk = todayKey();
+  const todayArrivals = rows.filter(r => r.start === tk && (r.status==="confirmed" || r.status==="checked_in"));
+  const pending = rows.filter(r => r.status==="pending");
+  const confirmed = rows.filter(r => r.status==="confirmed");
+  const done = rows.filter(r => r.status==="done");
+
+  $("kToday").textContent = String(todayArrivals.length);
+  $("kPending").textContent = String(pending.length);
+  $("kConfirmed").textContent = String(confirmed.length);
+  $("kDone").textContent = String(done.length);
+
+  let view = rows.filter(r=>matches(r,q));
+  if(filter !== "all") view = view.filter(r=>r.status===filter);
+
+  const list = $("list");
+  list.innerHTML = "";
+
+  if(view.length===0){
+    list.innerHTML = `
+      <div class="item">
+        <div>
+          <div class="a">Aucune réservation</div>
+          <div class="b">Clique “Nouvelle réservation” pour créer ta première.</div>
         </div>
-        <div>${badge(r.status)}</div>
-      `;
-      list.appendChild(item);
-    }
+        <div class="badge neutral">VIDE</div>
+      </div>`;
+    return;
   }
 
-  function update(id, patch){
-    const rows = load();
-    const i = rows.findIndex(x=>x.id===id);
-    if(i<0) return;
-    rows[i] = { ...rows[i], ...patch, updated_at: nowISO() };
-    save(rows);
-    render();
+  for(const r of view){
+    const title = `${r.client || "—"} • ${r.unit || "—"}`;
+    const sub = [
+      `Tel: ${r.phone || "—"} • Montant: ${money(r.amount)}`,
+      `Dates: ${r.start || "—"} → ${r.end || "—"}`,
+      r.note ? `Note: ${r.note}` : null,
+      `Créée: ${new Date(r.created_at).toLocaleString("fr-FR")}`
+    ].filter(Boolean).join("<br>");
+
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `
+      <div style="flex:1">
+        <div class="a">${title}</div>
+        <div class="b">${sub}</div>
+        <div class="row" style="margin-top:10px">
+          <button class="tinybtn" data-act="confirm" data-id="${r.id}">✅ Confirmer</button>
+          <button class="tinybtn" data-act="checkin" data-id="${r.id}">🟢 Check-in</button>
+          <button class="tinybtn" data-act="done" data-id="${r.id}">🏁 Terminer</button>
+          <button class="tinybtn" data-act="cancel" data-id="${r.id}">🧨 Annuler</button>
+          <button class="tinybtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
+        </div>
+      </div>
+      <div>${badge(r.status)}</div>
+    `;
+    list.appendChild(item);
   }
-  function remove(id){
-    save(load().filter(x=>x.id!==id));
-    render();
-  }
+}
 
-  // modal
-  const modal = document.getElementById("modalNew");
-  const openModal = ()=>{
-    document.getElementById("mSlug").textContent = slug || "—";
-    modal.style.display = "flex";
-    setTimeout(()=>document.getElementById("client").focus(), 150);
-  };
-  const closeModal = ()=>{ modal.style.display = "none"; };
-
-  document.getElementById("btnNew").onclick = openModal;
-  document.getElementById("cancel").onclick = closeModal;
-  document.getElementById("close").onclick = closeModal;
-  modal.addEventListener("click",(e)=>{ if(e.target===modal) closeModal(); });
-
-  document.getElementById("save").onclick = ()=>{
-    const r = {
-      id: uid(),
-      slug, owner_id: s.owner_id || null,
-      status: "pending",
-      client: document.getElementById("client").value.trim(),
-      phone: document.getElementById("phone").value.trim(),
-      start: document.getElementById("start").value,
-      end: document.getElementById("end").value,
-      unit: document.getElementById("unit").value.trim(),
-      amount: document.getElementById("amount").value.trim(),
-      note: document.getElementById("note").value.trim(),
-      created_at: nowISO()
-    };
-    const rows = load();
-    rows.unshift(r);
-    save(rows);
-
-    ["client","phone","start","end","unit","amount","note"].forEach(id=>document.getElementById(id).value="");
-    closeModal();
-    render();
-  };
-
-  // actions list
-  document.addEventListener("click",(e)=>{
-    const b = e.target.closest("[data-act]");
-    if(!b) return;
-    const id = b.getAttribute("data-id");
-    const act = b.getAttribute("data-act");
-    if(act==="confirm") return update(id,{ status:"confirmed" });
-    if(act==="checkin") return update(id,{ status:"checked_in" });
-    if(act==="done") return update(id,{ status:"done" });
-    if(act==="cancel") return update(id,{ status:"cancelled" });
-    if(act==="del") return remove(id);
-  });
-
-  // quicks
-  document.getElementById("btnToday").onclick = ()=>{
-    const tk = todayKey();
-    document.getElementById("q").value = tk; // astuce: recherche date
-    render();
-    alert("📍 Filtre rapide: tape un nom/tel, ou laisse la date du jour pour retrouver les arrivées.");
-  };
-  document.getElementById("btnPulse").onclick = ()=>alert("🔔 Inbox: V2 confirmations auto + rappels.");
-  document.getElementById("q").oninput = render;
-  document.getElementById("filter").onchange = render;
-
-  // support
-  document.getElementById("btnHelp").onclick = ()=>{
-    const num = "+221771342889";
-    const txt = encodeURIComponent("DIGIY Support — RESA PRO. Slug: " + (slug||"") + " • Besoin d’aide.");
-    location.href = "https://wa.me/" + num.replace("+","") + "?text=" + txt;
-  };
-
-  // logout
-  document.getElementById("btnLogout").onclick = ()=>{
-    localStorage.removeItem("DIGIY_ACCESS");
-    location.href = "./pin.html" + (slug ? ("?slug="+encodeURIComponent(slug)) : "");
-  };
-
-  // tools
-  document.getElementById("btnExport").onclick = ()=>{
-    const rows = load();
-    const blob = new Blob([JSON.stringify(rows,null,2)], { type:"application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "resa-" + (slug||"pro") + ".json";
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 800);
-  };
-  document.getElementById("btnReset").onclick = ()=>{
-    if(confirm("Reset démo pour ce slug ?")){
-      localStorage.removeItem(KEY);
-      render();
-    }
-  };
-  document.getElementById("btnAddNote").onclick = ()=>alert("📝 V2: notes internes par réservation + tags.");
-  document.getElementById("btnPrint").onclick = ()=>window.print();
-
-  // init
+function update(id, patch){
+  const rows = load();
+  const i = rows.findIndex(x=>x.id===id);
+  if(i<0) return;
+  rows[i] = { ...rows[i], ...patch, updated_at: nowISO() };
+  save(rows);
   render();
+}
+function removeRow(id){
+  save(load().filter(x=>x.id!==id));
+  render();
+}
+
+/* =========================
+   Modal
+   ========================= */
+const modal = $("modalNew");
+const openModal = ()=>{
+  $("mSlug").textContent = (window.DIGIY_ACCESS?.slug || "—");
+  modal.style.display = "flex";
+  setTimeout(()=>$("client").focus(), 150);
+};
+const closeModal = ()=>{ modal.style.display = "none"; };
+
+$("btnNew").onclick = openModal;
+$("cancel").onclick = closeModal;
+$("close").onclick = closeModal;
+modal.addEventListener("click",(e)=>{ if(e.target===modal) closeModal(); });
+
+$("save").onclick = ()=>{
+  const s = window.DIGIY_ACCESS || {};
+  const r = {
+    id: uid(),
+    slug: (s.slug || "").toLowerCase(),
+    owner_id: s.owner_id || null,
+    status: "pending",
+    client: $("client").value.trim(),
+    phone: $("phone").value.trim(),
+    start: $("start").value,
+    end: $("end").value,
+    unit: $("unit").value.trim(),
+    amount: $("amount").value.trim(),
+    note: $("note").value.trim(),
+    created_at: nowISO()
+  };
+  const rows = load();
+  rows.unshift(r);
+  save(rows);
+
+  ["client","phone","start","end","unit","amount","note"].forEach(id=>$(id).value="");
+  closeModal();
+  render();
+};
+
+document.addEventListener("click",(e)=>{
+  const b = e.target.closest("[data-act]");
+  if(!b) return;
+  const id = b.getAttribute("data-id");
+  const act = b.getAttribute("data-act");
+  if(act==="confirm") return update(id,{ status:"confirmed" });
+  if(act==="checkin") return update(id,{ status:"checked_in" });
+  if(act==="done") return update(id,{ status:"done" });
+  if(act==="cancel") return update(id,{ status:"cancelled" });
+  if(act==="del") return removeRow(id);
+});
+
+$("btnToday").onclick = ()=>{
+  const tk = todayKey();
+  $("q").value = tk;
+  render();
+  alert("📍 Astuce: filtre date du jour (arrivées).");
+};
+$("btnPulse").onclick = ()=>alert("🔔 Inbox: V2 confirmations auto + rappels.");
+$("q").oninput = render;
+$("filter").onchange = render;
+
+$("btnHelp").onclick = ()=>{
+  const num = "221771342889";
+  const slug = (window.DIGIY_ACCESS?.slug || "");
+  const txt = encodeURIComponent("DIGIY Support — RESA PRO. Slug: " + slug + " • Besoin d’aide.");
+  location.href = "https://wa.me/" + num + "?text=" + txt;
+};
+
+$("btnLogout").onclick = ()=>{
+  try{
+    if(window.DIGIY_GUARD?.logout) return window.DIGIY_GUARD.logout("pin.html");
+  }catch(_){}
+  localStorage.removeItem("DIGIY_ACCESS");
+  const slug = (window.DIGIY_ACCESS?.slug || "");
+  location.href = "./pin.html" + (slug ? ("?slug="+encodeURIComponent(slug)) : "");
+};
+
+$("btnExport").onclick = ()=>{
+  const rows = load();
+  const slug = (window.DIGIY_ACCESS?.slug || "pro");
+  const blob = new Blob([JSON.stringify(rows,null,2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "resa-" + slug + ".json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 800);
+};
+$("btnReset").onclick = ()=>{
+  if(confirm("Reset démo pour ce slug ?")){
+    localStorage.removeItem(KEY);
+    render();
+  }
+};
+$("btnAddNote").onclick = ()=>alert("📝 V2: notes internes par réservation + tags.");
+$("btnPrint").onclick = ()=>window.print();
+
+/* =========================
+   INIT
+   ========================= */
+(async ()=>{
+  const s = await bootSession();
+  KEY = "DIGIY_RESA_BOOKINGS::" + (s.slug ? s.slug.toLowerCase() : "noslug");
+  render();
+})();
 </script>
 </body>
 </html>
