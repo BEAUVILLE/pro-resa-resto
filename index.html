@@ -337,7 +337,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
   <div class="footer">
     <div class="footer-logo">DIGIYLYFE</div>
     <div class="footer-text">L'Afrique enracinée, connectée au monde · © 2026</div>
-    <div class="footer-text">digiylyfe@gmail.com</div>
+    <div class="footer-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8ccc1cfc1d1c4d1cecde8cfc5c9c1c486cbc7c5">[email&#160;protected]</a></div>
   </div>
 </div>
 
@@ -390,7 +390,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
         <div class="auth-error" id="login-error"></div>
         <button class="btn-auth" id="btn-login" onclick="doLogin()">Se connecter →</button>
       </div>
-      <div class="demo-box">🔑 Démo : demo@digiylyfe.com / demo1234</div>
+      <div class="demo-box">🔑 Démo : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1175747c7e5175787678687d6877743f727e7c">[email&#160;protected]</a> / demo1234</div>
       <div class="auth-link">Pas encore de compte ? <a onclick="goTo('register')">1 mois gratuit</a></div>
     </div>
   </div>
@@ -552,7 +552,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════════════════════
 // ⚙️  CONFIGURATION SUPABASE
 // → Remplace ces 2 valeurs par tes vraies clés Supabase
@@ -561,7 +561,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
  const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-  
+
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── ÉTAT ──────────────────────────────────────────────────────
@@ -580,13 +580,18 @@ const STATUS_COLOR = {free:"#f0c040", partial:"#e8852a", full:"#c0392b"};
 
 // ── INIT ──────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
+  // Timeout securite 6s
+  const timeout = setTimeout(() => { goTo('landing'); }, 6000);
+  try {
+    const { data, error } = await sb.auth.getSession();
+    clearTimeout(timeout);
+    if (error || !data.session) { goTo('landing'); return; }
+    currentUser = data.session.user;
     await loadProfile();
     await loadTables();
     launchApp();
-  } else {
+  } catch(e) {
+    clearTimeout(timeout);
     goTo('landing');
   }
 });
@@ -1030,14 +1035,4 @@ function hideUpgrade() { document.getElementById('upgrade-overlay').style.displa
 
 // ── TOAST ─────────────────────────────────────────────────────
 function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent=msg; t.style.display='block';
-  t.style.background = type==='error' ? '#c0392b' : '#0f2318';
-  t.style.borderColor = type==='error' ? '#c0392b' : '#f0c040';
-  t.style.color='#e8f0e8';
-  clearTimeout(window._tt);
-  window._tt = setTimeout(() => t.style.display='none', 3000);
-}
-</script>
-</body>
-</html>
+  const t = do
