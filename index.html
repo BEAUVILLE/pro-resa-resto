@@ -418,7 +418,10 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
     </div>
     <div class="app-user">
       <div class="user-avatar" id="user-avatar">R</div>
-      <span id="user-resto-name">Mon Resto</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end">
+        <span id="user-resto-name">Mon Resto</span>
+        <span id="user-slug" style="font-size:9px;color:var(--muted);letter-spacing:1px"></span>
+      </div>
       <button class="btn-logout" onclick="doLogout()">Déco</button>
     </div>
   </div>
@@ -555,9 +558,8 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 // ══════════════════════════════════════════════════════════════
 // ⚙️  CONFIG SUPABASE — Remplace par tes vraies clés
 // ══════════════════════════════════════════════════════════════
- const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+const SUPABASE_URL     = 'https://TON_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'TON_ANON_KEY';
 
 // ══════════════════════════════════════════════════════════════
 // MINI CLIENT SUPABASE — fetch() natif, zéro CDN
@@ -852,6 +854,9 @@ function launchApp() {
   const restoName = currentProfile.nom_resto || 'Mon Resto';
   document.getElementById('user-resto-name').textContent = restoName;
   document.getElementById('user-avatar').textContent = restoName.charAt(0).toUpperCase();
+  // Afficher le slug
+  const slugEl = document.getElementById('user-slug');
+  if(slugEl && currentProfile.slug) slugEl.textContent = '🔑 ' + currentProfile.slug;
   document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
 
   goTo('app');
