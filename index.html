@@ -5,7 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DIGIY RESTO PRO</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Chargement Supabase avec fallback multiple
+(function() {
+  var cdns = [
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
+    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js'
+  ];
+  var idx = 0;
+  function loadNext() {
+    if (idx >= cdns.length) {
+      document.getElementById('loading-text').textContent = 'Erreur réseau — Rechargez';
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = cdns[idx++];
+    s.onerror = loadNext;
+    document.head.appendChild(s);
+  }
+  loadNext();
+})();
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -253,7 +273,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 <!-- ══ LOADING ══ -->
 <div id="screen-loading" class="screen active">
   <div class="spinner"></div>
-  <div class="loading-text">DIGIY RESTO PRO</div>
+  <div class="loading-text" id="loading-text">DIGIY RESTO PRO</div>
 </div>
 
 <!-- ══ LANDING ══ -->
@@ -562,7 +582,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let sb = null; // initialisé après chargement du CDN
 
 // ── ÉTAT ──────────────────────────────────────────────────────
 let currentUser = null;
@@ -579,21 +599,36 @@ const TIME_SLOTS = ["12:00","12:30","13:00","13:30","14:00","19:00","19:30","20:
 const STATUS_COLOR = {free:"#f0c040", partial:"#e8852a", full:"#c0392b"};
 
 // ── INIT ──────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async () => {
-  // Timeout securite 6s
-  const timeout = setTimeout(() => { goTo('landing'); }, 6000);
-  try {
-    const { data, error } = await sb.auth.getSession();
-    clearTimeout(timeout);
-    if (error || !data.session) { goTo('landing'); return; }
-    currentUser = data.session.user;
-    await loadProfile();
-    await loadTables();
-    launchApp();
-  } catch(e) {
-    clearTimeout(timeout);
-    goTo('landing');
+// Attendre que Supabase soit chargé puis init
+function waitForSupabase(cb, tries) {
+  tries = tries || 0;
+  if (tries > 50) { goTo('landing'); return; } // 5s max
+  if (typeof supabase !== 'undefined' && window.sb) {
+    cb();
+  } else if (typeof supabase !== 'undefined') {
+    window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    cb();
+  } else {
+    setTimeout(() => waitForSupabase(cb, tries + 1), 100);
   }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  waitForSupabase(async () => {
+    const timeout = setTimeout(() => { goTo('landing'); }, 8000);
+    try {
+      const { data, error } = await sb.auth.getSession();
+      clearTimeout(timeout);
+      if (error || !data.session) { goTo('landing'); return; }
+      currentUser = data.session.user;
+      await loadProfile();
+      await loadTables();
+      launchApp();
+    } catch(e) {
+      clearTimeout(timeout);
+      goTo('landing');
+    }
+  });
 });
 
 // ── NAVIGATION ────────────────────────────────────────────────
