@@ -4,562 +4,143 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#061b14"/>
-  <title>DIGIY RESA PRO — Cockpit</title>
+  <title>DIGIY RESA — Cockpit</title>
 
-  <!-- ✅ Guard SOFT (page-safe) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-anti-crash-1"></script>
+  <script src="./guard.js?v=resa-1"></script>
 
   <style>
     :root{
-      --bg:#061b14; --bg2:#0a2b1f; --line:rgba(255,255,255,.14);
+      --bg:#061b14; --card:#0b2a1f; --line:rgba(255,255,255,.14);
       --text:#eafff1; --muted:rgba(234,255,241,.72);
-      --gold:#facc15; --ok:#22c55e; --bad:#fb7185;
+      --gold:#facc15; --ok:#22c55e; --bad:#fb7185; --warn:#f59e0b;
       --shadow:0 18px 55px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
-    body{
-      margin:0; color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto;
-      background:
-        radial-gradient(circle at top, rgba(250,204,21,.10), transparent 55%),
-        linear-gradient(135deg,var(--bg),var(--bg2));
-      padding:16px;
-    }
-    .wrap{max-width:1060px;margin:0 auto}
-    .top{
-      display:flex;justify-content:space-between;align-items:center;gap:12px;
-      background:linear-gradient(145deg,rgba(11,42,31,.96),rgba(6,35,25,.96));
-      border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow);
-      padding:16px;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .ico{
-      width:48px;height:48px;border-radius:50%;
-      display:grid;place-items:center;
-      background:radial-gradient(circle at 30% 0,var(--gold),transparent 60%);
-      color:#062015;font-weight:1000;border:1px solid rgba(250,204,21,.35);
-    }
-    h1{margin:0;font-size:16px;letter-spacing:.10em}
-    .sub{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.4}
-    .pill{
-      border:1px solid var(--line); background:rgba(250,204,21,.10);
-      padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap;
-    }
-    .grid{display:grid;gap:12px;margin-top:12px}
-    @media(min-width:900px){ .grid{grid-template-columns:1.15fr .85fr} }
-
-    .card{
-      background:linear-gradient(145deg,rgba(11,42,31,.92),rgba(6,35,25,.92));
-      border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow);
-      padding:14px;
-    }
-    .title{font-weight:1000;letter-spacing:.08em;font-size:12px;color:rgba(234,255,241,.85)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .btn{
-      flex:1; min-width:210px;
-      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(0,0,0,.18); color:var(--text);
-      font-weight:1000; cursor:pointer;
-    }
-    .btn:hover{border-color:rgba(250,204,21,.55)}
-    .btn.primary{
-      background:linear-gradient(90deg,var(--ok),var(--gold));
-      color:#062015;border:none;
-    }
-    .btn.danger{
-      border-color:rgba(251,113,133,.35);
-      background:rgba(251,113,133,.10);
-    }
-
-    .kpis{display:grid;gap:10px;margin-top:10px}
-    @media(min-width:520px){ .kpis{grid-template-columns:repeat(2,1fr)} }
-    .kpi{
-      padding:12px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
-    }
-    .kpi .k{font-size:12px;color:var(--muted)}
-    .kpi .v{font-size:20px;font-weight:1000;margin-top:6px}
-    .kpi .s{font-size:12px;color:rgba(234,255,241,.78);margin-top:4px}
-
-    .list{margin-top:10px;border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden}
-    .item{
-      padding:12px;border-top:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
-    }
-    .item:first-child{border-top:none}
-    .a{font-weight:1000}
-    .b{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
-    .badge{
-      font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(250,204,21,.10);
-      white-space:nowrap;
-    }
-    .badge.ok{background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.35)}
-    .badge.bad{background:rgba(251,113,133,.12); border-color:rgba(251,113,133,.35)}
-    .badge.neutral{background:rgba(148,163,184,.10); border-color:rgba(148,163,184,.28)}
-
-    select, input, textarea{
-      border-radius:14px;border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18); color:var(--text);
-      padding:10px 12px; outline:none;
-      font-weight:900;
-      width:100%;
-    }
-    textarea{min-height:84px;resize:vertical;font-weight:700}
-    .split{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .split .title{flex:1}
-    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45}
-    .tiny{font-size:11px;color:rgba(234,255,241,.66)}
-
-    .modal{
-      position:fixed; inset:0; display:none;
-      background:rgba(0,0,0,.55);
-      align-items:center; justify-content:center;
-      padding:18px;
-    }
-    .modal .box{
-      width:min(720px,94vw);
-      background:linear-gradient(145deg,rgba(11,42,31,.98),rgba(6,35,25,.98));
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:18px;
-      padding:16px;
-      box-shadow:0 24px 60px rgba(0,0,0,.65);
-    }
-    label{display:block;font-size:12px;color:var(--muted);margin:6px 0}
-    .fgrid{display:grid;gap:10px;margin-top:10px}
-    @media(min-width:720px){ .fgrid{grid-template-columns:1fr 1fr} }
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .actions button{
-      flex:1; min-width:190px;
-      padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(250,204,21,.12);
-      color:var(--text);font-weight:1000;cursor:pointer;
-    }
-    .actions .primary{
-      background:linear-gradient(90deg,var(--ok),var(--gold));
-      color:#062015;border:none;
-    }
-    .close{
-      margin-top:10px;width:100%;
-      padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);
-      color:var(--text);font-weight:1000;cursor:pointer;
-    }
-    .tinybtn{
-      padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);color:var(--text);font-weight:1000;cursor:pointer;
-    }
-    .tinybtn:hover{border-color:rgba(250,204,21,.55)}
+    body{margin:0;min-height:100vh;background:radial-gradient(1200px 800px at 50% 10%, rgba(250,204,21,.08), transparent 60%), var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
+    header{padding:16px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between}
+    .wrap{width:min(980px,94vw);margin:0 auto}
+    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px}
+    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    h1{font-size:16px;margin:0}
+    .msg{font-size:13px;color:var(--muted);margin-top:8px}
+    .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.warn{color:var(--warn)}
+    button,a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--text);text-decoration:none;cursor:pointer;font-weight:700}
+    a.primary{border-color:rgba(250,204,21,.35);background:rgba(250,204,21,.12)}
+    a.primary:hover{background:rgba(250,204,21,.18)}
+    button:hover{background:rgba(255,255,255,.05)}
+    .muted{color:var(--muted);font-size:12px}
+    .panel{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
   </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="top">
-    <div class="brand">
-      <div class="ico">🦅</div>
-      <div>
-        <h1>📅 RESA PRO — Cockpit</h1>
-        <div class="sub">
-          SLUG: <b id="slug">—</b> • OWNER: <b id="owner">—</b><br>
-          Statut: <b class="muted" id="stat">⏳ boot…</b>
-        </div>
-      </div>
+  <header>
+    <div class="wrap row">
+      <h1>📅 DIGIY RESA — Cockpit</h1>
+      <div class="pill" id="pill">…</div>
     </div>
-    <div class="pill">resa_pro</div>
-  </div>
+  </header>
 
-  <div class="grid">
-    <div class="card">
-      <div class="title">⚡ ACTIONS RAPIDES</div>
-      <div class="row">
-        <button class="btn primary" id="btnNew">➕ Nouvelle réservation</button>
-        <button class="btn" id="btnToday">📍 Aujourd’hui</button>
-        <button class="btn" id="btnPulse">🔔 Inbox</button>
-      </div>
+  <main class="wrap">
+    <div class="grid">
 
-      <div style="height:10px"></div>
-      <div class="title">🌡️ TEMPÉRATURE RÉSERVATIONS</div>
-      <div class="kpis">
-        <div class="kpi"><div class="k">Aujourd’hui</div><div class="v" id="kToday">—</div><div class="s">arrivées / check-in</div></div>
-        <div class="kpi"><div class="k">En attente</div><div class="v" id="kPending">—</div><div class="s">à confirmer</div></div>
-        <div class="kpi"><div class="k">Confirmées</div><div class="v" id="kConfirmed">—</div><div class="s">à préparer</div></div>
-        <div class="kpi"><div class="k">Terminées</div><div class="v" id="kDone">—</div><div class="s">checkout</div></div>
-      </div>
-
-      <div style="height:10px"></div>
-      <div class="split">
-        <div class="title">📋 RÉSERVATIONS</div>
-        <select id="filter" style="max-width:260px">
-          <option value="all">Toutes</option>
-          <option value="pending">En attente</option>
-          <option value="confirmed">Confirmées</option>
-          <option value="checked_in">Check-in</option>
-          <option value="done">Terminées</option>
-          <option value="cancelled">Annulées</option>
-        </select>
-        <input id="q" placeholder="Recherche: nom / tel / note…" style="max-width:260px">
-      </div>
-
-      <div class="list" id="list"></div>
-
-      <div class="hint">
-        <b>V1 Terrain :</b> stockage local par slug (ça tourne instant).<br>
-        <span class="tiny">V2 : on branche Supabase (réservations réelles + planning + Pulse).</span>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="title">🛟 SUPPORT</div>
-      <div class="row">
-        <button class="btn" id="btnHelp">💬 WhatsApp Support</button>
-        <button class="btn danger" id="btnLogout">🚪 Déconnexion</button>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="title">🧩 OUTILS</div>
-      <div class="row">
-        <button class="btn" id="btnExport">⬇️ Export JSON</button>
-        <button class="btn danger" id="btnReset">🧹 Reset Démo</button>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="title">📌 COMMANDES RAPIDES</div>
-      <div class="row">
-        <button class="btn" id="btnAddNote">📝 Note interne</button>
-        <button class="btn" id="btnPrint">🖨️ Imprimer liste</button>
-      </div>
-
-      <div class="list" style="margin-top:10px">
-        <div class="item">
+      <div class="card">
+        <div class="row">
           <div>
-            <div class="a">🔔 Inbox</div>
-            <div class="b">V2 : confirmations auto + rappels (J-1 / J+1).</div>
+            <div class="muted">État</div>
+            <div class="msg" id="stateMsg">Chargement…</div>
           </div>
-          <div class="badge neutral">V2</div>
+          <div class="row">
+            <button id="btnCheck">🔄 Vérifier mon accès</button>
+            <a class="btn" id="btnPin" href="./pin.html">🔐 PIN</a>
+            <a class="btn primary" id="btnPay" href="#" style="display:none">💳 Activer</a>
+          </div>
+        </div>
+
+        <div class="panel muted" id="details"></div>
+      </div>
+
+      <div class="card">
+        <div class="muted">UI RESA (placeholder)</div>
+        <div class="msg">
+          Ici tu poses ton planning / check-in / check-out / inbox.  
+          Le guard ne te bloque pas par redirect: il te donne l’état, et toi tu pilotes.
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
-<div class="modal" id="modalNew">
-  <div class="box">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <div style="font-weight:1000">➕ Nouvelle réservation</div>
-      <div class="badge neutral" id="mSlug">—</div>
     </div>
-
-    <div class="fgrid">
-      <div><label>Nom client</label><input id="client" placeholder="Ex: Astou"></div>
-      <div><label>Téléphone</label><input id="phone" placeholder="+221…"></div>
-      <div><label>Date arrivée (check-in)</label><input id="start" type="date"></div>
-      <div><label>Date départ (check-out)</label><input id="end" type="date"></div>
-      <div><label>Chambre / Logement</label><input id="unit" placeholder="Ex: Chambre 2 / Villa A"></div>
-      <div><label>Montant (FCFA)</label><input id="amount" inputmode="numeric" placeholder="Ex: 25000"></div>
-    </div>
-
-    <div style="margin-top:6px">
-      <label>Note</label>
-      <textarea id="note" placeholder="Ex: arrive tard / 2 personnes / besoin lit bébé…"></textarea>
-    </div>
-
-    <div class="actions">
-      <button class="primary" id="save">✅ Enregistrer</button>
-      <button id="cancel">Annuler</button>
-    </div>
-
-    <button class="close" id="close">Fermer</button>
-  </div>
-</div>
+  </main>
 
 <script>
-/* =========================
-   ✅ BOOT SESSION (guard-safe)
-   ========================= */
-const STORAGE_SLUG_KEY = "digiy_resa_slug";
-const $ = (id)=>document.getElementById(id);
+  const $ = (id)=>document.getElementById(id);
 
-function getSlugFromUrl(){
-  try{ return (new URL(location.href)).searchParams.get("slug") || ""; }catch(_){ return ""; }
-}
+  function setState(text, kind){
+    const el = $("stateMsg");
+    el.className = "msg" + (kind ? (" " + kind) : "");
+    el.textContent = text;
+  }
 
-function setTop(s){
-  $("slug").textContent  = s.slug || "—";
-  $("owner").textContent = s.owner_id || "—";
-  $("stat").textContent  = s.stat || "—";
-}
+  function render(st){
+    const slug = st?.slug || "—";
+    $("pill").textContent = "slug: " + slug;
 
-async function bootSession(){
-  // 1) slug URL or localStorage
-  let slug = (getSlugFromUrl() || "").trim();
-  if(!slug) slug = (localStorage.getItem(STORAGE_SLUG_KEY) || "").trim();
+    $("btnPin").href = "./pin.html?slug=" + encodeURIComponent(st?.slug || "");
 
-  // 2) boot guard (pas de loop)
-  try{
-    if(window.DIGIY_GUARD?.boot){
-      await window.DIGIY_GUARD.boot({ login: "pin.html" }); // page PIN du module
-      await window.DIGIY_GUARD.ready(8000).catch(()=>true);
+    const lines = [
+      `module=${st?.module}`,
+      `slug=${st?.slug}`,
+      `pin_ok=${st?.pin_ok}`,
+      `access_ok=${st?.access_ok}`,
+      `phone=${st?.phone || "—"}`,
+      `reason=${st?.reason || "—"}`
+    ];
+    $("details").textContent = lines.join("  |  ");
+
+    // Cas 1: pas de slug → message terrain
+    if (!st?.slug){
+      $("btnPay").style.display = "none";
+      setState("⚠️ Slug manquant. Passe par GO PIN / QR pour entrer.", "warn");
+      return;
     }
-  }catch(_){}
 
-  // 3) session
-  const sess = window.DIGIY_GUARD?.getSession?.() || {};
-  const s = {
-    slug: (sess.slug || slug || "").trim(),
-    owner_id: sess.owner_id || null,
-    phone: sess.phone || null,
-    stat: (sess.ok ? "✅ session OK" : "⚠️ session partielle")
-  };
+    // Cas 2: slug inconnu → renvoyer vers GO PIN
+    if (st?.reason === "slug_unknown"){
+      $("btnPay").style.display = "none";
+      setState("⚠️ Slug inconnu. Passe par GO PIN / QR (ou crée l’abo test pour générer le slug).", "warn");
+      return;
+    }
 
-  // 4) persist slug
-  if(s.slug){
-    localStorage.setItem(STORAGE_SLUG_KEY, s.slug);
-    try{
-      const u = new URL(location.href);
-      if(!u.searchParams.get("slug")) {
-        u.searchParams.set("slug", s.slug);
-        history.replaceState({}, "", u.toString());
-      }
-    }catch(_){}
-  }else{
-    s.stat = "⚠️ slug manquant (ouvre via GO PIN avec ?slug=...)";
+    // Cas 3: abonnement KO → proposer activer (sans boucler)
+    if (!st?.access_ok){
+      $("btnPay").href = st?.pay_url || "#";
+      $("btnPay").style.display = "inline-flex";
+      setState("💳 Abonnement RESA inactif. Active pour déverrouiller le module.", "bad");
+      return;
+    }
+
+    // Cas 4: abonnement OK → accès
+    $("btnPay").style.display = "none";
+    setState("✅ Abonnement OK. Cockpit ouvert.", "ok");
   }
 
-  // 5) expose (compat)
-  window.DIGIY_ACCESS = { slug: s.slug, owner_id: s.owner_id, phone: s.phone, ts: Date.now() };
-
-  setTop(s);
-  return s;
-}
-
-/* =========================
-   ✅ RESA V1 (localStorage)
-   ========================= */
-function uid(){
-  return (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now()));
-}
-function todayKey(){
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,"0");
-  const day = String(d.getDate()).padStart(2,"0");
-  return `${y}-${m}-${day}`;
-}
-function nowISO(){ return new Date().toISOString(); }
-
-function money(v){
-  const n = Number(String(v||"").replace(/[^\d]/g,"")) || 0;
-  return n ? (n.toLocaleString("fr-FR") + " FCFA") : "—";
-}
-function badge(st){
-  if(st==="pending") return `<span class="badge neutral">EN ATTENTE</span>`;
-  if(st==="confirmed") return `<span class="badge ok">CONFIRMÉE</span>`;
-  if(st==="checked_in") return `<span class="badge ok">CHECK-IN</span>`;
-  if(st==="done") return `<span class="badge ok">TERMINÉE</span>`;
-  if(st==="cancelled") return `<span class="badge bad">ANNULÉE</span>`;
-  return `<span class="badge neutral">${String(st||"—").toUpperCase()}</span>`;
-}
-function matches(r, q){
-  q = (q||"").trim().toLowerCase();
-  if(!q) return true;
-  const hay = [r.client,r.phone,r.unit,r.note,r.start,r.end,r.status].filter(Boolean).join(" ").toLowerCase();
-  return hay.includes(q);
-}
-
-let KEY = "DIGIY_RESA_BOOKINGS::noslug";
-
-function load(){
-  try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }catch(_){ return []; }
-}
-function save(rows){ localStorage.setItem(KEY, JSON.stringify(rows)); }
-
-function render(){
-  const rows = load().sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""));
-  const filter = $("filter").value;
-  const q = $("q").value;
-
-  const tk = todayKey();
-  const todayArrivals = rows.filter(r => r.start === tk && (r.status==="confirmed" || r.status==="checked_in"));
-  const pending = rows.filter(r => r.status==="pending");
-  const confirmed = rows.filter(r => r.status==="confirmed");
-  const done = rows.filter(r => r.status==="done");
-
-  $("kToday").textContent = String(todayArrivals.length);
-  $("kPending").textContent = String(pending.length);
-  $("kConfirmed").textContent = String(confirmed.length);
-  $("kDone").textContent = String(done.length);
-
-  let view = rows.filter(r=>matches(r,q));
-  if(filter !== "all") view = view.filter(r=>r.status===filter);
-
-  const list = $("list");
-  list.innerHTML = "";
-
-  if(view.length===0){
-    list.innerHTML = `
-      <div class="item">
-        <div>
-          <div class="a">Aucune réservation</div>
-          <div class="b">Clique “Nouvelle réservation” pour créer ta première.</div>
-        </div>
-        <div class="badge neutral">VIDE</div>
-      </div>`;
-    return;
+  async function boot(){
+    const st = await window.DIGIY_GUARD.ready;
+    if (!st?.ok){
+      setState("❌ Guard error: " + (st?.error || "unknown"), "bad");
+      return;
+    }
+    render(st);
   }
 
-  for(const r of view){
-    const title = `${r.client || "—"} • ${r.unit || "—"}`;
-    const sub = [
-      `Tel: ${r.phone || "—"} • Montant: ${money(r.amount)}`,
-      `Dates: ${r.start || "—"} → ${r.end || "—"}`,
-      r.note ? `Note: ${r.note}` : null,
-      `Créée: ${new Date(r.created_at).toLocaleString("fr-FR")}`
-    ].filter(Boolean).join("<br>");
+  $("btnCheck").addEventListener("click", async ()=>{
+    const st = await window.DIGIY_GUARD.refresh();
+    render(st);
+  });
 
-    const item = document.createElement("div");
-    item.className = "item";
-    item.innerHTML = `
-      <div style="flex:1">
-        <div class="a">${title}</div>
-        <div class="b">${sub}</div>
-        <div class="row" style="margin-top:10px">
-          <button class="tinybtn" data-act="confirm" data-id="${r.id}">✅ Confirmer</button>
-          <button class="tinybtn" data-act="checkin" data-id="${r.id}">🟢 Check-in</button>
-          <button class="tinybtn" data-act="done" data-id="${r.id}">🏁 Terminer</button>
-          <button class="tinybtn" data-act="cancel" data-id="${r.id}">🧨 Annuler</button>
-          <button class="tinybtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
-        </div>
-      </div>
-      <div>${badge(r.status)}</div>
-    `;
-    list.appendChild(item);
-  }
-}
-
-function update(id, patch){
-  const rows = load();
-  const i = rows.findIndex(x=>x.id===id);
-  if(i<0) return;
-  rows[i] = { ...rows[i], ...patch, updated_at: nowISO() };
-  save(rows);
-  render();
-}
-function removeRow(id){
-  save(load().filter(x=>x.id!==id));
-  render();
-}
-
-/* =========================
-   Modal
-   ========================= */
-const modal = $("modalNew");
-const openModal = ()=>{
-  $("mSlug").textContent = (window.DIGIY_ACCESS?.slug || "—");
-  modal.style.display = "flex";
-  setTimeout(()=>$("client").focus(), 150);
-};
-const closeModal = ()=>{ modal.style.display = "none"; };
-
-$("btnNew").onclick = openModal;
-$("cancel").onclick = closeModal;
-$("close").onclick = closeModal;
-modal.addEventListener("click",(e)=>{ if(e.target===modal) closeModal(); });
-
-$("save").onclick = ()=>{
-  const s = window.DIGIY_ACCESS || {};
-  const r = {
-    id: uid(),
-    slug: (s.slug || "").toLowerCase(),
-    owner_id: s.owner_id || null,
-    status: "pending",
-    client: $("client").value.trim(),
-    phone: $("phone").value.trim(),
-    start: $("start").value,
-    end: $("end").value,
-    unit: $("unit").value.trim(),
-    amount: $("amount").value.trim(),
-    note: $("note").value.trim(),
-    created_at: nowISO()
-  };
-  const rows = load();
-  rows.unshift(r);
-  save(rows);
-
-  ["client","phone","start","end","unit","amount","note"].forEach(id=>$(id).value="");
-  closeModal();
-  render();
-};
-
-document.addEventListener("click",(e)=>{
-  const b = e.target.closest("[data-act]");
-  if(!b) return;
-  const id = b.getAttribute("data-id");
-  const act = b.getAttribute("data-act");
-  if(act==="confirm") return update(id,{ status:"confirmed" });
-  if(act==="checkin") return update(id,{ status:"checked_in" });
-  if(act==="done") return update(id,{ status:"done" });
-  if(act==="cancel") return update(id,{ status:"cancelled" });
-  if(act==="del") return removeRow(id);
-});
-
-$("btnToday").onclick = ()=>{
-  const tk = todayKey();
-  $("q").value = tk;
-  render();
-  alert("📍 Astuce: filtre date du jour (arrivées).");
-};
-$("btnPulse").onclick = ()=>alert("🔔 Inbox: V2 confirmations auto + rappels.");
-$("q").oninput = render;
-$("filter").onchange = render;
-
-$("btnHelp").onclick = ()=>{
-  const num = "221771342889";
-  const slug = (window.DIGIY_ACCESS?.slug || "");
-  const txt = encodeURIComponent("DIGIY Support — RESA PRO. Slug: " + slug + " • Besoin d’aide.");
-  location.href = "https://wa.me/" + num + "?text=" + txt;
-};
-
-$("btnLogout").onclick = ()=>{
-  try{
-    if(window.DIGIY_GUARD?.logout) return window.DIGIY_GUARD.logout("pin.html");
-  }catch(_){}
-  localStorage.removeItem("DIGIY_ACCESS");
-  const slug = (window.DIGIY_ACCESS?.slug || "");
-  location.href = "./pin.html" + (slug ? ("?slug="+encodeURIComponent(slug)) : "");
-};
-
-$("btnExport").onclick = ()=>{
-  const rows = load();
-  const slug = (window.DIGIY_ACCESS?.slug || "pro");
-  const blob = new Blob([JSON.stringify(rows,null,2)], { type:"application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "resa-" + slug + ".json";
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href), 800);
-};
-$("btnReset").onclick = ()=>{
-  if(confirm("Reset démo pour ce slug ?")){
-    localStorage.removeItem(KEY);
-    render();
-  }
-};
-$("btnAddNote").onclick = ()=>alert("📝 V2: notes internes par réservation + tags.");
-$("btnPrint").onclick = ()=>window.print();
-
-/* =========================
-   INIT
-   ========================= */
-(async ()=>{
-  const s = await bootSession();
-  KEY = "DIGIY_RESA_BOOKINGS::" + (s.slug ? s.slug.toLowerCase() : "noslug");
-  render();
-})();
+  boot();
 </script>
 </body>
 </html>
