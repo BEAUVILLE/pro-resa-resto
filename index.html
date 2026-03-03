@@ -5,27 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DIGIY RESTO PRO</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>
-// Chargement Supabase avec fallback multiple
-(function() {
-  var cdns = [
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js',
-    'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js'
-  ];
-  var idx = 0;
-  function loadNext() {
-    if (idx >= cdns.length) {
-      document.getElementById('loading-text').textContent = 'Erreur réseau — Rechargez';
-      return;
-    }
-    var s = document.createElement('script');
-    s.src = cdns[idx++];
-    s.onerror = loadNext;
-    document.head.appendChild(s);
-  }
-  loadNext();
-})();
-</script>
+<!-- Supabase via fetch direct - pas de CDN -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -571,95 +551,214 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
     </div>
   </div>
 </div>
-
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ══════════════════════════════════════════════════════════════
-// ⚙️  CONFIGURATION SUPABASE
-// → Remplace ces 2 valeurs par tes vraies clés Supabase
-// → Supabase > Settings > API
+// ⚙️  CONFIG SUPABASE — Remplace par tes vraies clés
 // ══════════════════════════════════════════════════════════════
- const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+const SUPABASE_URL     = 'https://TON_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'TON_ANON_KEY';
 
-let sb = null; // initialisé après chargement du CDN
+// ══════════════════════════════════════════════════════════════
+// MINI CLIENT SUPABASE — fetch() natif, zéro CDN
+// ══════════════════════════════════════════════════════════════
+const SB = {
+  _token: localStorage.getItem('sb_token') || null,
 
-// ── ÉTAT ──────────────────────────────────────────────────────
-let currentUser = null;
+  h() {
+    return {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + (this._token || SUPABASE_ANON_KEY)
+    };
+  },
+
+  async signUp(email, password, meta) {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+      method: 'POST', headers: this.h(),
+      body: JSON.stringify({ email, password, data: meta })
+    });
+    return r.json();
+  },
+
+  async signIn(email, password) {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST', headers: this.h(),
+      body: JSON.stringify({ email, password })
+    });
+    const d = await r.json();
+    if (d.access_token) {
+      this._token = d.access_token;
+      localStorage.setItem('sb_token', d.access_token);
+      localStorage.setItem('sb_uid', d.user?.id || '');
+    }
+    return d;
+  },
+
+  async signOut() {
+    try { await fetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: this.h() }); } catch(e) {}
+    this._token = null;
+    localStorage.removeItem('sb_token');
+    localStorage.removeItem('sb_uid');
+  },
+
+  async getUser() {
+    if (!this._token) return null;
+    try {
+      const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: this.h() });
+      if (!r.ok) { this._token = null; localStorage.removeItem('sb_token'); return null; }
+      return await r.json();
+    } catch(e) { return null; }
+  },
+
+  // Retourne un query builder
+  from(table) {
+    const self = this;
+    const q = {
+      _table: table,
+      _filters: [],
+      _orderCol: null,
+
+      eq(col, val) { this._filters.push(col + '=eq.' + encodeURIComponent(val)); return this; },
+      order(col) { this._orderCol = col; return this; },
+
+      _url(extra) {
+        let u = SUPABASE_URL + '/rest/v1/' + this._table + '?';
+        u += this._filters.join('&');
+        if (this._orderCol) u += (this._filters.length ? '&' : '') + 'order=' + this._orderCol;
+        if (extra) u += (u.endsWith('?') ? '' : '&') + extra;
+        return u;
+      },
+
+      _h(extras) {
+        const h = Object.assign({}, self.h());
+        h['Prefer'] = 'return=representation';
+        return Object.assign(h, extras || {});
+      },
+
+      async select(cols) {
+        try {
+          const r = await fetch(this._url('select=' + (cols||'*')), { headers: this._h() });
+          const d = await r.json();
+          return { data: Array.isArray(d) ? d : [], error: d.message ? d : null };
+        } catch(e) { return { data: [], error: e }; }
+      },
+
+      async single() {
+        try {
+          const r = await fetch(this._url('select=*&limit=1'), { headers: this._h() });
+          const d = await r.json();
+          const arr = Array.isArray(d) ? d : [];
+          return { data: arr[0] || null, error: null };
+        } catch(e) { return { data: null, error: e }; }
+      },
+
+      async insert(obj) {
+        try {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/' + this._table, {
+            method: 'POST', headers: this._h(), body: JSON.stringify(obj)
+          });
+          const d = await r.json();
+          return { data: d, error: d.message ? d : null };
+        } catch(e) { return { data: null, error: e }; }
+      },
+
+      async update(obj) {
+        try {
+          const r = await fetch(this._url(''), {
+            method: 'PATCH', headers: this._h(), body: JSON.stringify(obj)
+          });
+          const d = await r.json();
+          return { data: d, error: d.message ? d : null };
+        } catch(e) { return { data: null, error: e }; }
+      },
+
+      async delete() {
+        try {
+          await fetch(this._url(''), { method: 'DELETE', headers: this._h() });
+          return { error: null };
+        } catch(e) { return { error: e }; }
+      }
+    };
+    return q;
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// ÉTAT APPLICATION
+// ══════════════════════════════════════════════════════════════
+let currentUser   = null;
 let currentProfile = null;
-let tables = [];
-let reservations = [];
+let tables        = [];
+let reservations  = [];
 let selectedTable = null;
-let selectedTime = "";
-let currentZone = "Tous";
-let editId = null;
+let selectedTime  = '';
+let currentZone   = 'Tous';
+let editId        = null;
 let deleteTargetId = null;
 
-const TIME_SLOTS = ["12:00","12:30","13:00","13:30","14:00","19:00","19:30","20:00","20:30","21:00","21:30","22:00"];
-const STATUS_COLOR = {free:"#f0c040", partial:"#e8852a", full:"#c0392b"};
+const TIME_SLOTS = ['12:00','12:30','13:00','13:30','14:00','19:00','19:30','20:00','20:30','21:00','21:30','22:00'];
+const STATUS_COLOR = { free:'#f0c040', partial:'#e8852a', full:'#c0392b' };
 
-// ── INIT ──────────────────────────────────────────────────────
-// Attendre que Supabase soit chargé puis init
-function waitForSupabase(cb, tries) {
-  tries = tries || 0;
-  if (tries > 50) { goTo('landing'); return; } // 5s max
-  if (typeof supabase !== 'undefined' && window.sb) {
-    cb();
-  } else if (typeof supabase !== 'undefined') {
-    window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    cb();
-  } else {
-    setTimeout(() => waitForSupabase(cb, tries + 1), 100);
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  waitForSupabase(async () => {
-    const timeout = setTimeout(() => { goTo('landing'); }, 8000);
-    try {
-      const { data, error } = await sb.auth.getSession();
-      clearTimeout(timeout);
-      if (error || !data.session) { goTo('landing'); return; }
-      currentUser = data.session.user;
-      await loadProfile();
-      await loadTables();
-      launchApp();
-    } catch(e) {
-      clearTimeout(timeout);
+// ══════════════════════════════════════════════════════════════
+// INIT — Démarre dès que la page est prête
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const user = await SB.getUser();
+    if (!user || user.error) {
       goTo('landing');
+      return;
     }
-  });
+    currentUser = user;
+    await loadProfile();
+    await loadTables();
+    launchApp();
+  } catch(e) {
+    console.error('Init error:', e);
+    goTo('landing');
+  }
 });
 
-// ── NAVIGATION ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
 function goTo(screen) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + screen).classList.add('active');
   window.scrollTo(0, 0);
 }
 
-// ── AUTH ──────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════
 async function doRegister() {
-  const email = document.getElementById('reg-email').value.trim();
-  const pass = document.getElementById('reg-pass').value.trim();
-  const resto = document.getElementById('reg-resto').value.trim();
+  const email  = document.getElementById('reg-email').value.trim();
+  const pass   = document.getElementById('reg-pass').value.trim();
+  const resto  = document.getElementById('reg-resto').value.trim();
   const prenom = document.getElementById('reg-prenom').value.trim();
-  const nom = document.getElementById('reg-nom').value.trim();
-  const errEl = document.getElementById('reg-error');
-  const btn = document.getElementById('btn-register');
+  const nom    = document.getElementById('reg-nom').value.trim();
+  const btn    = document.getElementById('btn-register');
 
   if (!email || !pass || !resto) { showAuthError('reg-error', 'Remplissez tous les champs requis'); return; }
   if (pass.length < 6) { showAuthError('reg-error', 'Mot de passe trop court (6 min)'); return; }
 
   btn.disabled = true; btn.textContent = 'Création...';
-  const { data, error } = await sb.auth.signUp({
-    email, password: pass,
-    options: { data: { nom_resto: resto, prenom, nom } }
-  });
 
-  if (error) { showAuthError('reg-error', error.message); btn.disabled=false; btn.textContent='Créer mon compte gratuit →'; return; }
+  const data = await SB.signUp(email, pass, { nom_resto: resto, prenom, nom });
+  if (data.error_code || data.msg || !data.id) {
+    showAuthError('reg-error', data.msg || data.error_description || 'Erreur inscription');
+    btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
+    return;
+  }
 
-  currentUser = data.user;
+  // Auto-login après inscription
+  const login = await SB.signIn(email, pass);
+  if (!login.access_token) {
+    showAuthError('reg-error', 'Compte créé ! Connectez-vous.');
+    btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
+    goTo('login'); return;
+  }
+  currentUser = login.user;
   await loadProfile();
   await loadTables();
   launchApp();
@@ -667,16 +766,19 @@ async function doRegister() {
 
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-pass').value.trim();
-  const btn = document.getElementById('btn-login');
+  const pass  = document.getElementById('login-pass').value.trim();
+  const btn   = document.getElementById('btn-login');
 
   if (!email || !pass) { showAuthError('login-error', 'Email et mot de passe requis'); return; }
 
   btn.disabled = true; btn.textContent = 'Connexion...';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
 
-  if (error) { showAuthError('login-error', 'Email ou mot de passe incorrect'); btn.disabled=false; btn.textContent='Se connecter →'; return; }
-
+  const data = await SB.signIn(email, pass);
+  if (!data.access_token) {
+    showAuthError('login-error', 'Email ou mot de passe incorrect');
+    btn.disabled = false; btn.textContent = 'Se connecter →';
+    return;
+  }
   currentUser = data.user;
   await loadProfile();
   await loadTables();
@@ -684,37 +786,53 @@ async function doLogin() {
 }
 
 async function doLogout() {
-  await sb.auth.signOut();
+  await SB.signOut();
   currentUser = null; currentProfile = null; tables = []; reservations = [];
   goTo('landing');
 }
 
 function showAuthError(id, msg) {
   const el = document.getElementById(id);
+  if (!el) return;
   el.textContent = msg; el.style.display = 'block';
   setTimeout(() => el.style.display = 'none', 4000);
 }
 
-// ── PROFILE ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// DONNÉES
+// ══════════════════════════════════════════════════════════════
 async function loadProfile() {
-  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  const { data } = await SB.from('profiles').eq('id', currentUser.id).single();
   currentProfile = data;
 }
 
 async function loadTables() {
-  const { data } = await sb.from('tables_resto').select('*').eq('profile_id', currentUser.id).eq('actif', true).order('numero');
+  const { data } = await SB.from('tables_resto').eq('profile_id', currentUser.id).eq('actif', true).order('numero').select('*');
   tables = data || [];
 }
 
-// ── LAUNCH APP ────────────────────────────────────────────────
+async function loadReservations() {
+  const { data } = await SB.from('reservations').eq('profile_id', currentUser.id).eq('date_resa', getDate()).select('*');
+  reservations = data || [];
+}
+
+function getDate()    { return document.getElementById('date-input').value; }
+function getDayResas(){ return reservations; }
+function isOccupied(tableId, time) { return reservations.some(r => r.table_id === tableId && r.heure === time); }
+function getStatus(tableId) {
+  const n = TIME_SLOTS.filter(t => isOccupied(tableId, t)).length;
+  return n === 0 ? 'free' : n >= 3 ? 'full' : 'partial';
+}
+
+// ══════════════════════════════════════════════════════════════
+// LANCEMENT APP
+// ══════════════════════════════════════════════════════════════
 function launchApp() {
   if (!currentProfile) { goTo('landing'); return; }
 
-  // Vérifier le trial
-  const trialEnd = new Date(currentProfile.trial_end);
-  const now = new Date();
-  const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
-  const isPro = currentProfile.plan === 'pro';
+  const trialEnd  = new Date(currentProfile.trial_end);
+  const daysLeft  = Math.ceil((trialEnd - new Date()) / 86400000);
+  const isPro     = currentProfile.plan === 'pro';
 
   if (!isPro && daysLeft <= 0) {
     goTo('app');
@@ -722,50 +840,26 @@ function launchApp() {
     return;
   }
 
-  // Mettre à jour la barre trial
   const trialBar = document.getElementById('trial-bar');
-  const trialDaysEl = document.getElementById('trial-days');
-
   if (isPro) {
     trialBar.style.display = 'none';
   } else {
-    trialDaysEl.textContent = daysLeft + ' jour' + (daysLeft > 1 ? 's' : '') + ' restant' + (daysLeft > 1 ? 's' : '');
+    document.getElementById('trial-days').textContent = daysLeft + ' jour' + (daysLeft > 1 ? 's' : '') + ' restant' + (daysLeft > 1 ? 's' : '');
     if (daysLeft <= 7) trialBar.classList.add('urgent');
   }
 
-  // Info utilisateur
   const restoName = currentProfile.nom_resto || 'Mon Resto';
   document.getElementById('user-resto-name').textContent = restoName;
   document.getElementById('user-avatar').textContent = restoName.charAt(0).toUpperCase();
-
-  // Date du jour
   document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
 
   goTo('app');
   renderAll();
 }
 
-// ── DATA ──────────────────────────────────────────────────────
-function getDate() { return document.getElementById('date-input').value; }
-function getDayResas() { return reservations.filter(r => r.date_resa === getDate()); }
-
-function isOccupied(tableId, time) {
-  return getDayResas().some(r => r.table_id === tableId && r.heure === time);
-}
-
-function getStatus(tableId) {
-  const n = TIME_SLOTS.filter(t => isOccupied(tableId, t)).length;
-  return n === 0 ? 'free' : n >= 3 ? 'full' : 'partial';
-}
-
-async function loadReservations() {
-  const { data } = await sb.from('reservations')
-    .select('*')
-    .eq('profile_id', currentUser.id)
-    .eq('date_resa', getDate());
-  reservations = data || [];
-}
-
+// ══════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════
 async function renderAll() {
   await loadReservations();
   updateStats();
@@ -774,19 +868,17 @@ async function renderAll() {
   renderTableSelector();
 }
 
-// ── STATS ─────────────────────────────────────────────────────
 function updateStats() {
   const d = getDayResas();
-  document.getElementById('stat-count').textContent = d.length;
+  document.getElementById('stat-count').textContent  = d.length;
   document.getElementById('stat-covers').textContent = d.reduce((a,r) => a + r.nb_couverts, 0);
-  document.getElementById('stat-free').textContent = tables.length - new Set(d.map(r => r.table_id)).size;
+  document.getElementById('stat-free').textContent   = tables.length - new Set(d.map(r => r.table_id)).size;
 }
 
-// ── FLOOR PLAN ────────────────────────────────────────────────
 function renderFloor() {
   const svg = document.getElementById('floor-svg');
   svg.innerHTML = `
-    <text x="50" y="5" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">TERRASSE</text>
+    <text x="50" y="5"  text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">TERRASSE</text>
     <text x="50" y="30" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">SALLE PRINCIPALE</text>
     <text x="50" y="51" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">SALON PRIVÉ</text>
     <text x="50" y="72" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">BAR</text>
@@ -795,59 +887,55 @@ function renderFloor() {
     <line x1="3" y1="71" x2="87" y2="71" stroke="#f0c04022" stroke-width=".3" stroke-dasharray="1,1"/>`;
 
   tables.forEach(t => {
-    const st = getStatus(t.id);
+    const st    = getStatus(t.id);
     const color = STATUS_COLOR[st];
     const dimmed = currentZone !== 'Tous' && t.zone !== currentZone;
-    const cx = t.position_x + t.w/2 || t.position_x + 7;
-    const cy = t.position_y + t.h/2 || t.position_y + 6;
-    const w = 14, h = 10;
-    const times = getDayResas().filter(r => r.table_id === t.id).map(r => r.heure).join(' ');
+    const px = t.position_x, py = t.position_y;
+    const isRound = t.forme === 'round';
+    const tcx = isRound ? px+6 : px+7;
+    const tcy = isRound ? py+6 : py+5;
+    const times = reservations.filter(r => r.table_id === t.id).map(r => r.heure).join(' ');
 
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
     g.setAttribute('class','svg-table');
     g.style.opacity = dimmed ? '0.2' : '1';
-    g.style.cursor = dimmed ? 'default' : 'pointer';
+    g.style.cursor  = dimmed ? 'default' : 'pointer';
     g.addEventListener('mouseenter', () => showTooltip(t));
     g.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display='none');
     g.addEventListener('click', () => { if(!dimmed) clickTable(t); });
 
-    const px = t.position_x, py = t.position_y;
     let shape;
-    if (t.forme === 'round') {
+    if (isRound) {
       shape = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
       shape.setAttribute('cx', px+6); shape.setAttribute('cy', py+6);
-      shape.setAttribute('rx','6'); shape.setAttribute('ry','6');
+      shape.setAttribute('rx','6');   shape.setAttribute('ry','6');
     } else {
       shape = document.createElementNS('http://www.w3.org/2000/svg','rect');
       shape.setAttribute('x', px); shape.setAttribute('y', py);
-      shape.setAttribute('width','14'); shape.setAttribute('height','10');
-      shape.setAttribute('rx','1.2');
+      shape.setAttribute('width','14'); shape.setAttribute('height','10'); shape.setAttribute('rx','1.2');
     }
-    shape.setAttribute('fill', color+'22');
+    shape.setAttribute('fill',   color+'22');
     shape.setAttribute('stroke', color);
     shape.setAttribute('stroke-width','.6');
 
-    const tcx = t.forme==='round' ? px+6 : px+7;
-    const tcy = t.forme==='round' ? py+6 : py+5;
-
     const t1 = document.createElementNS('http://www.w3.org/2000/svg','text');
     t1.setAttribute('x', tcx); t1.setAttribute('y', tcy-1);
-    t1.setAttribute('text-anchor','middle'); t1.setAttribute('fill',color);
-    t1.setAttribute('font-size','2.5'); t1.setAttribute('font-family','Cormorant Garamond');
-    t1.setAttribute('font-weight','600'); t1.textContent = 'T'+t.numero;
+    t1.setAttribute('text-anchor','middle'); t1.setAttribute('fill', color);
+    t1.setAttribute('font-size','2.5'); t1.setAttribute('font-family','Cormorant Garamond'); t1.setAttribute('font-weight','600');
+    t1.textContent = 'T' + t.numero;
 
     const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
     t2.setAttribute('x', tcx); t2.setAttribute('y', tcy+2.5);
-    t2.setAttribute('text-anchor','middle'); t2.setAttribute('fill',color+'99');
+    t2.setAttribute('text-anchor','middle'); t2.setAttribute('fill', color+'99');
     t2.setAttribute('font-size','1.8'); t2.setAttribute('font-family','Montserrat');
-    t2.textContent = t.capacite+'p';
+    t2.textContent = t.capacite + 'p';
 
     g.appendChild(shape); g.appendChild(t1); g.appendChild(t2);
 
     if (times) {
       const t3 = document.createElementNS('http://www.w3.org/2000/svg','text');
       t3.setAttribute('x', tcx); t3.setAttribute('y', tcy+5.5);
-      t3.setAttribute('text-anchor','middle'); t3.setAttribute('fill',color);
+      t3.setAttribute('text-anchor','middle'); t3.setAttribute('fill', color);
       t3.setAttribute('font-size','1.5'); t3.setAttribute('font-family','Montserrat');
       t3.textContent = times; g.appendChild(t3);
     }
@@ -856,9 +944,9 @@ function renderFloor() {
 }
 
 function showTooltip(t) {
-  const tip = document.getElementById('tooltip');
-  const rs = getDayResas().filter(r => r.table_id === t.id);
-  const labels = {free:'Libre',partial:'Partielle',full:'Complet'};
+  const tip    = document.getElementById('tooltip');
+  const rs     = reservations.filter(r => r.table_id === t.id);
+  const labels = { free:'Libre', partial:'Partielle', full:'Complet' };
   let h = `<div class="tip-title">Table ${t.numero} — ${t.zone}</div>`;
   h += `<div class="tip-sub">${t.capacite} couverts · ${labels[getStatus(t.id)]}</div>`;
   if (!rs.length) h += `<div class="tip-resa">Aucune réservation</div>`;
@@ -873,31 +961,15 @@ function setZone(z, el) {
   el.classList.add('active'); renderFloor();
 }
 
-function clickTable(t) {
-  selectedTable = t; selectedTime = ''; editId = null;
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-guests').value = Math.min(2, t.capacite);
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-note').value = '';
-  document.getElementById('form-title').textContent = '✦ Nouvelle réservation';
-  document.getElementById('btn-submit').textContent = 'Confirmer';
-  showView('form'); renderTableSelector(); renderTimeSelector();
-  document.getElementById('time-section').style.display = 'block';
-  document.getElementById('fields-section').style.display = 'block';
-  updateSummary();
-}
-
-// ── LIST ──────────────────────────────────────────────────────
 function renderList() {
-  const d = getDate();
-  const label = new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('list-title').textContent = 'Résas du '+label;
-  const q = (document.getElementById('list-search')||{}).value||'';
+  const label = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('list-title').textContent = 'Résas du ' + label;
+  const q    = (document.getElementById('list-search')||{}).value || '';
   const list = reservations
     .filter(r => r.nom_client.toLowerCase().includes(q.toLowerCase()) || (r.telephone||'').includes(q))
     .sort((a,b) => a.heure.localeCompare(b.heure));
   const el = document.getElementById('list-content');
-  if (!list.length) { el.innerHTML='<div class="empty-state">Aucune réservation pour ce jour</div>'; return; }
+  if (!list.length) { el.innerHTML = '<div class="empty-state">Aucune réservation pour ce jour</div>'; return; }
   el.innerHTML = list.map(r => {
     const tbl = tables.find(t => t.id === r.table_id);
     return `<div class="resa-row">
@@ -914,16 +986,15 @@ function renderList() {
       <div class="resa-actions">
         <span class="badge ${r.statut}" onclick="toggleStatus(${r.id})">${r.statut==='confirmed'?'✓ Confirmé':'⏳ En attente'}</span>
         <button class="btn-edit" onclick="editResa(${r.id})">✏</button>
-        <button class="btn-del" onclick="askDelete(${r.id})">🗑</button>
+        <button class="btn-del"  onclick="askDelete(${r.id})">🗑</button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── TABLE SELECTOR ────────────────────────────────────────────
 function renderTableSelector() {
   document.getElementById('table-selector').innerHTML = tables.map(t => {
-    const st = getStatus(t.id), color = STATUS_COLOR[st];
+    const st  = getStatus(t.id), color = STATUS_COLOR[st];
     const sel = selectedTable && selectedTable.id === t.id;
     return `<div class="t-chip" onclick="selectTable(${t.id})"
       style="background:${sel?'#f0c040':'#163020'};color:${sel?'#0a1a0f':color};border-color:${sel?'#f0c040':color+'44'}">
@@ -943,9 +1014,8 @@ function selectTable(id) {
   updateSummary();
 }
 
-// ── TIME SELECTOR ─────────────────────────────────────────────
 function renderTimeSelector() {
-  if (!selectedTable) { document.getElementById('time-selector').innerHTML=''; return; }
+  if (!selectedTable) { document.getElementById('time-selector').innerHTML = ''; return; }
   document.getElementById('time-selector').innerHTML = TIME_SLOTS.map(t => {
     const occ = isOccupied(selectedTable.id, t) && !(editId && reservations.find(r=>r.id===editId)?.heure===t);
     const sel = selectedTime === t;
@@ -959,115 +1029,129 @@ function selectTime(t) {
   selectedTime = t; renderTimeSelector(); updateSummary();
 }
 
-function updateSummary() {
-  const name = document.getElementById('f-name').value;
-  const guests = document.getElementById('f-guests').value;
-  const el = document.getElementById('form-summary');
-  const btn = document.getElementById('btn-submit');
-  if (name && selectedTime && selectedTable) {
-    const d = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
-    el.style.display='block';
-    el.innerHTML=`<span style="color:#f0c040">✦</span> <strong style="color:#f0c040">${name}</strong> — T<strong style="color:#f0c040">${selectedTable.numero}</strong> — <strong style="color:#f0c040">${selectedTime}</strong> — ${guests}p · ${d}`;
-    btn.disabled=false;
-  } else { el.style.display='none'; btn.disabled=true; }
+function clickTable(t) {
+  selectedTable = t; selectedTime = ''; editId = null;
+  document.getElementById('f-name').value   = '';
+  document.getElementById('f-guests').value = Math.min(2, t.capacite);
+  document.getElementById('f-phone').value  = '';
+  document.getElementById('f-note').value   = '';
+  document.getElementById('form-title').textContent   = '✦ Nouvelle réservation';
+  document.getElementById('btn-submit').textContent   = 'Confirmer';
+  showView('form'); renderTableSelector(); renderTimeSelector();
+  document.getElementById('time-section').style.display   = 'block';
+  document.getElementById('fields-section').style.display = 'block';
+  updateSummary();
 }
 
-// ── SUBMIT ────────────────────────────────────────────────────
+function updateSummary() {
+  const name   = document.getElementById('f-name').value;
+  const guests = document.getElementById('f-guests').value;
+  const el     = document.getElementById('form-summary');
+  const btn    = document.getElementById('btn-submit');
+  if (name && selectedTime && selectedTable) {
+    const d = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+    el.style.display = 'block';
+    el.innerHTML = `<span style="color:#f0c040">✦</span> <strong style="color:#f0c040">${name}</strong> — T<strong style="color:#f0c040">${selectedTable.numero}</strong> — <strong style="color:#f0c040">${selectedTime}</strong> — ${guests}p · ${d}`;
+    btn.disabled = false;
+  } else { el.style.display = 'none'; btn.disabled = true; }
+}
+
 async function submitForm() {
-  const name = document.getElementById('f-name').value.trim();
+  const name   = document.getElementById('f-name').value.trim();
   const guests = parseInt(document.getElementById('f-guests').value);
-  const phone = document.getElementById('f-phone').value.trim();
-  const note = document.getElementById('f-note').value.trim();
+  const phone  = document.getElementById('f-phone').value.trim();
+  const note   = document.getElementById('f-note').value.trim();
   if (!name || !selectedTime || !selectedTable) return;
 
   const btn = document.getElementById('btn-submit');
   btn.disabled = true; btn.textContent = 'Enregistrement...';
 
   if (editId) {
-    const { error } = await sb.from('reservations').update({
+    const { error } = await SB.from('reservations').eq('id', editId).update({
       nom_client: name, nb_couverts: guests, telephone: phone, note,
       heure: selectedTime, table_id: selectedTable.id, date_resa: getDate()
-    }).eq('id', editId);
-    if (error) { showToast('Erreur : '+error.message, 'error'); }
-    else { showToast('Réservation modifiée ✓'); }
+    });
+    showToast(error ? 'Erreur : ' + error.message : 'Réservation modifiée ✓', error ? 'error' : 'success');
   } else {
-    const { error } = await sb.from('reservations').insert({
+    const { error } = await SB.from('reservations').insert({
       profile_id: currentUser.id, table_id: selectedTable.id,
       date_resa: getDate(), heure: selectedTime,
       nom_client: name, nb_couverts: guests,
       telephone: phone, note, statut: 'confirmed'
     });
-    if (error) { showToast('Erreur : '+error.message, 'error'); }
-    else { showToast('Réservation confirmée ✓'); }
+    showToast(error ? 'Erreur : ' + error.message : 'Réservation confirmée ✓', error ? 'error' : 'success');
   }
-  editId=null; selectedTable=null; selectedTime='';
-  btn.disabled=false; btn.textContent='Confirmer';
+
+  editId = null; selectedTable = null; selectedTime = '';
+  btn.disabled = false; btn.textContent = 'Confirmer';
   showView('plan'); await renderAll();
 }
 
-// ── EDIT ──────────────────────────────────────────────────────
 function editResa(id) {
-  const r = reservations.find(x => x.id===id); if (!r) return;
+  const r = reservations.find(x => x.id === id); if (!r) return;
   editId = id;
-  selectedTable = tables.find(t => t.id===r.table_id);
-  selectedTime = r.heure;
-  document.getElementById('date-input').value = r.date_resa;
-  document.getElementById('f-name').value = r.nom_client;
-  document.getElementById('f-guests').value = r.nb_couverts;
-  document.getElementById('f-phone').value = r.telephone||'';
-  document.getElementById('f-note').value = r.note||'';
-  document.getElementById('form-title').textContent = '✏ Modifier la réservation';
-  document.getElementById('btn-submit').textContent = 'Enregistrer';
+  selectedTable = tables.find(t => t.id === r.table_id);
+  selectedTime  = r.heure;
+  document.getElementById('date-input').value   = r.date_resa;
+  document.getElementById('f-name').value        = r.nom_client;
+  document.getElementById('f-guests').value      = r.nb_couverts;
+  document.getElementById('f-phone').value       = r.telephone || '';
+  document.getElementById('f-note').value        = r.note || '';
+  document.getElementById('form-title').textContent  = '✏ Modifier la réservation';
+  document.getElementById('btn-submit').textContent  = 'Enregistrer';
   showView('form'); renderTableSelector(); renderTimeSelector();
-  document.getElementById('time-section').style.display='block';
-  document.getElementById('fields-section').style.display='block';
+  document.getElementById('time-section').style.display   = 'block';
+  document.getElementById('fields-section').style.display = 'block';
   updateSummary();
 }
 
-// ── DELETE ────────────────────────────────────────────────────
-function askDelete(id) { deleteTargetId=id; document.getElementById('modal-overlay').style.display='flex'; }
-function closeModal() { document.getElementById('modal-overlay').style.display='none'; deleteTargetId=null; }
+function askDelete(id) { deleteTargetId = id; document.getElementById('modal-overlay').style.display = 'flex'; }
+function closeModal()  { document.getElementById('modal-overlay').style.display = 'none'; deleteTargetId = null; }
 
 async function confirmDeleteAction() {
   if (!deleteTargetId) return;
-  await sb.from('reservations').delete().eq('id', deleteTargetId);
+  await SB.from('reservations').eq('id', deleteTargetId).delete();
   closeModal(); showToast('Réservation supprimée'); await renderAll();
 }
 
-// ── STATUS ────────────────────────────────────────────────────
 async function toggleStatus(id) {
-  const r = reservations.find(x => x.id===id);
-  if (!r) return;
-  const newStatus = r.statut==='confirmed' ? 'pending' : 'confirmed';
-  await sb.from('reservations').update({statut: newStatus}).eq('id', id);
+  const r = reservations.find(x => x.id === id); if (!r) return;
+  await SB.from('reservations').eq('id', id).update({ statut: r.statut === 'confirmed' ? 'pending' : 'confirmed' });
   await loadReservations(); renderList();
 }
 
-// ── VIEWS ─────────────────────────────────────────────────────
 function showView(v) {
-  ['plan','list','form'].forEach(x => document.getElementById('view-'+x).style.display='none');
-  document.getElementById('view-'+v).style.display='block';
+  ['plan','list','form'].forEach(x => document.getElementById('view-'+x).style.display = 'none');
+  document.getElementById('view-'+v).style.display = 'block';
   document.querySelectorAll('.nav-btn:not(.add-btn)').forEach(b => b.classList.remove('active'));
-  if (v==='plan') { document.getElementById('btn-plan').classList.add('active'); renderFloor(); }
-  if (v==='list') { document.getElementById('btn-list').classList.add('active'); renderList(); }
+  if (v === 'plan') { document.getElementById('btn-plan').classList.add('active'); renderFloor(); }
+  if (v === 'list') { document.getElementById('btn-list').classList.add('active'); renderList();  }
 }
 
 function openAddForm() {
-  selectedTable=null; selectedTime=''; editId=null;
-  document.getElementById('f-name').value=''; document.getElementById('f-guests').value='2';
-  document.getElementById('f-phone').value=''; document.getElementById('f-note').value='';
-  document.getElementById('form-title').textContent='✦ Nouvelle réservation';
-  document.getElementById('btn-submit').textContent='Confirmer';
-  document.getElementById('time-section').style.display='none';
-  document.getElementById('fields-section').style.display='none';
-  document.getElementById('form-summary').style.display='none';
+  selectedTable = null; selectedTime = ''; editId = null;
+  ['f-name','f-phone','f-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-guests').value = '2';
+  document.getElementById('form-title').textContent  = '✦ Nouvelle réservation';
+  document.getElementById('btn-submit').textContent  = 'Confirmer';
+  document.getElementById('time-section').style.display   = 'none';
+  document.getElementById('fields-section').style.display = 'none';
+  document.getElementById('form-summary').style.display   = 'none';
   showView('form'); renderTableSelector();
 }
 
-// ── UPGRADE ───────────────────────────────────────────────────
-function showUpgrade() { document.getElementById('upgrade-overlay').style.display='flex'; }
-function hideUpgrade() { document.getElementById('upgrade-overlay').style.display='none'; }
+function showUpgrade() { document.getElementById('upgrade-overlay').style.display = 'flex'; }
+function hideUpgrade() { document.getElementById('upgrade-overlay').style.display = 'none'; }
 
-// ── TOAST ─────────────────────────────────────────────────────
 function showToast(msg, type='success') {
-  const t = do
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  t.style.background   = type === 'error' ? '#c0392b' : '#0f2318';
+  t.style.borderColor  = type === 'error' ? '#c0392b' : '#f0c040';
+  t.style.color        = '#e8f0e8';
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => t.style.display = 'none', 3000);
+}
+</script>
+</body>
+</html>
