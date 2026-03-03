@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#061b14"/>
   <title>DIGIY — Porte PIN</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -12,7 +13,7 @@
       --bg:#061b14; --card:#0b2a1f; --line:rgba(255,255,255,.14);
       --text:#eafff1; --muted:rgba(234,255,241,.72);
       --gold:#facc15; --ok:#22c55e; --bad:#fb7185;
-      --shadow:0 18px 55px rgba(0,0,0,.45); --r:18px;
+      --shadow:0 18px 55px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
     body{
@@ -46,6 +47,7 @@
       background:rgba(250,204,21,.10);
       padding:7px 10px;border-radius:999px;
       font-size:12px;font-weight:900;
+      white-space:nowrap;
     }
     .sep{height:1px;background:var(--line);margin:14px 0}
     label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
@@ -101,36 +103,66 @@
 
 <script>
 (async () => {
-  // =========================
-  // ✅ À RÉGLER PAR MODULE
-  // =========================
- const MODULE_CODE = "resa_table_pro";
-const NEXT_URL    = "cockpit.html"
-  // =========================
-  // SUPABASE (TES CLÉS)
-  // =========================
+  "use strict";
+
+  /* =========================
+     ✅ RÉGLAGE MODULE
+  ========================= */
+  const MODULE_CODE = "RESA_TABLE_PRO";
+  const NEXT_URL    = "cockpit.html";
+
+  /* =========================
+     ✅ SUPABASE (TES CLÉS)
+  ========================= */
   const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-  // =========================
-  // UI
-  // =========================
+  /* =========================
+     ✅ HELPERS
+  ========================= */
   const $ = (id)=>document.getElementById(id);
+  const qs = new URLSearchParams(location.search);
+  const debug = qs.get("debug") === "1";
+
+  function say(html){ $("msg").innerHTML = html; }
+  function safeSet(k,v){ try{ localStorage.setItem(k, String(v??"")); }catch(_){ } }
+  function safeJsonSet(k,obj){ try{ localStorage.setItem(k, JSON.stringify(obj)); }catch(_){ } }
+
+  function cleanSlug(s){
+    return String(s||"").trim().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .replace(/[^a-z0-9\-_]/g,"")
+      .replace(/-+/g,"-");
+  }
+
+  /* =========================
+     UI init
+  ========================= */
   $("modPill").textContent = MODULE_CODE;
-  $("title").textContent = "PORTE PIN — " + MODULE_CODE.toUpperCase();
+  $("title").textContent = "PORTE PIN — " + MODULE_CODE;
 
-  // slug depuis URL
-  const url = new URL(location.href);
-  const slug = (url.searchParams.get("slug") || "").trim().toLowerCase();
-
+  const slug = cleanSlug(qs.get("slug"));
   $("slugBox").textContent = slug || "—";
   $("subtitle").textContent = slug ? "Accès sécurisé — PIN requis" : "SLUG manquant";
 
-  const msg = (html)=>{ $("msg").innerHTML = html; };
-
   if(!slug){
-    msg(`<span class="bad">❌ SLUG manquant.</span><br>Reviens depuis ton Espace PRO (bouton “Entrer”).`);
+    say(`<span class="bad">❌ SLUG manquant.</span><br>Reviens depuis ton GO PIN / lien QR (avec <b>?slug=...</b>).`);
+    $("go").disabled = true;
+    return;
+  }
+
+  if(!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 80){
+    say(`<span class="bad">❌ Config Supabase invalide.</span><br>ANON manquante ou tronquée.`);
+    $("go").disabled = true;
+    return;
+  }
+
+  let sb;
+  try{
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }catch(e){
+    say(`<span class="bad">❌ Supabase KO.</span><br>CDN/JS/clé non chargé.`);
     $("go").disabled = true;
     return;
   }
@@ -140,34 +172,35 @@ const NEXT_URL    = "cockpit.html"
 
   function saveSessions(payload){
     const session = {
-      slug: payload.slug,
-      phone: payload.phone,
-      owner_id: payload.owner_id,
+      slug: payload.slug || slug,
+      phone: payload.phone || null,
+      owner_id: payload.owner_id || null,
       module: payload.module || MODULE_CODE,
       ts: Date.now()
     };
 
-    // ✅ session universelle (HUB)
-    localStorage.setItem("DIGIY_ACCESS", JSON.stringify({
-      slug: session.slug,
-      phone: session.phone,
-      owner_id: session.owner_id,
-      ts: session.ts
-    }));
+    // ✅ HUB session
+    const hub = { slug: session.slug, phone: session.phone, owner_id: session.owner_id, ts: session.ts };
+    safeJsonSet("DIGIY_ACCESS", hub);
+    window.DIGIY_ACCESS = hub;
 
-    // ✅ session spécifique module
-    localStorage.setItem("DIGIY_SESSION_" + MODULE_CODE.toUpperCase(), JSON.stringify(session));
+    // ✅ Module session
+    safeJsonSet("DIGIY_SESSION_" + MODULE_CODE, session);
+
+    // ✅ Slug mémoire (utile cockpit/guard)
+    safeSet("digiy_last_slug", session.slug);
+    safeSet("digiy_resa_slug", session.slug);
   }
 
   async function enter(){
     const pin = $("pin").value.trim();
     if(pin.length < 3){
-      msg(`<span class="bad">❌ PIN invalide.</span>`);
+      say(`<span class="bad">❌ PIN invalide.</span>`);
       return;
     }
 
     $("go").disabled = true;
-    msg(`Vérification en cours…`);
+    say(`⏳ Vérification en cours…`);
 
     const { data, error } = await sb.rpc("digiy_verify_access", {
       p_slug: slug,
@@ -177,7 +210,8 @@ const NEXT_URL    = "cockpit.html"
 
     if(error){
       $("go").disabled = false;
-      msg(`<span class="bad">❌ Erreur.</span><br>${String(error.message || error)}`);
+      say(`<span class="bad">❌ Erreur RPC.</span><br>${String(error.message || error)}`);
+      if(debug) console.log("RPC error", error);
       return;
     }
 
@@ -185,23 +219,23 @@ const NEXT_URL    = "cockpit.html"
       $("go").disabled = false;
 
       if(data?.reason === "module_inactive"){
-        msg(`<span class="bad">🔒 Module non actif.</span><br>
-             Ce module n’est pas encore activé pour ce pro.<br>
+        say(`<span class="bad">🔒 Module non actif.</span><br>
+             Ce module n’est pas activé pour ce pro.<br>
              <span style="opacity:.85">Modules actifs: ${(data.modules_active||[]).join(", ")}</span>`);
+        if(debug) console.log("inactive", data);
         return;
       }
 
-      msg(`<span class="bad">❌ Accès refusé.</span><br>PIN incorrect.`);
+      say(`<span class="bad">❌ Accès refusé.</span><br>PIN incorrect.`);
+      if(debug) console.log("not ok", data);
       return;
     }
 
     // ✅ OK
     saveSessions(data);
-    msg(`<span class="ok">✅ Accès validé.</span> Ouverture du cockpit…`);
+    say(`<span class="ok">✅ Accès validé.</span> Ouverture du cockpit…`);
 
-    // petit délai pour rendre l'UX "velours"
     setTimeout(()=>{
-      // On conserve le slug dans l'URL si tu veux (pratique debug)
       const next = new URL(NEXT_URL, location.href);
       next.searchParams.set("slug", slug);
       location.href = next.toString();
@@ -209,9 +243,7 @@ const NEXT_URL    = "cockpit.html"
   }
 
   $("go").addEventListener("click", enter);
-  $("pin").addEventListener("keydown", (e)=>{
-    if(e.key === "Enter") enter();
-  });
+  $("pin").addEventListener("keydown", (e)=>{ if(e.key === "Enter") enter(); });
 
 })();
 </script>
