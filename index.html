@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DIGIY RESTO PRO</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!-- Supabase via fetch direct - pas de CDN -->
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -248,6 +249,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
 .btn-skip:hover{color:var(--text)}
 </style>
 </head>
+
 <body>
 
 <!-- ══ LOADING ══ -->
@@ -265,6 +267,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <button class="btn-gold" onclick="goTo('register')">1 mois gratuit</button>
     </div>
   </div>
+
   <div class="hero">
     <div class="hero-badge">🚀 1er mois offert — sans CB requise</div>
     <h1 class="hero-title">Gérez vos réservations<br><em>comme un chef</em></h1>
@@ -274,6 +277,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <button class="btn-hero-outline" onclick="goTo('login')">Se connecter</button>
     </div>
   </div>
+
   <div class="section">
     <div class="section-badge"><span class="hero-badge">Fonctionnalités</span></div>
     <h2 class="section-title">Tout ce dont votre resto a besoin</h2>
@@ -287,6 +291,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">100% responsive</div><div class="feature-text">Fonctionne sur ordinateur, tablette et smartphone. Gérez depuis la salle, la cuisine ou chez vous.</div></div>
     </div>
   </div>
+
   <div class="pricing-section">
     <div class="pricing-inner">
       <div class="section-badge" style="text-align:center"><span class="hero-badge">Tarifs</span></div>
@@ -324,6 +329,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       </div>
     </div>
   </div>
+
   <div class="trust">
     <h2 class="section-title">Pourquoi DIGIY RESTO PRO ?</h2>
     <div class="trust-items">
@@ -334,10 +340,11 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <div class="trust-item"><span class="trust-icon">🦅</span><span class="trust-label">DIGIYLYFE</span></div>
     </div>
   </div>
+
   <div class="footer">
     <div class="footer-logo">DIGIYLYFE</div>
     <div class="footer-text">L'Afrique enracinée, connectée au monde · © 2026</div>
-    <div class="footer-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8ccc1cfc1d1c4d1cecde8cfc5c9c1c486cbc7c5">[email&#160;protected]</a></div>
+    <div class="footer-text">support@digiylyfe.com</div>
   </div>
 </div>
 
@@ -360,12 +367,12 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       </div>
       <div class="auth-form">
         <div class="auth-row">
-          <div class="auth-field"><label class="auth-label">Prénom</label><input class="auth-input" id="reg-prenom" placeholder="Marie"></div>
-          <div class="auth-field"><label class="auth-label">Nom</label><input class="auth-input" id="reg-nom" placeholder="Dupont"></div>
+          <div class="auth-field"><label class="auth-label">Prénom</label><input class="auth-input" id="reg-prenom" placeholder="Marie" autocomplete="given-name"></div>
+          <div class="auth-field"><label class="auth-label">Nom</label><input class="auth-input" id="reg-nom" placeholder="Dupont" autocomplete="family-name"></div>
         </div>
-        <div class="auth-field"><label class="auth-label">Email *</label><input class="auth-input" id="reg-email" type="email" placeholder="marie@monresto.fr"></div>
+        <div class="auth-field"><label class="auth-label">Email *</label><input class="auth-input" id="reg-email" type="email" placeholder="marie@monresto.fr" autocomplete="email"></div>
         <div class="auth-field"><label class="auth-label">Nom du restaurant *</label><input class="auth-input" id="reg-resto" placeholder="Le Petit Bistrot"></div>
-        <div class="auth-field"><label class="auth-label">Mot de passe *</label><input class="auth-input" id="reg-pass" type="password" placeholder="8 caractères minimum"></div>
+        <div class="auth-field"><label class="auth-label">Mot de passe *</label><input class="auth-input" id="reg-pass" type="password" placeholder="6 caractères minimum" autocomplete="new-password"></div>
         <div class="auth-error" id="reg-error"></div>
         <button class="btn-auth" id="btn-register" onclick="doRegister()">Créer mon compte gratuit →</button>
       </div>
@@ -385,12 +392,12 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <div class="auth-title">Connexion</div>
       <p class="auth-sub">Accédez à votre espace de réservations.</p>
       <div class="auth-form">
-        <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" id="login-email" type="email" placeholder="votre@email.com"></div>
-        <div class="auth-field"><label class="auth-label">Mot de passe</label><input class="auth-input" id="login-pass" type="password" placeholder="••••••••"></div>
+        <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" id="login-email" type="email" placeholder="votre@email.com" autocomplete="email"></div>
+        <div class="auth-field"><label class="auth-label">Mot de passe</label><input class="auth-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
         <div class="auth-error" id="login-error"></div>
         <button class="btn-auth" id="btn-login" onclick="doLogin()">Se connecter →</button>
       </div>
-      <div class="demo-box">🔑 Démo : <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1175747c7e5175787678687d6877743f727e7c">[email&#160;protected]</a> / demo1234</div>
+      <div class="demo-box">🔑 Démo : demo@digiylyfe.com / demo1234</div>
       <div class="auth-link">Pas encore de compte ? <a onclick="goTo('register')">1 mois gratuit</a></div>
     </div>
   </div>
@@ -405,32 +412,39 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
     </div>
     <button class="trial-bar-btn" onclick="showUpgrade()">Passer en Pro →</button>
   </div>
+
   <div id="app-header">
     <div class="app-logo-wrap">
       <span style="font-size:20px">🍽</span>
-      <div><div class="app-logo-title">RESTO RÉSA</div><div class="app-logo-sub">Gestion des réservations</div></div>
+      <div>
+        <div class="app-logo-title">RESTO RÉSA</div>
+        <div class="app-logo-sub">Gestion des réservations</div>
+      </div>
     </div>
-    <input type="date" id="date-input" onchange="renderAll()">
+
+    <input type="date" id="date-input" onchange="renderAll()"/>
+
     <div class="header-stats">
       <div class="stat-box"><span class="stat-num" id="stat-count">0</span><span class="stat-label">Résas</span></div>
       <div class="stat-box"><span class="stat-num" id="stat-covers">0</span><span class="stat-label">Couverts</span></div>
       <div class="stat-box"><span class="stat-num" id="stat-free">0</span><span class="stat-label">Libres</span></div>
     </div>
+
     <div class="app-user">
       <div class="user-avatar" id="user-avatar">R</div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end">
-        <span id="user-resto-name">Mon Resto</span>
-        <span id="user-slug" style="font-size:9px;color:var(--muted);letter-spacing:1px"></span>
-      </div>
+      <span id="user-resto-name">Mon Resto</span>
       <button class="btn-logout" onclick="doLogout()">Déco</button>
     </div>
   </div>
+
   <div id="app-nav">
     <button class="nav-btn active" id="btn-plan" onclick="showView('plan')">🗺 Plan de salle</button>
     <button class="nav-btn" id="btn-list" onclick="showView('list')">📋 Liste des résas</button>
     <button class="nav-btn add-btn" onclick="openAddForm()">+ Nouvelle résa</button>
   </div>
+
   <div id="toast"></div>
+
   <div id="app-content">
     <div id="view-plan">
       <div id="zone-bar">
@@ -446,26 +460,35 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
           <span class="leg-item"><span class="leg-dot" style="background:#c0392b"></span>Complet</span>
         </div>
       </div>
+
       <div id="floor-wrap">
         <svg id="floor-svg" viewBox="0 0 90 92" xmlns="http://www.w3.org/2000/svg"></svg>
         <div id="tooltip"></div>
       </div>
     </div>
+
     <div id="view-list" style="display:none">
       <div id="list-header">
         <div class="list-title" id="list-title">Réservations</div>
-        <input id="list-search" type="text" placeholder="🔍 Rechercher..." oninput="renderList()">
+        <input id="list-search" type="text" placeholder="🔍 Rechercher..." oninput="renderList()" />
       </div>
       <div id="list-content"></div>
     </div>
+
     <div id="view-form" style="display:none">
       <div id="form-wrap">
         <div class="form-title" id="form-title">✦ Nouvelle réservation</div>
-        <div class="form-section"><div class="form-label">Choisir une table</div><div class="table-grid" id="table-selector"></div></div>
+
+        <div class="form-section">
+          <div class="form-label">Choisir une table</div>
+          <div class="table-grid" id="table-selector"></div>
+        </div>
+
         <div id="time-section" style="display:none" class="form-section">
           <div class="form-label" id="time-label">Créneau horaire</div>
           <div class="time-grid" id="time-selector"></div>
         </div>
+
         <div id="fields-section" style="display:none">
           <div class="form-section">
             <div class="form-label">Informations client</div>
@@ -476,15 +499,20 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
               <div class="field-wrap"><label class="field-label">Note spéciale</label><input class="field" id="f-note" placeholder="Allergie, anniversaire..."></div>
             </div>
           </div>
+
           <div id="form-summary"></div>
+
           <div class="form-actions">
             <button class="btn-cancel" onclick="showView('plan')">Annuler</button>
             <button class="btn-submit" id="btn-submit" onclick="submitForm()" disabled>Confirmer</button>
           </div>
         </div>
+
       </div>
     </div>
   </div>
+
+  <!-- DELETE MODAL -->
   <div id="modal-overlay" onclick="closeModal()" style="display:none;align-items:center;justify-content:center">
     <div id="modal" onclick="event.stopPropagation()">
       <div class="modal-title">Supprimer ?</div>
@@ -513,7 +541,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <div class="contact-name">JB BEAUVILLE</div>
       <div class="contact-tel">+221 77 134 28 89</div>
       <div class="contact-btns">
-        <a class="btn-wa" href="https://wa.me/221771342889?text=Bonjour%20JB%2C%20je%20souhaite%20activer%20mon%20abonnement%20DIGIY%20RESTO%20PRO" target="_blank">💬 WhatsApp</a>
+        <a class="btn-wa" href="https://wa.me/221771342889?text=Bonjour%20JB%2C%20je%20souhaite%20activer%20mon%20abonnement%20DIGIY%20RESTO%20PRO" target="_blank" rel="noopener">💬 WhatsApp</a>
         <a class="btn-tel" href="tel:+221771342889">📞 Appeler</a>
       </div>
     </div>
@@ -544,7 +572,7 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
       <div class="contact-name">JB BEAUVILLE</div>
       <div class="contact-tel">+221 77 134 28 89</div>
       <div class="contact-btns">
-        <a class="btn-wa" href="https://wa.me/221771342889?text=Bonjour%20JB%2C%20mon%20essai%20est%20termin%C3%A9%2C%20je%20veux%20activer%20mon%20abonnement" target="_blank">💬 WhatsApp</a>
+        <a class="btn-wa" href="https://wa.me/221771342889?text=Bonjour%20JB%2C%20mon%20essai%20est%20termin%C3%A9%2C%20je%20veux%20activer%20mon%20abonnement" target="_blank" rel="noopener">💬 WhatsApp</a>
         <a class="btn-tel" href="tel:+221771342889">📞 Appeler</a>
       </div>
     </div>
@@ -554,162 +582,193 @@ body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);
     </div>
   </div>
 </div>
+
 <script>
-// ══════════════════════════════════════════════════════════════
-// ⚙️  CONFIG SUPABASE — Remplace par tes vraies clés
-// ══════════════════════════════════════════════════════════════
- const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+/* ============================================================
+   ⚙️ CONFIG
+============================================================ */
+const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-// ══════════════════════════════════════════════════════════════
-// MINI CLIENT SUPABASE — fetch() natif, zéro CDN
-// ══════════════════════════════════════════════════════════════
+const TIME_SLOTS = ['12:00','12:30','13:00','13:30','14:00','19:00','19:30','20:00','20:30','21:00','21:30','22:00'];
+const STATUS_COLOR = { free:'#f0c040', partial:'#e8852a', full:'#c0392b' };
+
+/* ============================================================
+   🧩 HELPERS
+============================================================ */
+function todayISO(){
+  const d = new Date();
+  const z = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+  return z.toISOString().slice(0,10);
+}
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+/* ============================================================
+   🧠 MINI CLIENT SUPABASE (fetch natif)
+============================================================ */
 const SB = {
   _token: localStorage.getItem('sb_token') || null,
 
-  h() {
-    return {
+  _headers(extra){
+    return Object.assign({
       'Content-Type': 'application/json',
       'apikey': SUPABASE_ANON_KEY,
       'Authorization': 'Bearer ' + (this._token || SUPABASE_ANON_KEY)
-    };
+    }, extra || {});
   },
 
-  async signUp(email, password, meta) {
-    const r = await fetch(SUPABASE_URL + '/auth/v1/signup', {
-      method: 'POST', headers: this.h(),
+  async _json(r){
+    const t = await r.text();
+    try { return t ? JSON.parse(t) : null; } catch(e){ return { message: t || 'Bad JSON' }; }
+  },
+
+  async signUp(email, password, meta){
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      method:'POST',
+      headers: this._headers(),
       body: JSON.stringify({ email, password, data: meta })
     });
-    return r.json();
+    const d = await this._json(r);
+    if(!r.ok) return { error: d, ok:false };
+    return { data: d, ok:true };
   },
 
-  async signIn(email, password) {
-    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
-      method: 'POST', headers: this.h(),
+  async signIn(email, password){
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method:'POST',
+      headers: this._headers(),
       body: JSON.stringify({ email, password })
     });
-    const d = await r.json();
-    if (d.access_token) {
+    const d = await this._json(r);
+    if(!r.ok) return { error: d, ok:false };
+
+    if (d?.access_token) {
       this._token = d.access_token;
       localStorage.setItem('sb_token', d.access_token);
       localStorage.setItem('sb_uid', d.user?.id || '');
     }
-    return d;
+    return { data: d, ok:true };
   },
 
-  async signOut() {
-    try { await fetch(SUPABASE_URL + '/auth/v1/logout', { method: 'POST', headers: this.h() }); } catch(e) {}
+  async signOut(){
+    try { await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method:'POST', headers: this._headers() }); } catch(e){}
     this._token = null;
     localStorage.removeItem('sb_token');
     localStorage.removeItem('sb_uid');
   },
 
-  async getUser() {
-    if (!this._token) return null;
-    try {
-      const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: this.h() });
-      if (!r.ok) { this._token = null; localStorage.removeItem('sb_token'); return null; }
-      return await r.json();
-    } catch(e) { return null; }
+  async getUser(){
+    if(!this._token) return null;
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers: this._headers() });
+    if(!r.ok){ this._token=null; localStorage.removeItem('sb_token'); return null; }
+    return await this._json(r);
   },
 
-  // Retourne un query builder
-  from(table) {
+  from(table){
     const self = this;
     const q = {
       _table: table,
       _filters: [],
       _orderCol: null,
 
-      eq(col, val) { this._filters.push(col + '=eq.' + encodeURIComponent(val)); return this; },
-      order(col) { this._orderCol = col; return this; },
+      eq(col,val){ this._filters.push(`${col}=eq.${encodeURIComponent(val)}`); return this; },
+      order(col){ this._orderCol = col; return this; },
 
-      _url(extra) {
-        let u = SUPABASE_URL + '/rest/v1/' + this._table + '?';
+      _url(extra){
+        let u = `${SUPABASE_URL}/rest/v1/${this._table}?`;
         u += this._filters.join('&');
-        if (this._orderCol) u += (this._filters.length ? '&' : '') + 'order=' + this._orderCol;
-        if (extra) u += (u.endsWith('?') ? '' : '&') + extra;
+        if(this._orderCol) u += (this._filters.length ? '&':'') + 'order=' + this._orderCol;
+        if(extra) u += (u.endsWith('?') ? '' : '&') + extra;
         return u;
       },
 
-      _h(extras) {
-        const h = Object.assign({}, self.h());
-        h['Prefer'] = 'return=representation';
-        return Object.assign(h, extras || {});
+      _h(){
+        return self._headers({ Prefer: 'return=representation' });
       },
 
-      async select(cols) {
-        try {
-          const r = await fetch(this._url('select=' + (cols||'*')), { headers: this._h() });
-          const d = await r.json();
-          return { data: Array.isArray(d) ? d : [], error: d.message ? d : null };
-        } catch(e) { return { data: [], error: e }; }
+      async select(cols='*'){
+        try{
+          const r = await fetch(this._url('select=' + encodeURIComponent(cols)), { headers:this._h() });
+          const d = await self._json(r);
+          if(!r.ok) return { data:[], error:d };
+          return { data: Array.isArray(d) ? d : [], error:null };
+        }catch(e){ return { data:[], error:e }; }
       },
 
-      async single() {
-        try {
-          const r = await fetch(this._url('select=*&limit=1'), { headers: this._h() });
-          const d = await r.json();
+      async single(){
+        try{
+          const r = await fetch(this._url('select=*&limit=1'), { headers:this._h() });
+          const d = await self._json(r);
+          if(!r.ok) return { data:null, error:d };
           const arr = Array.isArray(d) ? d : [];
-          return { data: arr[0] || null, error: null };
-        } catch(e) { return { data: null, error: e }; }
+          return { data: arr[0] || null, error:null };
+        }catch(e){ return { data:null, error:e }; }
       },
 
-      async insert(obj) {
-        try {
-          const r = await fetch(SUPABASE_URL + '/rest/v1/' + this._table, {
-            method: 'POST', headers: this._h(), body: JSON.stringify(obj)
+      async insert(obj){
+        try{
+          const r = await fetch(`${SUPABASE_URL}/rest/v1/${this._table}`, {
+            method:'POST', headers:this._h(), body: JSON.stringify(obj)
           });
-          const d = await r.json();
-          return { data: d, error: d.message ? d : null };
-        } catch(e) { return { data: null, error: e }; }
+          const d = await self._json(r);
+          if(!r.ok) return { data:null, error:d };
+          return { data:d, error:null };
+        }catch(e){ return { data:null, error:e }; }
       },
 
-      async update(obj) {
-        try {
+      async update(obj){
+        try{
           const r = await fetch(this._url(''), {
-            method: 'PATCH', headers: this._h(), body: JSON.stringify(obj)
+            method:'PATCH', headers:this._h(), body: JSON.stringify(obj)
           });
-          const d = await r.json();
-          return { data: d, error: d.message ? d : null };
-        } catch(e) { return { data: null, error: e }; }
+          const d = await self._json(r);
+          if(!r.ok) return { data:null, error:d };
+          return { data:d, error:null };
+        }catch(e){ return { data:null, error:e }; }
       },
 
-      async delete() {
-        try {
-          await fetch(this._url(''), { method: 'DELETE', headers: this._h() });
-          return { error: null };
-        } catch(e) { return { error: e }; }
+      async delete(){
+        try{
+          const r = await fetch(this._url(''), { method:'DELETE', headers:this._h() });
+          if(!r.ok){
+            const d = await self._json(r);
+            return { error:d };
+          }
+          return { error:null };
+        }catch(e){ return { error:e }; }
       }
     };
     return q;
   }
 };
 
-// ══════════════════════════════════════════════════════════════
-// ÉTAT APPLICATION
-// ══════════════════════════════════════════════════════════════
-let currentUser   = null;
-let currentProfile = null;
-let tables        = [];
-let reservations  = [];
-let selectedTable = null;
-let selectedTime  = '';
-let currentZone   = 'Tous';
-let editId        = null;
-let deleteTargetId = null;
+/* ============================================================
+   📦 STATE
+============================================================ */
+let currentUser     = null;
+let currentProfile  = null;
+let tables          = [];
+let reservations    = [];
 
-const TIME_SLOTS = ['12:00','12:30','13:00','13:30','14:00','19:00','19:30','20:00','20:30','21:00','21:30','22:00'];
-const STATUS_COLOR = { free:'#f0c040', partial:'#e8852a', full:'#c0392b' };
+let selectedTable   = null;
+let selectedTime    = '';
+let currentZone     = 'Tous';
+let editId          = null;
+let deleteTargetId  = null;
 
-// ══════════════════════════════════════════════════════════════
-// INIT — Démarre dès que la page est prête
-// ══════════════════════════════════════════════════════════════
+/* ============================================================
+   🚀 INIT
+============================================================ */
 window.addEventListener('DOMContentLoaded', async () => {
   try {
     const user = await SB.getUser();
-    if (!user || user.error) {
+    if (!user || user?.error) {
       goTo('landing');
       return;
     }
@@ -717,25 +776,43 @@ window.addEventListener('DOMContentLoaded', async () => {
     await loadProfile();
     await loadTables();
     launchApp();
-  } catch(e) {
-    console.error('Init error:', e);
+  } catch (e) {
+    console.error(e);
     goTo('landing');
+  } finally {
+    // évite la page qui reste sur loading si bug
+    await sleep(150);
+    if (!document.getElementById('screen-landing').classList.contains('active')
+        && !document.getElementById('screen-login').classList.contains('active')
+        && !document.getElementById('screen-register').classList.contains('active')
+        && !document.getElementById('screen-app').classList.contains('active')) {
+      goTo('landing');
+    }
   }
 });
 
-// ══════════════════════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════════════════════
-function goTo(screen) {
+/* ============================================================
+   🧭 NAV
+============================================================ */
+function goTo(screen){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + screen).classList.add('active');
-  window.scrollTo(0, 0);
+  const el = document.getElementById('screen-' + screen);
+  if (el) el.classList.add('active');
+  window.scrollTo(0,0);
 }
 
-// ══════════════════════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════════════════════
-async function doRegister() {
+/* ============================================================
+   🔐 AUTH
+============================================================ */
+function showAuthError(id, msg){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display='none', 4500);
+}
+
+async function doRegister(){
   const email  = document.getElementById('reg-email').value.trim();
   const pass   = document.getElementById('reg-pass').value.trim();
   const resto  = document.getElementById('reg-resto').value.trim();
@@ -743,131 +820,154 @@ async function doRegister() {
   const nom    = document.getElementById('reg-nom').value.trim();
   const btn    = document.getElementById('btn-register');
 
-  if (!email || !pass || !resto) { showAuthError('reg-error', 'Remplissez tous les champs requis'); return; }
-  if (pass.length < 6) { showAuthError('reg-error', 'Mot de passe trop court (6 min)'); return; }
+  if(!email || !pass || !resto) return showAuthError('reg-error', 'Remplissez tous les champs requis');
+  if(pass.length < 6) return showAuthError('reg-error', 'Mot de passe trop court (6 min)');
 
   btn.disabled = true; btn.textContent = 'Création...';
 
-  const data = await SB.signUp(email, pass, { nom_resto: resto, prenom, nom });
-  if (data.error_code || data.msg || !data.id) {
-    showAuthError('reg-error', data.msg || data.error_description || 'Erreur inscription');
-    btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
+  const res = await SB.signUp(email, pass, { nom_resto: resto, prenom, nom });
+  if(!res.ok){
+    const m = res.error?.msg || res.error?.message || res.error?.error_description || 'Erreur inscription';
+    showAuthError('reg-error', m);
+    btn.disabled=false; btn.textContent='Créer mon compte gratuit →';
     return;
   }
 
-  // Auto-login après inscription
+  // Auto-login
   const login = await SB.signIn(email, pass);
-  if (!login.access_token) {
-    showAuthError('reg-error', 'Compte créé ! Connectez-vous.');
-    btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
-    goTo('login'); return;
+  if(!login.ok || !login.data?.access_token){
+    showAuthError('reg-error', "Compte créé ! Connectez-vous.");
+    btn.disabled=false; btn.textContent='Créer mon compte gratuit →';
+    goTo('login');
+    return;
   }
-  currentUser = login.user;
+
+  currentUser = login.data.user;
   await loadProfile();
   await loadTables();
+  btn.disabled=false; btn.textContent='Créer mon compte gratuit →';
   launchApp();
 }
 
-async function doLogin() {
+async function doLogin(){
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-pass').value.trim();
   const btn   = document.getElementById('btn-login');
 
-  if (!email || !pass) { showAuthError('login-error', 'Email et mot de passe requis'); return; }
+  if(!email || !pass) return showAuthError('login-error', 'Email et mot de passe requis');
 
-  btn.disabled = true; btn.textContent = 'Connexion...';
+  btn.disabled=true; btn.textContent='Connexion...';
 
-  const data = await SB.signIn(email, pass);
-  if (!data.access_token) {
-    showAuthError('login-error', 'Email ou mot de passe incorrect');
-    btn.disabled = false; btn.textContent = 'Se connecter →';
-    return;
+  const res = await SB.signIn(email, pass);
+  if(!res.ok || !res.data?.access_token){
+    btn.disabled=false; btn.textContent='Se connecter →';
+    return showAuthError('login-error', 'Email ou mot de passe incorrect');
   }
-  currentUser = data.user;
+
+  currentUser = res.data.user;
   await loadProfile();
   await loadTables();
+  btn.disabled=false; btn.textContent='Se connecter →';
   launchApp();
 }
 
-async function doLogout() {
+async function doLogout(){
   await SB.signOut();
-  currentUser = null; currentProfile = null; tables = []; reservations = [];
+  currentUser=null; currentProfile=null;
+  tables=[]; reservations=[];
+  selectedTable=null; selectedTime='';
+  editId=null; deleteTargetId=null;
   goTo('landing');
 }
 
-function showAuthError(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg; el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 4000);
-}
-
-// ══════════════════════════════════════════════════════════════
-// DONNÉES
-// ══════════════════════════════════════════════════════════════
-async function loadProfile() {
+/* ============================================================
+   🗄️ DATA
+============================================================ */
+async function loadProfile(){
+  if(!currentUser?.id){ currentProfile=null; return; }
   const { data } = await SB.from('profiles').eq('id', currentUser.id).single();
-  currentProfile = data;
+  currentProfile = data || null;
 }
 
-async function loadTables() {
-  const { data } = await SB.from('tables_resto').eq('profile_id', currentUser.id).eq('actif', true).order('numero').select('*');
+async function loadTables(){
+  if(!currentUser?.id){ tables=[]; return; }
+  const { data } = await SB.from('tables_resto')
+    .eq('profile_id', currentUser.id)
+    .eq('actif', true)
+    .order('numero')
+    .select('*');
   tables = data || [];
 }
 
-async function loadReservations() {
-  const { data } = await SB.from('reservations').eq('profile_id', currentUser.id).eq('date_resa', getDate()).select('*');
+async function loadReservations(){
+  if(!currentUser?.id){ reservations=[]; return; }
+  const { data } = await SB.from('reservations')
+    .eq('profile_id', currentUser.id)
+    .eq('date_resa', getDate())
+    .select('*');
   reservations = data || [];
 }
 
-function getDate()    { return document.getElementById('date-input').value; }
-function getDayResas(){ return reservations; }
-function isOccupied(tableId, time) { return reservations.some(r => r.table_id === tableId && r.heure === time); }
-function getStatus(tableId) {
-  const n = TIME_SLOTS.filter(t => isOccupied(tableId, t)).length;
-  return n === 0 ? 'free' : n >= 3 ? 'full' : 'partial';
+function getDate(){
+  const i = document.getElementById('date-input');
+  return i?.value || todayISO();
 }
 
-// ══════════════════════════════════════════════════════════════
-// LANCEMENT APP
-// ══════════════════════════════════════════════════════════════
-function launchApp() {
-  if (!currentProfile) { goTo('landing'); return; }
+function isOccupied(tableId, time){
+  return reservations.some(r => r.table_id === tableId && r.heure === time);
+}
 
-  const trialEnd  = new Date(currentProfile.trial_end);
-  const daysLeft  = Math.ceil((trialEnd - new Date()) / 86400000);
-  const isPro     = currentProfile.plan === 'pro';
+function getStatus(tableId){
+  const n = TIME_SLOTS.filter(t => isOccupied(tableId, t)).length;
+  return n === 0 ? 'free' : (n >= 3 ? 'full' : 'partial');
+}
 
-  if (!isPro && daysLeft <= 0) {
+/* ============================================================
+   🏁 LAUNCH
+============================================================ */
+function launchApp(){
+  if(!currentProfile){
+    goTo('landing');
+    return;
+  }
+
+  // date
+  const dateInput = document.getElementById('date-input');
+  dateInput.value = todayISO();
+
+  // trial / plan
+  const isPro = (currentProfile.plan || '').toLowerCase() === 'pro';
+  const trialEnd = currentProfile.trial_end ? new Date(currentProfile.trial_end) : null;
+  const daysLeft = trialEnd ? Math.ceil((trialEnd - new Date()) / 86400000) : 30;
+
+  if(!isPro && daysLeft <= 0){
     goTo('app');
     document.getElementById('expired-overlay').style.display = 'flex';
     return;
   }
 
   const trialBar = document.getElementById('trial-bar');
-  if (isPro) {
+  if(isPro){
     trialBar.style.display = 'none';
   } else {
-    document.getElementById('trial-days').textContent = daysLeft + ' jour' + (daysLeft > 1 ? 's' : '') + ' restant' + (daysLeft > 1 ? 's' : '');
-    if (daysLeft <= 7) trialBar.classList.add('urgent');
+    document.getElementById('trial-days').textContent =
+      `${Math.max(0,daysLeft)} jour${daysLeft>1?'s':''} restant${daysLeft>1?'s':''}`;
+    trialBar.classList.toggle('urgent', daysLeft <= 7);
   }
 
+  // header user
   const restoName = currentProfile.nom_resto || 'Mon Resto';
   document.getElementById('user-resto-name').textContent = restoName;
   document.getElementById('user-avatar').textContent = restoName.charAt(0).toUpperCase();
-  // Afficher le slug
-  const slugEl = document.getElementById('user-slug');
-  if(slugEl && currentProfile.slug) slugEl.textContent = '🔑 ' + currentProfile.slug;
-  document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
 
   goTo('app');
   renderAll();
 }
 
-// ══════════════════════════════════════════════════════════════
-// RENDER
-// ══════════════════════════════════════════════════════════════
-async function renderAll() {
+/* ============================================================
+   🎨 RENDER
+============================================================ */
+async function renderAll(){
   await loadReservations();
   updateStats();
   renderFloor();
@@ -875,14 +975,14 @@ async function renderAll() {
   renderTableSelector();
 }
 
-function updateStats() {
-  const d = getDayResas();
+function updateStats(){
+  const d = reservations;
   document.getElementById('stat-count').textContent  = d.length;
-  document.getElementById('stat-covers').textContent = d.reduce((a,r) => a + r.nb_couverts, 0);
+  document.getElementById('stat-covers').textContent = d.reduce((a,r) => a + (parseInt(r.nb_couverts)||0), 0);
   document.getElementById('stat-free').textContent   = tables.length - new Set(d.map(r => r.table_id)).size;
 }
 
-function renderFloor() {
+function renderFloor(){
   const svg = document.getElementById('floor-svg');
   svg.innerHTML = `
     <text x="50" y="5"  text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">TERRASSE</text>
@@ -894,13 +994,14 @@ function renderFloor() {
     <line x1="3" y1="71" x2="87" y2="71" stroke="#f0c04022" stroke-width=".3" stroke-dasharray="1,1"/>`;
 
   tables.forEach(t => {
-    const st    = getStatus(t.id);
+    const st = getStatus(t.id);
     const color = STATUS_COLOR[st];
     const dimmed = currentZone !== 'Tous' && t.zone !== currentZone;
     const px = t.position_x, py = t.position_y;
     const isRound = t.forme === 'round';
     const tcx = isRound ? px+6 : px+7;
     const tcy = isRound ? py+6 : py+5;
+
     const times = reservations.filter(r => r.table_id === t.id).map(r => r.heure).join(' ');
 
     const g = document.createElementNS('http://www.w3.org/2000/svg','g');
@@ -935,7 +1036,7 @@ function renderFloor() {
     t2.setAttribute('x', tcx); t2.setAttribute('y', tcy+2.5);
     t2.setAttribute('text-anchor','middle'); t2.setAttribute('fill', color+'99');
     t2.setAttribute('font-size','1.8'); t2.setAttribute('font-family','Montserrat');
-    t2.textContent = t.capacite + 'p';
+    t2.textContent = (t.capacite||'?') + 'p';
 
     g.appendChild(shape); g.appendChild(t1); g.appendChild(t2);
 
@@ -946,219 +1047,307 @@ function renderFloor() {
       t3.setAttribute('font-size','1.5'); t3.setAttribute('font-family','Montserrat');
       t3.textContent = times; g.appendChild(t3);
     }
+
     svg.appendChild(g);
   });
 }
 
-function showTooltip(t) {
-  const tip    = document.getElementById('tooltip');
-  const rs     = reservations.filter(r => r.table_id === t.id);
+function showTooltip(t){
+  const tip = document.getElementById('tooltip');
+  const rs  = reservations.filter(r => r.table_id === t.id);
   const labels = { free:'Libre', partial:'Partielle', full:'Complet' };
-  let h = `<div class="tip-title">Table ${t.numero} — ${t.zone}</div>`;
-  h += `<div class="tip-sub">${t.capacite} couverts · ${labels[getStatus(t.id)]}</div>`;
-  if (!rs.length) h += `<div class="tip-resa">Aucune réservation</div>`;
-  rs.forEach(r => h += `<div class="tip-resa"><span style="color:#f0c040">${r.heure}</span> ${r.nom_client} (${r.nb_couverts}p)</div>`);
+
+  let h = `<div class="tip-title">Table ${esc(t.numero)} — ${esc(t.zone)}</div>`;
+  h += `<div class="tip-sub">${esc(t.capacite)} couverts · ${labels[getStatus(t.id)]}</div>`;
+  if(!rs.length) h += `<div class="tip-resa">Aucune réservation</div>`;
+  rs.forEach(r => {
+    h += `<div class="tip-resa"><span style="color:#f0c040">${esc(r.heure)}</span> ${esc(r.nom_client)} (${esc(r.nb_couverts)}p)</div>`;
+  });
   h += `<div style="color:#f0c04066;font-size:9px;margin-top:5px">Cliquer pour réserver</div>`;
-  tip.innerHTML = h; tip.style.display = 'block';
+
+  tip.innerHTML = h;
+  tip.style.display='block';
 }
 
-function setZone(z, el) {
+function setZone(z, el){
   currentZone = z;
   document.querySelectorAll('.zone-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active'); renderFloor();
+  el.classList.add('active');
+  renderFloor();
 }
 
-function renderList() {
+function renderList(){
   const label = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('list-title').textContent = 'Résas du ' + label;
-  const q    = (document.getElementById('list-search')||{}).value || '';
+
+  const q = (document.getElementById('list-search')||{}).value || '';
+  const qq = q.toLowerCase();
+
   const list = reservations
-    .filter(r => r.nom_client.toLowerCase().includes(q.toLowerCase()) || (r.telephone||'').includes(q))
-    .sort((a,b) => a.heure.localeCompare(b.heure));
+    .filter(r => (r.nom_client||'').toLowerCase().includes(qq) || String(r.telephone||'').includes(q))
+    .sort((a,b) => String(a.heure||'').localeCompare(String(b.heure||'')));
+
   const el = document.getElementById('list-content');
-  if (!list.length) { el.innerHTML = '<div class="empty-state">Aucune réservation pour ce jour</div>'; return; }
+  if(!list.length){ el.innerHTML = '<div class="empty-state">Aucune réservation pour ce jour</div>'; return; }
+
   el.innerHTML = list.map(r => {
     const tbl = tables.find(t => t.id === r.table_id);
+    const tnum = tbl ? tbl.numero : r.table_id;
+    const tzone = tbl ? tbl.zone : '';
+    const note = r.note ? `<span>·</span><span style="color:#f0c04088">💬 ${esc(r.note)}</span>` : '';
+    const tel  = r.telephone ? `<span>·</span><span>📞 ${esc(r.telephone)}</span>` : '';
+
     return `<div class="resa-row">
-      <div class="resa-time">${r.heure}</div>
+      <div class="resa-time">${esc(r.heure)}</div>
       <div class="resa-main">
-        <div class="resa-name">${r.nom_client}</div>
+        <div class="resa-name">${esc(r.nom_client)}</div>
         <div class="resa-meta">
-          <span>T${tbl?tbl.numero:r.table_id} · ${tbl?tbl.zone:''}</span>
-          <span>·</span><span>👥 ${r.nb_couverts}p</span>
-          ${r.telephone?`<span>·</span><span>📞 ${r.telephone}</span>`:''}
-          ${r.note?`<span>·</span><span style="color:#f0c04088">💬 ${r.note}</span>`:''}
+          <span>T${esc(tnum)} · ${esc(tzone)}</span>
+          <span>·</span><span>👥 ${esc(r.nb_couverts)}p</span>
+          ${tel}
+          ${note}
         </div>
       </div>
       <div class="resa-actions">
-        <span class="badge ${r.statut}" onclick="toggleStatus(${r.id})">${r.statut==='confirmed'?'✓ Confirmé':'⏳ En attente'}</span>
-        <button class="btn-edit" onclick="editResa(${r.id})">✏</button>
-        <button class="btn-del"  onclick="askDelete(${r.id})">🗑</button>
+        <span class="badge ${esc(r.statut)}" onclick="toggleStatus(${Number(r.id)})">${r.statut==='confirmed'?'✓ Confirmé':'⏳ En attente'}</span>
+        <button class="btn-edit" onclick="editResa(${Number(r.id)})">✏</button>
+        <button class="btn-del"  onclick="askDelete(${Number(r.id)})">🗑</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderTableSelector() {
-  document.getElementById('table-selector').innerHTML = tables.map(t => {
+function renderTableSelector(){
+  const el = document.getElementById('table-selector');
+  el.innerHTML = tables.map(t => {
     const st  = getStatus(t.id), color = STATUS_COLOR[st];
     const sel = selectedTable && selectedTable.id === t.id;
-    return `<div class="t-chip" onclick="selectTable(${t.id})"
+    return `<div class="t-chip" onclick="selectTable(${Number(t.id)})"
       style="background:${sel?'#f0c040':'#163020'};color:${sel?'#0a1a0f':color};border-color:${sel?'#f0c040':color+'44'}">
-      <div class="t-chip-name">T${t.numero}</div>
-      <div class="t-chip-sub">${t.capacite}p · ${t.zone}</div>
+      <div class="t-chip-name">T${esc(t.numero)}</div>
+      <div class="t-chip-sub">${esc(t.capacite)}p · ${esc(t.zone)}</div>
     </div>`;
   }).join('');
 }
 
-function selectTable(id) {
-  selectedTable = tables.find(t => t.id === id); selectedTime = '';
-  renderTableSelector(); renderTimeSelector();
-  document.getElementById('time-section').style.display = 'block';
+function selectTable(id){
+  selectedTable = tables.find(t => t.id === id);
+  selectedTime = '';
+  renderTableSelector();
+  renderTimeSelector();
+
+  document.getElementById('time-section').style.display='block';
   document.getElementById('time-label').textContent = `Créneau — Table ${selectedTable.numero} (${selectedTable.capacite} pers.)`;
-  document.getElementById('fields-section').style.display = 'block';
-  document.getElementById('f-guests').max = selectedTable.capacite;
+  document.getElementById('fields-section').style.display='block';
+
+  const g = document.getElementById('f-guests');
+  g.max = selectedTable.capacite || 99;
+  if (parseInt(g.value||'2') > parseInt(g.max)) g.value = g.max;
+
   updateSummary();
 }
 
-function renderTimeSelector() {
-  if (!selectedTable) { document.getElementById('time-selector').innerHTML = ''; return; }
-  document.getElementById('time-selector').innerHTML = TIME_SLOTS.map(t => {
-    const occ = isOccupied(selectedTable.id, t) && !(editId && reservations.find(r=>r.id===editId)?.heure===t);
+function renderTimeSelector(){
+  const el = document.getElementById('time-selector');
+  if(!selectedTable){ el.innerHTML=''; return; }
+
+  const editing = editId ? reservations.find(r => r.id === editId) : null;
+
+  el.innerHTML = TIME_SLOTS.map(t => {
+    const occ = isOccupied(selectedTable.id, t) && !(editing && editing.heure === t);
     const sel = selectedTime === t;
     return `<span class="time-chip${occ?' occ':''}${sel?' sel':''}" onclick="selectTime('${t}')">${t}</span>`;
   }).join('');
 }
 
-function selectTime(t) {
-  if (!selectedTable) return;
-  if (isOccupied(selectedTable.id, t) && !(editId && reservations.find(r=>r.id===editId)?.heure===t)) return;
-  selectedTime = t; renderTimeSelector(); updateSummary();
-}
-
-function clickTable(t) {
-  selectedTable = t; selectedTime = ''; editId = null;
-  document.getElementById('f-name').value   = '';
-  document.getElementById('f-guests').value = Math.min(2, t.capacite);
-  document.getElementById('f-phone').value  = '';
-  document.getElementById('f-note').value   = '';
-  document.getElementById('form-title').textContent   = '✦ Nouvelle réservation';
-  document.getElementById('btn-submit').textContent   = 'Confirmer';
-  showView('form'); renderTableSelector(); renderTimeSelector();
-  document.getElementById('time-section').style.display   = 'block';
-  document.getElementById('fields-section').style.display = 'block';
+function selectTime(t){
+  if(!selectedTable) return;
+  const editing = editId ? reservations.find(r => r.id === editId) : null;
+  if(isOccupied(selectedTable.id, t) && !(editing && editing.heure === t)) return;
+  selectedTime = t;
+  renderTimeSelector();
   updateSummary();
 }
 
-function updateSummary() {
-  const name   = document.getElementById('f-name').value;
-  const guests = document.getElementById('f-guests').value;
-  const el     = document.getElementById('form-summary');
-  const btn    = document.getElementById('btn-submit');
-  if (name && selectedTime && selectedTable) {
-    const d = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
-    el.style.display = 'block';
-    el.innerHTML = `<span style="color:#f0c040">✦</span> <strong style="color:#f0c040">${name}</strong> — T<strong style="color:#f0c040">${selectedTable.numero}</strong> — <strong style="color:#f0c040">${selectedTime}</strong> — ${guests}p · ${d}`;
-    btn.disabled = false;
-  } else { el.style.display = 'none'; btn.disabled = true; }
+function clickTable(t){
+  selectedTable = t;
+  selectedTime = '';
+  editId = null;
+
+  document.getElementById('f-name').value   = '';
+  document.getElementById('f-guests').value = Math.min(2, t.capacite || 2);
+  document.getElementById('f-phone').value  = '';
+  document.getElementById('f-note').value   = '';
+
+  document.getElementById('form-title').textContent = '✦ Nouvelle réservation';
+  document.getElementById('btn-submit').textContent = 'Confirmer';
+
+  showView('form');
+  renderTableSelector();
+  renderTimeSelector();
+
+  document.getElementById('time-section').style.display='block';
+  document.getElementById('fields-section').style.display='block';
+
+  updateSummary();
 }
 
-async function submitForm() {
+function updateSummary(){
   const name   = document.getElementById('f-name').value.trim();
-  const guests = parseInt(document.getElementById('f-guests').value);
+  const guests = parseInt(document.getElementById('f-guests').value || '0', 10);
+  const el     = document.getElementById('form-summary');
+  const btn    = document.getElementById('btn-submit');
+
+  if(name && selectedTime && selectedTable && guests > 0){
+    const d = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+    el.style.display='block';
+    el.innerHTML = `<span style="color:#f0c040">✦</span> <strong style="color:#f0c040">${esc(name)}</strong> — T<strong style="color:#f0c040">${esc(selectedTable.numero)}</strong> — <strong style="color:#f0c040">${esc(selectedTime)}</strong> — ${esc(guests)}p · ${esc(d)}`;
+    btn.disabled=false;
+  } else {
+    el.style.display='none';
+    btn.disabled=true;
+  }
+}
+
+async function submitForm(){
+  const name   = document.getElementById('f-name').value.trim();
+  const guests = parseInt(document.getElementById('f-guests').value || '0', 10);
   const phone  = document.getElementById('f-phone').value.trim();
   const note   = document.getElementById('f-note').value.trim();
-  if (!name || !selectedTime || !selectedTable) return;
+
+  if(!name || !selectedTime || !selectedTable || guests <= 0) return;
 
   const btn = document.getElementById('btn-submit');
   btn.disabled = true; btn.textContent = 'Enregistrement...';
 
-  if (editId) {
+  if(guests > (selectedTable.capacite || 999)){
+    showToast('Couverts > capacité table', 'error');
+    btn.disabled=false; btn.textContent = editId ? 'Enregistrer' : 'Confirmer';
+    return;
+  }
+
+  if(editId){
     const { error } = await SB.from('reservations').eq('id', editId).update({
-      nom_client: name, nb_couverts: guests, telephone: phone, note,
-      heure: selectedTime, table_id: selectedTable.id, date_resa: getDate()
+      nom_client: name,
+      nb_couverts: guests,
+      telephone: phone,
+      note,
+      heure: selectedTime,
+      table_id: selectedTable.id,
+      date_resa: getDate()
     });
-    showToast(error ? 'Erreur : ' + error.message : 'Réservation modifiée ✓', error ? 'error' : 'success');
+    showToast(error ? 'Erreur : ' + (error.message||error.msg||'') : 'Réservation modifiée ✓', error ? 'error' : 'success');
   } else {
     const { error } = await SB.from('reservations').insert({
-      profile_id: currentUser.id, table_id: selectedTable.id,
-      date_resa: getDate(), heure: selectedTime,
-      nom_client: name, nb_couverts: guests,
-      telephone: phone, note, statut: 'confirmed'
+      profile_id: currentUser.id,
+      table_id: selectedTable.id,
+      date_resa: getDate(),
+      heure: selectedTime,
+      nom_client: name,
+      nb_couverts: guests,
+      telephone: phone,
+      note,
+      statut: 'confirmed'
     });
-    showToast(error ? 'Erreur : ' + error.message : 'Réservation confirmée ✓', error ? 'error' : 'success');
+    showToast(error ? 'Erreur : ' + (error.message||error.msg||'') : 'Réservation confirmée ✓', error ? 'error' : 'success');
   }
 
   editId = null; selectedTable = null; selectedTime = '';
-  btn.disabled = false; btn.textContent = 'Confirmer';
-  showView('plan'); await renderAll();
+  btn.disabled=false; btn.textContent='Confirmer';
+
+  showView('plan');
+  await renderAll();
 }
 
-function editResa(id) {
-  const r = reservations.find(x => x.id === id); if (!r) return;
+function editResa(id){
+  const r = reservations.find(x => x.id === id);
+  if(!r) return;
+
   editId = id;
-  selectedTable = tables.find(t => t.id === r.table_id);
-  selectedTime  = r.heure;
-  document.getElementById('date-input').value   = r.date_resa;
-  document.getElementById('f-name').value        = r.nom_client;
-  document.getElementById('f-guests').value      = r.nb_couverts;
-  document.getElementById('f-phone').value       = r.telephone || '';
-  document.getElementById('f-note').value        = r.note || '';
-  document.getElementById('form-title').textContent  = '✏ Modifier la réservation';
-  document.getElementById('btn-submit').textContent  = 'Enregistrer';
-  showView('form'); renderTableSelector(); renderTimeSelector();
-  document.getElementById('time-section').style.display   = 'block';
-  document.getElementById('fields-section').style.display = 'block';
+  selectedTable = tables.find(t => t.id === r.table_id) || null;
+  selectedTime = r.heure || '';
+
+  document.getElementById('date-input').value = r.date_resa || todayISO();
+  document.getElementById('f-name').value    = r.nom_client || '';
+  document.getElementById('f-guests').value  = r.nb_couverts || 2;
+  document.getElementById('f-phone').value   = r.telephone || '';
+  document.getElementById('f-note').value    = r.note || '';
+
+  document.getElementById('form-title').textContent = '✏ Modifier la réservation';
+  document.getElementById('btn-submit').textContent = 'Enregistrer';
+
+  showView('form');
+  renderTableSelector();
+  renderTimeSelector();
+
+  document.getElementById('time-section').style.display='block';
+  document.getElementById('fields-section').style.display='block';
+
   updateSummary();
 }
 
-function askDelete(id) { deleteTargetId = id; document.getElementById('modal-overlay').style.display = 'flex'; }
-function closeModal()  { document.getElementById('modal-overlay').style.display = 'none'; deleteTargetId = null; }
-
-async function confirmDeleteAction() {
-  if (!deleteTargetId) return;
+function askDelete(id){
+  deleteTargetId = id;
+  document.getElementById('modal-overlay').style.display='flex';
+}
+function closeModal(){
+  document.getElementById('modal-overlay').style.display='none';
+  deleteTargetId = null;
+}
+async function confirmDeleteAction(){
+  if(!deleteTargetId) return;
   await SB.from('reservations').eq('id', deleteTargetId).delete();
-  closeModal(); showToast('Réservation supprimée'); await renderAll();
+  closeModal();
+  showToast('Réservation supprimée');
+  await renderAll();
 }
 
-async function toggleStatus(id) {
-  const r = reservations.find(x => x.id === id); if (!r) return;
+async function toggleStatus(id){
+  const r = reservations.find(x => x.id === id);
+  if(!r) return;
   await SB.from('reservations').eq('id', id).update({ statut: r.statut === 'confirmed' ? 'pending' : 'confirmed' });
-  await loadReservations(); renderList();
+  await loadReservations();
+  renderList();
 }
 
-function showView(v) {
-  ['plan','list','form'].forEach(x => document.getElementById('view-'+x).style.display = 'none');
-  document.getElementById('view-'+v).style.display = 'block';
+function showView(v){
+  ['plan','list','form'].forEach(x => document.getElementById('view-'+x).style.display='none');
+  document.getElementById('view-'+v).style.display='block';
+
   document.querySelectorAll('.nav-btn:not(.add-btn)').forEach(b => b.classList.remove('active'));
-  if (v === 'plan') { document.getElementById('btn-plan').classList.add('active'); renderFloor(); }
-  if (v === 'list') { document.getElementById('btn-list').classList.add('active'); renderList();  }
+  if(v==='plan'){ document.getElementById('btn-plan').classList.add('active'); renderFloor(); }
+  if(v==='list'){ document.getElementById('btn-list').classList.add('active'); renderList(); }
 }
 
-function openAddForm() {
-  selectedTable = null; selectedTime = ''; editId = null;
-  ['f-name','f-phone','f-note'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-guests').value = '2';
-  document.getElementById('form-title').textContent  = '✦ Nouvelle réservation';
-  document.getElementById('btn-submit').textContent  = 'Confirmer';
-  document.getElementById('time-section').style.display   = 'none';
-  document.getElementById('fields-section').style.display = 'none';
-  document.getElementById('form-summary').style.display   = 'none';
-  showView('form'); renderTableSelector();
+function openAddForm(){
+  selectedTable=null; selectedTime=''; editId=null;
+  ['f-name','f-phone','f-note'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-guests').value='2';
+  document.getElementById('form-title').textContent='✦ Nouvelle réservation';
+  document.getElementById('btn-submit').textContent='Confirmer';
+
+  document.getElementById('time-section').style.display='none';
+  document.getElementById('fields-section').style.display='none';
+  document.getElementById('form-summary').style.display='none';
+
+  showView('form');
+  renderTableSelector();
 }
 
-function showUpgrade() { document.getElementById('upgrade-overlay').style.display = 'flex'; }
-function hideUpgrade() { document.getElementById('upgrade-overlay').style.display = 'none'; }
+function showUpgrade(){ document.getElementById('upgrade-overlay').style.display='flex'; }
+function hideUpgrade(){ document.getElementById('upgrade-overlay').style.display='none'; }
 
-function showToast(msg, type='success') {
+function showToast(msg, type='success'){
   const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  t.style.background   = type === 'error' ? '#c0392b' : '#0f2318';
-  t.style.borderColor  = type === 'error' ? '#c0392b' : '#f0c040';
-  t.style.color        = '#e8f0e8';
+  t.textContent = msg;
+  t.style.display='block';
+  t.style.background = (type==='error') ? '#c0392b' : '#0f2318';
+  t.style.borderColor= (type==='error') ? '#c0392b' : '#f0c040';
+  t.style.color='#e8f0e8';
   clearTimeout(window._tt);
-  window._tt = setTimeout(() => t.style.display = 'none', 3000);
+  window._tt = setTimeout(() => t.style.display='none', 3000);
 }
 </script>
+
 </body>
 </html>
