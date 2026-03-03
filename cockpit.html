@@ -4,10 +4,19 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#061b14"/>
-  <title>DIGIY RESA — Cockpit</title>
+  <title>DIGIY PRO-RESA — Cockpit</title>
 
+  <!-- Supabase d'abord -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-1"></script>
+
+  <!-- ✅ Clés globales (pour guard.js si tu veux centraliser) -->
+  <script>
+    window.DIGIY_SUPABASE_URL  = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+  </script>
+
+  <!-- Guard après Supabase -->
+  <script src="./guard.js?v=pro-resa-1"></script>
 
   <style>
     :root{
@@ -17,21 +26,46 @@
       --shadow:0 18px 55px rgba(0,0,0,.45);
     }
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:radial-gradient(1200px 800px at 50% 10%, rgba(250,204,21,.08), transparent 60%), var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif}
-    header{padding:16px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between}
+    body{
+      margin:0; min-height:100vh;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto;
+      background:radial-gradient(1200px 800px at 50% 10%, rgba(250,204,21,.08), transparent 60%), var(--bg);
+      color:var(--text);
+    }
+    header{
+      border-bottom:1px solid var(--line);
+      padding:14px 14px;
+    }
     .wrap{width:min(980px,94vw);margin:0 auto}
-    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px}
     .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    h1{font-size:16px;margin:0}
-    .msg{font-size:13px;color:var(--muted);margin-top:8px}
+    .pill{
+      border:1px solid var(--line);
+      background:rgba(250,204,21,.10);
+      padding:7px 10px;border-radius:999px;
+      font-size:12px;font-weight:900;
+    }
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    h1{margin:0;font-size:16px}
+    .muted{color:var(--muted);font-size:12px}
+    .msg{margin-top:8px;font-size:13px;color:var(--muted)}
     .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.warn{color:var(--warn)}
-    button,a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--text);text-decoration:none;cursor:pointer;font-weight:700}
+    button,a.btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:11px 12px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      color:var(--text);text-decoration:none;cursor:pointer;font-weight:900;
+    }
     a.primary{border-color:rgba(250,204,21,.35);background:rgba(250,204,21,.12)}
     a.primary:hover{background:rgba(250,204,21,.18)}
-    button:hover{background:rgba(255,255,255,.05)}
-    .muted{color:var(--muted);font-size:12px}
+    button:hover,a.btn:hover{background:rgba(255,255,255,.05)}
     .panel{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
   </style>
 </head>
@@ -39,8 +73,11 @@
 <body>
   <header>
     <div class="wrap row">
-      <h1>📅 DIGIY RESA — Cockpit</h1>
-      <div class="pill" id="pill">…</div>
+      <div>
+        <h1>📅 DIGIY PRO-RESA — Cockpit</h1>
+        <div class="muted">PIN = personne • Abonnement = module</div>
+      </div>
+      <div class="pill" id="pill">slug: —</div>
     </div>
   </header>
 
@@ -55,19 +92,19 @@
           </div>
           <div class="row">
             <button id="btnCheck">🔄 Vérifier mon accès</button>
-            <a class="btn" id="btnPin" href="./pin.html">🔐 PIN</a>
-            <a class="btn primary" id="btnPay" href="#" style="display:none">💳 Activer</a>
+            <a class="btn" id="btnPin" href="./index.html">🔐 Refaire PIN</a>
+            <a class="btn primary" id="btnPay" href="#" style="display:none">💳 Activer RESA</a>
           </div>
         </div>
 
         <div class="panel muted" id="details"></div>
       </div>
 
-      <div class="card">
-        <div class="muted">UI RESA (placeholder)</div>
+      <div class="card" id="appCard" style="display:none">
+        <div class="muted">PRO-RESA — UI</div>
         <div class="msg">
-          Ici tu poses ton planning / check-in / check-out / inbox.  
-          Le guard ne te bloque pas par redirect: il te donne l’état, et toi tu pilotes.
+          Ici tu poses ton planning, tes réservations, ton inbox, etc.
+          (Le guard te donne l’état, toi tu affiches l’app.)
         </div>
       </div>
 
@@ -84,10 +121,8 @@
   }
 
   function render(st){
-    const slug = st?.slug || "—";
-    $("pill").textContent = "slug: " + slug;
-
-    $("btnPin").href = "./pin.html?slug=" + encodeURIComponent(st?.slug || "");
+    $("pill").textContent = "slug: " + (st?.slug || "—");
+    $("btnPin").href = "./index.html?slug=" + encodeURIComponent(st?.slug || "");
 
     const lines = [
       `module=${st?.module}`,
@@ -99,30 +134,42 @@
     ];
     $("details").textContent = lines.join("  |  ");
 
-    // Cas 1: pas de slug → message terrain
+    // 1) slug manquant
     if (!st?.slug){
       $("btnPay").style.display = "none";
-      setState("⚠️ Slug manquant. Passe par GO PIN / QR pour entrer.", "warn");
+      $("appCard").style.display = "none";
+      setState("⚠️ Slug manquant. Passe par GO PIN / QR.", "warn");
       return;
     }
 
-    // Cas 2: slug inconnu → renvoyer vers GO PIN
+    // 2) slug inconnu
     if (st?.reason === "slug_unknown"){
       $("btnPay").style.display = "none";
-      setState("⚠️ Slug inconnu. Passe par GO PIN / QR (ou crée l’abo test pour générer le slug).", "warn");
+      $("appCard").style.display = "none";
+      setState("⚠️ Slug inconnu. Active/valide l’abo test pour créer le slug.", "warn");
       return;
     }
 
-    // Cas 3: abonnement KO → proposer activer (sans boucler)
+    // 3) PIN pas OK (la personne)
+    if (!st?.pin_ok){
+      $("btnPay").style.display = "none";
+      $("appCard").style.display = "none";
+      setState("🔐 PIN requis. Clique “Refaire PIN”.", "warn");
+      return;
+    }
+
+    // 4) abo KO → bouton activer
     if (!st?.access_ok){
       $("btnPay").href = st?.pay_url || "#";
       $("btnPay").style.display = "inline-flex";
-      setState("💳 Abonnement RESA inactif. Active pour déverrouiller le module.", "bad");
+      $("appCard").style.display = "none";
+      setState("💳 Abonnement RESA inactif. Active pour déverrouiller.", "bad");
       return;
     }
 
-    // Cas 4: abonnement OK → accès
+    // 5) accès OK → show app
     $("btnPay").style.display = "none";
+    $("appCard").style.display = "block";
     setState("✅ Abonnement OK. Cockpit ouvert.", "ok");
   }
 
