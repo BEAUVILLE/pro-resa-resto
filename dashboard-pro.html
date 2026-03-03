@@ -3,10 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DIGIY PRO — Dashboard</title>
-
-  <!-- Optionnel: ton guard-pro existant -->
-  <!-- <script src="./guard-pro.js?v=1"></script> -->
+  <title>DIGIY PRO — RESA</title>
 
   <style>
     :root{
@@ -37,18 +34,13 @@
       display:flex;align-items:center;justify-content:space-between;
       gap:12px;padding:10px 6px;margin-bottom:10px;
     }
-    .brand{
-      display:flex;align-items:center;gap:10px;
-      font-weight:800;letter-spacing:.2px
-    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
     .brand .badge{
       display:inline-flex;align-items:center;justify-content:center;
       width:34px;height:34px;border-radius:11px;
       background:rgba(99,102,241,.18);border:1px solid var(--line)
     }
-    .right{
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end
-    }
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 10px;border-radius:999px;
@@ -65,20 +57,10 @@
       padding:10px 12px;border-radius:12px;
       font-weight:800;cursor:pointer;
     }
-    .btn.primary{
-      background:rgba(99,102,241,.22);
-      border-color:rgba(99,102,241,.35);
-    }
+    .btn.primary{background:rgba(99,102,241,.22);border-color:rgba(99,102,241,.35)}
     .btn:disabled{opacity:.55;cursor:not-allowed}
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
-      margin-top:8px;
-    }
-    @media(min-width:920px){
-      .grid{grid-template-columns: 1.05fr .95fr}
-    }
+    .grid{display:grid;grid-template-columns: 1fr;gap:12px;margin-top:8px}
+    @media(min-width:920px){ .grid{grid-template-columns: 1.05fr .95fr} }
     .card{
       background:rgba(18,26,51,.92);
       border:1px solid var(--line);
@@ -92,18 +74,12 @@
     .statusDot{width:10px;height:10px;border-radius:999px;background:var(--warn)}
     .statusDot.ok{background:var(--ok)}
     .statusDot.bad{background:var(--danger)}
-    .bigMoney{
-      font-size:34px;font-weight:900;letter-spacing:-.8px;margin:6px 0 2px 0
-    }
-    .mini{
-      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-      font-size:13px;color:var(--muted);font-weight:650
-    }
+    .bigMoney{font-size:34px;font-weight:900;letter-spacing:-.8px;margin:6px 0 2px 0}
+    .mini{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted);font-weight:650}
     .hr{height:1px;background:var(--line);margin:12px 0}
     .boostBox{
       display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
-      padding:12px;border-radius:16px;
-      background:rgba(99,102,241,.10);
+      padding:12px;border-radius:16px;background:rgba(99,102,241,.10);
       border:1px solid rgba(99,102,241,.25);
     }
     .boostBox b{display:block;margin-bottom:4px}
@@ -113,17 +89,11 @@
       background:rgba(255,255,255,.03);
       display:flex;align-items:flex-start;justify-content:space-between;gap:10px
     }
-    .tag{
-      font-size:12px;font-weight:900;
-      padding:6px 9px;border-radius:999px;border:1px solid var(--line);
-      color:var(--muted)
-    }
+    .tag{font-size:12px;font-weight:900;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
     .tag.warn{color:#ffe2b0;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)}
     .tag.ok{color:#c9ffd9;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08)}
     .tag.info{color:#cfd6ff;border-color:rgba(99,102,241,.35);background:rgba(99,102,241,.10)}
-    .footer{
-      margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end
-    }
+    .footer{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .smallLink{color:var(--muted);text-decoration:none;font-weight:750}
     .smallLink:hover{color:var(--text)}
   </style>
@@ -131,19 +101,16 @@
 
 <body>
   <div class="wrap">
-
-    <!-- TOPBAR -->
     <div class="topbar">
       <div class="brand">
         <div class="badge">🦅</div>
         <div>
-          <div id="brandTitle">DIGIY PRO</div>
+          <div id="brandTitle">DIGIY RESA PRO</div>
           <div class="muted" style="font-size:12px;font-weight:700;margin-top:2px" id="brandSub">
             Dashboard ultra simple
           </div>
         </div>
       </div>
-
       <div class="right">
         <div class="pill" id="pillStatus">Statut : <b>…</b></div>
         <button class="btn" id="btnSettings" type="button">⚙️ Paramètres</button>
@@ -151,11 +118,8 @@
     </div>
 
     <div class="grid">
-
-      <!-- CARD A: STATUT -->
       <div class="card" id="cardStatus">
         <h3>Statut & sécurité</h3>
-
         <div class="row">
           <div class="statusDot" id="dot"></div>
           <div style="flex:1">
@@ -167,9 +131,7 @@
         <div class="hr"></div>
 
         <div class="mini" id="metaLine">
-          <span>Plan : —</span>
-          <span>•</span>
-          <span>Paiement : —</span>
+          <span>Plan : —</span><span>•</span><span>Paiement : —</span>
         </div>
 
         <div class="footer">
@@ -177,15 +139,11 @@
         </div>
       </div>
 
-      <!-- CARD B: ARGENT + BOOST -->
       <div class="card" id="cardMoney">
         <h3>Argent</h3>
-
         <div class="bigMoney" id="moneyMonth">— FCFA</div>
         <div class="mini" id="moneyMeta">
-          <span id="txCount">— transactions</span>
-          <span>•</span>
-          <span id="todayHint">—</span>
+          <span id="txCount">— transactions</span><span>•</span><span id="todayHint">—</span>
         </div>
 
         <div class="hr"></div>
@@ -208,7 +166,6 @@
         </div>
       </div>
 
-      <!-- CARD C: ACTION PRINCIPALE -->
       <div class="card" id="cardAction" style="grid-column:1/-1">
         <h3>Action principale</h3>
         <div class="muted" style="font-weight:750;margin-bottom:10px" id="actionDesc">
@@ -223,64 +180,44 @@
         <div class="hr"></div>
 
         <h3>Notifications</h3>
-        <div class="notifList" id="notifList">
-          <!-- inject -->
-        </div>
+        <div class="notifList" id="notifList"></div>
 
         <div class="footer">
           <a class="smallLink" href="#" id="linkSupport">Support</a>
           <a class="smallLink" href="#" id="linkPayments">Mes paiements</a>
         </div>
       </div>
-
     </div>
   </div>
 
 <script>
 /**
- * ✅ DIGIY PRO DASH — minimal, terrain, universel
+ * ✅ DIGIY PRO DASH — RESA (slug-first)
  * - Lit ?slug=
  * - Résout phone via digiy_subscriptions_public (view)
- * - Vérifie accès via digiy_has_access(phone,module)
+ * - Vérifie accès via RPC digiy_has_access(phone,"RESA")
  */
 
 /* =========================
-   CONFIG — DIGIY MARKET
+   CONFIG — RESA
    ========================= */
-const MODULE_CODE = "RESA RESTO";
-const MODULE_LABEL = "DIGIY RESA RESTO";
-const PRIMARY_ACTION_LABEL = "Publier un produit";
-const PRIMARY_ACTION_HINT  = "Ajoute un produit ou gère tes commandes.";
+const MODULE_CODE  = "RESA";
+const MODULE_LABEL = "DIGIY RESA PRO";
+const PRIMARY_ACTION_LABEL = "Ouvrir le planning";
+const PRIMARY_ACTION_HINT  = "Gère tes réservations et ton calendrier.";
 
 /* =========================
    SUPABASE OFFICIEL DIGIY
    ========================= */
 const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
 const SUPABASE_ANON =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-if(!SUPABASE_URL || !SUPABASE_ANON){
-  alert("Configuration Supabase manquante.");
-}
+const ABOS_URL = "https://commencer-a-payer.digiylyfe.com/"; // ✅ le plus sûr (backbone PAY)
+const SUPPORT_WA = "https://wa.me/221771342889";
 
-/* ====== ROUTES DIGIY ======
-   - ABOS: ton GitHub Pages qui propose plans
-   - Module home: page principale PRO une fois actif (souvent index du module)
-*/
-const ABOS_URL = "https://apps.digiylyfe.com/abos/"; // adapte si besoin
-const MODULE_HOME_FALLBACK = "/"; // ou "index.html" selon ton module
-
-/* ====== BOOST CONFIG ======
-   Ici on propose un BOOST simple.
-   Tu peux le gérer comme "module add-on" via digiy_build_pay_url + digiy_pay_admin_validate_order
-*/
-const BOOST = {
-  module: "BOOST",
-  plan: "boost_7d",
-  price_xof: 5000,
-  label: "BOOST visibilité",
-  duration_days: 7
-};
+/* BOOST (optionnel, tu peux garder ou virer) */
+const BOOST = { module: "BOOST", plan: "boost_7d", price_xof: 5000 };
 
 /* =========================
    UI HELPERS
@@ -295,7 +232,7 @@ function fmtDateFR(iso){
 
 function getSlug(){
   const u = new URL(location.href);
-  return u.searchParams.get("slug") || "";
+  return (u.searchParams.get("slug") || "").trim();
 }
 
 function setNotifs(items){
@@ -320,27 +257,24 @@ function setNotifs(items){
   }
 }
 
-function daysBetween(aIso, bIso){
-  const a = new Date(aIso).getTime();
-  const b = new Date(bIso).getTime();
-  return Math.ceil((b - a) / (1000*60*60*24));
+function daysLeft(expiresIso){
+  if(!expiresIso) return null;
+  const now = Date.now();
+  const end = new Date(expiresIso).getTime();
+  return Math.ceil((end - now) / (1000*60*60*24));
 }
 
 /* =========================
    SUPABASE CALLS (REST)
    ========================= */
 async function sbGetSubscriptionBySlug(slug){
-  // View minimale: digiy_subscriptions_public (phone,module,slug)
   const url = `${SUPABASE_URL}/rest/v1/digiy_subscriptions_public?select=phone,module,slug&slug=eq.${encodeURIComponent(slug)}&limit=1`;
   const r = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_ANON,
-      authorization: `Bearer ${SUPABASE_ANON}`
-    }
+    headers: { apikey: SUPABASE_ANON, authorization: `Bearer ${SUPABASE_ANON}` }
   });
-  if(!r.ok) throw new Error("Cannot read digiy_subscriptions_public");
-  const data = await r.json();
-  return data[0] || null;
+  const j = await r.json().catch(()=>[]);
+  if(!r.ok) throw new Error(j?.message || "subscriptions_public_error");
+  return j[0] || null;
 }
 
 async function sbRpc(name, payload){
@@ -354,59 +288,14 @@ async function sbRpc(name, payload){
     },
     body: JSON.stringify(payload || {})
   });
-  if(!r.ok){
-    const t = await r.text().catch(()=> "");
-    throw new Error(`RPC ${name} failed: ${t || r.status}`);
-  }
-  return r.json();
+  const t = await r.text().catch(()=> "");
+  if(!r.ok) throw new Error(`RPC ${name} failed: ${t || r.status}`);
+  return t ? JSON.parse(t) : null;
 }
 
 async function digiyHasAccess(phone, module){
-  // ton RPC: digiy_has_access(phone,module) => boolean/json
   const res = await sbRpc("digiy_has_access", { p_phone: phone, p_module: module });
-  // adapte selon ton retour (boolean direct ou json)
-  if(typeof res === "boolean") return res;
-  if(res && typeof res.ok === "boolean") return res.ok;
-  if(res && typeof res.has_access === "boolean") return res.has_access;
-  return !!res;
-}
-
-async function digiyGetSubscriptionFull(phone, module){
-  // Si tu as une RPC publique minimaliste (recommandé) :
-  // ex: digiy_get_subscription_status(phone,module) -> {status,plan,expires_at,payment_ref}
-  // Sinon tu affiches juste info basique.
-  try{
-    return await sbRpc("digiy_get_subscription_status", { p_phone: phone, p_module: module });
-  }catch(e){
-    return null;
-  }
-}
-
-async function digiyGetDashboardStats(phone, module){
-  // Optionnel: une RPC par module ou générique
-  // ex: digiy_get_dashboard_stats(p_phone,p_module) -> {month_xof,tx_count,today_hint}
-  try{
-    return await sbRpc("digiy_get_dashboard_stats", { p_phone: phone, p_module: module });
-  }catch(e){
-    // fallback
-    return { month_xof: null, tx_count: null, today_hint: "Aujourd’hui" };
-  }
-}
-
-async function digiyGetBoostStatus(phone){
-  // Optionnel: digiy_get_boost_status(p_phone) -> {active,expires_at,views_today}
-  try{
-    return await sbRpc("digiy_get_boost_status", { p_phone: phone });
-  }catch(e){
-    return null;
-  }
-}
-
-async function digiyBuildPayUrl(module, phone, plan){
-  // Ton backbone mentionne digiy_build_pay_url(ref)
-  // Ici on propose une signature: digiy_build_pay_url(p_module,p_phone,p_plan_code)
-  // Adapte si ta RPC attend d'autres paramètres.
-  return await sbRpc("digiy_build_pay_url", { p_module: module, p_phone: phone, p_plan_code: plan });
+  return (typeof res === "boolean") ? res : !!res;
 }
 
 /* =========================
@@ -425,31 +314,35 @@ async function digiyBuildPayUrl(module, phone, plan){
     $("dot").classList.add("bad");
     $("pillStatus").innerHTML = `Statut : <b>Bloqué</b>`;
     setNotifs([{level:"warn",tag:"ACTION",title:"Lien invalide",text:"Le lien doit contenir ?slug=…"}]);
+    $("btnManageSub").onclick = () => location.href = ABOS_URL;
     return;
   }
 
   // 1) resolve phone
-  let subPublic = null;
+  let pub = null;
   try{
-    subPublic = await sbGetSubscriptionBySlug(slug);
+    pub = await sbGetSubscriptionBySlug(slug);
   }catch(e){
     $("statusLine").textContent = "Erreur connexion";
-    $("expiryLine").textContent = "Impossible de vérifier le compte.";
+    $("expiryLine").textContent = "Vérifie internet ou clé ANON.";
     $("dot").classList.add("bad");
-    setNotifs([{level:"warn",tag:"RÉSEAU",title:"Connexion",text:"Vérifie internet ou config Supabase."}]);
+    $("pillStatus").innerHTML = `Statut : <b>KO</b>`;
+    setNotifs([{level:"warn",tag:"RÉSEAU",title:"Connexion",text:String(e.message || e)}]);
+    $("btnManageSub").onclick = () => location.href = ABOS_URL;
     return;
   }
 
-  if(!subPublic || !subPublic.phone){
-    $("statusLine").textContent = "Compte introuvable";
+  if(!pub?.phone){
+    $("statusLine").textContent = "Slug inconnu";
     $("expiryLine").textContent = "Ce slug n’existe pas.";
     $("dot").classList.add("bad");
     $("pillStatus").innerHTML = `Statut : <b>Inconnu</b>`;
-    setNotifs([{level:"warn",tag:"INFO",title:"Slug inconnu",text:"Demande un nouveau lien d’accès."}]);
+    setNotifs([{level:"warn",tag:"INFO",title:"Slug introuvable",text:"Demande un lien GO PIN / slug valide."}]);
+    $("btnManageSub").onclick = () => location.href = ABOS_URL;
     return;
   }
 
-  const phone = subPublic.phone;
+  const phone = String(pub.phone);
 
   // 2) access check
   const ok = await digiyHasAccess(phone, MODULE_CODE).catch(()=> false);
@@ -459,108 +352,66 @@ async function digiyBuildPayUrl(module, phone, plan){
     $("expiryLine").textContent = "Active ton accès en 1 clic.";
     $("dot").classList.add("bad");
     $("pillStatus").innerHTML = `Statut : <b>Inactif</b>`;
-
-    setNotifs([
-      {level:"warn",tag:"ABO",title:"Accès fermé",text:"Ton abonnement n’est pas actif sur ce module."},
-    ]);
+    setNotifs([{level:"warn",tag:"ABO",title:"Accès fermé",text:`Pas d’accès actif pour ${MODULE_CODE}.`}]);
 
     $("btnManageSub").onclick = () => {
-      location.href = `${ABOS_URL}?module=${encodeURIComponent(MODULE_CODE)}&phone=${encodeURIComponent(phone)}`;
+      const u = new URL(ABOS_URL);
+      u.searchParams.set("module", MODULE_CODE);
+      u.searchParams.set("phone", phone);
+      u.searchParams.set("slug", slug);
+      u.searchParams.set("return", location.href);
+      location.href = u.toString();
     };
-
-    // On peut même rediriger direct si tu veux:
-    // location.href = `${ABOS_URL}?module=${encodeURIComponent(MODULE_CODE)}&phone=${encodeURIComponent(phone)}`;
     return;
   }
 
-  // 3) load status full (optional)
-  const status = await digiyGetSubscriptionFull(phone, MODULE_CODE);
-  let expiresAt = status?.expires_at || status?.current_period_end || null;
-  let plan = status?.plan || "standard";
-  let pay = status?.payment_ref ? "validé" : "ok";
-
+  // 3) actif
   $("dot").classList.add("ok");
   $("statusLine").textContent = "Abonnement actif";
-  $("expiryLine").textContent = expiresAt ? `Expire le ${fmtDateFR(expiresAt)}` : "Expiration : —";
   $("pillStatus").innerHTML = `Statut : <b>Actif</b>`;
-  $("metaLine").innerHTML = `<span>Plan : ${plan}</span><span>•</span><span>Paiement : ${pay}</span>`;
 
-  // 4) stats
-  const stats = await digiyGetDashboardStats(phone, MODULE_CODE);
-  const month = (stats?.month_xof ?? null);
-  const tx = (stats?.tx_count ?? null);
+  // Si tu as une RPC “digiy_get_subscription_status” tu peux l’activer plus tard
+  // Ici fallback simple :
+  $("expiryLine").textContent = "Accès valide ✅";
+  $("metaLine").innerHTML = `<span>Plan : standard</span><span>•</span><span>Paiement : OK</span>`;
 
-  $("moneyMonth").textContent = month ? `${Number(month).toLocaleString("fr-FR")} FCFA` : "— FCFA";
-  $("txCount").textContent = tx ? `${tx} transactions` : "— transactions";
-  $("todayHint").textContent = stats?.today_hint || "Aujourd’hui";
+  // 4) stats fallback (tu brancheras RPC stats plus tard)
+  $("moneyMonth").textContent = "— FCFA";
+  $("txCount").textContent = "— transactions";
+  $("todayHint").textContent = "Aujourd’hui";
 
-  // 5) notifs rules
-  const notifs = [];
-  if(expiresAt){
-    const d = daysBetween(new Date().toISOString(), expiresAt);
-    if(d <= 3){
-      notifs.push({level:"warn",tag:"J-3",title:"Abonnement bientôt expiré",text:`Expire dans ${d} jour(s). Renouvelle pour éviter coupure.`});
-    }else{
-      notifs.push({level:"ok",tag:"OK",title:"Abonnement",text:`Actif — prochain contrôle : J-3.`});
-    }
-  }
-
-  // 6) boost status
-  const boost = await digiyGetBoostStatus(phone);
-  if(boost?.active){
-    $("boostStatus").textContent = `Statut boost : actif jusqu’au ${fmtDateFR(boost.expires_at)} • +${boost.views_today || 0} vues aujourd’hui`;
-    $("btnBoost").textContent = "Actif";
-    $("btnBoost").disabled = true;
-    notifs.push({level:"info",tag:"BOOST",title:"Boost actif",text:"Visibilité augmentée. Continue ton activité."});
-  }else{
-    $("boostStatus").textContent = "Statut boost : inactif";
-    notifs.push({level:"info",tag:"OPTION",title:"Boost disponible",text:"Active le BOOST si tu veux plus de visibilité."});
-  }
-
-  setNotifs(notifs);
+  // 5) notifs
+  setNotifs([
+    {level:"ok",tag:"OK",title:"Accès RESA",text:"Tu es dedans. Tu peux tester l’esthétique et brancher les vraies stats après."},
+    {level:"info",tag:"NEXT",title:"Prochaine étape",text:"Créer 1 RPC stats RESA + 1 vue liste du jour (optionnel)."}
+  ]);
 
   // Buttons
   $("btnManageSub").onclick = () => {
-    location.href = `${ABOS_URL}?module=${encodeURIComponent(MODULE_CODE)}&phone=${encodeURIComponent(phone)}`;
+    const u = new URL(ABOS_URL);
+    u.searchParams.set("module", MODULE_CODE);
+    u.searchParams.set("phone", phone);
+    u.searchParams.set("slug", slug);
+    u.searchParams.set("return", location.href);
+    location.href = u.toString();
   };
 
   $("btnPrimaryAction").onclick = () => {
-    // action module spécifique — à adapter
-    // exemple: ouvrir la page “online” / “orders” / “new sale”
-    alert("Action principale — branche ici ton flow module.");
+    alert("Action principale RESA — branche ici: planning.html?slug=" + slug);
   };
 
   $("btnBoostInfo").onclick = () => {
     alert("BOOST : +50% d’apparition pendant 7 jours. Paiement direct. Aucun spam.");
   };
 
-  $("btnBoost").onclick = async () => {
-    try{
-      $("btnBoost").disabled = true;
-      $("btnBoost").textContent = "…";
-
-      // Construire l’URL de paiement BOOST (via ton système)
-      const pay = await digiyBuildPayUrl(BOOST.module, phone, BOOST.plan);
-
-      // Ton RPC peut renvoyer {url} ou directement une string
-      const url = (typeof pay === "string") ? pay : (pay?.url || pay?.pay_url || null);
-
-      if(!url){
-        throw new Error("URL paiement BOOST manquante");
-      }
-
-      location.href = url; // puis wait.html fera le reste (confirmation / activation)
-    }catch(e){
-      console.error(e);
-      alert("Impossible d’activer le BOOST. Vérifie la config ou la RPC digiy_build_pay_url.");
-      $("btnBoost").disabled = false;
-      $("btnBoost").textContent = "Activer";
-    }
+  $("btnBoost").onclick = () => {
+    // Option: tu brancheras plus tard via digiy_build_pay_url (quand BOOST sera prêt)
+    alert("BOOST pas branché ici pour l’instant. (On le fait après RESA stable.)");
   };
 
-  $("btnSettings").onclick = () => alert("Paramètres — branche ici ton écran simple (profil, tel, etc.)");
-  $("linkSupport").onclick = (ev) => { ev.preventDefault(); alert("Support — branche ton WhatsApp/numéro support."); };
-  $("linkPayments").onclick = (ev) => { ev.preventDefault(); alert("Mes paiements — branche ton écran historique."); };
+  $("btnSettings").onclick = () => alert("Paramètres — branche écran profil/numéro");
+  $("linkSupport").onclick = (ev) => { ev.preventDefault(); location.href = SUPPORT_WA; };
+  $("linkPayments").onclick = (ev) => { ev.preventDefault(); alert("Mes paiements — écran à brancher"); };
 
 })();
 </script>
