@@ -1,1327 +1,947 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>DIGIY RESTO PRO — RÉSA</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Supabase v2 (OBLIGATOIRE) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<title>DIGIY RESTO PRO</title>
+  <!-- ✅ CONFIG UNIQUE (1 seule fois) -->
+  <script>
+    window.DIGIY_SUPABASE_URL  = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+  </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020; --card:#121a33; --card2:#0e1630;
+      --text:#eef1ff; --muted:#a8b1d1; --line:rgba(255,255,255,.10);
+      --gold:#facc15; --ok:#22c55e; --warn:#f59e0b; --bad:#fb7185; --accent:#6366f1;
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:
+        radial-gradient(1100px 650px at 20% -20%, rgba(99,102,241,.22), transparent 70%),
+        radial-gradient(900px 600px at 110% 0%, rgba(34,197,94,.12), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    a{color:inherit}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .screen{display:none}
+    .screen.active{display:block}
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;padding:10px 6px;margin-bottom:10px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+    .badge{
+      width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
+      background:rgba(99,102,241,.18);border:1px solid var(--line)
+    }
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      background:rgba(255,255,255,.04); border:1px solid var(--line);
+      color:var(--muted); font-weight:700; font-size:13px;
+    }
+    .pill b{color:var(--text);font-weight:900}
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;border-radius:12px;
+      font-weight:900;cursor:pointer;
+    }
+    .btn:hover{border-color:rgba(250,204,21,.35)}
+    .btn.primary{background:rgba(99,102,241,.22);border-color:rgba(99,102,241,.35)}
+    .btn.good{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.35)}
+    .btn.bad{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.35)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:920px){ .grid{grid-template-columns:1.2fr .8fr} }
 
-<script>
-const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    .card{
+      background:rgba(18,26,51,.92);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .card h3{margin:0 0 10px 0;font-size:14px;letter-spacing:.2px}
+    .muted{color:var(--muted)}
+    .hr{height:1px;background:var(--line);margin:12px 0}
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}
+    label{font-size:12px;color:var(--muted);font-weight:800}
+    input, select, textarea{
+      width:100%;
+      border-radius:12px;border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      padding:10px 12px; outline:none;
+      font-weight:800;
+    }
+    textarea{min-height:86px;resize:vertical;font-weight:700}
 
- <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --gold:#f0c040;--gold2:#d4a820;
-  --bg:#0a1a0f;--bg2:#0f2318;--bg3:#163020;
-  --text:#e8f0e8;--muted:#7a9e7a;
-  --red:#c0392b;--green:#27ae60;--border:#1e3a28;
-}
-body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:#f0c04044;border-radius:2px}
-.screen{display:none;animation:fadeIn .35s ease}
-.screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .notice{
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--muted); font-weight:750; font-size:13px; line-height:1.45;
+    }
+    .notice.ok{border-color:rgba(34,197,94,.28); background:rgba(34,197,94,.08); color:#c9ffd9}
+    .notice.bad{border-color:rgba(251,113,133,.28); background:rgba(251,113,133,.08); color:#ffd1dc}
+    .notice.warn{border-color:rgba(245,158,11,.28); background:rgba(245,158,11,.08); color:#ffe7c2}
 
-/* ── LOADING ── */
-#screen-loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px}
-.spinner{width:40px;height:40px;border:3px solid #f0c04022;border-top-color:#f0c040;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold);letter-spacing:3px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{
+      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03); color:var(--muted);
+      font-weight:900; cursor:pointer; font-size:12px;
+    }
+    .tab.active{border-color:rgba(250,204,21,.35); color:var(--text); background:rgba(250,204,21,.10)}
 
-/* ── TOP BAR ── */
-.top-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--bg2);border-bottom:1px solid #f0c04022;position:sticky;top:0;z-index:100}
-.top-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;letter-spacing:3px;color:var(--gold)}
-.top-logo span{color:var(--text);font-weight:300}
-.top-nav{display:flex;gap:10px;align-items:center}
-.btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:8px 18px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:1px;transition:all .2s}
-.btn-sm:hover{border-color:var(--gold);color:var(--gold)}
-.btn-gold{background:var(--gold);border:none;color:var(--bg);border-radius:6px;padding:8px 18px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;transition:all .2s}
-.btn-gold:hover{background:var(--gold2)}
+    .list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    .item{
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+    }
+    .item b{font-weight:1000}
+    .item .meta{margin-top:4px;font-size:12px;color:var(--muted);font-weight:750;line-height:1.35}
+    .tag{
+      font-size:12px;font-weight:1000;padding:6px 9px;border-radius:999px;border:1px solid var(--line);
+      color:var(--muted); white-space:nowrap;
+    }
+    .tag.ok{color:#c9ffd9;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08)}
+    .tag.warn{color:#ffe7c2;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)}
+    .tag.bad{color:#ffd1dc;border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.10)}
+    .miniBtn{
+      padding:8px 10px;border-radius:12px;border:1px solid var(--line);
+      background:rgba(0,0,0,.16); color:var(--text);
+      font-weight:900; cursor:pointer;
+    }
+    .miniBtn:hover{border-color:rgba(250,204,21,.35)}
 
-/* ── HERO ── */
-.hero{text-align:center;padding:80px 20px 60px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,#f0c04008 0%,transparent 70%);pointer-events:none}
-.hero-badge{display:inline-block;background:#f0c04018;border:1px solid #f0c04044;border-radius:20px;padding:6px 18px;font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:24px;text-transform:uppercase}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,6vw,72px);font-weight:700;line-height:1.1;margin-bottom:20px}
-.hero-title em{color:var(--gold);font-style:normal}
-.hero-sub{font-size:14px;color:var(--muted);max-width:560px;margin:0 auto 36px;line-height:1.8}
-.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.btn-hero{background:var(--gold);border:none;color:var(--bg);border-radius:8px;padding:16px 36px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;transition:all .2s;box-shadow:0 4px 24px #f0c04033}
-.btn-hero:hover{background:var(--gold2);transform:translateY(-2px)}
-.btn-hero-outline{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:16px 36px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:2px;transition:all .2s}
-.btn-hero-outline:hover{border-color:var(--gold);color:var(--gold)}
-
-/* ── FEATURES ── */
-.section{padding:70px 20px;max-width:1100px;margin:0 auto}
-.section-badge{text-align:center;margin-bottom:12px}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,44px);text-align:center;margin-bottom:10px}
-.section-sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:44px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.8}
-.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
-.feature-card{background:var(--bg2);border:1px solid #f0c04018;border-radius:12px;padding:26px;transition:all .3s}
-.feature-card:hover{border-color:#f0c04044;transform:translateY(-4px)}
-.feature-icon{font-size:30px;margin-bottom:14px}
-.feature-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold);margin-bottom:7px}
-.feature-text{font-size:12px;color:var(--muted);line-height:1.8}
-
-/* ── PRICING ── */
-.pricing-section{padding:70px 20px;background:var(--bg2)}
-.pricing-inner{max-width:860px;margin:0 auto}
-.pricing-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:44px}
-.pricing-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;transition:all .3s}
-.pricing-card.featured{border-color:var(--gold);box-shadow:0 0 40px #f0c04018}
-.pricing-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--bg);border-radius:20px;padding:3px 14px;font-size:9px;font-weight:700;letter-spacing:2px;white-space:nowrap}
-.pricing-name{font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:5px}
-.pricing-price{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:700;color:var(--gold);line-height:1}
-.pricing-price span{font-size:14px;color:var(--muted);font-family:'Montserrat',sans-serif;font-weight:400}
-.pricing-period{font-size:10px;color:var(--muted);margin-bottom:22px;letter-spacing:1px}
-.pricing-features{list-style:none;margin-bottom:24px}
-.pricing-features li{font-size:11px;color:#aaa;padding:6px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
-.pricing-features li::before{content:"✦";color:var(--gold);font-size:9px;flex-shrink:0}
-.btn-pricing{width:100%;padding:12px;border-radius:8px;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .2s}
-.btn-pricing.primary{background:var(--gold);border:none;color:var(--bg)}
-.btn-pricing.primary:hover{background:var(--gold2)}
-.btn-pricing.outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-pricing.outline:hover{border-color:var(--gold);color:var(--gold)}
-
-/* ── TRUST ── */
-.trust{padding:50px 20px;max-width:800px;margin:0 auto;text-align:center}
-.trust-items{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin-top:26px}
-.trust-item{display:flex;flex-direction:column;align-items:center;gap:5px}
-.trust-icon{font-size:26px}
-.trust-label{font-size:10px;color:var(--muted);letter-spacing:1px}
-
-/* ── FOOTER ── */
-.footer{background:var(--bg2);border-top:1px solid #f0c04022;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.footer-logo{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gold);letter-spacing:2px}
-.footer-text{font-size:10px;color:var(--muted);letter-spacing:1px}
-
-/* ── AUTH SCREENS ── */
-#screen-register,#screen-login{min-height:100vh;background:var(--bg);display:flex;flex-direction:column}
-.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-card{background:var(--bg2);border:1px solid #f0c04033;border-radius:16px;padding:36px;max-width:440px;width:100%}
-.auth-title{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);margin-bottom:5px;letter-spacing:2px}
-.auth-sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.7}
-.trial-banner{background:#f0c04018;border:1px solid #f0c04044;border-radius:8px;padding:13px 15px;margin-bottom:22px;display:flex;align-items:center;gap:10px}
-.trial-banner-text{font-size:11px;color:var(--gold);line-height:1.6}
-.trial-banner-text strong{display:block;font-size:12px;margin-bottom:2px}
-.auth-form{display:flex;flex-direction:column;gap:13px}
-.auth-field{display:flex;flex-direction:column;gap:4px}
-.auth-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.auth-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px 13px;font-family:'Montserrat',sans-serif;font-size:12px;outline:none;transition:border-color .2s}
-.auth-input:focus{border-color:#f0c04066}
-.auth-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.btn-auth{background:var(--gold);border:none;color:var(--bg);border-radius:8px;padding:13px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:background .2s;margin-top:4px}
-.btn-auth:hover{background:var(--gold2)}
-.btn-auth:disabled{opacity:.5;cursor:not-allowed}
-.auth-link{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;line-height:1.6}
-.auth-link a{color:var(--gold);cursor:pointer}
-.auth-error{background:#2a1010;border:1px solid #c0392b44;border-radius:6px;padding:10px 13px;font-size:11px;color:#e74c3c;display:none;margin-top:4px}
-.demo-box{background:#f0c04010;border:1px solid #f0c04033;border-radius:6px;padding:10px 13px;font-size:10px;color:var(--gold);text-align:center;margin-top:12px;letter-spacing:1px}
-.link-mini{font-size:10px;color:var(--muted);text-align:center;margin-top:8px}
-.link-mini a{color:var(--gold);cursor:pointer}
-
-/* ── TRIAL BAR ── */
-#trial-bar{background:linear-gradient(90deg,#0a1f10,#0f2a18);border-bottom:1px solid #f0c04044;padding:7px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
-.trial-bar-text{font-size:10px;color:var(--gold);display:flex;align-items:center;gap:7px}
-.trial-countdown{background:#f0c04022;border:1px solid #f0c04044;border-radius:20px;padding:3px 11px;font-size:10px;font-weight:600;letter-spacing:1px}
-.trial-bar-btn{background:var(--gold);border:none;color:var(--bg);border-radius:4px;padding:5px 13px;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer}
-#trial-bar.urgent{background:linear-gradient(90deg,#1a1505,#2a2008);border-color:#f0c04088}
-
-/* ── APP HEADER ── */
-#app-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--bg2);border-bottom:1px solid #f0c04022;flex-wrap:wrap;gap:9px}
-.app-logo-wrap{display:flex;align-items:center;gap:8px}
-.app-logo-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;letter-spacing:3px;color:var(--gold)}
-.app-logo-sub{font-size:8px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.header-stats{display:flex;gap:16px}
-.stat-box{text-align:center}
-.stat-num{display:block;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--gold);line-height:1}
-.stat-label{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-#date-input{background:var(--bg3);border:1px solid #f0c04044;border-radius:6px;color:var(--gold);padding:6px 11px;font-family:'Montserrat',sans-serif;font-size:11px;cursor:pointer;outline:none}
-.app-user{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}
-.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;font-family:'Cormorant Garamond',serif}
-.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:4px;padding:4px 9px;cursor:pointer;font-size:9px;font-family:'Montserrat',sans-serif}
-.btn-logout:hover{border-color:var(--red);color:var(--red)}
-
-/* ── APP NAV ── */
-#app-nav{display:flex;gap:4px;padding:8px 18px;background:var(--bg);border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap}
-.nav-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:6px 13px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:1px;transition:all .2s}
-.nav-btn:hover,.nav-btn.active{background:#f0c04011;color:var(--gold);border-color:#f0c04044}
-.nav-btn.add-btn{background:#f0c04022;color:var(--gold);border-color:#f0c04044;margin-left:auto}
-
-/* ── TOAST ── */
-#toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:6px;border:1px solid;font-size:11px;z-index:9999;letter-spacing:1px;display:none;white-space:nowrap;font-family:'Montserrat',sans-serif}
-
-/* ── APP CONTENT ── */
-#app-content{padding:15px 18px}
-
-/* ZONE BAR */
-#zone-bar{display:flex;align-items:center;gap:7px;margin-bottom:12px;flex-wrap:wrap}
-.zone-chip{padding:4px 11px;border-radius:20px;border:1px solid var(--border);color:var(--muted);font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .2s;font-family:'Montserrat',sans-serif}
-.zone-chip:hover,.zone-chip.active{background:#f0c04022;color:var(--gold);border-color:#f0c04044}
-.legend{margin-left:auto;display:flex;gap:9px;align-items:center}
-.leg-item{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)}
-.leg-dot{width:7px;height:7px;border-radius:50%}
-
-/* FLOOR */
-#floor-wrap{background:var(--bg2);border:1px solid #f0c04022;border-radius:12px;padding:12px;position:relative;overflow:hidden}
-#floor-svg{width:100%;max-height:500px}
-.svg-table{cursor:pointer;transition:filter .18s}
-.svg-table:hover{filter:brightness(1.4)}
-#tooltip{position:absolute;top:12px;right:12px;background:var(--bg3);border:1px solid #f0c04044;border-radius:8px;padding:10px 13px;min-width:165px;display:none;z-index:10}
-.tip-title{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--gold);margin-bottom:2px}
-.tip-sub{font-size:9px;color:var(--muted);margin-bottom:5px}
-.tip-resa{font-size:10px;color:#ccc;margin-bottom:2px}
-
-/* LIST */
-#list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.list-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold)}
-#list-search{background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 11px;font-family:'Montserrat',sans-serif;font-size:11px;width:190px;outline:none}
-.resa-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--bg2);border-radius:8px;margin-bottom:6px;border:1px solid var(--border);transition:background .2s;flex-wrap:wrap}
-.resa-row:hover{background:var(--bg3)}
-.resa-time{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);min-width:50px}
-.resa-main{flex:1;min-width:140px}
-.resa-name{font-weight:600;font-size:12px;margin-bottom:2px}
-.resa-meta{display:flex;gap:6px;font-size:9px;color:var(--muted);flex-wrap:wrap}
-.resa-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
-.badge{padding:3px 8px;border-radius:20px;font-size:9px;letter-spacing:1px;cursor:pointer;font-weight:600;border:1px solid}
-.badge.confirmed{background:#0f2318;color:var(--green);border-color:#27ae6044}
-.badge.pending{background:#2a2a0a;color:#e8a020;border-color:#e8a02044}
-.btn-edit{background:#0f1a2a;border:1px solid #1a3a5a;color:#6ab0d8;border-radius:5px;padding:4px 8px;cursor:pointer;font-size:11px}
-.btn-del{background:#1a0f0f;border:1px solid #3a1a1a;color:var(--red);border-radius:5px;padding:4px 8px;cursor:pointer;font-size:11px}
-
-/* FORM */
-#form-wrap{max-width:740px;margin:0 auto}
-.form-title{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);margin-bottom:18px;letter-spacing:2px}
-.form-section{margin-bottom:18px}
-.form-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(83px,1fr));gap:6px}
-.t-chip{border-radius:8px;padding:8px 6px;text-align:center;cursor:pointer;transition:all .2s;border:1px solid}
-.t-chip-name{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600}
-.t-chip-sub{font-size:8px;opacity:.8}
-.time-grid{display:flex;flex-wrap:wrap;gap:6px}
-.time-chip{padding:6px 11px;border-radius:6px;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s;border:1px solid var(--border);color:var(--muted);background:var(--bg3)}
-.time-chip:hover:not(.occ){background:var(--gold);color:var(--bg);border-color:var(--gold)}
-.time-chip.sel{background:var(--gold);color:var(--bg);border-color:var(--gold)}
-.time-chip.occ{background:#1a0f0f;color:#555;border-color:#c0392b33;cursor:not-allowed;text-decoration:line-through}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
-.field-wrap{display:flex;flex-direction:column;gap:4px}
-.field-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.field{background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 11px;font-family:'Montserrat',sans-serif;font-size:12px;outline:none;transition:border-color .2s}
-.field:focus{border-color:#f0c04066}
-#form-summary{background:#0f200f;border:1px solid #f0c04033;border-radius:8px;padding:11px 14px;font-size:11px;color:#aaa;margin-bottom:14px;display:none}
-.form-actions{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
-.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:9px 19px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:10px}
-.btn-submit{background:var(--gold);border:none;color:var(--bg);border-radius:6px;padding:9px 20px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;transition:background .2s}
-.btn-submit:hover:not(:disabled){background:var(--gold2)}
-.btn-submit:disabled{opacity:.4;cursor:not-allowed}
-.btn-danger{background:var(--red);border:none;color:#fff;border-radius:6px;padding:9px 18px;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700}
-.empty-state{text-align:center;color:#3a6a3a;padding:45px 20px;font-family:'Cormorant Garamond',serif;font-size:18px}
-
-/* MODALS */
-#modal-overlay,#upgrade-overlay,#expired-overlay{position:fixed;inset:0;background:#000000cc;display:none;align-items:center;justify-content:center;z-index:9998;padding:20px}
-#modal{background:var(--bg3);border:1px solid #f0c04044;border-radius:12px;padding:24px;max-width:320px;width:100%}
-.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold);margin-bottom:5px}
-.modal-sub{font-size:11px;color:var(--muted);margin-bottom:18px}
-.modal-actions{display:flex;gap:9px;justify-content:flex-end}
-
-/* UPGRADE */
-#upgrade-modal,#expired-modal{background:var(--bg2);border:2px solid var(--gold);border-radius:16px;padding:32px;max-width:460px;width:100%;text-align:center}
-.upgrade-icon{font-size:44px;margin-bottom:14px}
-.upgrade-title{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold);margin-bottom:8px}
-.upgrade-sub{font-size:12px;color:var(--muted);margin-bottom:22px;line-height:1.7}
-.step-list{display:flex;flex-direction:column;gap:10px;text-align:left;margin-bottom:20px}
-.step-item{display:flex;align-items:flex-start;gap:10px}
-.step-num{background:var(--gold);color:var(--bg);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0;margin-top:1px}
-.step-text{font-size:11px;color:#aaa;line-height:1.6}
-.contact-card{background:var(--bg);border:2px solid var(--gold);border-radius:10px;padding:16px;margin-bottom:16px;text-align:left}
-.contact-name{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gold);font-weight:700;margin-bottom:3px}
-.contact-tel{font-size:13px;color:var(--text);margin-bottom:12px;letter-spacing:1px}
-.contact-btns{display:flex;gap:8px}
-.btn-wa{background:#25d366;color:#fff;border:none;border-radius:7px;padding:9px 16px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
-.btn-tel{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:7px;padding:9px 16px;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
-.price-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
-.price-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
-.price-box.best{border-color:var(--gold);background:#0f200f}
-.price-amt{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);font-weight:700}
-.price-period{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px}
-.price-eco{font-size:9px;color:var(--green);margin-top:3px}
-.btn-skip{background:transparent;border:none;color:var(--muted);font-size:10px;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:8px}
-.btn-skip:hover{color:var(--text)}
-</style>
+    .modal{
+      position:fixed; inset:0; display:none;
+      background:rgba(0,0,0,.55);
+      align-items:center; justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modal .box{
+      width:min(820px,96vw);
+      background:rgba(18,26,51,.98);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 24px 60px rgba(0,0,0,.65);
+    }
+    .modal h4{margin:0 0 10px 0}
+    .modal .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .small{font-size:12px;color:var(--muted);font-weight:750}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .kpi{
+      background:rgba(0,0,0,.18);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+    }
+    .kpi .k{font-size:12px;color:var(--muted);font-weight:800}
+    .kpi .v{font-size:22px;font-weight:1000;margin-top:6px}
+    .footerLine{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:10px}
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
 
-<!-- ══ LOADING ══ -->
-<div id="screen-loading" class="screen active">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loading-text">DIGIY RESTO PRO</div>
-</div>
-
-<!-- ══ LANDING ══ -->
-<div id="screen-landing" class="screen">
-  <div class="top-bar">
-    <div class="top-logo">DIGIY <span>RESTO PRO</span></div>
-    <div class="top-nav">
-      <button class="btn-sm" onclick="goTo('login')">Se connecter</button>
-      <button class="btn-gold" onclick="goTo('register')">1 mois gratuit</button>
-    </div>
-  </div>
-
-  <div class="hero">
-    <div class="hero-badge">🚀 1er mois offert — sans CB requise</div>
-    <h1 class="hero-title">Gérez vos réservations<br><em>comme un chef</em></h1>
-    <p class="hero-sub">Plan de salle interactif, créneaux automatiques, suivi des couverts. Tout votre service sous contrôle — 0% commission.</p>
-    <div class="hero-btns">
-      <button class="btn-hero" onclick="goTo('register')">🎯 Commencer gratuitement</button>
-      <button class="btn-hero-outline" onclick="goTo('login')">Se connecter</button>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-badge"><span class="hero-badge">Fonctionnalités</span></div>
-    <h2 class="section-title">Tout ce dont votre resto a besoin</h2>
-    <p class="section-sub">Pensé par des pros de la restauration, pour des pros de la restauration.</p>
-    <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">🗺</div><div class="feature-title">Plan de salle interactif</div><div class="feature-text">Visualisez votre salle en temps réel. Libres, occupées, partielles — d'un seul coup d'œil. Cliquez pour réserver.</div></div>
-      <div class="feature-card"><div class="feature-icon">⏰</div><div class="feature-title">Créneaux horaires</div><div class="feature-text">Midi et soir, toutes les 30 minutes. Les slots déjà pris sont bloqués automatiquement. Zéro double réservation.</div></div>
-      <div class="feature-card"><div class="feature-icon">📋</div><div class="feature-title">Liste & suivi</div><div class="feature-text">Vue tableau avec recherche, filtres, statuts confirmé/en attente. Modifiez ou annulez en un clic.</div></div>
-      <div class="feature-card"><div class="feature-icon">💾</div><div class="feature-title">Données sauvegardées</div><div class="feature-text">Vos réservations sont stockées en ligne et synchronisées. Accédez à votre logiciel depuis n'importe quel appareil.</div></div>
-      <div class="feature-card"><div class="feature-icon">🔐</div><div class="feature-title">Votre espace privé</div><div class="feature-text">Chaque restaurant a son propre compte sécurisé. Vos données vous appartiennent, personne d'autre ne peut y accéder.</div></div>
-      <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">100% responsive</div><div class="feature-text">Fonctionne sur ordinateur, tablette et smartphone. Gérez depuis la salle, la cuisine ou chez vous.</div></div>
-    </div>
-  </div>
-
-  <div class="pricing-section">
-    <div class="pricing-inner">
-      <div class="section-badge" style="text-align:center"><span class="hero-badge">Tarifs</span></div>
-      <h2 class="section-title">Simple, transparent, 0% commission</h2>
-      <p class="section-sub">Abonnement fixe. Zéro commission. Vous gardez 100% de vos revenus.</p>
-      <div class="pricing-cards">
-        <div class="pricing-card">
-          <div class="pricing-name">Découverte</div>
-          <div class="pricing-price">0 F <span>CFA</span></div>
-          <div class="pricing-period">PREMIER MOIS OFFERT</div>
-          <ul class="pricing-features">
-            <li>Accès complet au logiciel</li>
-            <li>Plan de salle 14 tables</li>
-            <li>Réservations illimitées</li>
-            <li>Données sauvegardées en ligne</li>
-            <li>Sans engagement</li>
-          </ul>
-          <button class="btn-pricing outline" onclick="goTo('register')">Démarrer gratuitement</button>
-        </div>
-        <div class="pricing-card featured">
-          <div class="pricing-badge">⭐ APRÈS L'ESSAI</div>
-          <div class="pricing-name">Pro</div>
-          <div class="pricing-price">12.900 F <span>CFA</span></div>
-          <div class="pricing-period">PAR MOIS · PAIEMENT WAVE</div>
-          <ul class="pricing-features">
-            <li>Tout inclus dans Découverte</li>
-            <li>Tables illimitées</li>
-            <li>Zones personnalisables</li>
-            <li>Support WhatsApp prioritaire</li>
-            <li>Mises à jour incluses</li>
-            <li>0% commission</li>
-          </ul>
-          <button class="btn-pricing primary" onclick="goTo('register')">Essayer 1 mois gratuit</button>
+    <!-- TOPBAR (visible everywhere) -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge">🦅</div>
+        <div>
+          <div style="font-weight:1000" id="brandTitle">DIGIY RESTO PRO</div>
+          <div class="muted" style="font-size:12px;font-weight:750;margin-top:2px" id="brandSub">RÉSA — Auth email/mot de passe</div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="trust">
-    <h2 class="section-title">Pourquoi DIGIY RESTO PRO ?</h2>
-    <div class="trust-items">
-      <div class="trust-item"><span class="trust-icon">🔒</span><span class="trust-label">Données sécurisées</span></div>
-      <div class="trust-item"><span class="trust-icon">🌍</span><span class="trust-label">France & Sénégal</span></div>
-      <div class="trust-item"><span class="trust-icon" style="color:var(--gold);font-weight:700">0%</span><span class="trust-label" style="color:var(--gold)">Commission</span></div>
-      <div class="trust-item"><span class="trust-icon">⚡</span><span class="trust-label">En ligne en 5 min</span></div>
-      <div class="trust-item"><span class="trust-icon">🦅</span><span class="trust-label">DIGIYLYFE</span></div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <div class="footer-logo">DIGIYLYFE</div>
-    <div class="footer-text">L'Afrique enracinée, connectée au monde · © 2026</div>
-    <div class="footer-text"></div>
-  </div>
-</div>
-
-<!-- ══ REGISTER ══ -->
-<div id="screen-register" class="screen">
-  <div class="top-bar">
-    <div class="top-logo">DIGIY <span>RESTO PRO</span></div>
-    <button class="btn-sm" onclick="goTo('landing')">← Retour</button>
-  </div>
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-title">1er mois gratuit</div>
-      <p class="auth-sub">Créez votre compte en 30 secondes. Accès immédiat, sans carte bancaire.</p>
-
-      <div class="trial-banner">
-        <span style="font-size:22px">🎁</span>
-        <div class="trial-banner-text">
-          <strong>30 jours offerts — accès complet</strong>
-          Après l'essai : 12.900 F CFA/mois via Wave · Annulation libre
-        </div>
-      </div>
-
-      <div class="auth-form">
-        <div class="auth-row">
-          <div class="auth-field"><label class="auth-label">Prénom</label><input class="auth-input" id="reg-prenom" placeholder="Marie"></div>
-          <div class="auth-field"><label class="auth-label">Nom</label><input class="auth-input" id="reg-nom" placeholder="Dupont"></div>
-        </div>
-        <div class="auth-field"><label class="auth-label">Email *</label><input class="auth-input" id="reg-email" type="email" placeholder="marie@monresto.fr"></div>
-        <div class="auth-field"><label class="auth-label">Nom du restaurant *</label><input class="auth-input" id="reg-resto" placeholder="Le Petit Bistrot"></div>
-        <div class="auth-field"><label class="auth-label">Mot de passe *</label><input class="auth-input" id="reg-pass" type="password" placeholder="6 caractères minimum"></div>
-        <div class="auth-error" id="reg-error"></div>
-        <button class="btn-auth" id="btn-register" onclick="doRegister()">Créer mon compte gratuit →</button>
-      </div>
-
-      <div class="auth-link">Déjà un compte ? <a onclick="goTo('login')">Se connecter</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ LOGIN ══ -->
-<div id="screen-login" class="screen">
-  <div class="top-bar">
-    <div class="top-logo">DIGIY <span>RESTO PRO</span></div>
-    <button class="btn-sm" onclick="goTo('landing')">← Retour</button>
-  </div>
-
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-title">Connexion</div>
-      <p class="auth-sub">Accédez à votre espace de réservations.</p>
-
-      <div class="auth-form">
-        <div class="auth-field"><label class="auth-label">Email</label><input class="auth-input" id="login-email" type="email" placeholder="votre@email.com"></div>
-        <div class="auth-field"><label class="auth-label">Mot de passe</label><input class="auth-input" id="login-pass" type="password" placeholder="••••••••"></div>
-        <div class="auth-error" id="login-error"></div>
-        <button class="btn-auth" id="btn-login" onclick="doLogin()">Se connecter →</button>
-      </div>
-
-      <div class="link-mini"><a onclick="forgotPassword()">Mot de passe oublié ?</a></div>
-
-      <div class="demo-box">🔑 Démo : demo@digiylyfe.com / demo1234</div>
-      <div class="auth-link">Pas encore de compte ? <a onclick="goTo('register')">1 mois gratuit</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ APP ══ -->
-<div id="screen-app" class="screen">
-  <div id="trial-bar">
-    <div class="trial-bar-text">
-      ⏳ Période d'essai gratuite :
-      <span class="trial-countdown" id="trial-days">30 jours restants</span>
-    </div>
-    <button class="trial-bar-btn" onclick="showUpgrade()">Passer en Pro →</button>
-  </div>
-
-  <div id="app-header">
-    <div class="app-logo-wrap">
-      <span style="font-size:20px">🍽</span>
-      <div><div class="app-logo-title">RESTO RÉSA</div><div class="app-logo-sub">Gestion des réservations</div></div>
-    </div>
-
-    <input type="date" id="date-input" onchange="renderAll()">
-
-    <div class="header-stats">
-      <div class="stat-box"><span class="stat-num" id="stat-count">0</span><span class="stat-label">Résas</span></div>
-      <div class="stat-box"><span class="stat-num" id="stat-covers">0</span><span class="stat-label">Couverts</span></div>
-      <div class="stat-box"><span class="stat-num" id="stat-free">0</span><span class="stat-label">Libres</span></div>
-    </div>
-
-    <div class="app-user">
-      <div class="user-avatar" id="user-avatar">R</div>
-      <span id="user-resto-name">Mon Resto</span>
-      <button class="btn-logout" onclick="doLogout()">Déco</button>
-    </div>
-  </div>
-
-  <div id="app-nav">
-    <button class="nav-btn active" id="btn-plan" onclick="showView('plan')">🗺 Plan de salle</button>
-    <button class="nav-btn" id="btn-list" onclick="showView('list')">📋 Liste des résas</button>
-    <button class="nav-btn add-btn" onclick="openAddForm()">+ Nouvelle résa</button>
-  </div>
-
-  <div id="toast"></div>
-
-  <div id="app-content">
-    <div id="view-plan">
-      <div id="zone-bar">
-        <span style="font-size:9px;color:#7a9e7a;letter-spacing:1px">Zone :</span>
-        <span class="zone-chip active" onclick="setZone('Tous',this)">Tous</span>
-        <span class="zone-chip" onclick="setZone('Terrasse',this)">Terrasse</span>
-        <span class="zone-chip" onclick="setZone('Salle principale',this)">Salle principale</span>
-        <span class="zone-chip" onclick="setZone('Salon privé',this)">Salon privé</span>
-        <span class="zone-chip" onclick="setZone('Bar',this)">Bar</span>
-        <div class="legend">
-          <span class="leg-item"><span class="leg-dot" style="background:#f0c040"></span>Libre</span>
-          <span class="leg-item"><span class="leg-dot" style="background:#e8852a"></span>Partielle</span>
-          <span class="leg-item"><span class="leg-dot" style="background:#c0392b"></span>Complet</span>
-        </div>
-      </div>
-      <div id="floor-wrap">
-        <svg id="floor-svg" viewBox="0 0 90 92" xmlns="http://www.w3.org/2000/svg"></svg>
-        <div id="tooltip"></div>
+      <div class="right">
+        <div class="pill" id="pillStatus">Statut : <b>…</b></div>
+        <button class="btn" id="btnLogoutTop" type="button" style="display:none">🚪 Déconnexion</button>
       </div>
     </div>
 
-    <div id="view-list" style="display:none">
-      <div id="list-header">
-        <div class="list-title" id="list-title">Réservations</div>
-        <input id="list-search" type="text" placeholder="🔍 Rechercher..." oninput="renderList()">
+    <!-- LOADING -->
+    <div class="screen active" id="screen-loading">
+      <div class="card">
+        <h3>Chargement…</h3>
+        <div class="notice">On prépare ton cockpit. Si ça dure : check internet + clé ANON.</div>
       </div>
-      <div id="list-content"></div>
     </div>
 
-    <div id="view-form" style="display:none">
-      <div id="form-wrap">
-        <div class="form-title" id="form-title">✦ Nouvelle réservation</div>
-
-        <div class="form-section">
-          <div class="form-label">Choisir une table</div>
-          <div class="table-grid" id="table-selector"></div>
+    <!-- LANDING -->
+    <div class="screen" id="screen-landing">
+      <div class="grid">
+        <div class="card">
+          <h3>Bienvenue</h3>
+          <div class="notice">
+            Gestion des réservations **RESTO** (v1) : planning du jour, liste, ajout, statuts.
+          </div>
+          <div class="hr"></div>
+          <div class="row">
+            <button class="btn primary" id="btnGoRegister">🎁 1 mois gratuit</button>
+            <button class="btn" id="btnGoLogin">Se connecter</button>
+          </div>
+          <div class="hr"></div>
+          <div class="notice warn">
+            Démo : <b>demo@digiylyfe.com</b> / <b>demo1234</b>
+          </div>
         </div>
 
-        <div id="time-section" style="display:none" class="form-section">
-          <div class="form-label" id="time-label">Créneau horaire</div>
-          <div class="time-grid" id="time-selector"></div>
+        <div class="card">
+          <h3>Ce que ça fait (simple)</h3>
+          <div class="kpis">
+            <div class="kpi"><div class="k">Vue</div><div class="v">Jour</div><div class="small">planning + stats</div></div>
+            <div class="kpi"><div class="k">Liste</div><div class="v">OK</div><div class="small">tri par heure</div></div>
+            <div class="kpi"><div class="k">Ajout</div><div class="v">1 clic</div><div class="small">nom + heure</div></div>
+          </div>
+          <div class="hr"></div>
+          <div class="small">
+            Backend attendu :
+            <code>restaurants</code> + <code>resa_resto_reservations</code> (FK restaurant_id).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="screen" id="screen-register">
+      <div class="card">
+        <h3>Créer mon compte</h3>
+        <div class="notice">On crée l’utilisateur Supabase + le restaurant associé.</div>
+        <div class="hr"></div>
+
+        <div class="row">
+          <div class="field">
+            <label>Email *</label>
+            <input id="regEmail" type="email" placeholder="demo@digiylyfe.com" autocomplete="email"/>
+          </div>
+          <div class="field">
+            <label>Mot de passe *</label>
+            <input id="regPass" type="password" placeholder="6 caractères minimum" autocomplete="new-password"/>
+          </div>
         </div>
 
-        <div id="fields-section" style="display:none">
-          <div class="form-section">
-            <div class="form-label">Informations client</div>
-            <div class="form-grid">
-              <div class="field-wrap"><label class="field-label">Nom & Prénom *</label><input class="field" id="f-name" placeholder="Martin Sophie" oninput="updateSummary()"></div>
-              <div class="field-wrap"><label class="field-label">Couverts *</label><input class="field" id="f-guests" type="number" min="1" value="2" oninput="updateSummary()"></div>
-              <div class="field-wrap"><label class="field-label">Téléphone</label><input class="field" id="f-phone" placeholder="77 xxx xx xx"></div>
-              <div class="field-wrap"><label class="field-label">Note spéciale</label><input class="field" id="f-note" placeholder="Allergie, anniversaire..."></div>
+        <div class="row">
+          <div class="field">
+            <label>Nom du restaurant *</label>
+            <input id="regResto" type="text" placeholder="Le Petit Bistrot"/>
+          </div>
+        </div>
+
+        <div class="notice bad" id="regErr" style="display:none"></div>
+
+        <div class="footerLine">
+          <button class="btn" id="btnBackLanding1">← Retour</button>
+          <button class="btn primary" id="btnRegister">Créer mon compte →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="screen" id="screen-login">
+      <div class="card">
+        <h3>Connexion</h3>
+        <div class="notice">Email + mot de passe (Supabase Auth).</div>
+        <div class="hr"></div>
+
+        <div class="row">
+          <div class="field">
+            <label>Email</label>
+            <input id="loginEmail" type="email" placeholder="demo@digiylyfe.com" autocomplete="email"/>
+          </div>
+          <div class="field">
+            <label>Mot de passe</label>
+            <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"/>
+          </div>
+        </div>
+
+        <div class="notice bad" id="loginErr" style="display:none"></div>
+
+        <div class="footerLine">
+          <button class="btn" id="btnBackLanding2">← Retour</button>
+          <button class="btn primary" id="btnLogin">Se connecter →</button>
+          <button class="btn" id="btnForgot">Mot de passe oublié</button>
+        </div>
+
+        <div class="hr"></div>
+        <div class="small">Démo : <b>demo@digiylyfe.com</b> / <b>demo1234</b></div>
+      </div>
+    </div>
+
+    <!-- APP -->
+    <div class="screen" id="screen-app">
+      <div class="grid">
+        <div class="card">
+          <div class="row" style="justify-content:space-between;align-items:flex-start">
+            <div>
+              <h3 style="margin-bottom:6px">Cockpit Réservations</h3>
+              <div class="small">
+                Restaurant : <b id="appRestoName">—</b><br>
+                User : <b id="appUserEmail">—</b>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field" style="min-width:220px">
+                <label>Date</label>
+                <input id="dayPick" type="date"/>
+              </div>
+              <button class="btn good" id="btnAdd">➕ Nouvelle résa</button>
             </div>
           </div>
 
-          <div id="form-summary"></div>
+          <div class="hr"></div>
 
-          <div class="form-actions">
-            <button class="btn-cancel" onclick="showView('plan')">Annuler</button>
-            <button class="btn-submit" id="btn-submit" onclick="submitForm()" disabled>Confirmer</button>
+          <div class="tabs">
+            <button class="tab active" id="tabDay">📅 Planning du jour</button>
+            <button class="tab" id="tabList">📋 Liste</button>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="kpis">
+            <div class="kpi"><div class="k">Total</div><div class="v" id="kTotal">0</div><div class="small">réservations</div></div>
+            <div class="kpi"><div class="k">Confirmées</div><div class="v" id="kBooked">0</div><div class="small">status=booked</div></div>
+            <div class="kpi"><div class="k">Annulées</div><div class="v" id="kCancelled">0</div><div class="small">status=cancelled</div></div>
+          </div>
+
+          <div class="hr"></div>
+
+          <!-- VIEW: DAY -->
+          <div id="viewDay">
+            <div class="notice" id="dayHint">—</div>
+            <div class="list" id="dayList"></div>
+          </div>
+
+          <!-- VIEW: LIST -->
+          <div id="viewList" style="display:none">
+            <div class="row">
+              <div class="field">
+                <label>Recherche</label>
+                <input id="q" placeholder="Nom client…"/>
+              </div>
+              <div class="field" style="max-width:220px">
+                <label>Statut</label>
+                <select id="filterStatus">
+                  <option value="all">Tous</option>
+                  <option value="booked">booked</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+              </div>
+            </div>
+            <div class="list" id="listBox"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Actions</h3>
+          <div class="notice ok" id="appState">Connecté ✅</div>
+          <div class="hr"></div>
+
+          <div class="row">
+            <button class="btn" id="btnReload">🔄 Recharger</button>
+            <button class="btn bad" id="btnLogout">🚪 Déconnexion</button>
+          </div>
+
+          <div class="hr"></div>
+          <div class="notice">
+            <b>V1 terrain :</b> on se concentre sur la stabilité (auth + CRUD résas).<br>
+            <span class="muted">Tables/plan de salle détaillé = V2 (quand la table “tables” est prête).</span>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- delete modal -->
-  <div id="modal-overlay" onclick="closeModal()" style="display:none;align-items:center;justify-content:center">
-    <div id="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">Supprimer ?</div>
-      <div class="modal-sub">Cette action est irréversible.</div>
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-        <button class="btn-danger" onclick="confirmDeleteAction()">Supprimer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- UPGRADE MODAL -->
-<div id="upgrade-overlay" onclick="hideUpgrade()" style="display:none;align-items:center;justify-content:center">
-  <div id="upgrade-modal" onclick="event.stopPropagation()">
-    <div class="upgrade-icon">🌊</div>
-    <div class="upgrade-title">Activer votre abonnement</div>
-    <p class="upgrade-sub">Envoyez votre paiement Wave — votre accès Pro est activé dans la journée.</p>
-    <div class="step-list">
-      <div class="step-item"><div class="step-num">1</div><div class="step-text">Ouvrez <strong style="color:#27ae60">Wave</strong> et envoyez le montant</div></div>
-      <div class="step-item"><div class="step-num">2</div><div class="step-text">Envoyez la <strong style="color:#fff">capture + votre email</strong> sur WhatsApp</div></div>
-      <div class="step-item"><div class="step-num">3</div><div class="step-text">Votre accès Pro est <strong style="color:#f0c040">activé dans la journée ✓</strong></div></div>
-    </div>
-    <div class="contact-card">
-      <div style="font-size:9px;color:#7a9e7a;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Votre contact DIGIYLYFE</div>
-      <div class="contact-name">JB BEAUVILLE</div>
-      <div class="contact-tel">+221 77 134 28 89</div>
-      <div class="contact-btns">
-        <a class="btn-wa" href="https://wa.me/221771342889?text=Bonjour%20JB%2C%20je%20souhaite%20activer%20mon%20abonnement%20DIGIY%20RESTO%20PRO" target="_blank" rel="noreferrer">💬 WhatsApp</a>
-        <a class="btn-tel" href="tel:+221771342889">📞 Appeler</a>
-      </div>
-    </div>
-    <div class="price-row">
-      <div class="price-box">
-        <div class="price-amt">12.900 F</div>
-        <div class="price-period">MENSUEL · CFA</div>
-        <div class="price-eco" style="color:#7a9e7a">≈ 20€/mois</div>
-      </div>
-      <div class="price-box best">
-        <div style="font-size:8px;color:#f0c040;letter-spacing:1px;margin-bottom:4px">⭐ MEILLEUR PRIX</div>
-        <div class="price-amt">24.900 F</div>
-        <div class="price-period">TRIMESTRIEL · CFA</div>
-        <div class="price-eco">Économisez 5.000 F !</div>
-      </div>
-    </div>
-    <button class="btn-skip" onclick="hideUpgrade()">← Retour à l'application</button>
-  </div>
-</div>
-
-<!-- EXPIRED MODAL -->
-<div id="expired-overlay" style="display:none;align-items:center;justify-content:center">
-  <div id="expired-modal">
-    <div class="upgrade-icon">⏰</div>
-    <div class="upgrade-title">Essai terminé</div>
-    <p class="upgrade-sub">Votre période d'essai gratuite est expirée. Activez votre abonnement pour continuer à utiliser DIGIY RESTO PRO.</p>
-    <div class="contact-card">
-      <div class="contact-name">JB BEAUVILLE</div>
-      <div class="contact-tel">+221 77 134 28 89</div>
-      <div class="contact-btns">
-        <a class="btn-wa" href="https://wa.me/221771342889?text=Bonjour%20JB%2C%20mon%20essai%20est%20termin%C3%A9%2C%20je%20veux%20activer%20mon%20abonnement" target="_blank" rel="noreferrer">💬 WhatsApp</a>
-        <a class="btn-tel" href="tel:+221771342889">📞 Appeler</a>
-      </div>
-    </div>
-    <div class="price-row">
-      <div class="price-box"><div class="price-amt">12.900 F</div><div class="price-period">MENSUEL · CFA</div></div>
-      <div class="price-box best"><div class="price-amt">24.900 F</div><div class="price-period">TRIMESTRIEL · CFA</div><div class="price-eco">Économisez 5.000 F !</div></div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ============================================================
-   ⚙️ SUPABASE CONFIG (TES CLÉS)
-   ============================================================ */
-const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-
-/* ============================================================
-   🧠 MINI SUPABASE (Auth + Rest) — stable, no loops
-   ============================================================ */
-const SB = {
-  _token: localStorage.getItem('sb_token') || null,
-
-  _headers(withAuth=true){
-    const h = {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_ANON_KEY
-    };
-    if (withAuth) {
-      h['Authorization'] = 'Bearer ' + (this._token || SUPABASE_ANON_KEY);
-    }
-    return h;
-  },
-
-  _saveSession(access_token, user){
-    this._token = access_token;
-    localStorage.setItem('sb_token', access_token);
-    localStorage.setItem('sb_uid', user?.id || '');
-  },
-
-  _clearSession(){
-    this._token = null;
-    localStorage.removeItem('sb_token');
-    localStorage.removeItem('sb_uid');
-  },
-
-  async signUp(email, password, meta){
-    const r = await fetch(SUPABASE_URL + '/auth/v1/signup', {
-      method:'POST',
-      headers: this._headers(false),
-      body: JSON.stringify({ email, password, data: meta })
-    });
-    const d = await r.json().catch(()=> ({}));
-    return { status: r.status, data: d };
-  },
-
-  async signIn(email, password){
-    const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
-      method:'POST',
-      headers: this._headers(false),
-      body: JSON.stringify({ email, password })
-    });
-    const d = await r.json().catch(()=> ({}));
-    if (d.access_token) this._saveSession(d.access_token, d.user);
-    return { status: r.status, data: d };
-  },
-
-  async signOut(){
-    try {
-      await fetch(SUPABASE_URL + '/auth/v1/logout', { method:'POST', headers: this._headers(true) });
-    } catch(e){}
-    this._clearSession();
-  },
-
-  async getUser(){
-    if (!this._token) return null;
-    try {
-      const r = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: this._headers(true) });
-      if (!r.ok) { this._clearSession(); return null; }
-      return await r.json();
-    } catch(e){
-      return null;
-    }
-  },
-
-  async recover(email){
-    const r = await fetch(SUPABASE_URL + '/auth/v1/recover', {
-      method:'POST',
-      headers: this._headers(false),
-      body: JSON.stringify({ email })
-    });
-    const d = await r.json().catch(()=> ({}));
-    return { status: r.status, data: d };
-  },
-
-  from(table){
-    const self = this;
-    const q = {
-      _table: table,
-      _filters: [],
-      _order: null,
-
-      eq(col,val){ this._filters.push(col + '=eq.' + encodeURIComponent(val)); return this; },
-      order(col){ this._order = col; return this; },
-
-      _url(extra){
-        let u = SUPABASE_URL + '/rest/v1/' + this._table + '?';
-        u += this._filters.join('&');
-        if (this._order) u += (this._filters.length ? '&' : '') + 'order=' + encodeURIComponent(this._order);
-        if (extra) u += (u.endsWith('?') ? '' : '&') + extra;
-        return u;
-      },
-
-      _restHeaders(){
-        const h = self._headers(true);
-        h['Prefer'] = 'return=representation';
-        return h;
-      },
-
-      async select(cols='*'){
-        const r = await fetch(this._url('select=' + encodeURIComponent(cols)), { headers: this._restHeaders() });
-        const d = await r.json().catch(()=> ([]));
-        const err = (!r.ok) ? (d?.message ? d : { message: 'REST error', status:r.status }) : null;
-        return { data: Array.isArray(d) ? d : [], error: err };
-      },
-
-      async single(){
-        const r = await fetch(this._url('select=*&limit=1'), { headers: this._restHeaders() });
-        const d = await r.json().catch(()=> ([]));
-        if (!r.ok) return { data:null, error: d?.message ? d : { message:'REST error', status:r.status } };
-        const arr = Array.isArray(d) ? d : [];
-        return { data: arr[0] || null, error: null };
-      },
-
-      async insert(obj){
-        const r = await fetch(SUPABASE_URL + '/rest/v1/' + this._table, {
-          method:'POST', headers: this._restHeaders(), body: JSON.stringify(obj)
-        });
-        const d = await r.json().catch(()=> ({}));
-        const err = (!r.ok) ? (d?.message ? d : { message:'REST error', status:r.status }) : null;
-        return { data: d, error: err };
-      },
-
-      async update(obj){
-        const r = await fetch(this._url(''), {
-          method:'PATCH', headers: this._restHeaders(), body: JSON.stringify(obj)
-        });
-        const d = await r.json().catch(()=> ({}));
-        const err = (!r.ok) ? (d?.message ? d : { message:'REST error', status:r.status }) : null;
-        return { data: d, error: err };
-      },
-
-      async delete(){
-        const r = await fetch(this._url(''), { method:'DELETE', headers: this._restHeaders() });
-        if (!r.ok) {
-          const d = await r.json().catch(()=> ({}));
-          return { error: d?.message ? d : { message:'REST error', status:r.status } };
-        }
-        return { error:null };
-      }
-    };
-    return q;
-  }
-};
-
-/* ============================================================
-   ✅ STATE
-   ============================================================ */
-let currentUser = null;
-let currentProfile = null;
-let tables = [];
-let reservations = [];
-let selectedTable = null;
-let selectedTime = '';
-let currentZone = 'Tous';
-let editId = null;
-let deleteTargetId = null;
-
-const TIME_SLOTS = ['12:00','12:30','13:00','13:30','14:00','19:00','19:30','20:00','20:30','21:00','21:30','22:00'];
-const STATUS_COLOR = { free:'#f0c040', partial:'#e8852a', full:'#c0392b' };
-
-/* ============================================================
-   🟢 BOOT — pas de boucle, pas de "loading infini"
-   ============================================================ */
-window.addEventListener('DOMContentLoaded', async () => {
-  // Affiche loading max 1.2s, puis landing si pas de session
-  const hard = setTimeout(() => goTo('landing'), 1200);
-
-  try {
-    const user = await SB.getUser();
-    clearTimeout(hard);
-
-    if (!user) { goTo('landing'); return; }
-
-    currentUser = user;
-    await loadProfile();
-    await loadTables();
-    launchApp();
-  } catch(e){
-    clearTimeout(hard);
-    console.error(e);
-    goTo('landing');
-  }
-});
-
-/* ============================================================
-   NAV
-   ============================================================ */
-function goTo(screen){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById('screen-' + screen);
-  if (el) el.classList.add('active');
-  window.scrollTo(0,0);
-}
-
-/* ============================================================
-   AUTH
-   ============================================================ */
-function showAuthError(id, msg){
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(()=> el.style.display='none', 5500);
-}
-
-async function doRegister(){
-  const email  = document.getElementById('reg-email').value.trim();
-  const pass   = document.getElementById('reg-pass').value.trim();
-  const resto  = document.getElementById('reg-resto').value.trim();
-  const prenom = document.getElementById('reg-prenom').value.trim();
-  const nom    = document.getElementById('reg-nom').value.trim();
-  const btn    = document.getElementById('btn-register');
-
-  if (!email || !pass || !resto) { showAuthError('reg-error', 'Remplissez tous les champs requis'); return; }
-  if (pass.length < 6) { showAuthError('reg-error', 'Mot de passe trop court (6 min)'); return; }
-
-  btn.disabled = true; btn.textContent = 'Création...';
-
-  const res = await SB.signUp(email, pass, { nom_resto: resto, prenom, nom });
-
-  // Supabase renvoie souvent {user, session:null} ou des erreurs
-  if (res.status >= 400) {
-    const msg = res.data?.error_description || res.data?.msg || res.data?.message || 'Erreur inscription';
-    showAuthError('reg-error', msg);
-    btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
-    return;
-  }
-
-  // Auto-login
-  const login = await SB.signIn(email, pass);
-  if (!login.data?.access_token) {
-    const msg = login.data?.error_description || login.data?.msg || 'Compte créé. Connectez-vous.';
-    showAuthError('reg-error', msg);
-    btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
-    goTo('login');
-    return;
-  }
-
-  currentUser = login.data.user;
-  await loadProfile();
-  await loadTables();
-  btn.disabled = false; btn.textContent = 'Créer mon compte gratuit →';
-  launchApp();
-}
-
-async function doLogin(){
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value.trim();
-  const btn   = document.getElementById('btn-login');
-
-  if (!email || !pass) { showAuthError('login-error', 'Email et mot de passe requis'); return; }
-
-  btn.disabled = true; btn.textContent = 'Connexion...';
-
-  const res = await SB.signIn(email, pass);
-
-  if (!res.data?.access_token) {
-    const msg = res.data?.error_description || res.data?.msg || res.data?.error || `Erreur connexion (HTTP ${res.status})`;
-    showAuthError('login-error', msg);
-    btn.disabled = false; btn.textContent = 'Se connecter →';
-    return;
-  }
-
-  currentUser = res.data.user;
-  await loadProfile();
-  await loadTables();
-  btn.disabled = false; btn.textContent = 'Se connecter →';
-  launchApp();
-}
-
-async function doLogout(){
-  await SB.signOut();
-  currentUser=null; currentProfile=null; tables=[]; reservations=[];
-  goTo('landing');
-}
-
-async function forgotPassword(){
-  const email = (document.getElementById('login-email').value || '').trim();
-  if (!email) { showAuthError('login-error', 'Mets ton email puis clique à nouveau'); return; }
-  const res = await SB.recover(email);
-  if (res.status >= 400) {
-    const msg = res.data?.error_description || res.data?.msg || 'Erreur reset';
-    showAuthError('login-error', msg);
-    return;
-  }
-  showAuthError('login-error', 'Si le compte existe, un email de réinitialisation a été envoyé.');
-}
-
-/* ============================================================
-   DATA
-   ============================================================ */
-async function loadProfile(){
-  const { data } = await SB.from('profiles').eq('id', currentUser.id).single();
-  currentProfile = data;
-}
-
-async function loadTables(){
-  const { data } = await SB.from('tables_resto')
-    .eq('profile_id', currentUser.id)
-    .eq('actif', true)
-    .order('numero')
-    .select('*');
-  tables = data || [];
-}
-
-function getDate(){ return document.getElementById('date-input').value; }
-
-async function loadReservations(){
-  const { data } = await SB.from('reservations')
-    .eq('profile_id', currentUser.id)
-    .eq('date_resa', getDate())
-    .select('*');
-  reservations = data || [];
-}
-
-function isOccupied(tableId, time){
-  return reservations.some(r => r.table_id === tableId && r.heure === time);
-}
-
-function getStatus(tableId){
-  const n = TIME_SLOTS.filter(t => isOccupied(tableId, t)).length;
-  return n === 0 ? 'free' : n >= 3 ? 'full' : 'partial';
-}
-
-/* ============================================================
-   LAUNCH
-   ============================================================ */
-function launchApp(){
-  if (!currentProfile) { goTo('landing'); return; }
-
-  // Sécurité: si trial_end absent, on met 30j
-  const trialEnd = currentProfile.trial_end ? new Date(currentProfile.trial_end) : new Date(Date.now() + 30*86400000);
-  const daysLeft = Math.ceil((trialEnd - new Date()) / 86400000);
-  const isPro = (currentProfile.plan === 'pro');
-
-  if (!isPro && daysLeft <= 0){
-    goTo('app');
-    document.getElementById('expired-overlay').style.display = 'flex';
-    return;
-  }
-
-  const trialBar = document.getElementById('trial-bar');
-  if (isPro){
-    trialBar.style.display = 'none';
-  } else {
-    document.getElementById('trial-days').textContent = `${daysLeft} jour${daysLeft>1?'s':''} restant${daysLeft>1?'s':''}`;
-    if (daysLeft <= 7) trialBar.classList.add('urgent');
-  }
-
-  const restoName = currentProfile.nom_resto || 'Mon Resto';
-  document.getElementById('user-resto-name').textContent = restoName;
-  document.getElementById('user-avatar').textContent = restoName.charAt(0).toUpperCase();
-
-  document.getElementById('date-input').value = new Date().toISOString().split('T')[0];
-
-  goTo('app');
-  renderAll();
-}
-
-/* ============================================================
-   RENDER
-   ============================================================ */
-async function renderAll(){
-  await loadReservations();
-  updateStats();
-  renderFloor();
-  renderList();
-  renderTableSelector();
-}
-
-function updateStats(){
-  const d = reservations;
-  document.getElementById('stat-count').textContent = d.length;
-  document.getElementById('stat-covers').textContent = d.reduce((a,r) => a + (r.nb_couverts||0), 0);
-  document.getElementById('stat-free').textContent = tables.length - new Set(d.map(r => r.table_id)).size;
-}
-
-function renderFloor(){
-  const svg = document.getElementById('floor-svg');
-  svg.innerHTML = `
-    <text x="50" y="5"  text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">TERRASSE</text>
-    <text x="50" y="30" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">SALLE PRINCIPALE</text>
-    <text x="50" y="51" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">SALON PRIVÉ</text>
-    <text x="50" y="72" text-anchor="middle" fill="#f0c04044" font-size="3" font-family="Cormorant Garamond">BAR</text>
-    <line x1="3" y1="27" x2="87" y2="27" stroke="#f0c04022" stroke-width=".3" stroke-dasharray="1,1"/>
-    <line x1="3" y1="50" x2="87" y2="50" stroke="#f0c04022" stroke-width=".3" stroke-dasharray="1,1"/>
-    <line x1="3" y1="71" x2="87" y2="71" stroke="#f0c04022" stroke-width=".3" stroke-dasharray="1,1"/>`;
-
-  tables.forEach(t => {
-    const st = getStatus(t.id);
-    const color = STATUS_COLOR[st];
-    const dimmed = currentZone !== 'Tous' && t.zone !== currentZone;
-
-    const px = t.position_x || 0, py = t.position_y || 0;
-    const isRound = t.forme === 'round';
-    const tcx = isRound ? px+6 : px+7;
-    const tcy = isRound ? py+6 : py+5;
-    const times = reservations.filter(r => r.table_id === t.id).map(r => r.heure).join(' ');
-
-    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('class','svg-table');
-    g.style.opacity = dimmed ? '0.2' : '1';
-    g.style.cursor = dimmed ? 'default' : 'pointer';
-    g.addEventListener('mouseenter', () => showTooltip(t));
-    g.addEventListener('mouseleave', () => document.getElementById('tooltip').style.display='none');
-    g.addEventListener('click', () => { if(!dimmed) clickTable(t); });
-
-    let shape;
-    if (isRound){
-      shape = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-      shape.setAttribute('cx', px+6); shape.setAttribute('cy', py+6);
-      shape.setAttribute('rx','6'); shape.setAttribute('ry','6');
-    } else {
-      shape = document.createElementNS('http://www.w3.org/2000/svg','rect');
-      shape.setAttribute('x', px); shape.setAttribute('y', py);
-      shape.setAttribute('width','14'); shape.setAttribute('height','10'); shape.setAttribute('rx','1.2');
-    }
-    shape.setAttribute('fill', color+'22');
-    shape.setAttribute('stroke', color);
-    shape.setAttribute('stroke-width','.6');
-
-    const t1 = document.createElementNS('http://www.w3.org/2000/svg','text');
-    t1.setAttribute('x', tcx); t1.setAttribute('y', tcy-1);
-    t1.setAttribute('text-anchor','middle'); t1.setAttribute('fill', color);
-    t1.setAttribute('font-size','2.5'); t1.setAttribute('font-family','Cormorant Garamond'); t1.setAttribute('font-weight','600');
-    t1.textContent = 'T' + t.numero;
-
-    const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
-    t2.setAttribute('x', tcx); t2.setAttribute('y', tcy+2.5);
-    t2.setAttribute('text-anchor','middle'); t2.setAttribute('fill', color+'99');
-    t2.setAttribute('font-size','1.8'); t2.setAttribute('font-family','Montserrat');
-    t2.textContent = (t.capacite || 0) + 'p';
-
-    g.appendChild(shape); g.appendChild(t1); g.appendChild(t2);
-
-    if (times){
-      const t3 = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t3.setAttribute('x', tcx); t3.setAttribute('y', tcy+5.5);
-      t3.setAttribute('text-anchor','middle'); t3.setAttribute('fill', color);
-      t3.setAttribute('font-size','1.5'); t3.setAttribute('font-family','Montserrat');
-      t3.textContent = times;
-      g.appendChild(t3);
-    }
-
-    svg.appendChild(g);
-  });
-}
-
-function showTooltip(t){
-  const tip = document.getElementById('tooltip');
-  const rs = reservations.filter(r => r.table_id === t.id);
-  const labels = { free:'Libre', partial:'Partielle', full:'Complet' };
-
-  let h = `<div class="tip-title">Table ${t.numero} — ${t.zone}</div>`;
-  h += `<div class="tip-sub">${t.capacite} couverts · ${labels[getStatus(t.id)]}</div>`;
-  if (!rs.length) h += `<div class="tip-resa">Aucune réservation</div>`;
-  rs.forEach(r => h += `<div class="tip-resa"><span style="color:#f0c040">${r.heure}</span> ${r.nom_client} (${r.nb_couverts}p)</div>`);
-  h += `<div style="color:#f0c04066;font-size:9px;margin-top:5px">Cliquer pour réserver</div>`;
-
-  tip.innerHTML = h;
-  tip.style.display = 'block';
-}
-
-function setZone(z, el){
-  currentZone = z;
-  document.querySelectorAll('.zone-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderFloor();
-}
-
-function renderList(){
-  const label = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('list-title').textContent = 'Résas du ' + label;
-  const q = (document.getElementById('list-search')||{}).value || '';
-  const list = reservations
-    .filter(r => (r.nom_client||'').toLowerCase().includes(q.toLowerCase()) || (r.telephone||'').includes(q))
-    .sort((a,b) => (a.heure||'').localeCompare(b.heure||''));
-
-  const el = document.getElementById('list-content');
-  if (!list.length){ el.innerHTML = '<div class="empty-state">Aucune réservation pour ce jour</div>'; return; }
-
-  el.innerHTML = list.map(r => {
-    const tbl = tables.find(t => t.id === r.table_id);
-    return `<div class="resa-row">
-      <div class="resa-time">${r.heure}</div>
-      <div class="resa-main">
-        <div class="resa-name">${r.nom_client}</div>
-        <div class="resa-meta">
-          <span>T${tbl?tbl.numero:r.table_id} · ${tbl?tbl.zone:''}</span>
-          <span>·</span><span>👥 ${r.nb_couverts}p</span>
-          ${r.telephone?`<span>·</span><span>📞 ${r.telephone}</span>`:''}
-          ${r.note?`<span>·</span><span style="color:#f0c04088">💬 ${r.note}</span>`:''}
+  <!-- MODAL: ADD/EDIT -->
+  <div class="modal" id="modal">
+    <div class="box">
+      <h4 id="modalTitle">Nouvelle réservation</h4>
+      <div class="small" id="modalSub">On enregistre dans <code>resa_resto_reservations</code>.</div>
+      <div class="hr"></div>
+
+      <div class="row">
+        <div class="field">
+          <label>Nom client *</label>
+          <input id="mName" placeholder="Mamadou"/>
+        </div>
+        <div class="field">
+          <label>Date & heure *</label>
+          <input id="mStart" type="datetime-local"/>
         </div>
       </div>
-      <div class="resa-actions">
-        <span class="badge ${r.statut}" onclick="toggleStatus(${r.id})">${r.statut==='confirmed'?'✓ Confirmé':'⏳ En attente'}</span>
-        <button class="btn-edit" onclick="editResa(${r.id})">✏</button>
-        <button class="btn-del"  onclick="askDelete(${r.id})">🗑</button>
+
+      <div class="row">
+        <div class="field" style="max-width:240px">
+          <label>Statut</label>
+          <select id="mStatus">
+            <option value="booked">booked</option>
+            <option value="cancelled">cancelled</option>
+          </select>
+        </div>
       </div>
-    </div>`;
-  }).join('');
-}
 
-function renderTableSelector(){
-  const el = document.getElementById('table-selector');
-  el.innerHTML = tables.map(t => {
-    const st = getStatus(t.id), color = STATUS_COLOR[st];
-    const sel = selectedTable && selectedTable.id === t.id;
-    return `<div class="t-chip" onclick="selectTable(${t.id})"
-      style="background:${sel?'#f0c040':'#163020'};color:${sel?'#0a1a0f':color};border-color:${sel?'#f0c040':color+'44'}">
-      <div class="t-chip-name">T${t.numero}</div>
-      <div class="t-chip-sub">${t.capacite}p · ${t.zone}</div>
-    </div>`;
-  }).join('');
-}
+      <div class="notice bad" id="mErr" style="display:none"></div>
 
-function selectTable(id){
-  selectedTable = tables.find(t => t.id === id);
-  selectedTime = '';
-  renderTableSelector();
-  renderTimeSelector();
-  document.getElementById('time-section').style.display = 'block';
-  document.getElementById('time-label').textContent = `Créneau — Table ${selectedTable.numero} (${selectedTable.capacite} pers.)`;
-  document.getElementById('fields-section').style.display = 'block';
-  document.getElementById('f-guests').max = selectedTable.capacite;
-  updateSummary();
-}
+      <div class="actions">
+        <button class="btn" id="btnClose">Annuler</button>
+        <button class="btn primary" id="btnSave">Enregistrer</button>
+      </div>
+    </div>
+  </div>
 
-function renderTimeSelector(){
-  const el = document.getElementById('time-selector');
-  if (!selectedTable){ el.innerHTML=''; return; }
-  el.innerHTML = TIME_SLOTS.map(t => {
-    const occ = isOccupied(selectedTable.id, t) && !(editId && reservations.find(r => r.id===editId)?.heure===t);
-    const sel = selectedTime === t;
-    return `<span class="time-chip${occ?' occ':''}${sel?' sel':''}" onclick="selectTime('${t}')">${t}</span>`;
-  }).join('');
-}
+  <script>
+    /* =========================================================
+       ✅ SUPABASE CLIENT (v2) — 1 seule instance
+       ========================================================= */
+    const sb = supabase.createClient(
+      window.DIGIY_SUPABASE_URL,
+      window.DIGIY_SUPABASE_ANON
+    );
 
-function selectTime(t){
-  if (!selectedTable) return;
-  if (isOccupied(selectedTable.id, t) && !(editId && reservations.find(r => r.id===editId)?.heure===t)) return;
-  selectedTime = t;
-  renderTimeSelector();
-  updateSummary();
-}
+    /* =========================================================
+       ✅ STATE
+       ========================================================= */
+    let SESSION = null;
+    let USER = null;
+    let RESTO = null; // {id, restaurant_name, user_id}
+    let ROWS = [];    // reservations rows
+    let EDIT_ID = null;
 
-function clickTable(t){
-  selectedTable = t; selectedTime = ''; editId = null;
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-guests').value = Math.min(2, t.capacite);
-  document.getElementById('f-phone').value = '';
-  document.getElementById('f-note').value = '';
-  document.getElementById('form-title').textContent = '✦ Nouvelle réservation';
-  document.getElementById('btn-submit').textContent = 'Confirmer';
+    const $ = (id)=>document.getElementById(id);
+    const show = (screenId)=>{
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      $(screenId).classList.add('active');
+      window.scrollTo(0,0);
+    };
+    const setPill = (txt, strong)=>{ $("pillStatus").innerHTML = `Statut : <b>${strong||txt}</b>`; };
+    const errBox = (elId, msg)=>{
+      const el=$(elId);
+      if(!msg){ el.style.display="none"; el.textContent=""; return; }
+      el.textContent = msg;
+      el.style.display="block";
+    };
 
-  showView('form');
-  renderTableSelector();
-  renderTimeSelector();
-  document.getElementById('time-section').style.display = 'block';
-  document.getElementById('fields-section').style.display = 'block';
-  updateSummary();
-}
+    function isoLocalNowPlus(mins=60){
+      const d = new Date(Date.now() + mins*60000);
+      // datetime-local wants "YYYY-MM-DDTHH:mm"
+      const pad=(n)=>String(n).padStart(2,"0");
+      const y=d.getFullYear(), m=pad(d.getMonth()+1), day=pad(d.getDate());
+      const hh=pad(d.getHours()), mm=pad(d.getMinutes());
+      return `${y}-${m}-${day}T${hh}:${mm}`;
+    }
 
-function updateSummary(){
-  const name = document.getElementById('f-name').value;
-  const guests = document.getElementById('f-guests').value;
-  const el = document.getElementById('form-summary');
-  const btn = document.getElementById('btn-submit');
+    function toDateKey(d){
+      const pad=(n)=>String(n).padStart(2,"0");
+      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    }
 
-  if (name && selectedTime && selectedTable){
-    const d = new Date(getDate()+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
-    el.style.display='block';
-    el.innerHTML = `<span style="color:#f0c040">✦</span> <strong style="color:#f0c040">${name}</strong> — T<strong style="color:#f0c040">${selectedTable.numero}</strong> — <strong style="color:#f0c040">${selectedTime}</strong> — ${guests}p · ${d}`;
-    btn.disabled = false;
-  } else {
-    el.style.display='none';
-    btn.disabled = true;
-  }
-}
+    function startAtToNice(iso){
+      try{
+        const d = new Date(iso);
+        return d.toLocaleString("fr-FR",{ weekday:"short", year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      }catch{ return iso; }
+    }
 
-async function submitForm(){
-  const name = document.getElementById('f-name').value.trim();
-  const guests = parseInt(document.getElementById('f-guests').value,10);
-  const phone = document.getElementById('f-phone').value.trim();
-  const note = document.getElementById('f-note').value.trim();
-  if (!name || !selectedTime || !selectedTable) return;
+    function tagForStatus(st){
+      if(st==="booked") return `<span class="tag ok">BOOKED</span>`;
+      if(st==="cancelled") return `<span class="tag bad">CANCELLED</span>`;
+      return `<span class="tag warn">${String(st||"—").toUpperCase()}</span>`;
+    }
 
-  const btn = document.getElementById('btn-submit');
-  btn.disabled = true; btn.textContent = 'Enregistrement...';
+    /* =========================================================
+       ✅ DB HELPERS
+       ========================================================= */
+    async function ensureRestaurantForUser(userId, restaurantNameIfCreate){
+      // 1) try fetch
+      const { data: rows, error } = await sb
+        .from("restaurants")
+        .select("id, restaurant_name, user_id")
+        .eq("user_id", userId)
+        .limit(1);
 
-  if (editId){
-    const { error } = await SB.from('reservations').eq('id', editId).update({
-      nom_client:name, nb_couverts:guests, telephone:phone, note,
-      heure:selectedTime, table_id:selectedTable.id, date_resa:getDate()
+      if(error) throw new Error(error.message || "restaurants_select_error");
+      if(rows && rows[0]) return rows[0];
+
+      // 2) create (if no row)
+      const { data: ins, error: e2 } = await sb
+        .from("restaurants")
+        .insert({ user_id: userId, restaurant_name: restaurantNameIfCreate || "Mon Restaurant" })
+        .select("id, restaurant_name, user_id")
+        .limit(1);
+
+      if(e2) throw new Error(e2.message || "restaurants_insert_error");
+      return (ins && ins[0]) ? ins[0] : null;
+    }
+
+    async function loadReservationsForDay(restaurantId, dayKey){
+      // day range local: [00:00, 23:59:59]
+      const start = new Date(dayKey + "T00:00:00");
+      const end   = new Date(dayKey + "T23:59:59");
+
+      const { data, error } = await sb
+        .from("resa_resto_reservations")
+        .select("id, restaurant_id, customer_name, start_at, status")
+        .eq("restaurant_id", restaurantId)
+        .gte("start_at", start.toISOString())
+        .lte("start_at", end.toISOString())
+        .order("start_at", { ascending:true });
+
+      if(error) throw new Error(error.message || "resa_select_error");
+      return data || [];
+    }
+
+    async function insertReservation(restaurantId, customerName, startAtIso, status){
+      const payload = {
+        restaurant_id: restaurantId,
+        customer_name: customerName,
+        start_at: startAtIso,
+        status: status || "booked"
+      };
+      const { data, error } = await sb
+        .from("resa_resto_reservations")
+        .insert(payload)
+        .select("id, restaurant_id, customer_name, start_at, status")
+        .limit(1);
+
+      if(error) throw new Error(error.message || "resa_insert_error");
+      return data && data[0] ? data[0] : null;
+    }
+
+    async function updateReservation(id, patch){
+      const { data, error } = await sb
+        .from("resa_resto_reservations")
+        .update(patch)
+        .eq("id", id)
+        .select("id, restaurant_id, customer_name, start_at, status")
+        .limit(1);
+
+      if(error) throw new Error(error.message || "resa_update_error");
+      return data && data[0] ? data[0] : null;
+    }
+
+    async function deleteReservation(id){
+      const { error } = await sb
+        .from("resa_resto_reservations")
+        .delete()
+        .eq("id", id);
+
+      if(error) throw new Error(error.message || "resa_delete_error");
+      return true;
+    }
+
+    /* =========================================================
+       ✅ RENDER
+       ========================================================= */
+    function renderKPIs(){
+      const total = ROWS.length;
+      const booked = ROWS.filter(r=>r.status==="booked").length;
+      const cancelled = ROWS.filter(r=>r.status==="cancelled").length;
+      $("kTotal").textContent = String(total);
+      $("kBooked").textContent = String(booked);
+      $("kCancelled").textContent = String(cancelled);
+    }
+
+    function renderDay(){
+      const dkey = $("dayPick").value;
+      const label = new Date(dkey+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long", year:"numeric", month:"long", day:"2-digit"});
+      $("dayHint").innerHTML = `📌 ${label} • <b>${ROWS.length}</b> réservation(s)`;
+
+      const box = $("dayList");
+      box.innerHTML = "";
+
+      if(!ROWS.length){
+        box.innerHTML = `<div class="item"><div><b>Aucune réservation</b><div class="meta">Clique “Nouvelle résa” pour ajouter.</div></div>${tagForStatus("—")}</div>`;
+        return;
+      }
+
+      for(const r of ROWS){
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <div style="flex:1">
+            <b>${r.customer_name || "—"}</b>
+            <div class="meta">
+              ${startAtToNice(r.start_at)}<br>
+              <span class="muted">id:</span> <span class="muted">${r.id}</span>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button class="miniBtn" data-act="edit" data-id="${r.id}">✏️ Modifier</button>
+              <button class="miniBtn" data-act="toggle" data-id="${r.id}">🔁 Statut</button>
+              <button class="miniBtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
+            </div>
+          </div>
+          ${tagForStatus(r.status)}
+        `;
+        box.appendChild(div);
+      }
+    }
+
+    function renderList(){
+      const q = ($("q").value || "").trim().toLowerCase();
+      const f = $("filterStatus").value;
+
+      let view = ROWS.slice();
+      if(f !== "all") view = view.filter(r=>r.status===f);
+      if(q) view = view.filter(r => (r.customer_name||"").toLowerCase().includes(q));
+
+      const box = $("listBox");
+      box.innerHTML = "";
+
+      if(!view.length){
+        box.innerHTML = `<div class="item"><div><b>Rien à afficher</b><div class="meta">Change la recherche ou le filtre.</div></div><span class="tag warn">VIDE</span></div>`;
+        return;
+      }
+
+      for(const r of view){
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <div style="flex:1">
+            <b>${r.customer_name || "—"}</b>
+            <div class="meta">${startAtToNice(r.start_at)}</div>
+          </div>
+          ${tagForStatus(r.status)}
+        `;
+        box.appendChild(div);
+      }
+    }
+
+    function setView(which){
+      if(which==="day"){
+        $("viewDay").style.display = "block";
+        $("viewList").style.display = "none";
+        $("tabDay").classList.add("active");
+        $("tabList").classList.remove("active");
+      }else{
+        $("viewDay").style.display = "none";
+        $("viewList").style.display = "block";
+        $("tabDay").classList.remove("active");
+        $("tabList").classList.add("active");
+      }
+    }
+
+    /* =========================================================
+       ✅ MODAL
+       ========================================================= */
+    function openModalNew(){
+      EDIT_ID = null;
+      $("modalTitle").textContent = "Nouvelle réservation";
+      $("mName").value = "";
+      $("mStart").value = isoLocalNowPlus(60);
+      $("mStatus").value = "booked";
+      errBox("mErr", null);
+      $("modal").style.display = "flex";
+    }
+
+    function openModalEdit(row){
+      EDIT_ID = row.id;
+      $("modalTitle").textContent = "Modifier la réservation";
+      $("mName").value = row.customer_name || "";
+      // convert ISO to datetime-local "YYYY-MM-DDTHH:mm"
+      const d = new Date(row.start_at);
+      const pad=(n)=>String(n).padStart(2,"0");
+      const local = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      $("mStart").value = local;
+      $("mStatus").value = row.status || "booked";
+      errBox("mErr", null);
+      $("modal").style.display = "flex";
+    }
+
+    function closeModal(){
+      $("modal").style.display = "none";
+      errBox("mErr", null);
+    }
+
+    /* =========================================================
+       ✅ APP FLOW
+       ========================================================= */
+    async function refreshData(){
+      if(!USER || !RESTO) return;
+
+      $("appState").className = "notice";
+      $("appState").textContent = "Chargement…";
+
+      try{
+        const dayKey = $("dayPick").value;
+        ROWS = await loadReservationsForDay(RESTO.id, dayKey);
+        renderKPIs();
+        renderDay();
+        renderList();
+        $("appState").className = "notice ok";
+        $("appState").textContent = "Connecté ✅";
+        setPill("Actif", "Actif");
+      }catch(e){
+        console.error(e);
+        $("appState").className = "notice bad";
+        $("appState").textContent = "Erreur: " + String(e.message || e);
+        setPill("KO", "KO");
+      }
+    }
+
+    async function boot(){
+      setPill("…", "…");
+      $("btnLogoutTop").style.display = "none";
+
+      try{
+        const { data } = await sb.auth.getSession();
+        SESSION = data?.session || null;
+        USER = SESSION?.user || null;
+
+        if(!USER){
+          setPill("Déconnecté", "Déconnecté");
+          show("screen-landing");
+          return;
+        }
+
+        // ensure restaurant row exists
+        RESTO = await ensureRestaurantForUser(USER.id, null);
+
+        // fill header
+        $("btnLogoutTop").style.display = "inline-flex";
+        $("appUserEmail").textContent = USER.email || "—";
+        $("appRestoName").textContent = RESTO?.restaurant_name || "—";
+
+        // init day
+        const today = toDateKey(new Date());
+        $("dayPick").value = today;
+
+        show("screen-app");
+        setView("day");
+        await refreshData();
+
+      }catch(e){
+        console.error(e);
+        setPill("Erreur", "Erreur");
+        show("screen-landing");
+      }
+    }
+
+    /* =========================================================
+       ✅ AUTH ACTIONS
+       ========================================================= */
+    async function doRegister(){
+      errBox("regErr", null);
+      const email = $("regEmail").value.trim();
+      const pass  = $("regPass").value.trim();
+      const name  = $("regResto").value.trim();
+
+      if(!email || !pass || !name) return errBox("regErr","Remplis email + mot de passe + nom du restaurant.");
+      if(pass.length < 6) return errBox("regErr","Mot de passe trop court (6 caractères min).");
+
+      $("btnRegister").disabled = true;
+      $("btnRegister").textContent = "Création…";
+
+      try{
+        // signup
+        const { data: su, error: e1 } = await sb.auth.signUp({ email, password: pass });
+        if(e1) throw new Error(e1.message);
+
+        // login right after (avoid “change password” confusion)
+        const { data: si, error: e2 } = await sb.auth.signInWithPassword({ email, password: pass });
+        if(e2) throw new Error(e2.message);
+
+        SESSION = si?.session || null;
+        USER = si?.user || SESSION?.user || null;
+        if(!USER) throw new Error("Session introuvable après login.");
+
+        // ensure restaurant created
+        RESTO = await ensureRestaurantForUser(USER.id, name);
+
+        $("btnRegister").disabled = false;
+        $("btnRegister").textContent = "Créer mon compte →";
+        await boot();
+
+      }catch(e){
+        errBox("regErr", String(e.message || e));
+        $("btnRegister").disabled = false;
+        $("btnRegister").textContent = "Créer mon compte →";
+      }
+    }
+
+    async function doLogin(){
+      errBox("loginErr", null);
+      const email = $("loginEmail").value.trim();
+      const pass  = $("loginPass").value.trim();
+
+      if(!email || !pass) return errBox("loginErr","Email + mot de passe requis.");
+
+      $("btnLogin").disabled = true;
+      $("btnLogin").textContent = "Connexion…";
+
+      try{
+        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+        if(error) throw new Error(error.message);
+
+        SESSION = data?.session || null;
+        USER = data?.user || SESSION?.user || null;
+        if(!USER) throw new Error("Session introuvable.");
+
+        RESTO = await ensureRestaurantForUser(USER.id, null);
+
+        $("btnLogin").disabled = false;
+        $("btnLogin").textContent = "Se connecter →";
+        await boot();
+
+      }catch(e){
+        errBox("loginErr", String(e.message || e));
+        $("btnLogin").disabled = false;
+        $("btnLogin").textContent = "Se connecter →";
+      }
+    }
+
+    async function doForgot(){
+      errBox("loginErr", null);
+      const email = $("loginEmail").value.trim();
+      if(!email) return errBox("loginErr","Mets ton email puis clique à nouveau.");
+
+      try{
+        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href });
+        if(error) throw new Error(error.message);
+        errBox("loginErr","Si le compte existe, un email de réinitialisation a été envoyé.");
+        $("loginErr").className = "notice warn";
+        $("loginErr").style.display = "block";
+      }catch(e){
+        errBox("loginErr", String(e.message || e));
+      }
+    }
+
+    async function doLogout(){
+      try{ await sb.auth.signOut(); }catch(_){}
+      SESSION=null; USER=null; RESTO=null; ROWS=[];
+      $("btnLogoutTop").style.display = "none";
+      setPill("Déconnecté", "Déconnecté");
+      show("screen-landing");
+    }
+
+    /* =========================================================
+       ✅ EVENTS
+       ========================================================= */
+    $("btnGoRegister").onclick = ()=> show("screen-register");
+    $("btnGoLogin").onclick = ()=> show("screen-login");
+    $("btnBackLanding1").onclick = ()=> show("screen-landing");
+    $("btnBackLanding2").onclick = ()=> show("screen-landing");
+
+    $("btnRegister").onclick = doRegister;
+    $("btnLogin").onclick = doLogin;
+    $("btnForgot").onclick = doForgot;
+
+    $("btnLogout").onclick = doLogout;
+    $("btnLogoutTop").onclick = doLogout;
+
+    $("btnReload").onclick = refreshData;
+
+    $("tabDay").onclick = ()=> setView("day");
+    $("tabList").onclick = ()=> setView("list");
+
+    $("dayPick").addEventListener("change", refreshData);
+    $("q").addEventListener("input", renderList);
+    $("filterStatus").addEventListener("change", renderList);
+
+    $("btnAdd").onclick = openModalNew;
+    $("btnClose").onclick = closeModal;
+
+    $("modal").addEventListener("click",(e)=>{ if(e.target === $("modal")) closeModal(); });
+
+    $("btnSave").onclick = async ()=>{
+      errBox("mErr", null);
+
+      const name = $("mName").value.trim();
+      const startLocal = $("mStart").value; // datetime-local
+      const status = $("mStatus").value;
+
+      if(!name) return errBox("mErr","Nom client requis.");
+      if(!startLocal) return errBox("mErr","Date & heure requises.");
+      if(!RESTO?.id) return errBox("mErr","Restaurant introuvable.");
+
+      // convert local -> ISO
+      const startIso = new Date(startLocal).toISOString();
+
+      $("btnSave").disabled = true;
+      $("btnSave").textContent = "Enregistrement…";
+
+      try{
+        if(EDIT_ID){
+          await updateReservation(EDIT_ID, {
+            customer_name: name,
+            start_at: startIso,
+            status
+          });
+        }else{
+          await insertReservation(RESTO.id, name, startIso, status);
+        }
+
+        closeModal();
+        await refreshData();
+
+      }catch(e){
+        errBox("mErr", String(e.message || e));
+      }finally{
+        $("btnSave").disabled = false;
+        $("btnSave").textContent = "Enregistrer";
+      }
+    };
+
+    // Delegation buttons in day list
+    document.addEventListener("click", async (e)=>{
+      const b = e.target.closest("[data-act]");
+      if(!b) return;
+
+      const id = b.getAttribute("data-id");
+      const act = b.getAttribute("data-act");
+      const row = ROWS.find(x=>x.id===id);
+      if(!row) return;
+
+      if(act==="edit"){
+        openModalEdit(row);
+        return;
+      }
+
+      if(act==="toggle"){
+        const next = (row.status==="booked") ? "cancelled" : "booked";
+        try{
+          await updateReservation(row.id, { status: next });
+          await refreshData();
+        }catch(err){
+          alert("Erreur: " + (err.message||err));
+        }
+        return;
+      }
+
+      if(act==="del"){
+        if(!confirm("Supprimer cette réservation ?")) return;
+        try{
+          await deleteReservation(row.id);
+          await refreshData();
+        }catch(err){
+          alert("Erreur: " + (err.message||err));
+        }
+      }
     });
-    showToast(error ? ('Erreur : ' + (error.message||'update')) : 'Réservation modifiée ✓', error?'error':'success');
-  } else {
-    const { error } = await SB.from('reservations').insert({
-      profile_id: currentUser.id,
-      table_id: selectedTable.id,
-      date_resa: getDate(),
-      heure: selectedTime,
-      nom_client: name,
-      nb_couverts: guests,
-      telephone: phone,
-      note: note,
-      statut: 'confirmed'
-    });
-    showToast(error ? ('Erreur : ' + (error.message||'insert')) : 'Réservation confirmée ✓', error?'error':'success');
-  }
 
-  editId=null; selectedTable=null; selectedTime='';
-  btn.disabled=false; btn.textContent='Confirmer';
-  showView('plan');
-  await renderAll();
-}
-
-function editResa(id){
-  const r = reservations.find(x => x.id === id);
-  if (!r) return;
-  editId = id;
-  selectedTable = tables.find(t => t.id === r.table_id);
-  selectedTime = r.heure;
-
-  document.getElementById('date-input').value = r.date_resa;
-  document.getElementById('f-name').value = r.nom_client;
-  document.getElementById('f-guests').value = r.nb_couverts;
-  document.getElementById('f-phone').value = r.telephone || '';
-  document.getElementById('f-note').value = r.note || '';
-  document.getElementById('form-title').textContent = '✏ Modifier la réservation';
-  document.getElementById('btn-submit').textContent = 'Enregistrer';
-
-  showView('form');
-  renderTableSelector();
-  renderTimeSelector();
-  document.getElementById('time-section').style.display='block';
-  document.getElementById('fields-section').style.display='block';
-  updateSummary();
-}
-
-function askDelete(id){
-  deleteTargetId = id;
-  document.getElementById('modal-overlay').style.display = 'flex';
-}
-
-function closeModal(){
-  document.getElementById('modal-overlay').style.display = 'none';
-  deleteTargetId = null;
-}
-
-async function confirmDeleteAction(){
-  if (!deleteTargetId) return;
-  await SB.from('reservations').eq('id', deleteTargetId).delete();
-  closeModal();
-  showToast('Réservation supprimée');
-  await renderAll();
-}
-
-async function toggleStatus(id){
-  const r = reservations.find(x => x.id === id);
-  if (!r) return;
-  await SB.from('reservations').eq('id', id).update({ statut: r.statut === 'confirmed' ? 'pending' : 'confirmed' });
-  await loadReservations();
-  renderList();
-}
-
-function showView(v){
-  ['plan','list','form'].forEach(x => document.getElementById('view-'+x).style.display='none');
-  document.getElementById('view-'+v).style.display='block';
-  document.querySelectorAll('.nav-btn:not(.add-btn)').forEach(b => b.classList.remove('active'));
-  if (v==='plan'){ document.getElementById('btn-plan').classList.add('active'); renderFloor(); }
-  if (v==='list'){ document.getElementById('btn-list').classList.add('active'); renderList(); }
-}
-
-function openAddForm(){
-  selectedTable=null; selectedTime=''; editId=null;
-  document.getElementById('f-name').value='';
-  document.getElementById('f-phone').value='';
-  document.getElementById('f-note').value='';
-  document.getElementById('f-guests').value='2';
-  document.getElementById('form-title').textContent='✦ Nouvelle réservation';
-  document.getElementById('btn-submit').textContent='Confirmer';
-  document.getElementById('time-section').style.display='none';
-  document.getElementById('fields-section').style.display='none';
-  document.getElementById('form-summary').style.display='none';
-  showView('form');
-  renderTableSelector();
-}
-
-function showUpgrade(){ document.getElementById('upgrade-overlay').style.display='flex'; }
-function hideUpgrade(){ document.getElementById('upgrade-overlay').style.display='none'; }
-
-function showToast(msg, type='success'){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  t.style.background = (type==='error') ? '#c0392b' : '#0f2318';
-  t.style.borderColor = (type==='error') ? '#c0392b' : '#f0c040';
-  t.style.color = '#e8f0e8';
-  clearTimeout(window._tt);
-  window._tt = setTimeout(()=> t.style.display='none', 3200);
-}
-</script>
-
-<script>
-// Petite touche : dès que tout est prêt, on enlève le loading
-setTimeout(() => {
-  const loading = document.getElementById('screen-loading');
-  if (loading && loading.classList.contains('active')) goTo('landing');
-}, 900);
-</script>
-
+    // Start
+    boot();
+  </script>
 </body>
 </html>
