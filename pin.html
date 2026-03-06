@@ -3,216 +3,594 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="theme-color" content="#061b14"/>
-  <title>DIGIY PRO-RESA — PIN</title>
+  <title>DIGIY RESA PRO — PIN</title>
+  <meta name="theme-color" content="#07140f"/>
+  <meta name="description" content="Entrée sécurisée DIGIY RESA PRO par téléphone et PIN."/>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg:#061b14; --card:#0b2a1f; --line:rgba(255,255,255,.14);
-      --text:#eafff1; --muted:rgba(234,255,241,.72);
-      --gold:#facc15; --ok:#22c55e; --bad:#fb7185;
-      --shadow:0 18px 55px rgba(0,0,0,.45);
+      --bg:#07140f;
+      --bg2:#0b1d15;
+      --card:#10241b;
+      --card-2:#0d2018;
+      --line:rgba(255,255,255,.10);
+      --text:#ecfff4;
+      --muted:rgba(236,255,244,.72);
+      --primary:#22c55e;
+      --primary-2:#16a34a;
+      --gold:#facc15;
+      --gold-soft:rgba(250,204,21,.12);
+      --danger:#ef4444;
+      --shadow:0 20px 60px rgba(0,0,0,.38);
+      --r:24px;
+      --max:1100px;
     }
+
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
     body{
-      margin:0; min-height:100vh; display:grid; place-items:center;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto;
-      background:radial-gradient(circle at top, rgba(250,204,21,.10), transparent 55%),
-                 linear-gradient(135deg,#04160f,#0a2b1f);
-      color:var(--text); padding:18px;
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),
+        linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      padding:16px;
     }
+
+    a{color:inherit;text-decoration:none}
+
+    .wrap{
+      max-width:var(--max);
+      margin:auto;
+      display:grid;
+      gap:14px;
+    }
+
+    .hero,
     .card{
-      width:min(520px,92vw);
-      background:linear-gradient(145deg,rgba(11,42,31,.96),rgba(6,35,25,.96));
       border:1px solid var(--line);
-      border-radius:22px;
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));
       box-shadow:var(--shadow);
+    }
+
+    .hero{
+      overflow:hidden;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:420px 1fr;
+      min-height:420px;
+    }
+
+    @media(max-width:940px){
+      .hero-grid{ grid-template-columns:1fr; }
+    }
+
+    .hero-media{
+      position:relative;
+      min-height:300px;
+      background:#0a1712;
+      overflow:hidden;
+    }
+
+    .hero-media::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(250,204,21,.20), transparent 24%),
+        radial-gradient(circle at 75% 18%, rgba(34,197,94,.16), transparent 24%),
+        linear-gradient(180deg, #111827, #0b1120);
+    }
+
+    .hero-mark{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      font-size:72px;
+      font-weight:1000;
+      z-index:1;
+    }
+
+    .hero-badge{
+      position:absolute;
+      left:16px;
+      bottom:16px;
+      z-index:2;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(7,20,15,.72);
+      color:#fff6c9;
+      font-size:12px;
+      font-weight:950;
+      backdrop-filter:blur(8px);
+    }
+
+    .hero-badge .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--primary);
+      box-shadow:0 0 0 4px rgba(34,197,94,.14);
+    }
+
+    .hero-body{
+      padding:24px;
+      display:grid;
+      gap:18px;
+      align-content:start;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:950;
+      width:max-content;
+    }
+
+    .badge .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--primary);
+      box-shadow:0 0 0 4px rgba(34,197,94,.14);
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(30px, 4vw, 42px);
+      line-height:1.04;
+      letter-spacing:-.02em;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:16px;
+      font-weight:800;
+      line-height:1.55;
+    }
+
+    .pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .layout{
+      display:grid;
+      gap:14px;
+    }
+
+    @media(min-width:980px){
+      .layout{ grid-template-columns:1.02fr .98fr; }
+    }
+
+    .panel{
       padding:18px;
     }
-    .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .ico{
-      width:46px;height:46px;border-radius:50%;
-      display:grid;place-items:center;
-      background:radial-gradient(circle at 30% 0,var(--gold),transparent 60%);
-      color:#062015;font-weight:1000;
-      border:1px solid rgba(250,204,21,.35);
+
+    .panel h2{
+      margin:0 0 8px;
+      font-size:21px;
     }
-    .t{font-weight:1000;letter-spacing:.12em;font-size:12px}
-    .sub{font-size:12px;color:var(--muted);margin-top:4px}
-    .pill{
-      border:1px solid var(--line);
-      background:rgba(250,204,21,.10);
-      padding:7px 10px;border-radius:999px;
-      font-size:12px;font-weight:900;
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+      line-height:1.55;
     }
-    .sep{height:1px;background:var(--line);margin:14px 0}
-    label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
+
+    .form-grid{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
     input{
-      width:100%; padding:14px 14px;
-      border-radius:14px; border:1px solid var(--line);
-      background:rgba(0,0,0,.22); color:var(--text);
-      font-size:16px; font-weight:900; letter-spacing:.14em;
+      width:100%;
+      min-height:52px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      padding:12px 14px;
       outline:none;
+      font:inherit;
     }
-    button{
-      width:100%; margin-top:12px; padding:14px 14px;
-      border-radius:14px; border:none;
-      background:linear-gradient(90deg,var(--ok),var(--gold));
-      color:#062015; font-weight:1000; font-size:15px;
-      cursor:pointer;
+
+    input::placeholder{
+      color:rgba(236,255,244,.38);
     }
-    button:disabled{opacity:.6; cursor:not-allowed}
-    .msg{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.5}
-    .ok{color:var(--ok); font-weight:900}
-    .bad{color:var(--bad); font-weight:900}
-    .mini{margin-top:10px; font-size:12px; color:var(--muted)}
-    .row{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
-    .link{
-      flex:1; text-align:center;
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .btn{
+      min-height:48px;
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:950;
       border:1px solid var(--line);
       background:rgba(255,255,255,.06);
-      padding:10px 12px;border-radius:14px;
-      font-weight:1000; color:var(--text); text-decoration:none;
+      color:var(--text);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .btn:hover{ transform:translateY(-1px); }
+
+    .btn.primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:#041b12;
+      border-color:transparent;
+      box-shadow:0 12px 28px rgba(34,197,94,.22);
+    }
+
+    .btn.gold{
+      background:rgba(250,204,21,.12);
+      color:var(--gold);
+      border-color:rgba(250,204,21,.22);
+    }
+
+    .facts{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .fact{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.16);
+    }
+
+    .fact .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .fact .v{
+      font-size:15px;
+      font-weight:900;
+      line-height:1.5;
+    }
+
+    .statusbox{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      font-weight:900;
+      color:var(--muted);
+      min-height:48px;
+      display:flex;
+      align-items:center;
+      line-height:1.45;
+    }
+
+    .statusbox.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.22);
+      background:rgba(34,197,94,.10);
+    }
+
+    .statusbox.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.22);
+      background:rgba(250,204,21,.08);
+    }
+
+    .statusbox.err{
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+      background:rgba(239,68,68,.08);
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      padding:6px 0 2px;
     }
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <div class="top">
-      <div class="brand">
-        <div class="ico">🦅</div>
-        <div>
-          <div class="t">PIN — PRO-RESA</div>
-          <div class="sub" id="subtitle">Chargement…</div>
+  <div class="wrap">
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-media">
+          <div class="hero-mark">🔑</div>
+          <div class="hero-badge"><span class="dot"></span> Entrée PRO RESA</div>
+        </div>
+
+        <div class="hero-body">
+          <div class="badge"><span class="dot"></span> DIGIY RESA PRO</div>
+
+          <div>
+            <h1>Entrer avec ton PIN</h1>
+            <div class="subtitle">
+              Téléphone + PIN, puis accès direct à ton cockpit établissement.
+            </div>
+          </div>
+
+          <div class="pills">
+            <div class="pill">🔒 Accès simple</div>
+            <div class="pill">📱 Téléphone reconnu</div>
+            <div class="pill">🏠 Redirection cockpit</div>
+          </div>
         </div>
       </div>
-      <div class="pill">PRO-RESA</div>
-    </div>
+    </section>
 
-    <div class="sep"></div>
+    <section class="layout">
+      <section class="card panel">
+        <h2>Connexion</h2>
+        <div class="muted">
+          Entre le numéro utilisé pour ton abonnement et le PIN reçu après activation.
+        </div>
 
-    <div class="mini">SLUG : <b id="slugBox">—</b></div>
+        <div class="form-grid">
+          <div class="field">
+            <label for="phone">Téléphone</label>
+            <input id="phone" type="tel" inputmode="tel" placeholder="Ex: 221771342889">
+          </div>
 
-    <label for="pin">Entre ton PIN</label>
-    <input id="pin" type="password" inputmode="numeric" autocomplete="one-time-code" placeholder="••••" maxlength="8"/>
+          <div class="field">
+            <label for="pin">PIN</label>
+            <input id="pin" type="password" inputmode="numeric" placeholder="Ex: 4829">
+          </div>
+        </div>
 
-    <button id="go">🚀 ENTRER</button>
+        <div class="actions">
+          <button class="btn primary" id="btnLogin">🔑 Ouvrir mon cockpit</button>
+          <a class="btn gold" id="btnSupport" href="https://wa.me/221771342889?text=Salut%20DIGIY%20RESA%20PRO%2C%20j%27ai%20besoin%20d%27aide%20pour%20mon%20PIN." target="_blank" rel="noopener">💬 Support WhatsApp</a>
+          <a class="btn" href="./cockpit.html">🏠 Cockpit</a>
+        </div>
 
-    <div class="msg" id="msg"></div>
+        <div id="statusBox" class="statusbox">Prêt.</div>
+      </section>
 
-    <div class="row" id="linksRow" style="display:none">
-      <a class="link" id="payLink" href="#" target="_blank" rel="noopener">💳 Activer RESA</a>
-      <a class="link" href="https://wa.me/221771342889" target="_blank" rel="noopener">🛟 Support WhatsApp</a>
+      <section class="card panel">
+        <h2>Repères utiles</h2>
+        <div class="muted">
+          Cette page sert à retrouver proprement l’accès établissement sans te perdre dans les URL.
+        </div>
+
+        <div class="facts">
+          <div class="fact">
+            <div class="k">Module</div>
+            <div class="v">RESA</div>
+          </div>
+
+          <div class="fact">
+            <div class="k">Entrée</div>
+            <div class="v">Téléphone + PIN</div>
+          </div>
+
+          <div class="fact">
+            <div class="k">Destination</div>
+            <div class="v">cockpit.html?slug=...</div>
+          </div>
+
+          <div class="fact">
+            <div class="k">Support</div>
+            <div class="v">WhatsApp DIGIY si blocage PIN</div>
+          </div>
+        </div>
+
+        <div class="statusbox warn" style="margin-top:16px">
+          Si ton abonnement est actif mais qu’aucun slug n’est retrouvé, il faudra vérifier la subscription RESA ou le branchement PIN côté base.
+        </div>
+      </section>
+    </section>
+
+    <div class="footer">
+      DIGIY RESA PRO • Accès simple • PIN • Cockpit établissement
     </div>
   </div>
 
-<script>
-(async () => {
-  "use strict";
+  <script>
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-  // ✅ PIN ≠ ABONNEMENT
-  const PIN_MODULE = "pro_resa";     // pour digiy_verify_access
-  const PAY_MODULE = "RESA";         // pour commencer-a-payer
-  const NEXT_URL   = "cockpit.html"; // après PIN => cockpit
+    const supabaseLib = window.supabase;
+    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
+      console.error("Supabase JS non chargé.");
+    }
+    const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ✅ Supabase (tes clés)
-  const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-  const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const $ = (id) => document.getElementById(id);
 
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: false }
-  });
-
-  const $ = (id)=>document.getElementById(id);
-  const url = new URL(location.href);
-  const slug = (url.searchParams.get("slug") || "").trim();
-
-  $("slugBox").textContent = slug || "—";
-  $("subtitle").textContent = slug ? "Accès sécurisé — PIN requis" : "SLUG manquant";
-
-  // Lien paiement (module RESA)
-  const pay = new URL("https://commencer-a-payer.digiylyfe.com/");
-  pay.searchParams.set("module", PAY_MODULE);
-  if (slug) pay.searchParams.set("slug", slug);
-  $("payLink").href = pay.toString();
-
-  const showLinks = ()=> $("linksRow").style.display = "flex";
-  const setMsg = (html)=> $("msg").innerHTML = html;
-
-  if(!slug){
-    setMsg("<span class='bad'>❌ SLUG manquant.</span><br>Reviens depuis GO PIN / QR avec <b>?slug=resa-...</b>.");
-    $("go").disabled = true;
-    showLinks();
-    return;
-  }
-
-  setTimeout(()=>$("pin").focus(), 120);
-
-  function saveAccessSession(payload){
-    // ✅ Session universelle consommée par guard.js
-    localStorage.setItem("DIGIY_ACCESS", JSON.stringify({
-      slug: payload.slug || slug,
-      phone: payload.phone || null,
-      owner_id: payload.owner_id || null,
-      ts: Date.now()
-    }));
-  }
-
-  async function enter(){
-    const pin = $("pin").value.trim();
-    if(pin.length < 3){
-      setMsg("<span class='bad'>❌ PIN invalide.</span>");
-      return;
+    function normalizePhone(v){
+      return String(v || "").replace(/[^\d]/g, "");
     }
 
-    $("go").disabled = true;
-    setMsg("⏳ Vérification…");
-
-    const { data, error } = await sb.rpc("digiy_verify_access", {
-      p_slug: slug,
-      p_pin: pin,
-      p_module: PIN_MODULE
-    });
-
-    if(error){
-      $("go").disabled = false;
-      setMsg("<span class='bad'>❌ Erreur serveur (RPC).</span><br>" + (error.message || error));
-      showLinks();
-      return;
+    function normalizePin(v){
+      return String(v || "").trim().replace(/\s+/g, "");
     }
 
-    if(!data?.ok){
-      $("go").disabled = false;
+    function setStatus(msg, tone=""){
+      const box = $("statusBox");
+      box.className = "statusbox" + (tone ? " " + tone : "");
+      box.textContent = msg;
+    }
 
-      if(data?.reason === "module_inactive"){
-        setMsg("<span class='bad'>🔒 PIN PRO-RESA inactif pour ce pro.</span>");
-      }else{
-        setMsg("<span class='bad'>❌ PIN incorrect.</span>");
+    function getPinValue(row){
+      return normalizePin(
+        row?.pin ??
+        row?.pin_code ??
+        row?.code ??
+        row?.access_pin ??
+        row?.value ??
+        ""
+      );
+    }
+
+    function isPinActive(row){
+      const active = row?.is_active;
+      if (active === false) return false;
+
+      const expiresAt = row?.expires_at || row?.expires_on || row?.valid_until || null;
+      if (!expiresAt) return true;
+
+      const exp = new Date(expiresAt);
+      if (Number.isNaN(exp.getTime())) return true;
+
+      return exp.getTime() >= Date.now();
+    }
+
+    async function findMatchingPin(phone, pin){
+      const { data, error } = await sb
+        .from("digiy_access_pins")
+        .select("*")
+        .eq("module", "RESA")
+        .eq("phone", phone)
+        .limit(20);
+
+      if (error) throw error;
+
+      const rows = Array.isArray(data) ? data : [];
+      return rows.find(row => getPinValue(row) === pin && isPinActive(row)) || null;
+    }
+
+    async function findSlugForPhone(phone, preferredSlug=""){
+      let query = sb
+        .from("digiy_subscriptions_public")
+        .select("slug, phone, module")
+        .eq("module", "RESA")
+        .eq("phone", phone)
+        .limit(10);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const rows = Array.isArray(data) ? data : [];
+      if (!rows.length) return "";
+
+      if (preferredSlug) {
+        const exact = rows.find(r => String(r.slug || "").trim() === preferredSlug);
+        if (exact) return exact.slug;
       }
-      showLinks();
-      return;
+
+      return rows[0]?.slug || "";
     }
 
-    saveAccessSession(data);
-    setMsg("<span class='ok'>✅ PIN OK.</span> Ouverture du cockpit…");
+    async function login(){
+      const phone = normalizePhone($("phone").value);
+      const pin = normalizePin($("pin").value);
 
-    setTimeout(()=>{
-      const next = new URL(NEXT_URL, location.href);
-      next.searchParams.set("slug", slug);
-      location.assign(next.toString());
-    }, 420);
-  }
+      if (!phone) {
+        setStatus("Téléphone manquant.", "err");
+        return;
+      }
 
-  $("go").addEventListener("click", enter);
-  $("pin").addEventListener("keydown", (e)=>{ if(e.key === "Enter") enter(); });
+      if (!pin) {
+        setStatus("PIN manquant.", "err");
+        return;
+      }
 
-})();
-</script>
+      setStatus("Vérification du PIN...");
 
+      try{
+        const matchedPin = await findMatchingPin(phone, pin);
+
+        if (!matchedPin) {
+          setStatus("PIN invalide ou expiré.", "err");
+          return;
+        }
+
+        const targetSlug = await findSlugForPhone(phone, matchedPin.slug || "");
+
+        if (!targetSlug) {
+          setStatus("PIN reconnu, mais aucun slug RESA actif n’a été retrouvé pour ce téléphone.", "warn");
+          return;
+        }
+
+        localStorage.setItem("digiy_last_phone", phone);
+        localStorage.setItem("digiy_resa_last_slug", targetSlug);
+        sessionStorage.setItem("digiy_resa_phone", phone);
+        sessionStorage.setItem("digiy_resa_slug", targetSlug);
+
+        setStatus("PIN validé. Redirection vers le cockpit...", "ok");
+
+        setTimeout(() => {
+          location.href = `./cockpit.html?slug=${encodeURIComponent(targetSlug)}`;
+        }, 350);
+      }catch(e){
+        console.error(e);
+        setStatus("Erreur de vérification PIN. Vérifie la structure SQL ou contacte le support.", "err");
+      }
+    }
+
+    const lastPhone = localStorage.getItem("digiy_last_phone") || "";
+    if (lastPhone) $("phone").value = lastPhone;
+
+    $("btnLogin").addEventListener("click", login);
+    $("pin").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+    $("phone").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
+  </script>
 </body>
 </html>
