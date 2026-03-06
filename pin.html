@@ -60,9 +60,7 @@
       box-shadow:var(--shadow);
     }
 
-    .hero{
-      overflow:hidden;
-    }
+    .hero{ overflow:hidden; }
 
     .hero-grid{
       display:grid;
@@ -198,9 +196,7 @@
       .layout{ grid-template-columns:1.02fr .98fr; }
     }
 
-    .panel{
-      padding:18px;
-    }
+    .panel{ padding:18px; }
 
     .panel h2{
       margin:0 0 8px;
@@ -285,6 +281,12 @@
       border-color:rgba(250,204,21,.22);
     }
 
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      transform:none;
+    }
+
     .facts{
       display:grid;
       gap:12px;
@@ -309,6 +311,7 @@
       font-size:15px;
       font-weight:900;
       line-height:1.5;
+      word-break:break-word;
     }
 
     .statusbox{
@@ -376,6 +379,7 @@
             <div class="pill">🔒 Accès simple</div>
             <div class="pill">📱 Téléphone reconnu</div>
             <div class="pill">🏠 Redirection cockpit</div>
+            <div class="pill" id="pillSlug">🧭 Route libre</div>
           </div>
         </div>
       </div>
@@ -391,19 +395,19 @@
         <div class="form-grid">
           <div class="field">
             <label for="phone">Téléphone</label>
-            <input id="phone" type="tel" inputmode="tel" placeholder="Ex: 221771342889">
+            <input id="phone" type="tel" inputmode="tel" placeholder="Ex: 221771342889" autocomplete="tel">
           </div>
 
           <div class="field">
             <label for="pin">PIN</label>
-            <input id="pin" type="password" inputmode="numeric" placeholder="Ex: 4829">
+            <input id="pin" type="password" inputmode="numeric" placeholder="Ex: 4829" autocomplete="one-time-code">
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn primary" id="btnLogin">🔑 Ouvrir mon cockpit</button>
+          <button class="btn primary" id="btnLogin" type="button">🔑 Ouvrir mon cockpit</button>
           <a class="btn gold" id="btnSupport" href="https://wa.me/221771342889?text=Salut%20DIGIY%20RESA%20PRO%2C%20j%27ai%20besoin%20d%27aide%20pour%20mon%20PIN." target="_blank" rel="noopener">💬 Support WhatsApp</a>
-          <a class="btn" href="./cockpit.html">🏠 Cockpit</a>
+          <a class="btn" id="btnCockpit" href="./cockpit.html">🏠 Cockpit</a>
         </div>
 
         <div id="statusBox" class="statusbox">Prêt.</div>
@@ -428,7 +432,7 @@
 
           <div class="fact">
             <div class="k">Destination</div>
-            <div class="v">cockpit.html?slug=...</div>
+            <div class="v" id="destText">cockpit.html?slug=...</div>
           </div>
 
           <div class="fact">
@@ -438,7 +442,7 @@
         </div>
 
         <div class="statusbox warn" style="margin-top:16px">
-          Si ton abonnement est actif mais qu’aucun slug n’est retrouvé, il faudra vérifier la subscription RESA ou le branchement PIN côté base.
+          Le contrôle officiel passe par la RPC <strong style="margin-left:6px">resa_pin_login</strong>.
         </div>
       </section>
     </section>
@@ -452,11 +456,7 @@
     const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-    const supabaseLib = window.supabase;
-    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
-      console.error("Supabase JS non chargé.");
-    }
-    const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const hintedSlug = (new URL(location.href).searchParams.get("slug") || "").trim();
 
     const $ = (id) => document.getElementById(id);
 
@@ -474,64 +474,27 @@
       box.textContent = msg;
     }
 
-    function getPinValue(row){
-      return normalizePin(
-        row?.pin ??
-        row?.pin_code ??
-        row?.code ??
-        row?.access_pin ??
-        row?.value ??
-        ""
-      );
+    function setBusy(isBusy){
+      $("btnLogin").disabled = isBusy;
+      $("phone").disabled = isBusy;
+      $("pin").disabled = isBusy;
     }
 
-    function isPinActive(row){
-      const active = row?.is_active;
-      if (active === false) return false;
+    async function callResaPinLogin(phone, pin){
+      const tries = [
+        { p_phone: phone, p_pin: pin },
+        { phone: phone, pin: pin }
+      ];
 
-      const expiresAt = row?.expires_at || row?.expires_on || row?.valid_until || null;
-      if (!expiresAt) return true;
+      let lastError = null;
 
-      const exp = new Date(expiresAt);
-      if (Number.isNaN(exp.getTime())) return true;
-
-      return exp.getTime() >= Date.now();
-    }
-
-    async function findMatchingPin(phone, pin){
-      const { data, error } = await sb
-        .from("digiy_access_pins")
-        .select("*")
-        .eq("module", "RESA")
-        .eq("phone", phone)
-        .limit(20);
-
-      if (error) throw error;
-
-      const rows = Array.isArray(data) ? data : [];
-      return rows.find(row => getPinValue(row) === pin && isPinActive(row)) || null;
-    }
-
-    async function findSlugForPhone(phone, preferredSlug=""){
-      let query = sb
-        .from("digiy_subscriptions_public")
-        .select("slug, phone, module")
-        .eq("module", "RESA")
-        .eq("phone", phone)
-        .limit(10);
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      const rows = Array.isArray(data) ? data : [];
-      if (!rows.length) return "";
-
-      if (preferredSlug) {
-        const exact = rows.find(r => String(r.slug || "").trim() === preferredSlug);
-        if (exact) return exact.slug;
+      for(const args of tries){
+        const { data, error } = await sb.rpc("resa_pin_login", args);
+        if(!error) return data;
+        lastError = error;
       }
 
-      return rows[0]?.slug || "";
+      throw lastError || new Error("RPC resa_pin_login indisponible");
     }
 
     async function login(){
@@ -548,20 +511,25 @@
         return;
       }
 
+      setBusy(true);
       setStatus("Vérification du PIN...");
 
       try{
-        const matchedPin = await findMatchingPin(phone, pin);
+        const data = await callResaPinLogin(phone, pin);
 
-        if (!matchedPin) {
-          setStatus("PIN invalide ou expiré.", "err");
+        if (!data?.ok) {
+          const err =
+            data?.error ||
+            data?.message ||
+            "PIN invalide ou accès refusé.";
+          setStatus(err, "err");
           return;
         }
 
-        const targetSlug = await findSlugForPhone(phone, matchedPin.slug || "");
+        const targetSlug = String(data?.slug || hintedSlug || "").trim();
 
         if (!targetSlug) {
-          setStatus("PIN reconnu, mais aucun slug RESA actif n’a été retrouvé pour ce téléphone.", "warn");
+          setStatus("PIN reconnu, mais aucun slug RESA n’a été retourné.", "warn");
           return;
         }
 
@@ -577,20 +545,53 @@
         }, 350);
       }catch(e){
         console.error(e);
-        setStatus("Erreur de vérification PIN. Vérifie la structure SQL ou contacte le support.", "err");
+        setStatus("Erreur de vérification PIN. Vérifie la RPC resa_pin_login ou contacte le support.", "err");
+      }finally{
+        setBusy(false);
       }
     }
 
-    const lastPhone = localStorage.getItem("digiy_last_phone") || "";
-    if (lastPhone) $("phone").value = lastPhone;
+    function initUi(){
+      const lastPhone = localStorage.getItem("digiy_last_phone") || "";
+      if (lastPhone) $("phone").value = lastPhone;
 
-    $("btnLogin").addEventListener("click", login);
-    $("pin").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") login();
-    });
-    $("phone").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") login();
-    });
+      $("btnCockpit").href = hintedSlug
+        ? `./cockpit.html?slug=${encodeURIComponent(hintedSlug)}`
+        : "./cockpit.html";
+
+      $("destText").textContent = hintedSlug
+        ? `cockpit.html?slug=${hintedSlug}`
+        : "cockpit.html?slug=...";
+
+      $("pillSlug").textContent = hintedSlug
+        ? `🧭 Slug guidé : ${hintedSlug}`
+        : "🧭 Route libre";
+
+      if (hintedSlug) {
+        setStatus(`Slug détecté : ${hintedSlug}. Entre ton téléphone et ton PIN.`, "warn");
+      }
+
+      $("btnLogin").addEventListener("click", login);
+
+      $("pin").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") login();
+      });
+
+      $("phone").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") login();
+      });
+    }
+
+    const supabaseLib = window.supabase;
+    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
+      console.error("Supabase JS non chargé.");
+      setStatus("Erreur : bibliothèque Supabase non chargée.", "err");
+      $("btnLogin").disabled = true;
+    } else {
+      const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.sb = sb;
+      initUi();
+    }
   </script>
 </body>
 </html>
