@@ -5,15 +5,141 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#061b14"/>
   <title>DIGIY — GO PIN</title>
+
+  <style>
+    :root{
+      --bg:#061b14;
+      --card:#0b2a1f;
+      --line:rgba(255,255,255,.12);
+      --text:#eafff1;
+      --muted:rgba(234,255,241,.72);
+      --gold:#facc15;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+
+    body{
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    .card{
+      width:min(560px,100%);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:24px;
+      text-align:center;
+    }
+
+    .eyebrow{
+      color:var(--gold);
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(1.35rem,3.8vw,2rem);
+      line-height:1.08;
+    }
+
+    p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .spinner{
+      width:42px;
+      height:42px;
+      margin:0 auto 16px;
+      border-radius:50%;
+      border:3px solid rgba(255,255,255,.12);
+      border-top-color:var(--gold);
+      animation:spin .9s linear infinite;
+    }
+
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    .links{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:170px;
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#103428,#0c271e);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:800;
+    }
+
+    .btn.alt{
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+    }
+  </style>
 </head>
 <body>
-<script>
-  const slug = (new URL(location.href).searchParams.get("slug") || "").trim();
-  if(!slug){
-    document.body.innerHTML = "❌ Slug manquant. Utilise ?slug=...";
-  }else{
-    location.replace("./pin.html?slug=" + encodeURIComponent(slug));
-  }
-</script>
+  <div class="card">
+    <div class="spinner"></div>
+    <div class="eyebrow">DIGIY GO PIN</div>
+    <h1>Ouverture de la porte PIN…</h1>
+    <p id="msg">Redirection en cours vers votre accès professionnel.</p>
+
+    <div class="links">
+      <a class="btn" id="fallbackPin" href="./pin.html">Aller à la porte PIN</a>
+      <a class="btn alt" href="./cockpit.html">Voir le cockpit</a>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const qs = new URLSearchParams(location.search);
+      const slug = (qs.get("slug") || "").trim();
+
+      const pinUrl = slug
+        ? "./pin.html?slug=" + encodeURIComponent(slug)
+        : "./pin.html";
+
+      const fallbackPin = document.getElementById("fallbackPin");
+      const msg = document.getElementById("msg");
+
+      fallbackPin.href = pinUrl;
+
+      msg.textContent = slug
+        ? "Slug détecté. Redirection vers votre porte PIN sécurisée."
+        : "Aucun slug fourni. Redirection vers la porte PIN générale.";
+
+      setTimeout(() => {
+        location.replace(pinUrl);
+      }, 250);
+    })();
+  </script>
 </body>
 </html>
