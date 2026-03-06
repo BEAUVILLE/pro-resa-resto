@@ -3,945 +3,849 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>DIGIY RESTO PRO — RÉSA</title>
+  <title>DIGIY RESA — Profil établissement</title>
+  <meta name="theme-color" content="#07140f"/>
+  <meta name="description" content="Profil établissement DIGIY RESA. Gestion identité, horaires, capacité, publication."/>
 
-  <!-- Supabase v2 (OBLIGATOIRE) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- ✅ CONFIG UNIQUE (1 seule fois) -->
-  <script>
-    window.DIGIY_SUPABASE_URL  = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-  </script>
 
   <style>
     :root{
-      --bg:#0b1020; --card:#121a33; --card2:#0e1630;
-      --text:#eef1ff; --muted:#a8b1d1; --line:rgba(255,255,255,.10);
-      --gold:#facc15; --ok:#22c55e; --warn:#f59e0b; --bad:#fb7185; --accent:#6366f1;
-      --shadow:0 14px 40px rgba(0,0,0,.35);
-      --radius:18px;
+      --bg:#07140f;
+      --bg2:#0b1d15;
+      --card:#10241b;
+      --card-2:#0d2018;
+      --line:rgba(255,255,255,.10);
+      --text:#ecfff4;
+      --muted:rgba(236,255,244,.72);
+      --primary:#22c55e;
+      --primary-2:#16a34a;
+      --gold:#facc15;
+      --gold-soft:rgba(250,204,21,.12);
+      --danger:#ef4444;
+      --shadow:0 20px 60px rgba(0,0,0,.38);
+      --r:24px;
+      --max:1180px;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:
-        radial-gradient(1100px 650px at 20% -20%, rgba(99,102,241,.22), transparent 70%),
-        radial-gradient(900px 600px at 110% 0%, rgba(34,197,94,.12), transparent 55%),
-        var(--bg);
-      min-height:100vh;
-    }
-    a{color:inherit}
-    .wrap{max-width:1100px;margin:0 auto;padding:16px}
-    .screen{display:none}
-    .screen.active{display:block}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;
-      gap:12px;padding:10px 6px;margin-bottom:10px;
-    }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
-    .badge{
-      width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
-      background:rgba(99,102,241,.18);border:1px solid var(--line)
-    }
-    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 10px;border-radius:999px;
-      background:rgba(255,255,255,.04); border:1px solid var(--line);
-      color:var(--muted); font-weight:700; font-size:13px;
-    }
-    .pill b{color:var(--text);font-weight:900}
-    .btn{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
-      padding:10px 12px;border-radius:12px;
-      font-weight:900;cursor:pointer;
-    }
-    .btn:hover{border-color:rgba(250,204,21,.35)}
-    .btn.primary{background:rgba(99,102,241,.22);border-color:rgba(99,102,241,.35)}
-    .btn.good{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.35)}
-    .btn.bad{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.35)}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
 
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:920px){ .grid{grid-template-columns:1.2fr .8fr} }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),
+        linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      padding:16px;
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    .wrap{
+      max-width:var(--max);
+      margin:auto;
+      display:grid;
+      gap:14px;
+    }
 
     .card{
-      background:rgba(18,26,51,.92);
       border:1px solid var(--line);
-      border-radius:var(--radius);
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));
       box-shadow:var(--shadow);
-      padding:14px;
     }
-    .card h3{margin:0 0 10px 0;font-size:14px;letter-spacing:.2px}
-    .muted{color:var(--muted)}
-    .hr{height:1px;background:var(--line);margin:12px 0}
 
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px}
-    label{font-size:12px;color:var(--muted);font-weight:800}
-    input, select, textarea{
-      width:100%;
-      border-radius:12px;border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      color:var(--text);
-      padding:10px 12px; outline:none;
+    .topbar{
+      padding:18px;
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      min-width:0;
+    }
+
+    .logo{
+      width:64px;
+      height:64px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:24px;
+      font-weight:1000;
+      color:#041b12;
+      background:linear-gradient(135deg, var(--gold), var(--primary));
+      box-shadow:0 12px 28px rgba(34,197,94,.22);
+      flex:0 0 auto;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:950;
+      width:max-content;
+      margin-bottom:10px;
+    }
+
+    .badge .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--primary);
+      box-shadow:0 0 0 4px rgba(34,197,94,.14);
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(28px, 4vw, 40px);
+      line-height:1.04;
+      letter-spacing:-.02em;
+    }
+
+    .subtitle{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:15px;
       font-weight:800;
+      line-height:1.5;
     }
-    textarea{min-height:86px;resize:vertical;font-weight:700}
 
-    .notice{
-      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      color:var(--muted); font-weight:750; font-size:13px; line-height:1.45;
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
     }
-    .notice.ok{border-color:rgba(34,197,94,.28); background:rgba(34,197,94,.08); color:#c9ffd9}
-    .notice.bad{border-color:rgba(251,113,133,.28); background:rgba(251,113,133,.08); color:#ffd1dc}
-    .notice.warn{border-color:rgba(245,158,11,.28); background:rgba(245,158,11,.08); color:#ffe7c2}
 
-    .tabs{display:flex;gap:8px;flex-wrap:wrap}
-    .tab{
-      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(255,255,255,.03); color:var(--muted);
-      font-weight:900; cursor:pointer; font-size:12px;
-    }
-    .tab.active{border-color:rgba(250,204,21,.35); color:var(--text); background:rgba(250,204,21,.10)}
-
-    .list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-    .item{
-      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
-    }
-    .item b{font-weight:1000}
-    .item .meta{margin-top:4px;font-size:12px;color:var(--muted);font-weight:750;line-height:1.35}
-    .tag{
-      font-size:12px;font-weight:1000;padding:6px 9px;border-radius:999px;border:1px solid var(--line);
-      color:var(--muted); white-space:nowrap;
-    }
-    .tag.ok{color:#c9ffd9;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08)}
-    .tag.warn{color:#ffe7c2;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)}
-    .tag.bad{color:#ffd1dc;border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.10)}
-    .miniBtn{
-      padding:8px 10px;border-radius:12px;border:1px solid var(--line);
-      background:rgba(0,0,0,.16); color:var(--text);
-      font-weight:900; cursor:pointer;
-    }
-    .miniBtn:hover{border-color:rgba(250,204,21,.35)}
-
-    .modal{
-      position:fixed; inset:0; display:none;
-      background:rgba(0,0,0,.55);
-      align-items:center; justify-content:center;
-      padding:16px;
-      z-index:9999;
-    }
-    .modal .box{
-      width:min(820px,96vw);
-      background:rgba(18,26,51,.98);
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
       border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-      box-shadow:0 24px 60px rgba(0,0,0,.65);
-    }
-    .modal h4{margin:0 0 10px 0}
-    .modal .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .small{font-size:12px;color:var(--muted);font-weight:750}
-    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .kpi{
       background:rgba(0,0,0,.18);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:10px 12px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
     }
-    .kpi .k{font-size:12px;color:var(--muted);font-weight:800}
-    .kpi .v{font-size:22px;font-weight:1000;margin-top:6px}
-    .footerLine{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:10px}
+
+    .pill.slug{
+      color:var(--gold);
+      border-color:rgba(250,204,21,.22);
+      background:var(--gold-soft);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .btn{
+      min-height:48px;
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:950;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:#041b12;
+      border-color:transparent;
+      box-shadow:0 12px 28px rgba(34,197,94,.22);
+    }
+    .btn.gold{
+      background:rgba(250,204,21,.12);
+      color:var(--gold);
+      border-color:rgba(250,204,21,.22);
+    }
+    .btn.danger{
+      background:rgba(239,68,68,.12);
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+    }
+
+    .layout{
+      display:grid;
+      gap:14px;
+    }
+
+    @media(min-width:980px){
+      .layout{
+        grid-template-columns:1.05fr .95fr;
+      }
+    }
+
+    .panel{
+      padding:18px;
+    }
+
+    .panel h2{
+      margin:0 0 8px;
+      font-size:21px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+      line-height:1.55;
+    }
+
+    .form-grid{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    @media(max-width:760px){
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    input, textarea, select{
+      width:100%;
+      min-height:48px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      padding:12px 14px;
+      outline:none;
+      font:inherit;
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder{
+      color:rgba(236,255,244,.38);
+    }
+
+    .switch-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .switch{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      font-weight:900;
+      color:var(--muted);
+    }
+
+    .switch input{
+      width:18px;
+      height:18px;
+      min-height:auto;
+      margin:0;
+      accent-color:var(--primary);
+    }
+
+    .statusbox{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      font-weight:900;
+      color:var(--muted);
+      min-height:48px;
+      display:flex;
+      align-items:center;
+    }
+
+    .statusbox.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.22);
+      background:rgba(34,197,94,.10);
+    }
+
+    .statusbox.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.22);
+      background:rgba(250,204,21,.08);
+    }
+
+    .statusbox.err{
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+      background:rgba(239,68,68,.08);
+    }
+
+    .preview{
+      overflow:hidden;
+    }
+
+    .preview-cover{
+      position:relative;
+      min-height:240px;
+      background:#0a1712;
+      border-bottom:1px solid var(--line);
+    }
+
+    .preview-cover img{
+      width:100%;
+      height:100%;
+      min-height:240px;
+      object-fit:cover;
+      display:block;
+    }
+
+    .preview-fallback{
+      width:100%;
+      min-height:240px;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(250,204,21,.18), transparent 30%),
+        radial-gradient(circle at 75% 15%, rgba(34,197,94,.14), transparent 28%),
+        linear-gradient(180deg, #111827, #0b1120);
+      color:#fff;
+      font-size:48px;
+      font-weight:1000;
+    }
+
+    .preview-badge{
+      position:absolute;
+      left:14px;
+      bottom:14px;
+      z-index:2;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(7,20,15,.72);
+      color:#fff6c9;
+      font-size:12px;
+      font-weight:950;
+      backdrop-filter:blur(8px);
+    }
+
+    .preview-body{
+      padding:18px;
+      display:grid;
+      gap:14px;
+    }
+
+    .preview-title{
+      margin:0;
+      font-size:28px;
+      line-height:1.08;
+      letter-spacing:-.02em;
+    }
+
+    .preview-sub{
+      color:var(--muted);
+      font-size:15px;
+      font-weight:850;
+      line-height:1.5;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .chip{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .facts{
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .fact{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+    }
+
+    .fact .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .fact .v{
+      font-size:15px;
+      font-weight:900;
+      line-height:1.45;
+    }
+
+    .preview-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      padding:6px 0 2px;
+    }
   </style>
 </head>
-
 <body>
   <div class="wrap">
 
-    <!-- TOPBAR (visible everywhere) -->
-    <div class="topbar">
+    <section class="card topbar">
       <div class="brand">
-        <div class="badge">🦅</div>
+        <div class="logo">R</div>
         <div>
-          <div style="font-weight:1000" id="brandTitle">DIGIY RESTO PRO</div>
-          <div class="muted" style="font-size:12px;font-weight:750;margin-top:2px" id="brandSub">RÉSA — Auth email/mot de passe</div>
-        </div>
-      </div>
-      <div class="right">
-        <div class="pill" id="pillStatus">Statut : <b>…</b></div>
-        <button class="btn" id="btnLogoutTop" type="button" style="display:none">🚪 Déconnexion</button>
-      </div>
-    </div>
+          <div class="badge"><span class="dot"></span> DIGIY RESA PRO</div>
+          <h1 id="topTitle">Profil établissement</h1>
+          <div class="subtitle" id="topSubtitle">Identité, horaires, capacité, publication publique.</div>
 
-    <!-- LOADING -->
-    <div class="screen active" id="screen-loading">
-      <div class="card">
-        <h3>Chargement…</h3>
-        <div class="notice">On prépare ton cockpit. Si ça dure : check internet + clé ANON.</div>
-      </div>
-    </div>
-
-    <!-- LANDING -->
-    <div class="screen" id="screen-landing">
-      <div class="grid">
-        <div class="card">
-          <h3>Bienvenue</h3>
-          <div class="notice">
-            Gestion des réservations **RESTO** (v1) : planning du jour, liste, ajout, statuts.
-          </div>
-          <div class="hr"></div>
-          <div class="row">
-            <button class="btn primary" id="btnGoRegister">🎁 1 mois gratuit</button>
-            <button class="btn" id="btnGoLogin">Se connecter</button>
-          </div>
-          <div class="hr"></div>
-          <div class="notice warn">
-            Démo : <b>demo@digiylyfe.com</b> / <b>demo1234</b>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Ce que ça fait (simple)</h3>
-          <div class="kpis">
-            <div class="kpi"><div class="k">Vue</div><div class="v">Jour</div><div class="small">planning + stats</div></div>
-            <div class="kpi"><div class="k">Liste</div><div class="v">OK</div><div class="small">tri par heure</div></div>
-            <div class="kpi"><div class="k">Ajout</div><div class="v">1 clic</div><div class="small">nom + heure</div></div>
-          </div>
-          <div class="hr"></div>
-          <div class="small">
-            Backend attendu :
-            <code>restaurants</code> + <code>resa_resto_reservations</code> (FK restaurant_id).
+          <div class="meta">
+            <div class="pill slug" id="slugPill">slug : —</div>
+            <div class="pill" id="pubPill">Publication : brouillon</div>
+            <div class="pill" id="activePill">Statut : actif</div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- REGISTER -->
-    <div class="screen" id="screen-register">
-      <div class="card">
-        <h3>Créer mon compte</h3>
-        <div class="notice">On crée l’utilisateur Supabase + le restaurant associé.</div>
-        <div class="hr"></div>
-
-        <div class="row">
-          <div class="field">
-            <label>Email *</label>
-            <input id="regEmail" type="email" placeholder="demo@digiylyfe.com" autocomplete="email"/>
-          </div>
-          <div class="field">
-            <label>Mot de passe *</label>
-            <input id="regPass" type="password" placeholder="6 caractères minimum" autocomplete="new-password"/>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="field">
-            <label>Nom du restaurant *</label>
-            <input id="regResto" type="text" placeholder="Le Petit Bistrot"/>
-          </div>
-        </div>
-
-        <div class="notice bad" id="regErr" style="display:none"></div>
-
-        <div class="footerLine">
-          <button class="btn" id="btnBackLanding1">← Retour</button>
-          <button class="btn primary" id="btnRegister">Créer mon compte →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- LOGIN -->
-    <div class="screen" id="screen-login">
-      <div class="card">
-        <h3>Connexion</h3>
-        <div class="notice">Email + mot de passe (Supabase Auth).</div>
-        <div class="hr"></div>
-
-        <div class="row">
-          <div class="field">
-            <label>Email</label>
-            <input id="loginEmail" type="email" placeholder="demo@digiylyfe.com" autocomplete="email"/>
-          </div>
-          <div class="field">
-            <label>Mot de passe</label>
-            <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"/>
-          </div>
-        </div>
-
-        <div class="notice bad" id="loginErr" style="display:none"></div>
-
-        <div class="footerLine">
-          <button class="btn" id="btnBackLanding2">← Retour</button>
-          <button class="btn primary" id="btnLogin">Se connecter →</button>
-          <button class="btn" id="btnForgot">Mot de passe oublié</button>
-        </div>
-
-        <div class="hr"></div>
-        <div class="small">Démo : <b>demo@digiylyfe.com</b> / <b>demo1234</b></div>
-      </div>
-    </div>
-
-    <!-- APP -->
-    <div class="screen" id="screen-app">
-      <div class="grid">
-        <div class="card">
-          <div class="row" style="justify-content:space-between;align-items:flex-start">
-            <div>
-              <h3 style="margin-bottom:6px">Cockpit Réservations</h3>
-              <div class="small">
-                Restaurant : <b id="appRestoName">—</b><br>
-                User : <b id="appUserEmail">—</b>
-              </div>
-            </div>
-            <div class="row">
-              <div class="field" style="min-width:220px">
-                <label>Date</label>
-                <input id="dayPick" type="date"/>
-              </div>
-              <button class="btn good" id="btnAdd">➕ Nouvelle résa</button>
-            </div>
-          </div>
-
-          <div class="hr"></div>
-
-          <div class="tabs">
-            <button class="tab active" id="tabDay">📅 Planning du jour</button>
-            <button class="tab" id="tabList">📋 Liste</button>
-          </div>
-
-          <div class="hr"></div>
-
-          <div class="kpis">
-            <div class="kpi"><div class="k">Total</div><div class="v" id="kTotal">0</div><div class="small">réservations</div></div>
-            <div class="kpi"><div class="k">Confirmées</div><div class="v" id="kBooked">0</div><div class="small">status=booked</div></div>
-            <div class="kpi"><div class="k">Annulées</div><div class="v" id="kCancelled">0</div><div class="small">status=cancelled</div></div>
-          </div>
-
-          <div class="hr"></div>
-
-          <!-- VIEW: DAY -->
-          <div id="viewDay">
-            <div class="notice" id="dayHint">—</div>
-            <div class="list" id="dayList"></div>
-          </div>
-
-          <!-- VIEW: LIST -->
-          <div id="viewList" style="display:none">
-            <div class="row">
-              <div class="field">
-                <label>Recherche</label>
-                <input id="q" placeholder="Nom client…"/>
-              </div>
-              <div class="field" style="max-width:220px">
-                <label>Statut</label>
-                <select id="filterStatus">
-                  <option value="all">Tous</option>
-                  <option value="booked">booked</option>
-                  <option value="cancelled">cancelled</option>
-                </select>
-              </div>
-            </div>
-            <div class="list" id="listBox"></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>Actions</h3>
-          <div class="notice ok" id="appState">Connecté ✅</div>
-          <div class="hr"></div>
-
-          <div class="row">
-            <button class="btn" id="btnReload">🔄 Recharger</button>
-            <button class="btn bad" id="btnLogout">🚪 Déconnexion</button>
-          </div>
-
-          <div class="hr"></div>
-          <div class="notice">
-            <b>V1 terrain :</b> on se concentre sur la stabilité (auth + CRUD résas).<br>
-            <span class="muted">Tables/plan de salle détaillé = V2 (quand la table “tables” est prête).</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- MODAL: ADD/EDIT -->
-  <div class="modal" id="modal">
-    <div class="box">
-      <h4 id="modalTitle">Nouvelle réservation</h4>
-      <div class="small" id="modalSub">On enregistre dans <code>resa_resto_reservations</code>.</div>
-      <div class="hr"></div>
-
-      <div class="row">
-        <div class="field">
-          <label>Nom client *</label>
-          <input id="mName" placeholder="Mamadou"/>
-        </div>
-        <div class="field">
-          <label>Date & heure *</label>
-          <input id="mStart" type="datetime-local"/>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="field" style="max-width:240px">
-          <label>Statut</label>
-          <select id="mStatus">
-            <option value="booked">booked</option>
-            <option value="cancelled">cancelled</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="notice bad" id="mErr" style="display:none"></div>
 
       <div class="actions">
-        <button class="btn" id="btnClose">Annuler</button>
-        <button class="btn primary" id="btnSave">Enregistrer</button>
+        <button class="btn primary" id="btnSave">💾 Enregistrer</button>
+        <button class="btn gold" id="btnPublish">🌍 Publier</button>
+        <a class="btn" id="btnPublic" href="#" target="_blank" rel="noopener">👁 Voir la fiche</a>
+        <a class="btn" href="./cockpit.html">🏠 Cockpit</a>
       </div>
+    </section>
+
+    <section class="layout">
+      <section class="card panel">
+        <h2>Informations établissement</h2>
+        <div class="muted">Remplis le profil public de ton établissement. Plus c’est propre, plus la fiche inspire confiance.</div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="display_name">Nom établissement</label>
+            <input id="display_name" type="text" placeholder="Ex: La Terrasse de Saly">
+          </div>
+
+          <div class="field">
+            <label for="business_type">Type de lieu</label>
+            <input id="business_type" type="text" placeholder="Ex: Restaurant, Lounge, Salon privé">
+          </div>
+
+          <div class="field">
+            <label for="city">Ville</label>
+            <input id="city" type="text" placeholder="Ex: Saly">
+          </div>
+
+          <div class="field">
+            <label for="capacity">Capacité</label>
+            <input id="capacity" type="number" min="0" step="1" placeholder="Ex: 40">
+          </div>
+
+          <div class="field full">
+            <label for="zones_text">Zones desservies / mots-clés</label>
+            <input id="zones_text" type="text" placeholder="Ex: Saly, Ngaparou, Somone">
+          </div>
+
+          <div class="field full">
+            <label for="address_text">Adresse</label>
+            <input id="address_text" type="text" placeholder="Ex: Saly centre, route de la plage">
+          </div>
+
+          <div class="field">
+            <label for="opening_hours_text">Horaires</label>
+            <input id="opening_hours_text" type="text" placeholder="Ex: Tous les jours • 12h - 23h">
+          </div>
+
+          <div class="field">
+            <label for="whatsapp">WhatsApp</label>
+            <input id="whatsapp" type="text" placeholder="Ex: 221771342889">
+          </div>
+
+          <div class="field">
+            <label for="photo_url">Photo / logo</label>
+            <input id="photo_url" type="url" placeholder="https://...">
+          </div>
+
+          <div class="field">
+            <label for="cover_url">Image de couverture</label>
+            <input id="cover_url" type="url" placeholder="https://...">
+          </div>
+
+          <div class="field full">
+            <label for="bio">Description</label>
+            <textarea id="bio" placeholder="Ex: Établissement propre, accueil sérieux, réservation simple."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="priority">Priorité affichage</label>
+            <input id="priority" type="number" min="0" step="1" value="100">
+          </div>
+        </div>
+
+        <div class="switch-row">
+          <label class="switch">
+            <input id="is_active" type="checkbox" checked>
+            Établissement actif
+          </label>
+        </div>
+
+        <div id="statusBox" class="statusbox">Prêt.</div>
+      </section>
+
+      <section class="card preview">
+        <div class="preview-cover" id="previewCover">
+          <div class="preview-fallback">🍽️</div>
+          <div class="preview-badge" id="previewBadge">Établissement public</div>
+        </div>
+
+        <div class="preview-body">
+          <div>
+            <h2 class="preview-title" id="previewName">Nom établissement</h2>
+            <div class="preview-sub" id="previewSub">Ville • Type de lieu</div>
+          </div>
+
+          <div class="chips" id="previewChips">
+            <div class="chip">Zone non précisée</div>
+          </div>
+
+          <div class="facts">
+            <div class="fact">
+              <div class="k">Horaires</div>
+              <div class="v" id="previewHours">—</div>
+            </div>
+            <div class="fact">
+              <div class="k">Capacité</div>
+              <div class="v" id="previewCapacity">—</div>
+            </div>
+            <div class="fact">
+              <div class="k">Adresse</div>
+              <div class="v" id="previewAddress">—</div>
+            </div>
+            <div class="fact">
+              <div class="k">WhatsApp</div>
+              <div class="v" id="previewWhatsapp">—</div>
+            </div>
+          </div>
+
+          <div class="fact">
+            <div class="k">Présentation</div>
+            <div class="v" id="previewBio">—</div>
+          </div>
+
+          <div class="preview-actions">
+            <a class="btn gold" id="btnPublic2" href="#" target="_blank" rel="noopener">🌍 Ouvrir la fiche publique</a>
+            <a class="btn" id="btnBookingPage" href="#" target="_blank" rel="noopener">📅 Ouvrir réserver</a>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <div class="footer">
+      DIGIY RESA • Réserver simplement • Accueillir sérieusement
     </div>
   </div>
 
   <script>
-    /* =========================================================
-       ✅ SUPABASE CLIENT (v2) — 1 seule instance
-       ========================================================= */
-    const sb = supabase.createClient(
-      window.DIGIY_SUPABASE_URL,
-      window.DIGIY_SUPABASE_ANON
-    );
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-    /* =========================================================
-       ✅ STATE
-       ========================================================= */
-    let SESSION = null;
-    let USER = null;
-    let RESTO = null; // {id, restaurant_name, user_id}
-    let ROWS = [];    // reservations rows
-    let EDIT_ID = null;
+    const supabaseLib = window.supabase;
+    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
+      console.error("Supabase JS non chargé.");
+    }
+    const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const $ = (id)=>document.getElementById(id);
-    const show = (screenId)=>{
-      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      $(screenId).classList.add('active');
-      window.scrollTo(0,0);
-    };
-    const setPill = (txt, strong)=>{ $("pillStatus").innerHTML = `Statut : <b>${strong||txt}</b>`; };
-    const errBox = (elId, msg)=>{
-      const el=$(elId);
-      if(!msg){ el.style.display="none"; el.textContent=""; return; }
-      el.textContent = msg;
-      el.style.display="block";
-    };
+    const qs = new URLSearchParams(location.search);
+    const slug = (qs.get("slug") || "").trim();
 
-    function isoLocalNowPlus(mins=60){
-      const d = new Date(Date.now() + mins*60000);
-      // datetime-local wants "YYYY-MM-DDTHH:mm"
-      const pad=(n)=>String(n).padStart(2,"0");
-      const y=d.getFullYear(), m=pad(d.getMonth()+1), day=pad(d.getDate());
-      const hh=pad(d.getHours()), mm=pad(d.getMinutes());
-      return `${y}-${m}-${day}T${hh}:${mm}`;
+    const $ = (id) => document.getElementById(id);
+
+    function safe(v, fallback=""){
+      const s = String(v ?? "").trim();
+      return s || fallback;
     }
 
-    function toDateKey(d){
-      const pad=(n)=>String(n).padStart(2,"0");
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
     }
 
-    function startAtToNice(iso){
-      try{
-        const d = new Date(iso);
-        return d.toLocaleString("fr-FR",{ weekday:"short", year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-      }catch{ return iso; }
+    function publicProfileUrl(slug){
+      return `https://resa.digiylyfe.com/etablissement.html?slug=${encodeURIComponent(slug)}`;
     }
 
-    function tagForStatus(st){
-      if(st==="booked") return `<span class="tag ok">BOOKED</span>`;
-      if(st==="cancelled") return `<span class="tag bad">CANCELLED</span>`;
-      return `<span class="tag warn">${String(st||"—").toUpperCase()}</span>`;
+    function bookingUrl(slug){
+      return `https://resa.digiylyfe.com/reserver.html?slug=${encodeURIComponent(slug)}`;
     }
 
-    /* =========================================================
-       ✅ DB HELPERS
-       ========================================================= */
-    async function ensureRestaurantForUser(userId, restaurantNameIfCreate){
-      // 1) try fetch
-      const { data: rows, error } = await sb
-        .from("restaurants")
-        .select("id, restaurant_name, user_id")
-        .eq("user_id", userId)
-        .limit(1);
-
-      if(error) throw new Error(error.message || "restaurants_select_error");
-      if(rows && rows[0]) return rows[0];
-
-      // 2) create (if no row)
-      const { data: ins, error: e2 } = await sb
-        .from("restaurants")
-        .insert({ user_id: userId, restaurant_name: restaurantNameIfCreate || "Mon Restaurant" })
-        .select("id, restaurant_name, user_id")
-        .limit(1);
-
-      if(e2) throw new Error(e2.message || "restaurants_insert_error");
-      return (ins && ins[0]) ? ins[0] : null;
+    function setStatus(msg, tone=""){
+      const box = $("statusBox");
+      box.className = "statusbox" + (tone ? " " + tone : "");
+      box.textContent = msg;
     }
 
-    async function loadReservationsForDay(restaurantId, dayKey){
-      // day range local: [00:00, 23:59:59]
-      const start = new Date(dayKey + "T00:00:00");
-      const end   = new Date(dayKey + "T23:59:59");
-
-      const { data, error } = await sb
-        .from("resa_resto_reservations")
-        .select("id, restaurant_id, customer_name, start_at, status")
-        .eq("restaurant_id", restaurantId)
-        .gte("start_at", start.toISOString())
-        .lte("start_at", end.toISOString())
-        .order("start_at", { ascending:true });
-
-      if(error) throw new Error(error.message || "resa_select_error");
-      return data || [];
+    function parseZones(v){
+      return String(v || "")
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
     }
 
-    async function insertReservation(restaurantId, customerName, startAtIso, status){
-      const payload = {
-        restaurant_id: restaurantId,
-        customer_name: customerName,
-        start_at: startAtIso,
-        status: status || "booked"
+    function previewCoverUrl(){
+      return safe($("cover_url").value) || safe($("photo_url").value);
+    }
+
+    function syncPreview(){
+      const name = safe($("display_name").value, "Nom établissement");
+      const businessType = safe($("business_type").value, "Établissement");
+      const city = safe($("city").value, "Ville");
+      const capacity = safe($("capacity").value);
+      const address = safe($("address_text").value, "Adresse à préciser");
+      const hours = safe($("opening_hours_text").value, "Horaires à préciser");
+      const whatsapp = safe($("whatsapp").value, "Contact à préciser");
+      const bio = safe($("bio").value, "Présentation à préciser");
+      const zones = parseZones($("zones_text").value);
+      const cover = previewCoverUrl();
+
+      $("topTitle").textContent = name || "Profil établissement";
+      $("topSubtitle").textContent = `${city} • ${businessType}`;
+      $("previewName").textContent = name;
+      $("previewSub").textContent = `${city} • ${businessType}`;
+      $("previewHours").textContent = hours;
+      $("previewCapacity").textContent = capacity ? `${capacity} places` : "Capacité à préciser";
+      $("previewAddress").textContent = address;
+      $("previewWhatsapp").textContent = whatsapp;
+      $("previewBio").textContent = bio;
+
+      $("previewBadge").textContent = city ? `Établissement public • ${city}` : "Établissement public";
+
+      $("previewChips").innerHTML = zones.length
+        ? zones.map(z => `<div class="chip">${escapeHtml(z)}</div>`).join("")
+        : `<div class="chip">Zone non précisée</div>`;
+
+      if (cover) {
+        $("previewCover").innerHTML = `
+          <img src="${escapeHtml(cover)}" alt="${escapeHtml(name)}" onerror="this.outerHTML='<div class=&quot;preview-fallback&quot;>🍽️</div>';">
+          <div class="preview-badge" id="previewBadge">${escapeHtml(city ? `Établissement public • ${city}` : "Établissement public")}</div>
+        `;
+      } else {
+        $("previewCover").innerHTML = `
+          <div class="preview-fallback">🍽️</div>
+          <div class="preview-badge" id="previewBadge">${escapeHtml(city ? `Établissement public • ${city}` : "Établissement public")}</div>
+        `;
+      }
+    }
+
+    function getPayload(){
+      return {
+        p_slug: slug,
+        p_display_name: safe($("display_name").value) || null,
+        p_business_type: safe($("business_type").value) || null,
+        p_city: safe($("city").value) || null,
+        p_zones_text: safe($("zones_text").value) || null,
+        p_address_text: safe($("address_text").value) || null,
+        p_capacity: $("capacity").value ? Number($("capacity").value) : null,
+        p_opening_hours_text: safe($("opening_hours_text").value) || null,
+        p_whatsapp: safe($("whatsapp").value) || null,
+        p_bio: safe($("bio").value) || null,
+        p_photo_url: safe($("photo_url").value) || null,
+        p_cover_url: safe($("cover_url").value) || null,
+        p_priority: $("priority").value ? Number($("priority").value) : 100,
+        p_is_active: $("is_active").checked
       };
-      const { data, error } = await sb
-        .from("resa_resto_reservations")
-        .insert(payload)
-        .select("id, restaurant_id, customer_name, start_at, status")
-        .limit(1);
-
-      if(error) throw new Error(error.message || "resa_insert_error");
-      return data && data[0] ? data[0] : null;
     }
 
-    async function updateReservation(id, patch){
-      const { data, error } = await sb
-        .from("resa_resto_reservations")
-        .update(patch)
-        .eq("id", id)
-        .select("id, restaurant_id, customer_name, start_at, status")
-        .limit(1);
+    function fillForm(p){
+      $("display_name").value = safe(p.display_name);
+      $("business_type").value = safe(p.business_type);
+      $("city").value = safe(p.city);
+      $("zones_text").value = safe(p.zones_text);
+      $("address_text").value = safe(p.address_text);
+      $("capacity").value = p.capacity ?? "";
+      $("opening_hours_text").value = safe(p.opening_hours_text);
+      $("whatsapp").value = safe(p.whatsapp);
+      $("bio").value = safe(p.bio);
+      $("photo_url").value = safe(p.photo_url);
+      $("cover_url").value = safe(p.cover_url);
+      $("priority").value = p.priority ?? 100;
+      $("is_active").checked = p.is_active !== false;
 
-      if(error) throw new Error(error.message || "resa_update_error");
-      return data && data[0] ? data[0] : null;
+      $("pubPill").textContent = `Publication : ${p.is_published ? "publique" : "brouillon"}`;
+      $("activePill").textContent = `Statut : ${p.is_active === false ? "inactif" : "actif"}`;
+
+      updatePublishButton(!!p.is_published);
+      syncPreview();
     }
 
-    async function deleteReservation(id){
-      const { error } = await sb
-        .from("resa_resto_reservations")
-        .delete()
-        .eq("id", id);
-
-      if(error) throw new Error(error.message || "resa_delete_error");
-      return true;
+    function updatePublishButton(isPublished){
+      const btn = $("btnPublish");
+      btn.textContent = isPublished ? "🙈 Dépublier" : "🌍 Publier";
+      btn.className = isPublished ? "btn danger" : "btn gold";
     }
 
-    /* =========================================================
-       ✅ RENDER
-       ========================================================= */
-    function renderKPIs(){
-      const total = ROWS.length;
-      const booked = ROWS.filter(r=>r.status==="booked").length;
-      const cancelled = ROWS.filter(r=>r.status==="cancelled").length;
-      $("kTotal").textContent = String(total);
-      $("kBooked").textContent = String(booked);
-      $("kCancelled").textContent = String(cancelled);
-    }
-
-    function renderDay(){
-      const dkey = $("dayPick").value;
-      const label = new Date(dkey+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long", year:"numeric", month:"long", day:"2-digit"});
-      $("dayHint").innerHTML = `📌 ${label} • <b>${ROWS.length}</b> réservation(s)`;
-
-      const box = $("dayList");
-      box.innerHTML = "";
-
-      if(!ROWS.length){
-        box.innerHTML = `<div class="item"><div><b>Aucune réservation</b><div class="meta">Clique “Nouvelle résa” pour ajouter.</div></div>${tagForStatus("—")}</div>`;
+    async function loadProfile(){
+      if (!slug) {
+        setStatus("Slug manquant. Ouvre cette page avec ?slug=resa-...", "err");
+        $("slugPill").textContent = "slug : manquant";
         return;
       }
 
-      for(const r of ROWS){
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div style="flex:1">
-            <b>${r.customer_name || "—"}</b>
-            <div class="meta">
-              ${startAtToNice(r.start_at)}<br>
-              <span class="muted">id:</span> <span class="muted">${r.id}</span>
-            </div>
-            <div class="row" style="margin-top:10px">
-              <button class="miniBtn" data-act="edit" data-id="${r.id}">✏️ Modifier</button>
-              <button class="miniBtn" data-act="toggle" data-id="${r.id}">🔁 Statut</button>
-              <button class="miniBtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
-            </div>
-          </div>
-          ${tagForStatus(r.status)}
-        `;
-        box.appendChild(div);
-      }
-    }
-
-    function renderList(){
-      const q = ($("q").value || "").trim().toLowerCase();
-      const f = $("filterStatus").value;
-
-      let view = ROWS.slice();
-      if(f !== "all") view = view.filter(r=>r.status===f);
-      if(q) view = view.filter(r => (r.customer_name||"").toLowerCase().includes(q));
-
-      const box = $("listBox");
-      box.innerHTML = "";
-
-      if(!view.length){
-        box.innerHTML = `<div class="item"><div><b>Rien à afficher</b><div class="meta">Change la recherche ou le filtre.</div></div><span class="tag warn">VIDE</span></div>`;
-        return;
-      }
-
-      for(const r of view){
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div style="flex:1">
-            <b>${r.customer_name || "—"}</b>
-            <div class="meta">${startAtToNice(r.start_at)}</div>
-          </div>
-          ${tagForStatus(r.status)}
-        `;
-        box.appendChild(div);
-      }
-    }
-
-    function setView(which){
-      if(which==="day"){
-        $("viewDay").style.display = "block";
-        $("viewList").style.display = "none";
-        $("tabDay").classList.add("active");
-        $("tabList").classList.remove("active");
-      }else{
-        $("viewDay").style.display = "none";
-        $("viewList").style.display = "block";
-        $("tabDay").classList.remove("active");
-        $("tabList").classList.add("active");
-      }
-    }
-
-    /* =========================================================
-       ✅ MODAL
-       ========================================================= */
-    function openModalNew(){
-      EDIT_ID = null;
-      $("modalTitle").textContent = "Nouvelle réservation";
-      $("mName").value = "";
-      $("mStart").value = isoLocalNowPlus(60);
-      $("mStatus").value = "booked";
-      errBox("mErr", null);
-      $("modal").style.display = "flex";
-    }
-
-    function openModalEdit(row){
-      EDIT_ID = row.id;
-      $("modalTitle").textContent = "Modifier la réservation";
-      $("mName").value = row.customer_name || "";
-      // convert ISO to datetime-local "YYYY-MM-DDTHH:mm"
-      const d = new Date(row.start_at);
-      const pad=(n)=>String(n).padStart(2,"0");
-      const local = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-      $("mStart").value = local;
-      $("mStatus").value = row.status || "booked";
-      errBox("mErr", null);
-      $("modal").style.display = "flex";
-    }
-
-    function closeModal(){
-      $("modal").style.display = "none";
-      errBox("mErr", null);
-    }
-
-    /* =========================================================
-       ✅ APP FLOW
-       ========================================================= */
-    async function refreshData(){
-      if(!USER || !RESTO) return;
-
-      $("appState").className = "notice";
-      $("appState").textContent = "Chargement…";
+      $("slugPill").textContent = "slug : " + slug;
+      $("btnPublic").href = publicProfileUrl(slug);
+      $("btnPublic2").href = publicProfileUrl(slug);
+      $("btnBookingPage").href = bookingUrl(slug);
 
       try{
-        const dayKey = $("dayPick").value;
-        ROWS = await loadReservationsForDay(RESTO.id, dayKey);
-        renderKPIs();
-        renderDay();
-        renderList();
-        $("appState").className = "notice ok";
-        $("appState").textContent = "Connecté ✅";
-        setPill("Actif", "Actif");
+        const { data, error } = await sb.rpc("resa_get_profile_by_slug", { p_slug: slug });
+        if (error) throw error;
+
+        if (data?.ok && data.profile) {
+          fillForm(data.profile);
+          setStatus("Profil chargé.", "ok");
+        } else {
+          syncPreview();
+          setStatus("Aucun profil trouvé pour ce slug. Tu peux le créer en enregistrant.", "warn");
+        }
       }catch(e){
         console.error(e);
-        $("appState").className = "notice bad";
-        $("appState").textContent = "Erreur: " + String(e.message || e);
-        setPill("KO", "KO");
+        syncPreview();
+        setStatus("Impossible de charger le profil. Tu peux tenter un premier enregistrement.", "err");
       }
     }
 
-    async function boot(){
-      setPill("…", "…");
-      $("btnLogoutTop").style.display = "none";
+    async function saveProfile(){
+      if (!slug) {
+        setStatus("Slug manquant. Impossible d’enregistrer.", "err");
+        return;
+      }
 
+      setStatus("Enregistrement en cours...");
       try{
-        const { data } = await sb.auth.getSession();
-        SESSION = data?.session || null;
-        USER = SESSION?.user || null;
+        const { data, error } = await sb.rpc("resa_upsert_profile_by_slug", getPayload());
+        if (error) throw error;
+        if (!data?.ok) throw new Error(data?.error || "save_failed");
 
-        if(!USER){
-          setPill("Déconnecté", "Déconnecté");
-          show("screen-landing");
-          return;
-        }
-
-        // ensure restaurant row exists
-        RESTO = await ensureRestaurantForUser(USER.id, null);
-
-        // fill header
-        $("btnLogoutTop").style.display = "inline-flex";
-        $("appUserEmail").textContent = USER.email || "—";
-        $("appRestoName").textContent = RESTO?.restaurant_name || "—";
-
-        // init day
-        const today = toDateKey(new Date());
-        $("dayPick").value = today;
-
-        show("screen-app");
-        setView("day");
-        await refreshData();
-
+        if (data.profile) fillForm(data.profile);
+        setStatus("Profil enregistré proprement.", "ok");
       }catch(e){
         console.error(e);
-        setPill("Erreur", "Erreur");
-        show("screen-landing");
+        setStatus("Échec enregistrement profil.", "err");
       }
     }
 
-    /* =========================================================
-       ✅ AUTH ACTIONS
-       ========================================================= */
-    async function doRegister(){
-      errBox("regErr", null);
-      const email = $("regEmail").value.trim();
-      const pass  = $("regPass").value.trim();
-      const name  = $("regResto").value.trim();
-
-      if(!email || !pass || !name) return errBox("regErr","Remplis email + mot de passe + nom du restaurant.");
-      if(pass.length < 6) return errBox("regErr","Mot de passe trop court (6 caractères min).");
-
-      $("btnRegister").disabled = true;
-      $("btnRegister").textContent = "Création…";
-
-      try{
-        // signup
-        const { data: su, error: e1 } = await sb.auth.signUp({ email, password: pass });
-        if(e1) throw new Error(e1.message);
-
-        // login right after (avoid “change password” confusion)
-        const { data: si, error: e2 } = await sb.auth.signInWithPassword({ email, password: pass });
-        if(e2) throw new Error(e2.message);
-
-        SESSION = si?.session || null;
-        USER = si?.user || SESSION?.user || null;
-        if(!USER) throw new Error("Session introuvable après login.");
-
-        // ensure restaurant created
-        RESTO = await ensureRestaurantForUser(USER.id, name);
-
-        $("btnRegister").disabled = false;
-        $("btnRegister").textContent = "Créer mon compte →";
-        await boot();
-
-      }catch(e){
-        errBox("regErr", String(e.message || e));
-        $("btnRegister").disabled = false;
-        $("btnRegister").textContent = "Créer mon compte →";
-      }
-    }
-
-    async function doLogin(){
-      errBox("loginErr", null);
-      const email = $("loginEmail").value.trim();
-      const pass  = $("loginPass").value.trim();
-
-      if(!email || !pass) return errBox("loginErr","Email + mot de passe requis.");
-
-      $("btnLogin").disabled = true;
-      $("btnLogin").textContent = "Connexion…";
-
-      try{
-        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-        if(error) throw new Error(error.message);
-
-        SESSION = data?.session || null;
-        USER = data?.user || SESSION?.user || null;
-        if(!USER) throw new Error("Session introuvable.");
-
-        RESTO = await ensureRestaurantForUser(USER.id, null);
-
-        $("btnLogin").disabled = false;
-        $("btnLogin").textContent = "Se connecter →";
-        await boot();
-
-      }catch(e){
-        errBox("loginErr", String(e.message || e));
-        $("btnLogin").disabled = false;
-        $("btnLogin").textContent = "Se connecter →";
-      }
-    }
-
-    async function doForgot(){
-      errBox("loginErr", null);
-      const email = $("loginEmail").value.trim();
-      if(!email) return errBox("loginErr","Mets ton email puis clique à nouveau.");
-
-      try{
-        const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href });
-        if(error) throw new Error(error.message);
-        errBox("loginErr","Si le compte existe, un email de réinitialisation a été envoyé.");
-        $("loginErr").className = "notice warn";
-        $("loginErr").style.display = "block";
-      }catch(e){
-        errBox("loginErr", String(e.message || e));
-      }
-    }
-
-    async function doLogout(){
-      try{ await sb.auth.signOut(); }catch(_){}
-      SESSION=null; USER=null; RESTO=null; ROWS=[];
-      $("btnLogoutTop").style.display = "none";
-      setPill("Déconnecté", "Déconnecté");
-      show("screen-landing");
-    }
-
-    /* =========================================================
-       ✅ EVENTS
-       ========================================================= */
-    $("btnGoRegister").onclick = ()=> show("screen-register");
-    $("btnGoLogin").onclick = ()=> show("screen-login");
-    $("btnBackLanding1").onclick = ()=> show("screen-landing");
-    $("btnBackLanding2").onclick = ()=> show("screen-landing");
-
-    $("btnRegister").onclick = doRegister;
-    $("btnLogin").onclick = doLogin;
-    $("btnForgot").onclick = doForgot;
-
-    $("btnLogout").onclick = doLogout;
-    $("btnLogoutTop").onclick = doLogout;
-
-    $("btnReload").onclick = refreshData;
-
-    $("tabDay").onclick = ()=> setView("day");
-    $("tabList").onclick = ()=> setView("list");
-
-    $("dayPick").addEventListener("change", refreshData);
-    $("q").addEventListener("input", renderList);
-    $("filterStatus").addEventListener("change", renderList);
-
-    $("btnAdd").onclick = openModalNew;
-    $("btnClose").onclick = closeModal;
-
-    $("modal").addEventListener("click",(e)=>{ if(e.target === $("modal")) closeModal(); });
-
-    $("btnSave").onclick = async ()=>{
-      errBox("mErr", null);
-
-      const name = $("mName").value.trim();
-      const startLocal = $("mStart").value; // datetime-local
-      const status = $("mStatus").value;
-
-      if(!name) return errBox("mErr","Nom client requis.");
-      if(!startLocal) return errBox("mErr","Date & heure requises.");
-      if(!RESTO?.id) return errBox("mErr","Restaurant introuvable.");
-
-      // convert local -> ISO
-      const startIso = new Date(startLocal).toISOString();
-
-      $("btnSave").disabled = true;
-      $("btnSave").textContent = "Enregistrement…";
-
-      try{
-        if(EDIT_ID){
-          await updateReservation(EDIT_ID, {
-            customer_name: name,
-            start_at: startIso,
-            status
-          });
-        }else{
-          await insertReservation(RESTO.id, name, startIso, status);
-        }
-
-        closeModal();
-        await refreshData();
-
-      }catch(e){
-        errBox("mErr", String(e.message || e));
-      }finally{
-        $("btnSave").disabled = false;
-        $("btnSave").textContent = "Enregistrer";
-      }
-    };
-
-    // Delegation buttons in day list
-    document.addEventListener("click", async (e)=>{
-      const b = e.target.closest("[data-act]");
-      if(!b) return;
-
-      const id = b.getAttribute("data-id");
-      const act = b.getAttribute("data-act");
-      const row = ROWS.find(x=>x.id===id);
-      if(!row) return;
-
-      if(act==="edit"){
-        openModalEdit(row);
+    async function togglePublish(){
+      if (!slug) {
+        setStatus("Slug manquant. Impossible de publier.", "err");
         return;
       }
 
-      if(act==="toggle"){
-        const next = (row.status==="booked") ? "cancelled" : "booked";
-        try{
-          await updateReservation(row.id, { status: next });
-          await refreshData();
-        }catch(err){
-          alert("Erreur: " + (err.message||err));
-        }
-        return;
-      }
+      const currentlyPublished = $("btnPublish").textContent.includes("Dépublier");
+      const targetState = !currentlyPublished;
 
-      if(act==="del"){
-        if(!confirm("Supprimer cette réservation ?")) return;
-        try{
-          await deleteReservation(row.id);
-          await refreshData();
-        }catch(err){
-          alert("Erreur: " + (err.message||err));
-        }
-      }
-    });
+      setStatus(targetState ? "Publication en cours..." : "Dépublication en cours...");
+      try{
+        const { data, error } = await sb.rpc("resa_set_publish_by_slug", {
+          p_slug: slug,
+          p_is_published: targetState
+        });
+        if (error) throw error;
+        if (!data?.ok) throw new Error(data?.error || "publish_failed");
 
-    // Start
-    boot();
+        const p = data.profile || {};
+        $("pubPill").textContent = `Publication : ${p.is_published ? "publique" : "brouillon"}`;
+        updatePublishButton(!!p.is_published);
+        setStatus(p.is_published ? "Établissement publié." : "Établissement dépublié.", "ok");
+      }catch(e){
+        console.error(e);
+        setStatus("Impossible de changer la publication.", "err");
+      }
+    }
+
+    ["display_name","business_type","city","zones_text","address_text","capacity","opening_hours_text","whatsapp","bio","photo_url","cover_url","priority","is_active"]
+      .forEach(id => {
+        $(id).addEventListener("input", syncPreview);
+        $(id).addEventListener("change", syncPreview);
+      });
+
+    $("btnSave").addEventListener("click", saveProfile);
+    $("btnPublish").addEventListener("click", togglePublish);
+
+    syncPreview();
+    loadProfile();
   </script>
 </body>
 </html>
