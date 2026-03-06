@@ -3,913 +3,882 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>DIGIY RESA — Cockpit</title>
-  <meta name="theme-color" content="#07140f"/>
-  <meta name="description" content="Cockpit DIGIY RESA PRO. Réservations, statistiques, lecture claire, suivi simple."/>
-
+  <title>DIGIY RESA PRO — Cockpit</title>
+  <meta name="theme-color" content="#061b14"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
-      --bg:#07140f;
-      --bg2:#0b1d15;
-      --card:#10241b;
-      --card-2:#0d2018;
-      --line:rgba(255,255,255,.10);
-      --text:#ecfff4;
-      --muted:rgba(236,255,244,.72);
-      --primary:#22c55e;
-      --primary-2:#16a34a;
+      --bg:#061b14;
+      --card:#0b2a1f;
+      --card2:#0f3327;
+      --line:rgba(255,255,255,.12);
+      --text:#eafff1;
+      --muted:rgba(234,255,241,.72);
       --gold:#facc15;
-      --gold-soft:rgba(250,204,21,.12);
-      --danger:#ef4444;
+      --ok:#22c55e;
       --warn:#f59e0b;
-      --info:#60a5fa;
-      --shadow:0 20px 60px rgba(0,0,0,.38);
-      --r:24px;
-      --max:1180px;
+      --danger:#ef4444;
+      --accent:#38bdf8;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+      --radius:18px;
     }
 
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-
-    body{
+    html,body{
       margin:0;
-      min-height:100vh;
-      background:
-        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
-        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),
-        linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);
+      padding:0;
+      background:var(--bg);
       color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      padding:16px;
     }
 
     a{color:inherit;text-decoration:none}
 
     .wrap{
-      max-width:var(--max);
-      margin:auto;
-      display:grid;
-      gap:14px;
-    }
-
-    .card{
-      border:1px solid var(--line);
-      border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));
-      box-shadow:var(--shadow);
+      width:min(1180px,92vw);
+      margin:0 auto;
+      padding:18px 0 48px;
     }
 
     .topbar{
-      padding:18px;
       display:flex;
+      gap:12px;
       justify-content:space-between;
-      gap:14px;
-      align-items:flex-start;
+      align-items:center;
       flex-wrap:wrap;
+      margin-bottom:18px;
     }
 
     .brand{
       display:flex;
-      gap:14px;
-      align-items:flex-start;
-      min-width:0;
+      flex-direction:column;
+      gap:4px;
     }
 
-    .logo{
-      width:64px;
-      height:64px;
-      border-radius:20px;
-      display:grid;
-      place-items:center;
-      font-size:24px;
-      font-weight:1000;
-      color:#041b12;
-      background:linear-gradient(135deg, var(--gold), var(--primary));
-      box-shadow:0 12px 28px rgba(34,197,94,.22);
-      flex:0 0 auto;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 13px;
-      border-radius:999px;
-      border:1px solid rgba(34,197,94,.28);
-      background:rgba(34,197,94,.12);
-      color:#bbf7d0;
+    .eyebrow{
       font-size:12px;
-      font-weight:950;
-      width:max-content;
-      margin-bottom:10px;
-    }
-
-    .badge .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:var(--primary);
-      box-shadow:0 0 0 4px rgba(34,197,94,.14);
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:900;
     }
 
     h1{
       margin:0;
-      font-size:clamp(28px, 4vw, 40px);
-      line-height:1.04;
-      letter-spacing:-.02em;
+      font-size:clamp(1.5rem,3.4vw,2.3rem);
+      line-height:1.05;
     }
 
-    .subtitle{
-      margin-top:8px;
+    .sub{
       color:var(--muted);
-      font-size:15px;
-      font-weight:800;
-      line-height:1.5;
+      font-size:.95rem;
     }
 
-    .meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-      max-width:100%;
-    }
-
-    .pill.slug{
-      color:var(--gold);
-      border-color:rgba(250,204,21,.22);
-      background:var(--gold-soft);
-    }
-
-    .actions{
+    .actions-top{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
     }
 
     .btn{
-      min-height:48px;
-      padding:12px 16px;
-      border-radius:14px;
-      font-weight:950;
+      appearance:none;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
+      background:linear-gradient(180deg,#103428,#0c271e);
       color:var(--text);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:800;
       cursor:pointer;
-      transition:.18s ease;
+      box-shadow:var(--shadow);
     }
 
     .btn:hover{transform:translateY(-1px)}
-    .btn.primary{
-      background:linear-gradient(135deg, var(--primary), var(--primary-2));
-      color:#041b12;
-      border-color:transparent;
-      box-shadow:0 12px 28px rgba(34,197,94,.22);
-    }
-    .btn.gold{
-      background:rgba(250,204,21,.12);
-      color:var(--gold);
-      border-color:rgba(250,204,21,.22);
+    .btn.secondary{background:#0c241b}
+    .btn.warn{background:linear-gradient(180deg,#5a3d10,#3a2608)}
+    .btn.ghost{
+      background:rgba(255,255,255,.04);
+      border-style:dashed;
+      color:var(--muted);
     }
 
-    .layout{
+    .hero{
+      background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:16px;
+    }
+
+    .hero h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+
+    .hero p{
+      margin:0 0 8px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .mini-card{
+      background:rgba(0,0,0,.14);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .mini-card strong{
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.10);
+      color:#fff1a8;
+      font-size:.9rem;
+      font-weight:900;
+    }
+
+    .mode.live{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+    }
+
+    .hero-cta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .grid-stats{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:.88rem;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:1.8rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .panel-head h3{
+      margin:0;
+      font-size:1.05rem;
+    }
+
+    .filters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .chip.active{
+      background:#11392b;
+      border-color:rgba(250,204,21,.45);
+      color:#fff3b0;
+    }
+
+    .list{
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+
+    .booking{
+      background:var(--card2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
       display:grid;
       gap:14px;
     }
 
-    @media(min-width:980px){
-      .layout{
-        grid-template-columns:1.1fr .9fr;
-      }
-    }
-
-    .panel{
-      padding:18px;
-    }
-
-    .panel h2{
-      margin:0 0 8px;
-      font-size:21px;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:14px;
-      font-weight:800;
-      line-height:1.55;
-    }
-
-    .kpis{
-      display:grid;
-      gap:12px;
-      grid-template-columns:repeat(5,minmax(0,1fr));
-      margin-top:14px;
-    }
-
-    @media(max-width:1100px){
-      .kpis{
-        grid-template-columns:repeat(3,minmax(0,1fr));
-      }
-    }
-
-    @media(max-width:700px){
-      .kpis{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-    }
-
-    .kpi{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(0,0,0,.16);
-    }
-
-    .kpi .k{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      margin-bottom:6px;
-    }
-
-    .kpi .v{
-      font-size:28px;
-      font-weight:1000;
-      line-height:1;
-      letter-spacing:-.02em;
-    }
-
-    .kpi .s{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:850;
-      line-height:1.45;
-    }
-
-    .profilebox{
-      display:grid;
-      gap:12px;
-      margin-top:14px;
-    }
-
-    .facts{
-      display:grid;
-      gap:12px;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    @media(max-width:680px){
-      .facts{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .fact{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(0,0,0,.16);
-    }
-
-    .fact .k{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      margin-bottom:6px;
-    }
-
-    .fact .v{
-      font-size:15px;
-      font-weight:900;
-      line-height:1.5;
-      word-break:break-word;
-    }
-
-    .searchbar{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:14px;
-    }
-
-    .searchbar input{
-      flex:1;
-      min-width:240px;
-      min-height:48px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.16);
-      color:var(--text);
-      padding:12px 14px;
-      outline:none;
-      font:inherit;
-    }
-
-    .searchbar input::placeholder{
-      color:rgba(236,255,244,.38);
-    }
-
-    .bookings{
-      display:grid;
-      gap:12px;
-      margin-top:16px;
-    }
-
-    .booking{
-      padding:16px;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-      display:grid;
-      gap:12px;
+    .booking.preview{
+      opacity:.96;
     }
 
     .booking-top{
       display:flex;
       justify-content:space-between;
       gap:12px;
-      align-items:flex-start;
       flex-wrap:wrap;
+      align-items:flex-start;
     }
 
-    .booking-title{
-      font-size:18px;
-      font-weight:1000;
-      line-height:1.2;
-      margin:0;
+    .booking-main{
+      display:grid;
+      gap:6px;
     }
 
-    .booking-sub{
-      margin-top:4px;
+    .booking-name{
+      font-weight:900;
+      font-size:1.08rem;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
       color:var(--muted);
-      font-size:13px;
-      font-weight:850;
-      line-height:1.5;
+      font-size:.95rem;
     }
 
-    .status{
+    .badge{
       display:inline-flex;
       align-items:center;
-      justify-content:center;
-      min-height:34px;
-      padding:8px 12px;
+      gap:8px;
       border-radius:999px;
-      font-size:12px;
-      font-weight:1000;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
+      padding:9px 12px;
+      font-weight:900;
+      border:1px solid transparent;
       white-space:nowrap;
     }
 
-    .status.pending{
-      color:#fde68a;
-      border-color:rgba(250,204,21,.22);
-      background:rgba(250,204,21,.08);
-    }
+    .badge.pending{background:rgba(245,158,11,.14); color:#ffd38a; border-color:rgba(245,158,11,.25)}
+    .badge.confirmed{background:rgba(34,197,94,.14); color:#9ef2ba; border-color:rgba(34,197,94,.25)}
+    .badge.cancelled{background:rgba(239,68,68,.14); color:#ffb0b0; border-color:rgba(239,68,68,.25)}
+    .badge.done{background:rgba(56,189,248,.14); color:#b7ecff; border-color:rgba(56,189,248,.25)}
+    .badge.no_show{background:rgba(250,204,21,.12); color:#fff1a8; border-color:rgba(250,204,21,.24)}
 
-    .status.confirmed{
-      color:#bbf7d0;
-      border-color:rgba(34,197,94,.22);
-      background:rgba(34,197,94,.08);
-    }
-
-    .status.cancelled,
-    .status.no_show{
-      color:#fecaca;
-      border-color:rgba(239,68,68,.22);
-      background:rgba(239,68,68,.08);
-    }
-
-    .status.done{
-      color:#bfdbfe;
-      border-color:rgba(96,165,250,.22);
-      background:rgba(96,165,250,.08);
-    }
-
-    .booking-grid{
-      display:grid;
-      gap:10px;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    @media(max-width:700px){
-      .booking-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .booking-cell{
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.03);
-    }
-
-    .booking-cell .k{
-      font-size:12px;
+    .note{
+      border-left:3px solid rgba(250,204,21,.4);
+      padding-left:12px;
       color:var(--muted);
-      font-weight:800;
-      margin-bottom:5px;
-    }
-
-    .booking-cell .v{
-      font-size:14px;
-      font-weight:900;
       line-height:1.5;
-      word-break:break-word;
     }
 
     .booking-actions{
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
     }
 
-    .mini-btn{
-      min-height:42px;
-      padding:10px 14px;
-      border-radius:12px;
-      font-weight:950;
+    .action-btn{
+      appearance:none;
       border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
+      background:#0a2119;
       color:var(--text);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      text-decoration:none;
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:900;
     }
 
-    .mini-btn.primary{
-      background:linear-gradient(135deg, var(--primary), var(--primary-2));
-      color:#041b12;
-      border-color:transparent;
+    .action-btn.ok{background:#103525}
+    .action-btn.warn{background:#3a280d}
+    .action-btn.danger{background:#3a1414}
+    .action-btn.info{background:#0d2d38}
+    .action-btn.preview{
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      border-style:dashed;
+    }
+    .action-btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
     }
 
     .empty{
-      padding:14px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-      font-weight:850;
+      padding:28px 18px;
       color:var(--muted);
-    }
-
-    .statusbox{
-      margin-top:14px;
-      padding:12px 14px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-      font-weight:900;
-      color:var(--muted);
-      min-height:48px;
-      display:flex;
-      align-items:center;
-      line-height:1.45;
-    }
-
-    .statusbox.ok{
-      color:#bbf7d0;
-      border-color:rgba(34,197,94,.22);
-      background:rgba(34,197,94,.10);
-    }
-
-    .statusbox.warn{
-      color:#fde68a;
-      border-color:rgba(250,204,21,.22);
-      background:rgba(250,204,21,.08);
-    }
-
-    .statusbox.err{
-      color:#fecaca;
-      border-color:rgba(239,68,68,.22);
-      background:rgba(239,68,68,.08);
-    }
-
-    .footer{
       text-align:center;
+    }
+
+    .footer-note{
+      margin-top:14px;
       color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-      padding:6px 0 2px;
+      font-size:.92rem;
+      text-align:center;
+    }
+
+    .loading{
+      opacity:.72;
+      pointer-events:none;
+    }
+
+    @media (max-width:980px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid-stats{grid-template-columns:repeat(3,1fr)}
+    }
+
+    @media (max-width:640px){
+      .wrap{width:min(96vw,96vw)}
+      .grid-stats{grid-template-columns:repeat(2,1fr)}
+      .booking-top{flex-direction:column}
+      .actions-top,.filters,.booking-actions,.hero-cta{width:100%}
+      .actions-top > *, .booking-actions > *, .hero-cta > *{flex:1 1 auto}
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-
-    <section class="card topbar">
+    <div class="topbar">
       <div class="brand">
-        <div class="logo">R</div>
+        <div class="eyebrow">DIGIY RESA PRO</div>
+        <h1>Cockpit réservations</h1>
+        <div class="sub" id="topSub">Chargement du cockpit…</div>
+      </div>
+
+      <div class="actions-top">
+        <button class="btn secondary" id="btnReload">Recharger</button>
+        <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
+        <a class="btn" id="btnSettings" href="./etablissement.html">Réglages établissement</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-grid">
         <div>
-          <div class="badge"><span class="dot"></span> DIGIY RESA PRO</div>
-          <h1 id="topTitle">Cockpit réservations</h1>
-          <div class="subtitle" id="topSubtitle">Lecture simple des réservations et de l’activité établissement.</div>
+          <div class="mode" id="modeBadge">Mode aperçu</div>
+          <h2 id="heroName">Établissement</h2>
+          <p id="heroDesc">Lecture des réservations, suivi terrain, actions rapides.</p>
+          <p id="heroMeta">Slug : —</p>
 
-          <div class="meta">
-            <div class="pill slug" id="slugPill">slug : —</div>
-            <div class="pill" id="pubPill">Publication : —</div>
-            <div class="pill" id="activePill">Statut : —</div>
+          <div class="hero-cta" id="heroCta">
+            <a class="btn warn" href="./pin.html">Ouvrir ma porte PIN</a>
+            <a class="btn ghost" href="./etablissement.html">Voir les réglages</a>
           </div>
         </div>
-      </div>
 
-      <div class="actions">
-        <button class="btn primary" id="btnRefresh">🔄 Rafraîchir</button>
-        <a class="btn gold" id="btnProfile" href="./profil.html">⚙️ Profil</a>
-        <a class="btn" id="btnPublic" href="#" target="_blank" rel="noopener">👁 Fiche publique</a>
-        <a class="btn" id="btnReserve" href="#" target="_blank" rel="noopener">📅 Réserver</a>
-      </div>
-    </section>
-
-    <section class="card panel">
-      <h2>Vue d’ensemble</h2>
-      <div class="muted">Un regard net sur les demandes du jour, les demandes à venir et le volume total.</div>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="k">Aujourd’hui</div>
-          <div class="v" id="kpiToday">0</div>
-          <div class="s">Réservations prévues ce jour</div>
-        </div>
-
-        <div class="kpi">
-          <div class="k">7 jours</div>
-          <div class="v" id="kpi7d">0</div>
-          <div class="s">Réservations entre aujourd’hui et J+6</div>
-        </div>
-
-        <div class="kpi">
-          <div class="k">En attente</div>
-          <div class="v" id="kpiPending">0</div>
-          <div class="s">Demandes encore à traiter</div>
-        </div>
-
-        <div class="kpi">
-          <div class="k">Confirmées</div>
-          <div class="v" id="kpiConfirmed">0</div>
-          <div class="s">Réservations confirmées</div>
-        </div>
-
-        <div class="kpi">
-          <div class="k">Total</div>
-          <div class="v" id="kpiTotal">0</div>
-          <div class="s">Historique total visible</div>
+        <div class="mini-card">
+          <strong id="miniTitle">Lecture terrain</strong>
+          <div id="miniText" style="color:var(--muted);line-height:1.55;">
+            Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes,
+            tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="layout">
-      <section class="card panel">
-        <h2>Profil établissement</h2>
-        <div class="muted">Petit rappel métier utile pendant le suivi des réservations.</div>
-
-        <div class="profilebox">
-          <div class="facts">
-            <div class="fact">
-              <div class="k">Nom établissement</div>
-              <div class="v" id="factName">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Ville / type</div>
-              <div class="v" id="factTypeCity">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Horaires</div>
-              <div class="v" id="factHours">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Capacité</div>
-              <div class="v" id="factCapacity">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">WhatsApp</div>
-              <div class="v" id="factWhatsapp">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Adresse</div>
-              <div class="v" id="factAddress">—</div>
-            </div>
-          </div>
-
-          <div class="fact">
-            <div class="k">Présentation</div>
-            <div class="v" id="factBio">—</div>
-          </div>
-        </div>
-
-        <div id="statusBox" class="statusbox">Prêt.</div>
-      </section>
-
-      <section class="card panel">
-        <h2>Réservations récentes</h2>
-        <div class="muted">Recherche rapide par nom, téléphone, statut, date ou note.</div>
-
-        <div class="searchbar">
-          <input id="bookingSearch" type="search" placeholder="Rechercher : nom, téléphone, pending, 20:00, anniversaire...">
-        </div>
-
-        <div id="bookingsList" class="bookings">
-          <div class="empty">Chargement…</div>
-        </div>
-      </section>
+    <section class="grid-stats">
+      <div class="stat"><div class="label">Total</div><div class="value" id="sTotal">0</div></div>
+      <div class="stat"><div class="label">Pending</div><div class="value" id="sPending">0</div></div>
+      <div class="stat"><div class="label">Confirmées</div><div class="value" id="sConfirmed">0</div></div>
+      <div class="stat"><div class="label">Done</div><div class="value" id="sDone">0</div></div>
+      <div class="stat"><div class="label">No-show</div><div class="value" id="sNoShow">0</div></div>
+      <div class="stat"><div class="label">Annulées</div><div class="value" id="sCancelled">0</div></div>
     </section>
 
-    <div class="footer">
-      DIGIY RESA • Lecture claire • Réservation simple • Accueil sérieux
+    <section class="panel">
+      <div class="panel-head">
+        <h3 id="panelTitle">Réservations récentes</h3>
+
+        <div class="filters" id="filters">
+          <button class="chip active" data-filter="all">Toutes</button>
+          <button class="chip" data-filter="pending">Pending</button>
+          <button class="chip" data-filter="confirmed">Confirmées</button>
+          <button class="chip" data-filter="done">Done</button>
+          <button class="chip" data-filter="no_show">No-show</button>
+          <button class="chip" data-filter="cancelled">Annulées</button>
+        </div>
+      </div>
+
+      <div class="list" id="bookingList"></div>
+      <div class="empty" id="emptyState" style="display:none;">Aucune réservation pour l’instant.</div>
+    </section>
+
+    <div class="footer-note" id="footerNote">
+      Module RESA Phase 2 — cockpit métier.
     </div>
   </div>
 
   <script>
     const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-
-    const supabaseLib = window.supabase;
-    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
-      console.error("Supabase JS non chargé.");
-    }
-    const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const qs = new URLSearchParams(location.search);
-    const slug = (qs.get("slug") || "").trim();
+    const slug = qs.get("slug") || "";
 
     const $ = (id) => document.getElementById(id);
 
-    let currentProfile = null;
-    let currentBookings = [];
+    let ALL_BOOKINGS = [];
+    let ACTIVE_FILTER = "all";
+    let PROFILE = null;
+    let IS_PREVIEW = !slug;
 
-    function safe(v, fallback="—"){
-      const s = String(v ?? "").trim();
-      return s || fallback;
-    }
-
-    function esc(str){
-      return String(str ?? "")
+    function escapeHtml(v){
+      return String(v ?? "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
+        .replaceAll("'","&#039;");
     }
 
-    function formatDate(dateStr){
-      if(!dateStr) return "—";
-      const d = new Date(dateStr + "T00:00:00");
-      if (Number.isNaN(d.getTime())) return dateStr;
-      return d.toLocaleDateString("fr-FR", {
-        weekday:"short",
-        year:"numeric",
-        month:"short",
-        day:"numeric"
-      });
+    function fmtDate(v){
+      if(!v) return "—";
+      try{
+        return new Date(v).toLocaleDateString("fr-FR", {
+          year:"numeric", month:"2-digit", day:"2-digit"
+        });
+      }catch{
+        return String(v);
+      }
     }
 
-    function formatDateTime(createdAt){
-      if(!createdAt) return "—";
-      const d = new Date(createdAt);
-      if (Number.isNaN(d.getTime())) return createdAt;
-      return d.toLocaleString("fr-FR", {
-        year:"numeric",
-        month:"short",
-        day:"numeric",
-        hour:"2-digit",
-        minute:"2-digit"
-      });
+    function fmtDateTime(v){
+      if(!v) return "—";
+      try{
+        return new Date(v).toLocaleString("fr-FR", {
+          year:"numeric", month:"2-digit", day:"2-digit",
+          hour:"2-digit", minute:"2-digit"
+        });
+      }catch{
+        return String(v);
+      }
     }
 
-    function normalizeStatus(s){
-      const v = String(s || "").trim().toLowerCase();
-      return v || "pending";
+    function normStatus(v){
+      const s = String(v || "pending").toLowerCase().trim();
+      if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
+      return "pending";
     }
 
-    function statusLabel(s){
-      const v = normalizeStatus(s);
-      if(v === "pending") return "En attente";
-      if(v === "confirmed") return "Confirmée";
-      if(v === "cancelled") return "Annulée";
-      if(v === "done") return "Terminée";
-      if(v === "no_show") return "No show";
-      return v;
+    function statusLabel(v){
+      const s = normStatus(v);
+      if(s === "pending") return "Pending";
+      if(s === "confirmed") return "Confirmée";
+      if(s === "cancelled") return "Annulée";
+      if(s === "done") return "Done";
+      if(s === "no_show") return "No-show";
+      return s;
     }
 
-    function waLink(phone, name, booking){
-      const clean = String(phone || "").replace(/[^\d]/g, "");
-      if(!clean) return "";
-      const est = currentProfile?.display_name || "votre établissement";
-      const msg = [
-        `Bonjour ${name || ""},`,
-        `je vous contacte depuis ${est}.`,
-        booking?.booking_date ? `Date: ${booking.booking_date}` : "",
-        booking?.booking_time ? `Heure: ${booking.booking_time}` : "",
-        booking?.guests_count ? `Personnes: ${booking.guests_count}` : ""
-      ].filter(Boolean).join(" ");
-      return "https://wa.me/" + clean + "?text=" + encodeURIComponent(msg);
+    function bookingIdOf(row){
+      return String(
+        row?.id ??
+        row?.booking_id ??
+        row?.reservation_id ??
+        ""
+      );
     }
 
-    function profileUrl(slug){
-      return `./profil.html?slug=${encodeURIComponent(slug)}`;
+    function normalizeRows(payload){
+      let rows = [];
+
+      if(Array.isArray(payload)) rows = payload;
+      else if(Array.isArray(payload?.rows)) rows = payload.rows;
+      else if(Array.isArray(payload?.bookings)) rows = payload.bookings;
+      else if(Array.isArray(payload?.data)) rows = payload.data;
+
+      return rows.map((r) => ({
+        id: bookingIdOf(r),
+        status: normStatus(r.status),
+        status_note: r.status_note || "",
+        created_at: r.created_at || r.inserted_at || r.requested_at || null,
+        customer_name: r.customer_name || r.client_name || r.full_name || r.name || "Sans nom",
+        customer_phone: r.customer_phone || r.phone || r.whatsapp || "",
+        booking_date: r.booking_date || r.reservation_date || r.date || "",
+        booking_time: r.booking_time || r.reservation_time || r.time || "",
+        guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
+        note: r.note || r.message || r.special_request || ""
+      }));
     }
 
-    function publicUrl(slug){
-      return `https://resa.digiylyfe.com/etablissement.html?slug=${encodeURIComponent(slug)}`;
+    async function rpc(name, args){
+      const { data, error } = await sb.rpc(name, args);
+      if(error) throw error;
+      return data;
     }
 
-    function reserveUrl(slug){
-      return `https://resa.digiylyfe.com/reserver.html?slug=${encodeURIComponent(slug)}`;
+    function setPreviewHero(){
+      $("modeBadge").className = "mode";
+      $("modeBadge").textContent = "Mode aperçu";
+
+      $("heroName").textContent = "DIGIY RESA PRO";
+      $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, suivi terrain.";
+      $("heroMeta").textContent = "Slug : absent — aperçu visuel du logiciel";
+      $("topSub").textContent = "Aucun slug détecté. Tu vois le cockpit en mode aperçu élégant.";
+      $("panelTitle").textContent = "Aperçu des réservations";
+      $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le cockpit vivant.";
+      $("miniTitle").textContent = "Aperçu intelligent";
+      $("miniText").textContent =
+        "Pas de slug ? Pas grave. On ne jette pas le pro contre un mur. On lui montre le logiciel, puis on l’invite à entrer proprement par sa porte PIN.";
+
+      $("btnSettings").href = "./etablissement.html";
     }
 
-    function setStatus(msg, tone=""){
-      const box = $("statusBox");
-      box.className = "statusbox" + (tone ? " " + tone : "");
-      box.textContent = msg;
+    function setLiveHero(){
+      $("modeBadge").className = "mode live";
+      $("modeBadge").textContent = "Mode vivant";
+
+      $("heroMeta").textContent = `Slug : ${slug}`;
+      $("topSub").textContent = `Cockpit chargé pour ${slug}`;
+      $("panelTitle").textContent = "Réservations récentes";
+      $("footerNote").textContent = "Cockpit vivant branché sur les réservations réelles.";
+      $("miniTitle").textContent = "Lecture terrain";
+      $("miniText").textContent =
+        "Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes, tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.";
+
+      $("btnSettings").href = `./etablissement.html?slug=${encodeURIComponent(slug)}`;
     }
 
-    function fillProfile(p){
-      currentProfile = p || {};
+    function loadPreviewData(){
+      setPreviewHero();
 
-      $("topTitle").textContent = safe(p.display_name, "Cockpit réservations");
-      $("topSubtitle").textContent = `${safe(p.city)} • ${safe(p.business_type, "Établissement")} • lecture claire des demandes`;
-      $("slugPill").textContent = "slug : " + safe(slug, "—");
-      $("pubPill").textContent = `Publication : ${p.is_published ? "publique" : "brouillon"}`;
-      $("activePill").textContent = `Statut : ${p.is_active === false ? "inactif" : "actif"}`;
+      const now = new Date();
+      const addHours = (n) => new Date(now.getTime() - (n * 3600 * 1000)).toISOString();
 
-      $("factName").textContent = safe(p.display_name);
-      $("factTypeCity").textContent = `${safe(p.city)} • ${safe(p.business_type, "Établissement")}`;
-      $("factHours").textContent = safe(p.opening_hours_text, "Horaires à préciser");
-      $("factCapacity").textContent = p.capacity ? `${p.capacity} places` : "Capacité à préciser";
-      $("factWhatsapp").textContent = safe(p.whatsapp, "WhatsApp à préciser");
-      $("factAddress").textContent = safe(p.address_text, "Adresse à préciser");
-      $("factBio").textContent = safe(p.bio, "Présentation à préciser");
+      ALL_BOOKINGS = [
+        {
+          id: "preview-1",
+          status: "pending",
+          customer_name: "Awa Ndiaye",
+          customer_phone: "77 000 00 01",
+          booking_date: "2026-03-07",
+          booking_time: "20:30",
+          guests_count: 2,
+          note: "Table au calme si possible.",
+          created_at: addHours(2)
+        },
+        {
+          id: "preview-2",
+          status: "confirmed",
+          customer_name: "Moussa Fall",
+          customer_phone: "77 000 00 02",
+          booking_date: "2026-03-07",
+          booking_time: "21:00",
+          guests_count: 4,
+          note: "Anniversaire discret.",
+          created_at: addHours(4)
+        },
+        {
+          id: "preview-3",
+          status: "done",
+          customer_name: "Sokhna Diop",
+          customer_phone: "77 000 00 03",
+          booking_date: "2026-03-06",
+          booking_time: "13:00",
+          guests_count: 3,
+          note: "",
+          created_at: addHours(8)
+        },
+        {
+          id: "preview-4",
+          status: "no_show",
+          customer_name: "Cheikh Ba",
+          customer_phone: "77 000 00 04",
+          booking_date: "2026-03-06",
+          booking_time: "19:30",
+          guests_count: 2,
+          note: "Réservation faite tard.",
+          created_at: addHours(12)
+        },
+        {
+          id: "preview-5",
+          status: "cancelled",
+          customer_name: "Mariama Sarr",
+          customer_phone: "77 000 00 05",
+          booking_date: "2026-03-08",
+          booking_time: "12:30",
+          guests_count: 5,
+          note: "Le groupe a reporté.",
+          created_at: addHours(16)
+        }
+      ];
 
-      $("btnProfile").href = profileUrl(slug);
-      $("btnPublic").href = publicUrl(slug);
-      $("btnReserve").href = reserveUrl(slug);
+      $("sTotal").textContent = "18";
+      $("sPending").textContent = "4";
+      $("sConfirmed").textContent = "7";
+      $("sDone").textContent = "5";
+      $("sNoShow").textContent = "1";
+      $("sCancelled").textContent = "1";
+
+      renderBookings();
     }
 
-    function fillStats(stats){
-      $("kpiToday").textContent = Number(stats?.today_count || 0).toLocaleString("fr-FR");
-      $("kpi7d").textContent = Number(stats?.next_7d_count || 0).toLocaleString("fr-FR");
-      $("kpiPending").textContent = Number(stats?.pending_count || 0).toLocaleString("fr-FR");
-      $("kpiConfirmed").textContent = Number(stats?.confirmed_count || 0).toLocaleString("fr-FR");
-      $("kpiTotal").textContent = Number(stats?.total_count || 0).toLocaleString("fr-FR");
+    async function loadProfile(){
+      try{
+        const data = await rpc("resa_get_profile_by_slug", { p_slug: slug });
+        PROFILE = data?.profile || data || null;
+      }catch{
+        PROFILE = null;
+      }
+
+      const title =
+        PROFILE?.business_name ||
+        PROFILE?.name ||
+        PROFILE?.restaurant_name ||
+        "Établissement";
+
+      $("heroName").textContent = title;
+      $("heroDesc").textContent = "Lecture des réservations, suivi terrain, actions rapides.";
     }
 
-    function bookingCard(b){
-      const status = normalizeStatus(b.status);
-      const wa = waLink(b.customer_phone, b.customer_name, b);
+    async function loadStats(){
+      let data = null;
 
-      const searchHay = (
-        `${b.customer_name || ""} ${b.customer_phone || ""} ${b.booking_date || ""} ${b.booking_time || ""} ${b.status || ""} ${b.note_text || ""}`
-      ).toLowerCase();
+      try{
+        data = await rpc("resa_stats_v2_by_slug", { p_slug: slug });
+      }catch{
+        try{
+          data = await rpc("resa_stats_by_slug", { p_slug: slug });
+        }catch{
+          data = null;
+        }
+      }
 
+      $("sTotal").textContent = Number(data?.total || 0);
+      $("sPending").textContent = Number(data?.pending || 0);
+      $("sConfirmed").textContent = Number(data?.confirmed || 0);
+      $("sDone").textContent = Number(data?.done || 0);
+      $("sNoShow").textContent = Number(data?.no_show || 0);
+      $("sCancelled").textContent = Number(data?.cancelled || 0);
+    }
+
+    async function loadBookings(){
+      let data = null;
+
+      try{
+        data = await rpc("resa_list_recent_bookings_v2_by_slug", {
+          p_slug: slug,
+          p_limit: 100
+        });
+      }catch{
+        data = await rpc("resa_list_recent_bookings_by_slug", {
+          p_slug: slug
+        });
+      }
+
+      ALL_BOOKINGS = normalizeRows(data);
+      renderBookings();
+    }
+
+    function filterRows(rows){
+      if(ACTIVE_FILTER === "all") return rows;
+      return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+    }
+
+    function previewActionHtml(){
       return `
-        <article class="booking" data-search="${esc(searchHay)}">
-          <div class="booking-top">
-            <div>
-              <h3 class="booking-title">${esc(safe(b.customer_name, "Client"))}</h3>
-              <div class="booking-sub">Créée le ${esc(formatDateTime(b.created_at))}</div>
-            </div>
-            <div class="status ${esc(status)}">${esc(statusLabel(status))}</div>
-          </div>
-
-          <div class="booking-grid">
-            <div class="booking-cell">
-              <div class="k">Date</div>
-              <div class="v">${esc(formatDate(b.booking_date))}</div>
-            </div>
-
-            <div class="booking-cell">
-              <div class="k">Heure</div>
-              <div class="v">${esc(safe(b.booking_time, "—"))}</div>
-            </div>
-
-            <div class="booking-cell">
-              <div class="k">Personnes</div>
-              <div class="v">${esc(String(b.guests_count ?? "—"))}</div>
-            </div>
-
-            <div class="booking-cell">
-              <div class="k">Téléphone client</div>
-              <div class="v">${esc(safe(b.customer_phone, "—"))}</div>
-            </div>
-
-            <div class="booking-cell" style="grid-column:1 / -1;">
-              <div class="k">Note</div>
-              <div class="v">${esc(safe(b.note_text, "Aucune note"))}</div>
-            </div>
-          </div>
-
-          <div class="booking-actions">
-            ${wa
-              ? `<a class="mini-btn primary" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp client</a>`
-              : `<span class="mini-btn" style="opacity:.6;pointer-events:none">WhatsApp indisponible</span>`
-            }
-            ${b.customer_phone
-              ? `<a class="mini-btn" href="tel:${esc(String(b.customer_phone).replace(/[^\d+]/g, ""))}">📞 Appeler</a>`
-              : ``
-            }
-          </div>
-        </article>
+        <div class="booking-actions">
+          <a class="action-btn preview" href="./pin.html">Entrer par PIN pour agir</a>
+          <a class="action-btn preview" href="./etablissement.html">Voir les réglages</a>
+        </div>
       `;
     }
 
-    function renderBookings(rows){
-      currentBookings = Array.isArray(rows) ? rows : [];
-      const box = $("bookingsList");
+    function liveActionHtml(id, status){
+      return `
+        <div class="booking-actions">
+          <button class="action-btn ok" data-id="${id}" data-status="confirmed" ${status === "confirmed" ? "disabled" : ""}>Confirmer</button>
+          <button class="action-btn danger" data-id="${id}" data-status="cancelled" ${status === "cancelled" ? "disabled" : ""}>Annuler</button>
+          <button class="action-btn info" data-id="${id}" data-status="done" ${status === "done" ? "disabled" : ""}>Done</button>
+          <button class="action-btn warn" data-id="${id}" data-status="no_show" ${status === "no_show" ? "disabled" : ""}>No-show</button>
+          <button class="action-btn" data-id="${id}" data-status="pending" ${status === "pending" ? "disabled" : ""}>Remettre pending</button>
+        </div>
+      `;
+    }
 
-      if(!currentBookings.length){
-        box.innerHTML = `<div class="empty">Aucune réservation récente pour le moment.</div>`;
+    function renderBookings(){
+      const list = $("bookingList");
+      const empty = $("emptyState");
+      const rows = filterRows(ALL_BOOKINGS);
+
+      if(!rows.length){
+        list.innerHTML = "";
+        empty.style.display = "block";
+        empty.textContent = IS_PREVIEW
+          ? "Aperçu disponible, mais aucune ligne à afficher."
+          : "Aucune réservation pour l’instant.";
         return;
       }
 
-      box.innerHTML = currentBookings.map(bookingCard).join("");
+      empty.style.display = "none";
+
+      list.innerHTML = rows.map((row) => {
+        const id = escapeHtml(row.id);
+        const status = normStatus(row.status);
+        const customer = escapeHtml(row.customer_name);
+        const phone = escapeHtml(row.customer_phone || "—");
+        const date = escapeHtml(row.booking_date ? fmtDate(row.booking_date) : "—");
+        const time = escapeHtml(row.booking_time || "—");
+        const guests = escapeHtml(row.guests_count || "—");
+        const note = escapeHtml(row.note || "");
+        const created = escapeHtml(fmtDateTime(row.created_at));
+
+        return `
+          <article class="booking ${IS_PREVIEW ? "preview" : ""}" id="booking-${id}">
+            <div class="booking-top">
+              <div class="booking-main">
+                <div class="booking-name">${customer}</div>
+                <div class="meta">
+                  <span>📅 ${date}</span>
+                  <span>🕒 ${time}</span>
+                  <span>👥 ${guests}</span>
+                  <span>📞 ${phone}</span>
+                  <span>🧾 ${created}</span>
+                </div>
+              </div>
+
+              <div class="badge ${status}">
+                ${escapeHtml(statusLabel(status))}
+              </div>
+            </div>
+
+            ${note ? `<div class="note">“${note}”</div>` : ""}
+
+            ${IS_PREVIEW ? previewActionHtml() : liveActionHtml(id, status)}
+          </article>
+        `;
+      }).join("");
+
+      if(!IS_PREVIEW){
+        list.querySelectorAll("[data-id][data-status]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const bookingId = btn.getAttribute("data-id");
+            const status = btn.getAttribute("data-status");
+            await setBookingStatus(bookingId, status, btn);
+          });
+        });
+      }
     }
 
-    function applySearch(){
-      const q = ($("bookingSearch").value || "").trim().toLowerCase();
-      document.querySelectorAll("#bookingsList .booking").forEach(el => {
-        const hay = el.getAttribute("data-search") || "";
-        el.style.display = (!q || hay.includes(q)) ? "" : "none";
+    async function setBookingStatus(bookingId, status, btnEl){
+      if(!slug) return;
+      if(!bookingId) return alert("Booking introuvable.");
+
+      const oldText = btnEl.textContent;
+      btnEl.disabled = true;
+      btnEl.textContent = "…";
+
+      try{
+        const data = await rpc("resa_set_booking_status_by_slug", {
+          p_slug: slug,
+          p_booking_id: bookingId,
+          p_status: status,
+          p_status_note: null
+        });
+
+        if(!data?.ok){
+          throw new Error(data?.error || "update_failed");
+        }
+
+        ALL_BOOKINGS = ALL_BOOKINGS.map((r) => {
+          if(String(r.id) === String(bookingId)){
+            return { ...r, status };
+          }
+          return r;
+        });
+
+        await loadStats();
+        renderBookings();
+      }catch(err){
+        console.error(err);
+        alert("Impossible de changer le statut de cette réservation.");
+      }finally{
+        btnEl.textContent = oldText;
+      }
+    }
+
+    function initFilters(){
+      $("filters").querySelectorAll(".chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          $("filters").querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+          chip.classList.add("active");
+          ACTIVE_FILTER = chip.dataset.filter || "all";
+          renderBookings();
+        });
       });
     }
 
-    async function loadAll(){
-      if(!slug){
-        $("topTitle").textContent = "Slug manquant";
-        $("topSubtitle").textContent = "Impossible d’ouvrir ce cockpit sans identifiant établissement.";
-        setStatus("Slug manquant. Ouvre la page avec ?slug=resa-...", "err");
-        $("bookingsList").innerHTML = `<div class="empty">Cockpit indisponible sans slug.</div>`;
-        return;
-      }
-
-      $("slugPill").textContent = "slug : " + slug;
-      $("btnProfile").href = profileUrl(slug);
-      $("btnPublic").href = publicUrl(slug);
-      $("btnReserve").href = reserveUrl(slug);
-
-      setStatus("Chargement du cockpit...");
+    async function boot(){
+      document.body.classList.add("loading");
 
       try{
-        const [profileRes, statsRes, bookingsRes] = await Promise.all([
-          sb.rpc("resa_get_profile_by_slug", { p_slug: slug }),
-          sb.rpc("resa_stats_by_slug", { p_slug: slug }),
-          sb.rpc("resa_list_recent_bookings_by_slug", { p_slug: slug, p_limit: 50 })
-        ]);
-
-        if(profileRes.error) throw profileRes.error;
-        if(statsRes.error) throw statsRes.error;
-        if(bookingsRes.error) throw bookingsRes.error;
-
-        if(!profileRes.data?.ok){
-          throw new Error(profileRes.data?.error || "profile_not_found");
+        if(!slug){
+          IS_PREVIEW = true;
+          loadPreviewData();
+          return;
         }
 
-        fillProfile(profileRes.data.profile || {});
-        fillStats(statsRes.data || {});
-        renderBookings(bookingsRes.data?.rows || []);
+        IS_PREVIEW = false;
+        setLiveHero();
+        await loadProfile();
+        await Promise.all([
+          loadStats(),
+          loadBookings()
+        ]);
+      }catch(err){
+        console.error(err);
 
-        setStatus("Cockpit chargé proprement.", "ok");
-      }catch(e){
-        console.error(e);
-        $("topTitle").textContent = "Cockpit indisponible";
-        $("topSubtitle").textContent = "Impossible de charger les données établissement.";
-        $("bookingsList").innerHTML = `<div class="empty">Impossible de charger les réservations.</div>`;
-        setStatus("Erreur de chargement cockpit.", "err");
+        if(!slug){
+          IS_PREVIEW = true;
+          loadPreviewData();
+        }else{
+          $("emptyState").style.display = "block";
+          $("emptyState").textContent = "Erreur de chargement du cockpit.";
+        }
+      }finally{
+        document.body.classList.remove("loading");
       }
     }
 
-    $("btnRefresh").addEventListener("click", loadAll);
-    $("bookingSearch").addEventListener("input", applySearch);
-
-    loadAll();
+    $("btnReload").addEventListener("click", boot);
+    initFilters();
+    boot();
   </script>
 </body>
 </html>
