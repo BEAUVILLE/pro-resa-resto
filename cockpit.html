@@ -381,7 +381,7 @@
       </div>
 
       <div class="actions-top">
-        <button class="btn secondary" id="btnReload">Recharger</button>
+        <button class="btn secondary" id="btnReload" type="button">Recharger</button>
         <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
         <a class="btn" id="btnSettings" href="./etablissement.html">Réglages établissement</a>
       </div>
@@ -425,12 +425,12 @@
         <h3 id="panelTitle">Réservations récentes</h3>
 
         <div class="filters" id="filters">
-          <button class="chip active" data-filter="all">Toutes</button>
-          <button class="chip" data-filter="pending">Pending</button>
-          <button class="chip" data-filter="confirmed">Confirmées</button>
-          <button class="chip" data-filter="done">Done</button>
-          <button class="chip" data-filter="no_show">No-show</button>
-          <button class="chip" data-filter="cancelled">Annulées</button>
+          <button class="chip active" data-filter="all" type="button">Toutes</button>
+          <button class="chip" data-filter="pending" type="button">Pending</button>
+          <button class="chip" data-filter="confirmed" type="button">Confirmées</button>
+          <button class="chip" data-filter="done" type="button">Done</button>
+          <button class="chip" data-filter="no_show" type="button">No-show</button>
+          <button class="chip" data-filter="cancelled" type="button">Annulées</button>
         </div>
       </div>
 
@@ -541,6 +541,21 @@
       const { data, error } = await sb.rpc(name, args);
       if(error) throw error;
       return data;
+    }
+
+    function resetStats(){
+      $("sTotal").textContent = "0";
+      $("sPending").textContent = "0";
+      $("sConfirmed").textContent = "0";
+      $("sDone").textContent = "0";
+      $("sNoShow").textContent = "0";
+      $("sCancelled").textContent = "0";
+    }
+
+    function resetView(){
+      $("emptyState").style.display = "none";
+      $("bookingList").innerHTML = "";
+      ALL_BOOKINGS = [];
     }
 
     function setPreviewHero(){
@@ -680,12 +695,12 @@
         }
       }
 
-      $("sTotal").textContent = Number(data?.total || 0);
-      $("sPending").textContent = Number(data?.pending || 0);
-      $("sConfirmed").textContent = Number(data?.confirmed || 0);
-      $("sDone").textContent = Number(data?.done || 0);
-      $("sNoShow").textContent = Number(data?.no_show || 0);
-      $("sCancelled").textContent = Number(data?.cancelled || 0);
+      $("sTotal").textContent = String(Number(data?.total || 0));
+      $("sPending").textContent = String(Number(data?.pending || 0));
+      $("sConfirmed").textContent = String(Number(data?.confirmed || 0));
+      $("sDone").textContent = String(Number(data?.done || 0));
+      $("sNoShow").textContent = String(Number(data?.no_show || 0));
+      $("sCancelled").textContent = String(Number(data?.cancelled || 0));
     }
 
     async function loadBookings(){
@@ -723,11 +738,11 @@
     function liveActionHtml(id, status){
       return `
         <div class="booking-actions">
-          <button class="action-btn ok" data-id="${id}" data-status="confirmed" ${status === "confirmed" ? "disabled" : ""}>Confirmer</button>
-          <button class="action-btn danger" data-id="${id}" data-status="cancelled" ${status === "cancelled" ? "disabled" : ""}>Annuler</button>
-          <button class="action-btn info" data-id="${id}" data-status="done" ${status === "done" ? "disabled" : ""}>Done</button>
-          <button class="action-btn warn" data-id="${id}" data-status="no_show" ${status === "no_show" ? "disabled" : ""}>No-show</button>
-          <button class="action-btn" data-id="${id}" data-status="pending" ${status === "pending" ? "disabled" : ""}>Remettre pending</button>
+          <button class="action-btn ok" data-id="${id}" data-status="confirmed" type="button" ${status === "confirmed" ? "disabled" : ""}>Confirmer</button>
+          <button class="action-btn danger" data-id="${id}" data-status="cancelled" type="button" ${status === "cancelled" ? "disabled" : ""}>Annuler</button>
+          <button class="action-btn info" data-id="${id}" data-status="done" type="button" ${status === "done" ? "disabled" : ""}>Done</button>
+          <button class="action-btn warn" data-id="${id}" data-status="no_show" type="button" ${status === "no_show" ? "disabled" : ""}>No-show</button>
+          <button class="action-btn" data-id="${id}" data-status="pending" type="button" ${status === "pending" ? "disabled" : ""}>Remettre pending</button>
         </div>
       `;
     }
@@ -799,8 +814,10 @@
     async function setBookingStatus(bookingId, status, btnEl){
       if(!slug) return;
       if(!bookingId) return alert("Booking introuvable.");
+      if(btnEl?.dataset?.busy === "1") return;
 
       const oldText = btnEl.textContent;
+      btnEl.dataset.busy = "1";
       btnEl.disabled = true;
       btnEl.textContent = "…";
 
@@ -829,6 +846,7 @@
         console.error(err);
         alert("Impossible de changer le statut de cette réservation.");
       }finally{
+        btnEl.dataset.busy = "0";
         btnEl.textContent = oldText;
       }
     }
@@ -846,6 +864,7 @@
 
     async function boot(){
       document.body.classList.add("loading");
+      resetView();
 
       try{
         if(!slug){
@@ -856,6 +875,7 @@
 
         IS_PREVIEW = false;
         setLiveHero();
+
         await loadProfile();
         await Promise.all([
           loadStats(),
@@ -864,13 +884,13 @@
       }catch(err){
         console.error(err);
 
-        if(!slug){
-          IS_PREVIEW = true;
-          loadPreviewData();
-        }else{
-          $("emptyState").style.display = "block";
-          $("emptyState").textContent = "Erreur de chargement du cockpit.";
-        }
+        $("bookingList").innerHTML = "";
+        resetStats();
+        $("emptyState").style.display = "block";
+        $("emptyState").textContent = "Erreur de chargement du cockpit.";
+        $("topSub").textContent = slug
+          ? `Impossible de charger le cockpit pour ${slug}.`
+          : "Impossible de charger l’aperçu.";
       }finally{
         document.body.classList.remove("loading");
       }
