@@ -3,612 +3,913 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="theme-color" content="#061b14"/>
-  <title>DIGIY PRO — Cockpit</title>
+  <title>DIGIY RESA — Cockpit</title>
+  <meta name="theme-color" content="#07140f"/>
+  <meta name="description" content="Cockpit DIGIY RESA PRO. Réservations, statistiques, lecture claire, suivi simple."/>
 
-  <!-- Supabase d'abord -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- ✅ Clés globales -->
-  <script>
-    window.DIGIY_SUPABASE_URL  = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-  </script>
-
-  <!-- Guard universel -->
-  <script src="./guard.js?v=universal-3"></script>
 
   <style>
     :root{
-      --bg:#061b14; --bg2:#0a2b1f; --line:rgba(255,255,255,.14);
-      --text:#eafff1; --muted:rgba(234,255,241,.72);
-      --gold:#facc15; --ok:#22c55e; --bad:#fb7185; --warn:#f59e0b;
-      --shadow:0 18px 55px rgba(0,0,0,.45);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto;
-      background:
-        radial-gradient(circle at top, rgba(250,204,21,.10), transparent 55%),
-        linear-gradient(135deg,var(--bg),var(--bg2));
-      padding:16px;
-    }
-    .wrap{max-width:1140px;margin:0 auto}
-    header{
-      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
-      background:linear-gradient(145deg,rgba(11,42,31,.96),rgba(6,35,25,.96));
-      border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow);
-      padding:16px;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .ico{
-      width:48px;height:48px;border-radius:50%;
-      display:grid;place-items:center;
-      background:radial-gradient(circle at 30% 0,var(--gold),transparent 60%);
-      color:#062015;font-weight:1000;border:1px solid rgba(250,204,21,.35);
-    }
-    h1{margin:0;font-size:16px;letter-spacing:.10em}
-    .sub{margin-top:5px;font-size:12px;color:var(--muted);line-height:1.4}
-    .pill{
-      border:1px solid var(--line); background:rgba(250,204,21,.10);
-      padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap;
+      --bg:#07140f;
+      --bg2:#0b1d15;
+      --card:#10241b;
+      --card-2:#0d2018;
+      --line:rgba(255,255,255,.10);
+      --text:#ecfff4;
+      --muted:rgba(236,255,244,.72);
+      --primary:#22c55e;
+      --primary-2:#16a34a;
+      --gold:#facc15;
+      --gold-soft:rgba(250,204,21,.12);
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --info:#60a5fa;
+      --shadow:0 20px 60px rgba(0,0,0,.38);
+      --r:24px;
+      --max:1180px;
     }
 
-    .grid{display:grid;gap:12px;margin-top:12px}
-    @media(min-width:980px){ .grid{grid-template-columns:1.2fr .8fr} }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),
+        linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      padding:16px;
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    .wrap{
+      max-width:var(--max);
+      margin:auto;
+      display:grid;
+      gap:14px;
+    }
 
     .card{
-      background:linear-gradient(145deg,rgba(11,42,31,.92),rgba(6,35,25,.92));
-      border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow);
-      padding:14px;
-    }
-    .title{font-weight:1000;letter-spacing:.08em;font-size:12px;color:rgba(234,255,241,.85)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .btn{
-      flex:1; min-width:210px;
-      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
-      background:rgba(0,0,0,.18); color:var(--text);
-      font-weight:1000; cursor:pointer;
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      text-decoration:none;
-    }
-    .btn:hover{border-color:rgba(250,204,21,.55)}
-    .btn.primary{
-      background:linear-gradient(90deg,var(--ok),var(--gold));
-      color:#062015;border:none;
-    }
-    .btn.danger{
-      border-color:rgba(251,113,133,.35);
-      background:rgba(251,113,133,.10);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));
+      box-shadow:var(--shadow);
     }
 
-    .msg{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5}
-    .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.warn{color:var(--warn)}
-    .panel{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}
-
-    .kpis{display:grid;gap:10px;margin-top:10px}
-    @media(min-width:520px){ .kpis{grid-template-columns:repeat(2,1fr)} }
-    .kpi{
-      padding:12px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
+    .topbar{
+      padding:18px;
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:flex-start;
+      flex-wrap:wrap;
     }
-    .kpi .k{font-size:12px;color:var(--muted)}
-    .kpi .v{font-size:20px;font-weight:1000;margin-top:6px}
-    .kpi .s{font-size:12px;color:rgba(234,255,241,.78);margin-top:4px}
 
-    select, input, textarea{
-      border-radius:14px;border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18); color:var(--text);
-      padding:10px 12px; outline:none; font-weight:900;
-      width:100%;
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      min-width:0;
     }
-    textarea{min-height:80px;resize:vertical;font-weight:700}
 
-    .list{margin-top:10px;border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden}
-    .item{
-      padding:12px;border-top:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+    .logo{
+      width:64px;
+      height:64px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:24px;
+      font-weight:1000;
+      color:#041b12;
+      background:linear-gradient(135deg, var(--gold), var(--primary));
+      box-shadow:0 12px 28px rgba(34,197,94,.22);
+      flex:0 0 auto;
     }
-    .item:first-child{border-top:none}
-    .a{font-weight:1000}
-    .b{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+
     .badge{
-      font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(250,204,21,.10);
-      white-space:nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.12);
+      color:#bbf7d0;
+      font-size:12px;
+      font-weight:950;
+      width:max-content;
+      margin-bottom:10px;
     }
-    .badge.ok{background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.35)}
-    .badge.bad{background:rgba(251,113,133,.12); border-color:rgba(251,113,133,.35)}
-    .badge.neutral{background:rgba(148,163,184,.10); border-color:rgba(148,163,184,.28)}
-    .tinybtn{
-      padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);color:var(--text);font-weight:1000;cursor:pointer;
-    }
-    .tinybtn:hover{border-color:rgba(250,204,21,.55)}
 
-    .modal{
-      position:fixed; inset:0; display:none;
-      background:rgba(0,0,0,.55);
-      align-items:center; justify-content:center;
+    .badge .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--primary);
+      box-shadow:0 0 0 4px rgba(34,197,94,.14);
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(28px, 4vw, 40px);
+      line-height:1.04;
+      letter-spacing:-.02em;
+    }
+
+    .subtitle{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:15px;
+      font-weight:800;
+      line-height:1.5;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      max-width:100%;
+    }
+
+    .pill.slug{
+      color:var(--gold);
+      border-color:rgba(250,204,21,.22);
+      background:var(--gold-soft);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .btn{
+      min-height:48px;
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:950;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:#041b12;
+      border-color:transparent;
+      box-shadow:0 12px 28px rgba(34,197,94,.22);
+    }
+    .btn.gold{
+      background:rgba(250,204,21,.12);
+      color:var(--gold);
+      border-color:rgba(250,204,21,.22);
+    }
+
+    .layout{
+      display:grid;
+      gap:14px;
+    }
+
+    @media(min-width:980px){
+      .layout{
+        grid-template-columns:1.1fr .9fr;
+      }
+    }
+
+    .panel{
       padding:18px;
     }
-    .modal .box{
-      width:min(780px,94vw);
-      background:linear-gradient(145deg,rgba(11,42,31,.98),rgba(6,35,25,.98));
-      border:1px solid rgba(255,255,255,.14);
+
+    .panel h2{
+      margin:0 0 8px;
+      font-size:21px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+      line-height:1.55;
+    }
+
+    .kpis{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      margin-top:14px;
+    }
+
+    @media(max-width:1100px){
+      .kpis{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+    }
+
+    @media(max-width:700px){
+      .kpis{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+
+    .kpi{
+      padding:14px;
       border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.16);
+    }
+
+    .kpi .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .kpi .v{
+      font-size:28px;
+      font-weight:1000;
+      line-height:1;
+      letter-spacing:-.02em;
+    }
+
+    .kpi .s{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .profilebox{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .facts{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    @media(max-width:680px){
+      .facts{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .fact{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.16);
+    }
+
+    .fact .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+
+    .fact .v{
+      font-size:15px;
+      font-weight:900;
+      line-height:1.5;
+      word-break:break-word;
+    }
+
+    .searchbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .searchbar input{
+      flex:1;
+      min-width:240px;
+      min-height:48px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      padding:12px 14px;
+      outline:none;
+      font:inherit;
+    }
+
+    .searchbar input::placeholder{
+      color:rgba(236,255,244,.38);
+    }
+
+    .bookings{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .booking{
       padding:16px;
-      box-shadow:0 24px 60px rgba(0,0,0,.65);
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      display:grid;
+      gap:12px;
     }
-    label{display:block;font-size:12px;color:var(--muted);margin:6px 0}
-    .fgrid{display:grid;gap:10px;margin-top:10px}
-    @media(min-width:760px){ .fgrid{grid-template-columns:1fr 1fr} }
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .actions button{
-      flex:1; min-width:190px;
-      padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(250,204,21,.12);
-      color:var(--text);font-weight:1000;cursor:pointer;
+
+    .booking-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      flex-wrap:wrap;
     }
-    .actions .primary{
-      background:linear-gradient(90deg,var(--ok),var(--gold));
-      color:#062015;border:none;
+
+    .booking-title{
+      font-size:18px;
+      font-weight:1000;
+      line-height:1.2;
+      margin:0;
     }
-    .close{
-      margin-top:10px;width:100%;
-      padding:12px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);
-      color:var(--text);font-weight:1000;cursor:pointer;
+
+    .booking-sub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:850;
+      line-height:1.5;
+    }
+
+    .status{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:34px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1000;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+
+    .status.pending{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.22);
+      background:rgba(250,204,21,.08);
+    }
+
+    .status.confirmed{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.22);
+      background:rgba(34,197,94,.08);
+    }
+
+    .status.cancelled,
+    .status.no_show{
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+      background:rgba(239,68,68,.08);
+    }
+
+    .status.done{
+      color:#bfdbfe;
+      border-color:rgba(96,165,250,.22);
+      background:rgba(96,165,250,.08);
+    }
+
+    .booking-grid{
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    @media(max-width:700px){
+      .booking-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .booking-cell{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+    }
+
+    .booking-cell .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:800;
+      margin-bottom:5px;
+    }
+
+    .booking-cell .v{
+      font-size:14px;
+      font-weight:900;
+      line-height:1.5;
+      word-break:break-word;
+    }
+
+    .booking-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .mini-btn{
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:950;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+    }
+
+    .mini-btn.primary{
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:#041b12;
+      border-color:transparent;
+    }
+
+    .empty{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      font-weight:850;
+      color:var(--muted);
+    }
+
+    .statusbox{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      font-weight:900;
+      color:var(--muted);
+      min-height:48px;
+      display:flex;
+      align-items:center;
+      line-height:1.45;
+    }
+
+    .statusbox.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.22);
+      background:rgba(34,197,94,.10);
+    }
+
+    .statusbox.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.22);
+      background:rgba(250,204,21,.08);
+    }
+
+    .statusbox.err{
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+      background:rgba(239,68,68,.08);
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      padding:6px 0 2px;
     }
   </style>
 </head>
-
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <header>
-    <div class="brand">
-      <div class="ico">🦅</div>
-      <div>
-        <h1 id="title">DIGIY PRO — Cockpit</h1>
-        <div class="sub">
-          SLUG: <b id="slug">—</b> • OWNER: <b id="owner">—</b><br>
-          État: <b id="state">Chargement…</b>
+    <section class="card topbar">
+      <div class="brand">
+        <div class="logo">R</div>
+        <div>
+          <div class="badge"><span class="dot"></span> DIGIY RESA PRO</div>
+          <h1 id="topTitle">Cockpit réservations</h1>
+          <div class="subtitle" id="topSubtitle">Lecture simple des réservations et de l’activité établissement.</div>
+
+          <div class="meta">
+            <div class="pill slug" id="slugPill">slug : —</div>
+            <div class="pill" id="pubPill">Publication : —</div>
+            <div class="pill" id="activePill">Statut : —</div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="pill" id="pill">—</div>
-  </header>
 
-  <div class="card" style="margin-top:12px">
-    <div class="title">🔐 ACCÈS</div>
-    <div class="row">
-      <button class="btn" id="btnCheck">🔄 Vérifier mon accès</button>
-      <a class="btn" id="btnPin" href="./index.html">🔐 Refaire PIN</a>
-      <a class="btn primary" id="btnPay" href="#" style="display:none">💳 Activer</a>
-    </div>
-    <div class="msg" id="msg"></div>
-    <div class="panel" style="font-size:12px;color:rgba(234,255,241,.72)" id="details"></div>
-  </div>
-
-  <div class="grid" id="grid" style="display:none">
-
-    <!-- LEFT: RESTO UI -->
-    <div class="card" id="restoCard" style="display:none">
-      <div class="title">🍽️ RESTO — ACTIONS</div>
-      <div class="row">
-        <button class="btn primary" id="btnNew">➕ Nouveau ticket</button>
-        <button class="btn" id="btnPulse">🔔 Inbox</button>
-        <button class="btn" id="btnPrint">🖨️ Imprimer</button>
+      <div class="actions">
+        <button class="btn primary" id="btnRefresh">🔄 Rafraîchir</button>
+        <a class="btn gold" id="btnProfile" href="./profil.html">⚙️ Profil</a>
+        <a class="btn" id="btnPublic" href="#" target="_blank" rel="noopener">👁 Fiche publique</a>
+        <a class="btn" id="btnReserve" href="#" target="_blank" rel="noopener">📅 Réserver</a>
       </div>
+    </section>
 
-      <div style="height:10px"></div>
-      <div class="title">🌡️ TEMPÉRATURE RESTO</div>
+    <section class="card panel">
+      <h2>Vue d’ensemble</h2>
+      <div class="muted">Un regard net sur les demandes du jour, les demandes à venir et le volume total.</div>
+
       <div class="kpis">
-        <div class="kpi"><div class="k">Tickets ouverts</div><div class="v" id="kOpen">—</div><div class="s">en cours</div></div>
-        <div class="kpi"><div class="k">Prêts</div><div class="v" id="kReady">—</div><div class="s">à servir</div></div>
-        <div class="kpi"><div class="k">Servis</div><div class="v" id="kServed">—</div><div class="s">terminés</div></div>
-        <div class="kpi"><div class="k">CA du jour</div><div class="v" id="kCA">—</div><div class="s">estimé</div></div>
+        <div class="kpi">
+          <div class="k">Aujourd’hui</div>
+          <div class="v" id="kpiToday">0</div>
+          <div class="s">Réservations prévues ce jour</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">7 jours</div>
+          <div class="v" id="kpi7d">0</div>
+          <div class="s">Réservations entre aujourd’hui et J+6</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">En attente</div>
+          <div class="v" id="kpiPending">0</div>
+          <div class="s">Demandes encore à traiter</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">Confirmées</div>
+          <div class="v" id="kpiConfirmed">0</div>
+          <div class="s">Réservations confirmées</div>
+        </div>
+
+        <div class="kpi">
+          <div class="k">Total</div>
+          <div class="v" id="kpiTotal">0</div>
+          <div class="s">Historique total visible</div>
+        </div>
       </div>
+    </section>
 
-      <div style="height:10px"></div>
-      <div class="row" style="align-items:center">
-        <div class="title" style="flex:1">📋 TICKETS</div>
-        <select id="filter" style="max-width:260px">
-          <option value="all">Tous</option>
-          <option value="open">Ouverts</option>
-          <option value="ready">Prêts</option>
-          <option value="served">Servis</option>
-          <option value="cancelled">Annulés</option>
-        </select>
-        <input id="q" placeholder="Recherche: table / nom / note…" style="max-width:260px">
-      </div>
+    <section class="layout">
+      <section class="card panel">
+        <h2>Profil établissement</h2>
+        <div class="muted">Petit rappel métier utile pendant le suivi des réservations.</div>
 
-      <div class="list" id="list"></div>
+        <div class="profilebox">
+          <div class="facts">
+            <div class="fact">
+              <div class="k">Nom établissement</div>
+              <div class="v" id="factName">—</div>
+            </div>
 
-      <div class="msg" style="margin-top:12px">
-        <b>V1 terrain :</b> tickets stockés localement par slug (ça marche direct).<br>
-        V2 : menu + caisse + paiements + Pulse.
-      </div>
-    </div>
+            <div class="fact">
+              <div class="k">Ville / type</div>
+              <div class="v" id="factTypeCity">—</div>
+            </div>
 
-    <!-- RIGHT: Support/outils -->
-    <div class="card" id="sideCard">
-      <div class="title">🛟 SUPPORT</div>
-      <div class="row">
-        <button class="btn" id="btnHelp">💬 WhatsApp Support</button>
-        <button class="btn danger" id="btnLogout">🚪 Déconnexion</button>
-      </div>
+            <div class="fact">
+              <div class="k">Horaires</div>
+              <div class="v" id="factHours">—</div>
+            </div>
 
-      <div style="height:12px"></div>
-      <div class="title">🧩 OUTILS</div>
-      <div class="row">
-        <button class="btn" id="btnExport">⬇️ Export JSON</button>
-        <button class="btn danger" id="btnReset">🧹 Reset Démo</button>
-      </div>
+            <div class="fact">
+              <div class="k">Capacité</div>
+              <div class="v" id="factCapacity">—</div>
+            </div>
 
-      <div class="msg" style="margin-top:12px">
-        <b>Astuce :</b> si tu changes de module, fais PIN une fois par slug, puis cockpit direct.
-      </div>
-    </div>
+            <div class="fact">
+              <div class="k">WhatsApp</div>
+              <div class="v" id="factWhatsapp">—</div>
+            </div>
 
-  </div>
-</div>
-
-<!-- MODAL NEW TICKET -->
-<div class="modal" id="modalNew">
-  <div class="box">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <div style="font-weight:1000">➕ Nouveau ticket</div>
-      <div class="badge neutral" id="mSlug">—</div>
-    </div>
-
-    <div class="fgrid">
-      <div>
-        <label>Table</label>
-        <input id="table" placeholder="Ex: T1 / Terrasse / VIP">
-      </div>
-      <div>
-        <label>Nom client (option)</label>
-        <input id="client" placeholder="Ex: Mamadou">
-      </div>
-      <div>
-        <label>Total estimé (FCFA)</label>
-        <input id="amount" inputmode="numeric" placeholder="Ex: 7500">
-      </div>
-      <div>
-        <label>Mode</label>
-        <select id="mode">
-          <option value="sur_place">Sur place</option>
-          <option value="a_emporter">À emporter</option>
-          <option value="livraison">Livraison</option>
-        </select>
-      </div>
-    </div>
-
-    <div style="margin-top:6px">
-      <label>Commande / Note</label>
-      <textarea id="note" placeholder="Ex: 2 thieb, 1 jus, sans piment…"></textarea>
-    </div>
-
-    <div class="actions">
-      <button class="primary" id="save">✅ Enregistrer</button>
-      <button id="cancel">Annuler</button>
-    </div>
-
-    <button class="close" id="close">Fermer</button>
-  </div>
-</div>
-
-<script>
-  const $ = (id)=>document.getElementById(id);
-
-  function setMsg(text, kind){
-    const el = $("msg");
-    el.className = "msg" + (kind ? (" " + kind) : "");
-    el.textContent = text;
-  }
-
-  function todayKey(){
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const day = String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${day}`;
-  }
-  function nowISO(){ return new Date().toISOString(); }
-  function uid(){ return (crypto?.randomUUID ? crypto.randomUUID() : ("id_"+Math.random().toString(16).slice(2)+Date.now())); }
-  function load(key){ try{ return JSON.parse(localStorage.getItem(key) || "[]"); }catch(_){ return []; } }
-  function save(key, rows){ localStorage.setItem(key, JSON.stringify(rows)); }
-  function money(v){
-    const n = Number(String(v||"").replace(/[^\d]/g,"")) || 0;
-    return n ? (n.toLocaleString("fr-FR") + " FCFA") : "—";
-  }
-  function badge(st){
-    if(st==="open") return `<span class="badge neutral">OUVERT</span>`;
-    if(st==="ready") return `<span class="badge ok">PRÊT</span>`;
-    if(st==="served") return `<span class="badge ok">SERVI</span>`;
-    if(st==="cancelled") return `<span class="badge bad">ANNULÉ</span>`;
-    return `<span class="badge neutral">${String(st||"—").toUpperCase()}</span>`;
-  }
-  function matches(r, q){
-    q = (q||"").trim().toLowerCase();
-    if(!q) return true;
-    const hay = [r.table,r.client,r.mode,r.note,r.status].filter(Boolean).join(" ").toLowerCase();
-    return hay.includes(q);
-  }
-
-  // RESTO storage keys depend on slug
-  let S = { slug:"", owner_id:"", phone:"", module:"" };
-  let KEY = "";
-  let KEY_TABLES = "";
-
-  function renderTickets(){
-    const rows = load(KEY).sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""));
-    const filter = $("filter").value;
-    const q = $("q").value;
-
-    const open = rows.filter(r=>r.status==="open");
-    const ready = rows.filter(r=>r.status==="ready");
-    const served = rows.filter(r=>r.status==="served");
-    const day = todayKey();
-    const caDay = rows
-      .filter(r=>r.day_key===day && (r.status==="open" || r.status==="ready" || r.status==="served"))
-      .reduce((sum,r)=> sum + (Number(String(r.amount||"").replace(/[^\d]/g,""))||0), 0);
-
-    $("kOpen").textContent = String(open.length);
-    $("kReady").textContent = String(ready.length);
-    $("kServed").textContent = String(served.length);
-    $("kCA").textContent = caDay ? (caDay.toLocaleString("fr-FR")) : "0";
-
-    let view = rows.filter(r=>matches(r,q));
-    if(filter !== "all") view = view.filter(r=>r.status===filter);
-
-    const list = $("list");
-    list.innerHTML = "";
-
-    if(view.length===0){
-      list.innerHTML = `
-        <div class="item">
-          <div>
-            <div class="a">Aucun ticket</div>
-            <div class="b">Clique “Nouveau ticket” pour commencer.</div>
+            <div class="fact">
+              <div class="k">Adresse</div>
+              <div class="v" id="factAddress">—</div>
+            </div>
           </div>
-          <div class="badge neutral">VIDE</div>
-        </div>`;
-      return;
-    }
 
-    for(const r of view){
-      const title = `Table: ${r.table || "—"} • ${r.mode || "—"}`;
-      const sub = [
-        r.client ? `Client: ${r.client}` : null,
-        `Total: ${money(r.amount)}`,
-        r.note ? `Commande: ${r.note}` : null,
-        `Créé: ${new Date(r.created_at).toLocaleString("fr-FR")}`
-      ].filter(Boolean).join("<br>");
-
-      const item = document.createElement("div");
-      item.className = "item";
-      item.innerHTML = `
-        <div style="flex:1">
-          <div class="a">${title}</div>
-          <div class="b">${sub}</div>
-          <div class="row" style="margin-top:10px">
-            <button class="tinybtn" data-act="ready" data-id="${r.id}">🍳 Prêt</button>
-            <button class="tinybtn" data-act="served" data-id="${r.id}">✅ Servi</button>
-            <button class="tinybtn" data-act="cancel" data-id="${r.id}">🧨 Annuler</button>
-            <button class="tinybtn" data-act="del" data-id="${r.id}">🗑️ Supprimer</button>
+          <div class="fact">
+            <div class="k">Présentation</div>
+            <div class="v" id="factBio">—</div>
           </div>
         </div>
-        <div>${badge(r.status)}</div>
+
+        <div id="statusBox" class="statusbox">Prêt.</div>
+      </section>
+
+      <section class="card panel">
+        <h2>Réservations récentes</h2>
+        <div class="muted">Recherche rapide par nom, téléphone, statut, date ou note.</div>
+
+        <div class="searchbar">
+          <input id="bookingSearch" type="search" placeholder="Rechercher : nom, téléphone, pending, 20:00, anniversaire...">
+        </div>
+
+        <div id="bookingsList" class="bookings">
+          <div class="empty">Chargement…</div>
+        </div>
+      </section>
+    </section>
+
+    <div class="footer">
+      DIGIY RESA • Lecture claire • Réservation simple • Accueil sérieux
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+
+    const supabaseLib = window.supabase;
+    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
+      console.error("Supabase JS non chargé.");
+    }
+    const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const qs = new URLSearchParams(location.search);
+    const slug = (qs.get("slug") || "").trim();
+
+    const $ = (id) => document.getElementById(id);
+
+    let currentProfile = null;
+    let currentBookings = [];
+
+    function safe(v, fallback="—"){
+      const s = String(v ?? "").trim();
+      return s || fallback;
+    }
+
+    function esc(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+
+    function formatDate(dateStr){
+      if(!dateStr) return "—";
+      const d = new Date(dateStr + "T00:00:00");
+      if (Number.isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString("fr-FR", {
+        weekday:"short",
+        year:"numeric",
+        month:"short",
+        day:"numeric"
+      });
+    }
+
+    function formatDateTime(createdAt){
+      if(!createdAt) return "—";
+      const d = new Date(createdAt);
+      if (Number.isNaN(d.getTime())) return createdAt;
+      return d.toLocaleString("fr-FR", {
+        year:"numeric",
+        month:"short",
+        day:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      });
+    }
+
+    function normalizeStatus(s){
+      const v = String(s || "").trim().toLowerCase();
+      return v || "pending";
+    }
+
+    function statusLabel(s){
+      const v = normalizeStatus(s);
+      if(v === "pending") return "En attente";
+      if(v === "confirmed") return "Confirmée";
+      if(v === "cancelled") return "Annulée";
+      if(v === "done") return "Terminée";
+      if(v === "no_show") return "No show";
+      return v;
+    }
+
+    function waLink(phone, name, booking){
+      const clean = String(phone || "").replace(/[^\d]/g, "");
+      if(!clean) return "";
+      const est = currentProfile?.display_name || "votre établissement";
+      const msg = [
+        `Bonjour ${name || ""},`,
+        `je vous contacte depuis ${est}.`,
+        booking?.booking_date ? `Date: ${booking.booking_date}` : "",
+        booking?.booking_time ? `Heure: ${booking.booking_time}` : "",
+        booking?.guests_count ? `Personnes: ${booking.guests_count}` : ""
+      ].filter(Boolean).join(" ");
+      return "https://wa.me/" + clean + "?text=" + encodeURIComponent(msg);
+    }
+
+    function profileUrl(slug){
+      return `./profil.html?slug=${encodeURIComponent(slug)}`;
+    }
+
+    function publicUrl(slug){
+      return `https://resa.digiylyfe.com/etablissement.html?slug=${encodeURIComponent(slug)}`;
+    }
+
+    function reserveUrl(slug){
+      return `https://resa.digiylyfe.com/reserver.html?slug=${encodeURIComponent(slug)}`;
+    }
+
+    function setStatus(msg, tone=""){
+      const box = $("statusBox");
+      box.className = "statusbox" + (tone ? " " + tone : "");
+      box.textContent = msg;
+    }
+
+    function fillProfile(p){
+      currentProfile = p || {};
+
+      $("topTitle").textContent = safe(p.display_name, "Cockpit réservations");
+      $("topSubtitle").textContent = `${safe(p.city)} • ${safe(p.business_type, "Établissement")} • lecture claire des demandes`;
+      $("slugPill").textContent = "slug : " + safe(slug, "—");
+      $("pubPill").textContent = `Publication : ${p.is_published ? "publique" : "brouillon"}`;
+      $("activePill").textContent = `Statut : ${p.is_active === false ? "inactif" : "actif"}`;
+
+      $("factName").textContent = safe(p.display_name);
+      $("factTypeCity").textContent = `${safe(p.city)} • ${safe(p.business_type, "Établissement")}`;
+      $("factHours").textContent = safe(p.opening_hours_text, "Horaires à préciser");
+      $("factCapacity").textContent = p.capacity ? `${p.capacity} places` : "Capacité à préciser";
+      $("factWhatsapp").textContent = safe(p.whatsapp, "WhatsApp à préciser");
+      $("factAddress").textContent = safe(p.address_text, "Adresse à préciser");
+      $("factBio").textContent = safe(p.bio, "Présentation à préciser");
+
+      $("btnProfile").href = profileUrl(slug);
+      $("btnPublic").href = publicUrl(slug);
+      $("btnReserve").href = reserveUrl(slug);
+    }
+
+    function fillStats(stats){
+      $("kpiToday").textContent = Number(stats?.today_count || 0).toLocaleString("fr-FR");
+      $("kpi7d").textContent = Number(stats?.next_7d_count || 0).toLocaleString("fr-FR");
+      $("kpiPending").textContent = Number(stats?.pending_count || 0).toLocaleString("fr-FR");
+      $("kpiConfirmed").textContent = Number(stats?.confirmed_count || 0).toLocaleString("fr-FR");
+      $("kpiTotal").textContent = Number(stats?.total_count || 0).toLocaleString("fr-FR");
+    }
+
+    function bookingCard(b){
+      const status = normalizeStatus(b.status);
+      const wa = waLink(b.customer_phone, b.customer_name, b);
+
+      const searchHay = (
+        `${b.customer_name || ""} ${b.customer_phone || ""} ${b.booking_date || ""} ${b.booking_time || ""} ${b.status || ""} ${b.note_text || ""}`
+      ).toLowerCase();
+
+      return `
+        <article class="booking" data-search="${esc(searchHay)}">
+          <div class="booking-top">
+            <div>
+              <h3 class="booking-title">${esc(safe(b.customer_name, "Client"))}</h3>
+              <div class="booking-sub">Créée le ${esc(formatDateTime(b.created_at))}</div>
+            </div>
+            <div class="status ${esc(status)}">${esc(statusLabel(status))}</div>
+          </div>
+
+          <div class="booking-grid">
+            <div class="booking-cell">
+              <div class="k">Date</div>
+              <div class="v">${esc(formatDate(b.booking_date))}</div>
+            </div>
+
+            <div class="booking-cell">
+              <div class="k">Heure</div>
+              <div class="v">${esc(safe(b.booking_time, "—"))}</div>
+            </div>
+
+            <div class="booking-cell">
+              <div class="k">Personnes</div>
+              <div class="v">${esc(String(b.guests_count ?? "—"))}</div>
+            </div>
+
+            <div class="booking-cell">
+              <div class="k">Téléphone client</div>
+              <div class="v">${esc(safe(b.customer_phone, "—"))}</div>
+            </div>
+
+            <div class="booking-cell" style="grid-column:1 / -1;">
+              <div class="k">Note</div>
+              <div class="v">${esc(safe(b.note_text, "Aucune note"))}</div>
+            </div>
+          </div>
+
+          <div class="booking-actions">
+            ${wa
+              ? `<a class="mini-btn primary" href="${wa}" target="_blank" rel="noopener">💬 WhatsApp client</a>`
+              : `<span class="mini-btn" style="opacity:.6;pointer-events:none">WhatsApp indisponible</span>`
+            }
+            ${b.customer_phone
+              ? `<a class="mini-btn" href="tel:${esc(String(b.customer_phone).replace(/[^\d+]/g, ""))}">📞 Appeler</a>`
+              : ``
+            }
+          </div>
+        </article>
       `;
-      list.appendChild(item);
-    }
-  }
-
-  function updateTicket(id, patch){
-    const rows = load(KEY);
-    const i = rows.findIndex(x=>x.id===id);
-    if(i<0) return;
-    rows[i] = { ...rows[i], ...patch, updated_at: nowISO() };
-    save(KEY, rows);
-    renderTickets();
-  }
-  function removeTicket(id){
-    save(KEY, load(KEY).filter(x=>x.id!==id));
-    renderTickets();
-  }
-
-  // modal
-  const modal = $("modalNew");
-  const openModal = ()=>{
-    $("mSlug").textContent = S.slug || "—";
-    modal.style.display = "flex";
-    setTimeout(()=>$("table").focus(), 150);
-  };
-  const closeModal = ()=>{ modal.style.display = "none"; };
-
-  $("btnNew").onclick = openModal;
-  $("cancel").onclick = closeModal;
-  $("close").onclick = closeModal;
-  modal.addEventListener("click",(e)=>{ if(e.target===modal) closeModal(); });
-
-  $("save").onclick = ()=>{
-    const t = {
-      id: uid(),
-      slug: S.slug,
-      owner_id: S.owner_id || null,
-      status: "open",
-      day_key: todayKey(),
-      table: $("table").value.trim(),
-      client: $("client").value.trim(),
-      amount: $("amount").value.trim(),
-      mode: $("mode").value,
-      note: $("note").value.trim(),
-      created_at: nowISO()
-    };
-    const rows = load(KEY);
-    rows.unshift(t);
-    save(KEY, rows);
-
-    ["table","client","amount","note"].forEach(id=>$(id).value="");
-    $("mode").value = "sur_place";
-
-    closeModal();
-    renderTickets();
-  };
-
-  document.addEventListener("click",(e)=>{
-    const b = e.target.closest("[data-act]");
-    if(!b) return;
-    const id = b.getAttribute("data-id");
-    const act = b.getAttribute("data-act");
-    if(act==="ready") return updateTicket(id,{ status:"ready" });
-    if(act==="served") return updateTicket(id,{ status:"served" });
-    if(act==="cancel") return updateTicket(id,{ status:"cancelled" });
-    if(act==="del") return removeTicket(id);
-  });
-
-  $("btnPulse").onclick = ()=>alert("🔔 Inbox: V2 commandes online + notif cuisine.");
-  $("q").oninput = renderTickets;
-  $("filter").onchange = renderTickets;
-
-  $("btnHelp").onclick = ()=>{
-    const num = "221771342889";
-    const txt = encodeURIComponent("DIGIY Support — RESTO PRO. Slug: " + (S.slug||"") + " • Besoin d’aide.");
-    location.href = "https://wa.me/" + num + "?text=" + txt;
-  };
-
-  $("btnLogout").onclick = ()=>{
-    localStorage.removeItem("DIGIY_ACCESS");
-    location.href = "./index.html" + (S.slug ? ("?slug="+encodeURIComponent(S.slug)) : "");
-  };
-
-  $("btnExport").onclick = ()=>{
-    const rows = load(KEY);
-    const blob = new Blob([JSON.stringify(rows,null,2)], { type:"application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "resto-" + (S.slug||"pro") + ".json";
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 800);
-  };
-
-  $("btnReset").onclick = ()=>{
-    if(confirm("Reset démo pour ce slug ?")){
-      localStorage.removeItem(KEY);
-      localStorage.removeItem(KEY_TABLES);
-      renderTickets();
-    }
-  };
-
-  $("btnPrint").onclick = ()=>window.print();
-
-  function renderAccess(st){
-    $("slug").textContent = st?.slug || "—";
-    $("owner").textContent = (readOwnerId() || "—");
-    $("pill").textContent = st?.module ? ("PRO-" + st.module) : "—";
-    $("state").textContent = st?.ok ? "OK" : "KO";
-    $("btnPin").href = "./index.html?slug=" + encodeURIComponent(st?.slug || "");
-
-    const lines = [
-      `module=${st?.module}`,
-      `slug=${st?.slug}`,
-      `pin_ok=${st?.pin_ok}`,
-      `access_ok=${st?.access_ok}`,
-      `phone=${st?.phone || "—"}`,
-      `reason=${st?.reason || "—"}`
-    ];
-    $("details").textContent = lines.join("  |  ");
-
-    // accès
-    if(!st?.slug){
-      $("grid").style.display = "none";
-      $("btnPay").style.display = "none";
-      setMsg("⚠️ Slug manquant. Passe par GO PIN / QR.", "warn");
-      return;
-    }
-    if(st?.reason === "slug_unknown"){
-      $("grid").style.display = "none";
-      $("btnPay").style.display = "none";
-      setMsg("⚠️ Slug inconnu. Crée/valide l’abo test pour générer le slug.", "warn");
-      return;
-    }
-    if(!st?.pin_ok){
-      $("grid").style.display = "none";
-      $("btnPay").style.display = "none";
-      setMsg("🔐 PIN requis. Clique “Refaire PIN”.", "warn");
-      return;
-    }
-    if(!st?.access_ok){
-      $("grid").style.display = "none";
-      $("btnPay").href = st?.pay_url || "#";
-      $("btnPay").style.display = "inline-flex";
-      setMsg("💳 Abonnement inactif. Active pour déverrouiller.", "bad");
-      return;
     }
 
-    // OK => show module UI
-    $("btnPay").style.display = "none";
-    $("grid").style.display = "grid";
-    setMsg("✅ Abonnement OK. Cockpit ouvert.", "ok");
+    function renderBookings(rows){
+      currentBookings = Array.isArray(rows) ? rows : [];
+      const box = $("bookingsList");
 
-    // module switch
-    if(st.module === "RESTO"){
-      $("title").textContent = "🍽️ DIGIY PRO-RESTO — Cockpit";
-      document.title = "🍽️ DIGIY PRO-RESTO — Cockpit";
-      $("restoCard").style.display = "block";
-      // init keys
-      KEY = "DIGIY_RESTO_TICKETS::" + st.slug;
-      KEY_TABLES = "DIGIY_RESTO_TABLES::" + st.slug;
-      renderTickets();
-    } else if(st.module === "RESA"){
-      $("title").textContent = "📅 DIGIY PRO-RESA — Cockpit";
-      document.title = "📅 DIGIY PRO-RESA — Cockpit";
-      $("restoCard").style.display = "none";
-      // tu brancheras ta UI RESA ici
-    } else {
-      $("title").textContent = "DIGIY PRO — Cockpit";
-      document.title = "DIGIY PRO — Cockpit";
-      $("restoCard").style.display = "none";
+      if(!currentBookings.length){
+        box.innerHTML = `<div class="empty">Aucune réservation récente pour le moment.</div>`;
+        return;
+      }
+
+      box.innerHTML = currentBookings.map(bookingCard).join("");
     }
-  }
 
-  function readOwnerId(){
-    try{
-      const s = JSON.parse(localStorage.getItem("DIGIY_ACCESS")||"null");
-      return s?.owner_id || "";
-    }catch{ return ""; }
-  }
-
-  async function boot(){
-    const st = await window.DIGIY_GUARD.ready;
-    if(!st?.ok){
-      setMsg("❌ Guard error: " + (st?.error || "unknown"), "bad");
-      return;
+    function applySearch(){
+      const q = ($("bookingSearch").value || "").trim().toLowerCase();
+      document.querySelectorAll("#bookingsList .booking").forEach(el => {
+        const hay = el.getAttribute("data-search") || "";
+        el.style.display = (!q || hay.includes(q)) ? "" : "none";
+      });
     }
-    S.slug = st.slug || "";
-    S.phone = st.phone || "";
-    S.module = st.module || "";
-    S.owner_id = readOwnerId() || "";
-    renderAccess(st);
-  }
 
-  $("btnCheck").addEventListener("click", async ()=>{
-    const st = await window.DIGIY_GUARD.refresh();
-    S.slug = st.slug || "";
-    S.phone = st.phone || "";
-    S.module = st.module || "";
-    S.owner_id = readOwnerId() || "";
-    renderAccess(st);
-  });
+    async function loadAll(){
+      if(!slug){
+        $("topTitle").textContent = "Slug manquant";
+        $("topSubtitle").textContent = "Impossible d’ouvrir ce cockpit sans identifiant établissement.";
+        setStatus("Slug manquant. Ouvre la page avec ?slug=resa-...", "err");
+        $("bookingsList").innerHTML = `<div class="empty">Cockpit indisponible sans slug.</div>`;
+        return;
+      }
 
-  boot();
-</script>
+      $("slugPill").textContent = "slug : " + slug;
+      $("btnProfile").href = profileUrl(slug);
+      $("btnPublic").href = publicUrl(slug);
+      $("btnReserve").href = reserveUrl(slug);
+
+      setStatus("Chargement du cockpit...");
+
+      try{
+        const [profileRes, statsRes, bookingsRes] = await Promise.all([
+          sb.rpc("resa_get_profile_by_slug", { p_slug: slug }),
+          sb.rpc("resa_stats_by_slug", { p_slug: slug }),
+          sb.rpc("resa_list_recent_bookings_by_slug", { p_slug: slug, p_limit: 50 })
+        ]);
+
+        if(profileRes.error) throw profileRes.error;
+        if(statsRes.error) throw statsRes.error;
+        if(bookingsRes.error) throw bookingsRes.error;
+
+        if(!profileRes.data?.ok){
+          throw new Error(profileRes.data?.error || "profile_not_found");
+        }
+
+        fillProfile(profileRes.data.profile || {});
+        fillStats(statsRes.data || {});
+        renderBookings(bookingsRes.data?.rows || []);
+
+        setStatus("Cockpit chargé proprement.", "ok");
+      }catch(e){
+        console.error(e);
+        $("topTitle").textContent = "Cockpit indisponible";
+        $("topSubtitle").textContent = "Impossible de charger les données établissement.";
+        $("bookingsList").innerHTML = `<div class="empty">Impossible de charger les réservations.</div>`;
+        setStatus("Erreur de chargement cockpit.", "err");
+      }
+    }
+
+    $("btnRefresh").addEventListener("click", loadAll);
+    $("bookingSearch").addEventListener("input", applySearch);
+
+    loadAll();
+  </script>
 </body>
 </html>
