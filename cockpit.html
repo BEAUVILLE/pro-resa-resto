@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>DIGIY RESA PRO — Cockpit</title>
   <meta name="theme-color" content="#061b14"/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js"></script>
 
   <style>
     :root{
@@ -396,8 +402,8 @@
           <p id="heroMeta">Slug : —</p>
 
           <div class="hero-cta" id="heroCta">
-            <a class="btn warn" href="./pin.html">Ouvrir ma porte PIN</a>
-            <a class="btn ghost" href="./etablissement.html">Voir les réglages</a>
+            <a class="btn warn" id="heroPin" href="./pin.html">Ouvrir ma porte PIN</a>
+            <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir les réglages</a>
           </div>
         </div>
 
@@ -444,19 +450,17 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const qs = new URLSearchParams(location.search);
-    const slug = qs.get("slug") || "";
 
     const $ = (id) => document.getElementById(id);
 
     let ALL_BOOKINGS = [];
     let ACTIVE_FILTER = "all";
     let PROFILE = null;
-    let IS_PREVIEW = !slug;
+    let RESOLVED_SLUG = "";
+    let IS_PREVIEW = true;
 
     function escapeHtml(v){
       return String(v ?? "")
@@ -556,16 +560,40 @@
       $("emptyState").style.display = "none";
       $("bookingList").innerHTML = "";
       ALL_BOOKINGS = [];
+      PROFILE = null;
     }
 
-    function setPreviewHero(){
+    async function resolveGuardState(){
+      if(!window.DIGIY_GUARD?.ready){
+        return {
+          ok: false,
+          preview: true,
+          access_ok: false,
+          slug: "",
+          reason: "guard_missing"
+        };
+      }
+
+      await window.DIGIY_GUARD.ready;
+      const st = window.DIGIY_GUARD.state;
+
+      return st || {
+        ok: false,
+        preview: true,
+        access_ok: false,
+        slug: "",
+        reason: "guard_empty"
+      };
+    }
+
+    function setPreviewHero(message = ""){
       $("modeBadge").className = "mode";
       $("modeBadge").textContent = "Mode aperçu";
 
       $("heroName").textContent = "DIGIY RESA PRO";
       $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, suivi terrain.";
       $("heroMeta").textContent = "Slug : absent — aperçu visuel du logiciel";
-      $("topSub").textContent = "Aucun slug détecté. Tu vois le cockpit en mode aperçu élégant.";
+      $("topSub").textContent = message || "Aucun slug détecté. Tu vois le cockpit en mode aperçu élégant.";
       $("panelTitle").textContent = "Aperçu des réservations";
       $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le cockpit vivant.";
       $("miniTitle").textContent = "Aperçu intelligent";
@@ -573,21 +601,30 @@
         "Pas de slug ? Pas grave. On ne jette pas le pro contre un mur. On lui montre le logiciel, puis on l’invite à entrer proprement par sa porte PIN.";
 
       $("btnSettings").href = "./etablissement.html";
+      $("btnPin").href = "./pin.html";
+      $("heroSettings").href = "./etablissement.html";
+      $("heroPin").href = "./pin.html";
     }
 
     function setLiveHero(){
       $("modeBadge").className = "mode live";
       $("modeBadge").textContent = "Mode vivant";
 
-      $("heroMeta").textContent = `Slug : ${slug}`;
-      $("topSub").textContent = `Cockpit chargé pour ${slug}`;
+      $("heroMeta").textContent = `Slug : ${RESOLVED_SLUG}`;
+      $("topSub").textContent = `Cockpit chargé pour ${RESOLVED_SLUG}`;
       $("panelTitle").textContent = "Réservations récentes";
       $("footerNote").textContent = "Cockpit vivant branché sur les réservations réelles.";
       $("miniTitle").textContent = "Lecture terrain";
       $("miniText").textContent =
         "Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes, tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.";
 
-      $("btnSettings").href = `./etablissement.html?slug=${encodeURIComponent(slug)}`;
+      const settingsHref = `./etablissement.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`;
+      const pinHref = `./pin.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`;
+
+      $("btnSettings").href = settingsHref;
+      $("btnPin").href = pinHref;
+      $("heroSettings").href = settingsHref;
+      $("heroPin").href = pinHref;
     }
 
     function loadPreviewData(){
@@ -666,7 +703,7 @@
 
     async function loadProfile(){
       try{
-        const data = await rpc("resa_get_profile_by_slug", { p_slug: slug });
+        const data = await rpc("resa_get_profile_by_slug", { p_slug: RESOLVED_SLUG });
         PROFILE = data?.profile || data || null;
       }catch{
         PROFILE = null;
@@ -686,10 +723,10 @@
       let data = null;
 
       try{
-        data = await rpc("resa_stats_v2_by_slug", { p_slug: slug });
+        data = await rpc("resa_stats_v2_by_slug", { p_slug: RESOLVED_SLUG });
       }catch{
         try{
-          data = await rpc("resa_stats_by_slug", { p_slug: slug });
+          data = await rpc("resa_stats_by_slug", { p_slug: RESOLVED_SLUG });
         }catch{
           data = null;
         }
@@ -708,12 +745,12 @@
 
       try{
         data = await rpc("resa_list_recent_bookings_v2_by_slug", {
-          p_slug: slug,
+          p_slug: RESOLVED_SLUG,
           p_limit: 100
         });
       }catch{
         data = await rpc("resa_list_recent_bookings_by_slug", {
-          p_slug: slug
+          p_slug: RESOLVED_SLUG
         });
       }
 
@@ -812,7 +849,7 @@
     }
 
     async function setBookingStatus(bookingId, status, btnEl){
-      if(!slug) return;
+      if(!RESOLVED_SLUG) return;
       if(!bookingId) return alert("Booking introuvable.");
       if(btnEl?.dataset?.busy === "1") return;
 
@@ -823,7 +860,7 @@
 
       try{
         const data = await rpc("resa_set_booking_status_by_slug", {
-          p_slug: slug,
+          p_slug: RESOLVED_SLUG,
           p_booking_id: bookingId,
           p_status: status,
           p_status_note: null
@@ -865,32 +902,65 @@
     async function boot(){
       document.body.classList.add("loading");
       resetView();
+      resetStats();
 
       try{
-        if(!slug){
+        await window.DIGIY_GUARD.ready;
+        const st = window.DIGIY_GUARD.state;
+
+        if(st?.preview){
           IS_PREVIEW = true;
+          RESOLVED_SLUG = "";
           loadPreviewData();
+
+          if(st.reason === "preview_no_identity"){
+            $("topSub").textContent = "Aucun slug détecté. Aperçu affiché.";
+          }else if(st.reason === "unknown_identity"){
+            $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
+          }else if(st.reason === "guard_error"){
+            $("topSub").textContent = "Guard indisponible. Aperçu affiché.";
+          }
+
           return;
         }
 
-        IS_PREVIEW = false;
-        setLiveHero();
+        if(st?.access_ok){
+          IS_PREVIEW = false;
+          RESOLVED_SLUG = st.slug || "";
+          if(!RESOLVED_SLUG){
+            IS_PREVIEW = true;
+            loadPreviewData();
+            $("topSub").textContent = "Accès OK mais slug absent. Aperçu affiché.";
+            return;
+          }
 
-        await loadProfile();
-        await Promise.all([
-          loadStats(),
-          loadBookings()
-        ]);
+          setLiveHero();
+          await loadProfile();
+          await Promise.all([
+            loadStats(),
+            loadBookings()
+          ]);
+          return;
+        }
+
+        IS_PREVIEW = true;
+        RESOLVED_SLUG = "";
+        loadPreviewData();
+
+        if(st?.reason === "no_subscription"){
+          $("topSub").textContent = "Accès non actif. Aperçu affiché.";
+        }else if(st?.reason === "unknown_identity"){
+          $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
+        }else{
+          $("topSub").textContent = "Accès indisponible. Aperçu affiché.";
+        }
       }catch(err){
         console.error(err);
 
-        $("bookingList").innerHTML = "";
-        resetStats();
-        $("emptyState").style.display = "block";
-        $("emptyState").textContent = "Erreur de chargement du cockpit.";
-        $("topSub").textContent = slug
-          ? `Impossible de charger le cockpit pour ${slug}.`
-          : "Impossible de charger l’aperçu.";
+        IS_PREVIEW = true;
+        RESOLVED_SLUG = "";
+        loadPreviewData();
+        $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
       }finally{
         document.body.classList.remove("loading");
       }
