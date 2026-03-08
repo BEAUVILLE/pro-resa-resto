@@ -456,8 +456,6 @@
       "use strict";
 
       const MODULE = "RESA";
-      const SUPABASE_URL = window.DIGIY_SUPABASE_URL || "";
-      const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "";
       const querySlug = new URL(location.href).searchParams.get("slug") || "";
 
       const $ = (id) => document.getElementById(id);
@@ -556,6 +554,36 @@
           guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
           note: r.note || r.message || r.special_request || ""
         }));
+      }
+
+      function initClient(){
+        if (window.DIGIY_SB) {
+          sb = window.DIGIY_SB;
+          return;
+        }
+
+        if (!window.supabase?.createClient) {
+          throw new Error("Supabase JS non chargé.");
+        }
+
+        sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+          {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+              storage: {
+                getItem: () => null,
+                setItem: () => {},
+                removeItem: () => {}
+              }
+            }
+          }
+        );
+
+        window.DIGIY_SB = sb;
       }
 
       function setPreviewLinks(slug = ""){
@@ -809,10 +837,18 @@
       }
 
       function previewActionHtml(){
+        const pinHref = RESOLVED_SLUG
+          ? `./pin.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+          : "./pin.html";
+
+        const settingsHref = RESOLVED_SLUG
+          ? `./etablissement.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+          : "./etablissement.html";
+
         return `
           <div class="booking-actions">
-            <a class="action-btn preview" href="./pin.html">Entrer par PIN pour agir</a>
-            <a class="action-btn preview" href="./etablissement.html">Voir les réglages</a>
+            <a class="action-btn preview" href="${pinHref}">Entrer par PIN pour agir</a>
+            <a class="action-btn preview" href="${settingsHref}">Voir les réglages</a>
           </div>
         `;
       }
@@ -950,6 +986,8 @@
         resetStats();
 
         try{
+          initClient();
+
           const st = await resolveGuardState();
 
           if(st?.preview){
@@ -1023,26 +1061,12 @@
       $("btnReload").addEventListener("click", boot);
       initFilters();
 
-      if(!window.supabase || typeof window.supabase.createClient !== "function"){
-        console.error("Supabase JS non chargé.");
-        loadPreviewData(normalizeSlug(querySlug));
-        $("topSub").textContent = "Supabase indisponible. Aperçu affiché.";
-      } else {
-        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          auth: {
-            persistSession: false,
-            autoRefreshToken: false,
-            detectSessionInUrl: false,
-            storage: {
-              getItem: () => null,
-              setItem: () => {},
-              removeItem: () => {}
-            }
-          }
-        });
-
-        window.sb = sb;
+      try{
         boot();
+      }catch(err){
+        console.error(err);
+        loadPreviewData(normalizeSlug(querySlug));
+        $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
       }
     })();
   </script>
