@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>DIGIY RESA PRO — Établissement</title>
+  <meta name="theme-color" content="#071912"/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_MODULE = "RESA";
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js"></script>
+
+  <style>
+    :root{
+      --bg:#071912;
+      --bg2:#0a2218;
+      --card:#0e241b;
+      --card2:#123126;
+      --line:rgba(255,255,255,.10);
+      --text:#ecfff4;
+      --muted:rgba(236,255,244,.72);
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --gold:#facc15;
+      --accent:#38bdf8;
+      --shadow:0 18px 55px rgba(0,0,0,.34);
+      --radius:22px;
+      --max:1180px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.08), transparent 55%),
+        linear-gradient(180deg, #071912, #06140f 55%, #040d09 100%);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    .wrap{
+      max-width:var(--max);
+      margin:auto;
+      padding:16px;
+      display:grid;
+      gap:14px;
+    }
+
+    .topbar,
+    .hero,
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));
+      box-shadow:var(--shadow);
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:grid;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:900;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.5rem,3.4vw,2.3rem);
+      line-height:1.05;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.96rem;
+      font-weight:700;
+    }
+
+    .topActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:46px;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      background:linear-gradient(135deg, rgba(34,197,94,.24), rgba(22,163,74,.22));
+      border-color:rgba(34,197,94,.30);
+    }
+    .btn.gold{
+      background:rgba(250,204,21,.10);
+      color:#ffe79d;
+      border-color:rgba(250,204,21,.24);
+    }
+    .btn.warn{
+      background:rgba(245,158,11,.10);
+      color:#ffd593;
+      border-color:rgba(245,158,11,.24);
+    }
+    .btn:disabled{
+      opacity:.58;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .hero{
+      padding:18px;
+      display:grid;
+      gap:12px;
+      background:
+        radial-gradient(400px 220px at 0% 0%, rgba(255,255,255,.05), transparent 60%),
+        linear-gradient(135deg, rgba(34,197,94,.12), rgba(56,189,248,.08));
+    }
+
+    .heroGrid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:14px;
+    }
+
+    @media(max-width:920px){
+      .heroGrid{grid-template-columns:1fr}
+    }
+
+    .mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.10);
+      color:#fff1a8;
+      font-size:.9rem;
+      font-weight:900;
+      width:max-content;
+    }
+
+    .mode.live{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+    }
+
+    .heroNote{
+      color:var(--muted);
+      line-height:1.55;
+      font-weight:750;
+    }
+
+    .miniCard{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(0,0,0,.14);
+      padding:14px;
+    }
+
+    .miniCard strong{
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 11px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .statusBar{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(0,0,0,.16);
+      padding:12px 14px;
+      font-weight:900;
+      color:var(--muted);
+      line-height:1.45;
+    }
+
+    .statusBar.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.22);
+      background:rgba(34,197,94,.10);
+    }
+
+    .statusBar.warn{
+      color:#fde68a;
+      border-color:rgba(250,204,21,.22);
+      background:rgba(250,204,21,.08);
+    }
+
+    .statusBar.err{
+      color:#fecaca;
+      border-color:rgba(239,68,68,.22);
+      background:rgba(239,68,68,.08);
+    }
+
+    .grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns:1fr;
+    }
+
+    @media(min-width:980px){
+      .grid{grid-template-columns:1fr 1fr}
+    }
+
+    .card{
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size:1.02rem;
+    }
+
+    .cardBody{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:750;
+      line-height:1.5;
+    }
+
+    .formGrid{
+      display:grid;
+      gap:12px;
+      grid-template-columns:1fr;
+    }
+
+    @media(min-width:640px){
+      .formGrid.two{grid-template-columns:1fr 1fr}
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+    }
+
+    label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:900;
+    }
+
+    input, textarea, select{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      padding:12px 14px;
+      outline:none;
+      font:inherit;
+    }
+
+    input::placeholder,
+    textarea::placeholder{
+      color:rgba(236,255,244,.38);
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+      font-weight:700;
+    }
+
+    .facts{
+      display:grid;
+      gap:10px;
+    }
+
+    .fact{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,255,255,.03);
+    }
+
+    .fact .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:850;
+      margin-bottom:6px;
+    }
+
+    .fact .v{
+      font-size:14px;
+      font-weight:900;
+      line-height:1.45;
+      word-break:break-word;
+    }
+
+    .actionsBottom{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      padding:4px 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <section class="topbar">
+      <div class="brand">
+        <div class="eyebrow">DIGIY RESA PRO</div>
+        <h1>Paramètres établissement</h1>
+        <div class="sub" id="topSub">Chargement de la fiche établissement…</div>
+      </div>
+
+      <div class="topActions">
+        <button class="btn" id="btnReload" type="button">Recharger</button>
+        <a class="btn warn" id="btnPin" href="./pin.html">Porte PIN</a>
+        <a class="btn gold" id="btnCockpit" href="./cockpit.html">Cockpit</a>
+      </div>
+    </section>
+
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="mode" id="modeBadge">Mode aperçu</div>
+          <div style="margin-top:10px;font-size:1.25rem;font-weight:950;" id="heroTitle">Fiche établissement</div>
+          <div class="heroNote" id="heroText">
+            Ici tu règles le nom affiché, les contacts, les horaires et le message client.
+          </div>
+
+          <div class="chips" style="margin-top:12px">
+            <div class="chip" id="chipSlug">Slug : —</div>
+            <div class="chip" id="chipModule">Module : RESA</div>
+            <div class="chip" id="chipSave">Sauvegarde : intelligente</div>
+          </div>
+        </div>
+
+        <div class="miniCard">
+          <strong>Lecture simple</strong>
+          <div class="muted" id="miniText">
+            On garde la page stable. Si le backend n’est pas encore posé, la page sauvegarde au moins un brouillon local.
+          </div>
+        </div>
+      </div>
+
+      <div class="statusBar" id="statusBar">Prêt.</div>
+    </section>
+
+    <section class="grid">
+      <section class="card">
+        <div class="cardHead">
+          <h2>Identité</h2>
+          <span class="muted">Ce que voit le client</span>
+        </div>
+        <div class="cardBody">
+          <div class="formGrid">
+            <div class="field">
+              <label for="business_name">Nom établissement</label>
+              <input id="business_name" type="text" placeholder="Ex : Chez Astou Saly"/>
+            </div>
+
+            <div class="field">
+              <label for="tagline">Tagline</label>
+              <input id="tagline" type="text" placeholder="Ex : Réservation simple, accueil premium"/>
+            </div>
+
+            <div class="field">
+              <label for="owner_name">Responsable</label>
+              <input id="owner_name" type="text" placeholder="Ex : Astou Ndiaye"/>
+            </div>
+
+            <div class="field">
+              <label for="slug_public">Slug public</label>
+              <input id="slug_public" type="text" placeholder="resa-221771342889" readonly/>
+              <div class="hint">Le slug pilote la route du cockpit. Ici on l’affiche, on ne le casse pas.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
+          <h2>Contacts</h2>
+          <span class="muted">Téléphones terrain</span>
+        </div>
+        <div class="cardBody">
+          <div class="formGrid two">
+            <div class="field">
+              <label for="whatsapp_phone">WhatsApp</label>
+              <input id="whatsapp_phone" type="tel" placeholder="221771234567"/>
+            </div>
+
+            <div class="field">
+              <label for="call_phone">Appel direct</label>
+              <input id="call_phone" type="tel" placeholder="221771234567"/>
+            </div>
+
+            <div class="field">
+              <label for="wave_phone">Wave</label>
+              <input id="wave_phone" type="tel" placeholder="221771234567"/>
+            </div>
+
+            <div class="field">
+              <label for="contact_email">Email</label>
+              <input id="contact_email" type="email" placeholder="contact@exemple.com"/>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
+          <h2>Localisation & service</h2>
+          <span class="muted">Repères pratiques</span>
+        </div>
+        <div class="cardBody">
+          <div class="formGrid two">
+            <div class="field">
+              <label for="quartier">Quartier</label>
+              <input id="quartier" type="text" placeholder="Ex : Saly Centre"/>
+            </div>
+
+            <div class="field">
+              <label for="city">Ville</label>
+              <input id="city" type="text" placeholder="Ex : Saly"/>
+            </div>
+
+            <div class="field">
+              <label for="open_from">Ouverture</label>
+              <input id="open_from" type="time"/>
+            </div>
+
+            <div class="field">
+              <label for="open_to">Fermeture</label>
+              <input id="open_to" type="time"/>
+            </div>
+
+            <div class="field">
+              <label for="max_covers">Capacité / couverts</label>
+              <input id="max_covers" type="number" min="0" placeholder="Ex : 30"/>
+            </div>
+
+            <div class="field">
+              <label for="avg_duration_min">Durée moyenne réservation (min)</label>
+              <input id="avg_duration_min" type="number" min="0" placeholder="Ex : 90"/>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHead">
+          <h2>Message & description</h2>
+          <span class="muted">Texte client</span>
+        </div>
+        <div class="cardBody">
+          <div class="field">
+            <label for="address">Adresse</label>
+            <input id="address" type="text" placeholder="Ex : Route de Saly, près du rond-point"/>
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Présente ton lieu, ton ambiance, ta spécialité…"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="booking_message">Message après réservation</label>
+            <textarea id="booking_message" placeholder="Ex : Merci. Présentez-vous 10 minutes avant l’heure."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" style="grid-column:1/-1">
+        <div class="cardHead">
+          <h2>État & actions</h2>
+          <span class="muted">Lecture technique simple</span>
+        </div>
+        <div class="cardBody">
+          <div class="facts">
+            <div class="fact">
+              <div class="k">Mode actuel</div>
+              <div class="v" id="factMode">—</div>
+            </div>
+
+            <div class="fact">
+              <div class="k">Slug résolu</div>
+              <div class="v" id="factSlug">—</div>
+            </div>
+
+            <div class="fact">
+              <div class="k">Sauvegarde</div>
+              <div class="v" id="factSave">Backend si disponible, sinon brouillon local.</div>
+            </div>
+          </div>
+
+          <div class="actionsBottom">
+            <button class="btn" id="btnDraft" type="button">Enregistrer brouillon local</button>
+            <button class="btn primary" id="btnSave" type="button">Sauvegarder</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <div class="footer">
+      DIGIY RESA PRO • Établissement • page-safe • preview-safe
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const MODULE = "RESA";
+      const $ = (id) => document.getElementById(id);
+
+      let sb = null;
+      let RESOLVED_SLUG = "";
+      let RESOLVED_PHONE = "";
+      let CURRENT_STATE = null;
+      let LAST_LOADED_PROFILE = {};
+
+      const FIELD_IDS = [
+        "business_name",
+        "tagline",
+        "owner_name",
+        "slug_public",
+        "whatsapp_phone",
+        "call_phone",
+        "wave_phone",
+        "contact_email",
+        "quartier",
+        "city",
+        "open_from",
+        "open_to",
+        "max_covers",
+        "avg_duration_min",
+        "address",
+        "description",
+        "booking_message"
+      ];
+
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+      }
+
+      function normalizePhone(v){
+        return String(v || "").replace(/[^\d]/g, "");
+      }
+
+      function localDraftKey(slug){
+        return `digiy_resa_profile_draft_${normalizeSlug(slug || "preview")}`;
+      }
+
+      function setStatus(message, tone = ""){
+        const el = $("statusBar");
+        el.className = "statusBar" + (tone ? " " + tone : "");
+        el.textContent = message;
+      }
+
+      function setMode(mode, text){
+        const badge = $("modeBadge");
+        badge.className = "mode" + (mode === "live" ? " live" : "");
+        badge.textContent = mode === "live" ? "Mode vivant" : "Mode aperçu";
+
+        $("factMode").textContent = text || (mode === "live" ? "Accès actif confirmé." : "Aperçu ou brouillon local.");
+      }
+
+      function fillField(id, value){
+        const el = $(id);
+        if(!el) return;
+        el.value = value == null ? "" : String(value);
+      }
+
+      function readField(id){
+        return $(id)?.value ?? "";
+      }
+
+      function collectProfile(){
+        return {
+          business_name: readField("business_name").trim(),
+          tagline: readField("tagline").trim(),
+          owner_name: readField("owner_name").trim(),
+          slug: normalizeSlug(readField("slug_public").trim() || RESOLVED_SLUG),
+          whatsapp_phone: normalizePhone(readField("whatsapp_phone")),
+          call_phone: normalizePhone(readField("call_phone")),
+          wave_phone: normalizePhone(readField("wave_phone")),
+          contact_email: readField("contact_email").trim(),
+          quartier: readField("quartier").trim(),
+          city: readField("city").trim(),
+          open_from: readField("open_from").trim(),
+          open_to: readField("open_to").trim(),
+          max_covers: readField("max_covers").trim(),
+          avg_duration_min: readField("avg_duration_min").trim(),
+          address: readField("address").trim(),
+          description: readField("description").trim(),
+          booking_message: readField("booking_message").trim()
+        };
+      }
+
+      function fillProfile(p = {}){
+        fillField("business_name", p.business_name || p.name || p.restaurant_name || "");
+        fillField("tagline", p.tagline || "");
+        fillField("owner_name", p.owner_name || "");
+        fillField("slug_public", normalizeSlug(p.slug || RESOLVED_SLUG || ""));
+        fillField("whatsapp_phone", p.whatsapp_phone || p.phone || "");
+        fillField("call_phone", p.call_phone || "");
+        fillField("wave_phone", p.wave_phone || "");
+        fillField("contact_email", p.contact_email || p.email || "");
+        fillField("quartier", p.quartier || "");
+        fillField("city", p.city || "");
+        fillField("open_from", p.open_from || "");
+        fillField("open_to", p.open_to || "");
+        fillField("max_covers", p.max_covers || p.covers || "");
+        fillField("avg_duration_min", p.avg_duration_min || p.avg_duration || "");
+        fillField("address", p.address || p.adresse || "");
+        fillField("description", p.description || "");
+        fillField("booking_message", p.booking_message || p.confirmation_message || "");
+      }
+
+      function readDraft(){
+        try{
+          return JSON.parse(localStorage.getItem(localDraftKey(RESOLVED_SLUG)) || "null");
+        }catch{
+          return null;
+        }
+      }
+
+      function saveDraft(showMessage = true){
+        const payload = collectProfile();
+        localStorage.setItem(localDraftKey(RESOLVED_SLUG), JSON.stringify(payload));
+        if(showMessage){
+          setStatus("Brouillon local enregistré.", "ok");
+        }
+      }
+
+      async function rpc(name, args){
+        if(!sb) throw new Error("supabase_unavailable");
+        const { data, error } = await sb.rpc(name, args);
+        if(error) throw error;
+        return data;
+      }
+
+      async function resolveGuardState(){
+        const qs = new URL(location.href).searchParams;
+        const urlSlug = normalizeSlug(qs.get("slug") || "");
+        const memorySlug =
+          normalizeSlug(sessionStorage.getItem("digiy_resa_slug") || "") ||
+          normalizeSlug(localStorage.getItem("digiy_resa_last_slug") || "");
+
+        if(!window.DIGIY_GUARD?.ready){
+          return {
+            preview: true,
+            access_ok: false,
+            slug: urlSlug || memorySlug,
+            phone: "",
+            reason: "guard_missing"
+          };
+        }
+
+        try{
+          await window.DIGIY_GUARD.ready;
+          const st = window.DIGIY_GUARD.state || {};
+          return {
+            ...st,
+            slug: normalizeSlug(st.slug || urlSlug || memorySlug || ""),
+            phone: String(st.phone || "").replace(/[^\d]/g, "")
+          };
+        }catch{
+          return {
+            preview: true,
+            access_ok: false,
+            slug: urlSlug || memorySlug,
+            phone: "",
+            reason: "guard_error"
+          };
+        }
+      }
+
+      async function loadProfileFromBackend(){
+        if(!RESOLVED_SLUG) return null;
+
+        try{
+          const data = await rpc("resa_get_profile_by_slug", { p_slug: RESOLVED_SLUG });
+          return data?.profile || data || null;
+        }catch{
+          return null;
+        }
+      }
+
+      async function trySaveBackend(payload){
+        if(!RESOLVED_SLUG) {
+          return { ok:false, reason:"missing_slug" };
+        }
+
+        const tries = [
+          { name:"resa_upsert_profile_by_slug", args:{ p_slug: RESOLVED_SLUG, p_profile: payload } },
+          { name:"resa_save_profile_by_slug",   args:{ p_slug: RESOLVED_SLUG, p_profile: payload } },
+          { name:"resa_update_profile_by_slug", args:{ p_slug: RESOLVED_SLUG, p_profile: payload } },
+          { name:"resa_upsert_profile_by_slug", args:{ p_slug: RESOLVED_SLUG, ...payload } },
+          { name:"resa_save_profile_by_slug",   args:{ p_slug: RESOLVED_SLUG, ...payload } },
+          { name:"resa_update_profile_by_slug", args:{ p_slug: RESOLVED_SLUG, ...payload } }
+        ];
+
+        let lastError = null;
+
+        for(const t of tries){
+          try{
+            const data = await rpc(t.name, t.args);
+            if(data === false) throw new Error("save_refused");
+            return { ok:true, rpc:t.name, data };
+          }catch(err){
+            lastError = err;
+          }
+        }
+
+        return { ok:false, reason:"backend_unavailable", error:lastError };
+      }
+
+      function applyLinks(){
+        const pinHref = RESOLVED_SLUG
+          ? `./pin.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+          : "./pin.html";
+
+        const cockpitHref = RESOLVED_SLUG
+          ? `./cockpit.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+          : "./cockpit.html";
+
+        $("btnPin").href = pinHref;
+        $("btnCockpit").href = cockpitHref;
+      }
+
+      function applyHero(){
+        $("chipSlug").textContent = `Slug : ${RESOLVED_SLUG || "—"}`;
+        $("factSlug").textContent = RESOLVED_SLUG || "—";
+        $("slug_public").value = RESOLVED_SLUG || "";
+      }
+
+      function disableSaveButtons(isDisabled){
+        $("btnSave").disabled = isDisabled;
+        $("btnDraft").disabled = isDisabled;
+      }
+
+      async function boot(){
+        setStatus("Chargement de la fiche établissement…");
+        disableSaveButtons(true);
+
+        if(window.supabase?.createClient){
+          sb = window.supabase.createClient(
+            window.DIGIY_SUPABASE_URL,
+            window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+            {
+              auth:{
+                persistSession:false,
+                autoRefreshToken:false,
+                detectSessionInUrl:false,
+                storage:{
+                  getItem:() => null,
+                  setItem:() => {},
+                  removeItem:() => {}
+                }
+              }
+            }
+          );
+        }
+
+        CURRENT_STATE = await resolveGuardState();
+        RESOLVED_SLUG = normalizeSlug(CURRENT_STATE?.slug || "");
+        RESOLVED_PHONE = String(CURRENT_STATE?.phone || "").replace(/[^\d]/g, "");
+
+        applyLinks();
+        applyHero();
+
+        const draft = readDraft();
+
+        if(CURRENT_STATE?.access_ok && RESOLVED_SLUG){
+          setMode("live", "Accès actif confirmé.");
+          $("topSub").textContent = `Fiche établissement chargée pour ${RESOLVED_SLUG}`;
+          $("heroTitle").textContent = "Édite ta fiche établissement";
+          $("heroText").textContent = "Ici tu poses les informations visibles et utiles pour ton activité.";
+          setStatus("Lecture backend en cours…", "warn");
+
+          const backendProfile = await loadProfileFromBackend();
+
+          if(backendProfile){
+            LAST_LOADED_PROFILE = backendProfile;
+            fillProfile(backendProfile);
+            setStatus("Profil chargé depuis le backend.", "ok");
+          } else if(draft){
+            LAST_LOADED_PROFILE = draft;
+            fillProfile(draft);
+            setStatus("Backend non trouvé. Brouillon local chargé.", "warn");
+          } else {
+            LAST_LOADED_PROFILE = {};
+            fillProfile({ slug: RESOLVED_SLUG, whatsapp_phone: RESOLVED_PHONE });
+            setStatus("Aucun profil backend trouvé. Formulaire prêt.", "warn");
+          }
+
+          disableSaveButtons(false);
+          return;
+        }
+
+        setMode("preview", "Aperçu ou brouillon local.");
+        $("topSub").textContent = RESOLVED_SLUG
+          ? `Slug détecté (${RESOLVED_SLUG}) mais accès non confirmé.`
+          : "Aucun slug détecté. Aperçu affiché.";
+        $("heroTitle").textContent = "Fiche établissement — mode stable";
+        $("heroText").textContent = "Même si le backend n’est pas encore posé, tu peux préparer proprement la fiche.";
+        $("miniText").textContent = "Cette page ne casse pas. Elle garde un brouillon local tant que la vraie sauvegarde backend n’est pas branchée.";
+        fillProfile(draft || { slug: RESOLVED_SLUG });
+        setStatus(
+          RESOLVED_SLUG
+            ? "Mode aperçu avec slug détecté. Tu peux préparer la fiche."
+            : "Mode aperçu sans slug. Prépare le formulaire ou entre par PIN.",
+          "warn"
+        );
+        disableSaveButtons(false);
+      }
+
+      $("btnReload").addEventListener("click", boot);
+
+      $("btnDraft").addEventListener("click", () => {
+        saveDraft(true);
+      });
+
+      $("btnSave").addEventListener("click", async () => {
+        const payload = collectProfile();
+        payload.slug = normalizeSlug(payload.slug || RESOLVED_SLUG);
+
+        if(!payload.slug){
+          saveDraft(false);
+          setStatus("Slug absent. Brouillon local enregistré en attendant.", "warn");
+          return;
+        }
+
+        saveDraft(false);
+        setStatus("Tentative de sauvegarde backend…", "warn");
+
+        const result = await trySaveBackend(payload);
+
+        if(result.ok){
+          LAST_LOADED_PROFILE = payload;
+          localStorage.setItem("digiy_resa_last_slug", payload.slug);
+          sessionStorage.setItem("digiy_resa_slug", payload.slug);
+          setStatus(`Profil sauvegardé via ${result.rpc}.`, "ok");
+          return;
+        }
+
+        setStatus("Backend non branché ou RPC absente. Brouillon local enregistré.", "warn");
+      });
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
