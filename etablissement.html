@@ -411,14 +411,14 @@
           <div class="chips" style="margin-top:12px">
             <div class="chip" id="chipSlug">Slug : —</div>
             <div class="chip" id="chipModule">Module : RESA</div>
-            <div class="chip" id="chipSave">Sauvegarde : intelligente</div>
+            <div class="chip" id="chipSave">Sauvegarde : backend actif</div>
           </div>
         </div>
 
         <div class="miniCard">
-          <strong>Lecture simple</strong>
+          <strong>Vue établissement</strong>
           <div class="muted" id="miniText">
-            On garde la page stable. Si le backend n’est pas encore posé, la page sauvegarde au moins un brouillon local.
+            Ici tu règles les informations essentielles de ton établissement : identité, contacts, horaires et message client.
           </div>
         </div>
       </div>
@@ -553,8 +553,8 @@
 
       <section class="card" style="grid-column:1/-1">
         <div class="cardHead">
-          <h2>État & actions</h2>
-          <span class="muted">Lecture technique simple</span>
+          <h2>État technique</h2>
+          <span class="muted">Lecture du système</span>
         </div>
         <div class="cardBody">
           <div class="facts">
@@ -570,7 +570,7 @@
 
             <div class="fact">
               <div class="k">Sauvegarde</div>
-              <div class="v" id="factSave">Backend si disponible, sinon brouillon local.</div>
+              <div class="v" id="factSave">Sauvegarde backend active.</div>
             </div>
           </div>
 
@@ -598,27 +598,6 @@
       let RESOLVED_SLUG = "";
       let RESOLVED_PHONE = "";
       let CURRENT_STATE = null;
-      let LAST_LOADED_PROFILE = {};
-
-      const FIELD_IDS = [
-        "business_name",
-        "tagline",
-        "owner_name",
-        "slug_public",
-        "whatsapp_phone",
-        "call_phone",
-        "wave_phone",
-        "contact_email",
-        "quartier",
-        "city",
-        "open_from",
-        "open_to",
-        "max_covers",
-        "avg_duration_min",
-        "address",
-        "description",
-        "booking_message"
-      ];
 
       function normalizeSlug(v){
         return String(v || "")
@@ -718,6 +697,36 @@
         if(showMessage){
           setStatus("Brouillon local enregistré.", "ok");
         }
+      }
+
+      function initClient(){
+        if (window.DIGIY_SB) {
+          sb = window.DIGIY_SB;
+          return;
+        }
+
+        if (!window.supabase?.createClient) {
+          throw new Error("Supabase JS non chargé.");
+        }
+
+        sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+          {
+            auth:{
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false,
+              storage:{
+                getItem:() => null,
+                setItem:() => {},
+                removeItem:() => {}
+              }
+            }
+          }
+        );
+
+        window.DIGIY_SB = sb;
       }
 
       async function rpc(name, args){
@@ -831,24 +840,7 @@
         setStatus("Chargement de la fiche établissement…");
         disableSaveButtons(true);
 
-        if(window.supabase?.createClient){
-          sb = window.supabase.createClient(
-            window.DIGIY_SUPABASE_URL,
-            window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
-            {
-              auth:{
-                persistSession:false,
-                autoRefreshToken:false,
-                detectSessionInUrl:false,
-                storage:{
-                  getItem:() => null,
-                  setItem:() => {},
-                  removeItem:() => {}
-                }
-              }
-            }
-          );
-        }
+        initClient();
 
         CURRENT_STATE = await resolveGuardState();
         RESOLVED_SLUG = normalizeSlug(CURRENT_STATE?.slug || "");
@@ -864,21 +856,24 @@
           $("topSub").textContent = `Fiche établissement chargée pour ${RESOLVED_SLUG}`;
           $("heroTitle").textContent = "Édite ta fiche établissement";
           $("heroText").textContent = "Ici tu poses les informations visibles et utiles pour ton activité.";
+          $("chipSave").textContent = "Sauvegarde : backend actif";
+          $("factSave").textContent = "Sauvegarde backend active.";
           setStatus("Lecture backend en cours…", "warn");
 
           const backendProfile = await loadProfileFromBackend();
 
           if(backendProfile){
-            LAST_LOADED_PROFILE = backendProfile;
             fillProfile(backendProfile);
             setStatus("Profil chargé depuis le backend.", "ok");
           } else if(draft){
-            LAST_LOADED_PROFILE = draft;
             fillProfile(draft);
+            $("chipSave").textContent = "Sauvegarde : brouillon local";
+            $("factSave").textContent = "Backend absent, brouillon local chargé.";
             setStatus("Backend non trouvé. Brouillon local chargé.", "warn");
           } else {
-            LAST_LOADED_PROFILE = {};
             fillProfile({ slug: RESOLVED_SLUG, whatsapp_phone: RESOLVED_PHONE });
+            $("chipSave").textContent = "Sauvegarde : backend prêt";
+            $("factSave").textContent = "Backend prêt, aucun profil encore enregistré.";
             setStatus("Aucun profil backend trouvé. Formulaire prêt.", "warn");
           }
 
@@ -892,7 +887,9 @@
           : "Aucun slug détecté. Aperçu affiché.";
         $("heroTitle").textContent = "Fiche établissement — mode stable";
         $("heroText").textContent = "Même si le backend n’est pas encore posé, tu peux préparer proprement la fiche.";
-        $("miniText").textContent = "Cette page ne casse pas. Elle garde un brouillon local tant que la vraie sauvegarde backend n’est pas branchée.";
+        $("miniText").textContent = "Cette page reste stable. Elle garde un brouillon local tant que l’accès vivant n’est pas confirmé.";
+        $("chipSave").textContent = "Sauvegarde : brouillon local";
+        $("factSave").textContent = "Brouillon local actif.";
         fillProfile(draft || { slug: RESOLVED_SLUG });
         setStatus(
           RESOLVED_SLUG
@@ -915,6 +912,8 @@
 
         if(!payload.slug){
           saveDraft(false);
+          $("chipSave").textContent = "Sauvegarde : brouillon local";
+          $("factSave").textContent = "Slug absent, brouillon local enregistré.";
           setStatus("Slug absent. Brouillon local enregistré en attendant.", "warn");
           return;
         }
@@ -925,17 +924,26 @@
         const result = await trySaveBackend(payload);
 
         if(result.ok){
-          LAST_LOADED_PROFILE = payload;
           localStorage.setItem("digiy_resa_last_slug", payload.slug);
           sessionStorage.setItem("digiy_resa_slug", payload.slug);
+          $("chipSave").textContent = "Sauvegarde : backend actif";
+          $("factSave").textContent = "Sauvegarde backend active.";
           setStatus(`Profil sauvegardé via ${result.rpc}.`, "ok");
           return;
         }
 
+        $("chipSave").textContent = "Sauvegarde : brouillon local";
+        $("factSave").textContent = "Backend indisponible, brouillon local conservé.";
         setStatus("Backend non branché ou RPC absente. Brouillon local enregistré.", "warn");
       });
 
-      boot();
+      try{
+        boot();
+      }catch(err){
+        console.error(err);
+        setStatus("Erreur de chargement de la page établissement.", "err");
+        disableSaveButtons(false);
+      }
     })();
   </script>
 </body>
