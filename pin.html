@@ -453,145 +453,183 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    (() => {
+      "use strict";
 
-    const hintedSlug = (new URL(location.href).searchParams.get("slug") || "").trim();
+      const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
 
-    const $ = (id) => document.getElementById(id);
+      const $ = (id) => document.getElementById(id);
 
-    function normalizePhone(v){
-      return String(v || "").replace(/[^\d]/g, "");
-    }
-
-    function normalizePin(v){
-      return String(v || "").trim().replace(/\s+/g, "");
-    }
-
-    function setStatus(msg, tone=""){
-      const box = $("statusBox");
-      box.className = "statusbox" + (tone ? " " + tone : "");
-      box.textContent = msg;
-    }
-
-    function setBusy(isBusy){
-      $("btnLogin").disabled = isBusy;
-      $("phone").disabled = isBusy;
-      $("pin").disabled = isBusy;
-    }
-
-    async function callResaPinLogin(phone, pin){
-      const tries = [
-        { p_phone: phone, p_pin: pin },
-        { phone: phone, pin: pin }
-      ];
-
-      let lastError = null;
-
-      for(const args of tries){
-        const { data, error } = await sb.rpc("resa_pin_login", args);
-        if(!error) return data;
-        lastError = error;
+      function normalizePhone(v){
+        return String(v || "").replace(/[^\d]/g, "");
       }
 
-      throw lastError || new Error("RPC resa_pin_login indisponible");
-    }
-
-    async function login(){
-      const phone = normalizePhone($("phone").value);
-      const pin = normalizePin($("pin").value);
-
-      if (!phone) {
-        setStatus("Téléphone manquant.", "err");
-        return;
+      function normalizePin(v){
+        return String(v || "").trim().replace(/\s+/g, "");
       }
 
-      if (!pin) {
-        setStatus("PIN manquant.", "err");
-        return;
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
       }
 
-      setBusy(true);
-      setStatus("Vérification du PIN...");
+      const hintedSlug = normalizeSlug(new URL(location.href).searchParams.get("slug") || "");
 
-      try{
-        const data = await callResaPinLogin(phone, pin);
+      let sb = null;
 
-        if (!data?.ok) {
-          const err =
-            data?.error ||
-            data?.message ||
-            "PIN invalide ou accès refusé.";
-          setStatus(err, "err");
+      function setStatus(msg, tone = ""){
+        const box = $("statusBox");
+        box.className = "statusbox" + (tone ? " " + tone : "");
+        box.textContent = msg;
+      }
+
+      function setBusy(isBusy){
+        $("btnLogin").disabled = isBusy;
+        $("phone").disabled = isBusy;
+        $("pin").disabled = isBusy;
+      }
+
+      async function callResaPinLogin(phone, pin){
+        if (!sb) {
+          throw new Error("Supabase client indisponible");
+        }
+
+        const tries = [
+          { p_phone: phone, p_pin: pin },
+          { phone: phone, pin: pin }
+        ];
+
+        let lastError = null;
+
+        for (const args of tries) {
+          const { data, error } = await sb.rpc("resa_pin_login", args);
+          if (!error) return data;
+          lastError = error;
+        }
+
+        throw lastError || new Error("RPC resa_pin_login indisponible");
+      }
+
+      async function login(){
+        const phone = normalizePhone($("phone").value);
+        const pin = normalizePin($("pin").value);
+
+        if (!phone) {
+          setStatus("Téléphone manquant.", "err");
           return;
         }
 
-        const targetSlug = String(data?.slug || hintedSlug || "").trim();
-
-        if (!targetSlug) {
-          setStatus("PIN reconnu, mais aucun slug RESA n’a été retourné.", "warn");
+        if (!pin) {
+          setStatus("PIN manquant.", "err");
           return;
         }
 
-        localStorage.setItem("digiy_last_phone", phone);
-        localStorage.setItem("digiy_resa_last_slug", targetSlug);
-        sessionStorage.setItem("digiy_resa_phone", phone);
-        sessionStorage.setItem("digiy_resa_slug", targetSlug);
+        setBusy(true);
+        setStatus("Vérification du PIN...");
 
-        setStatus("PIN validé. Redirection vers le cockpit...", "ok");
+        try{
+          const data = await callResaPinLogin(phone, pin);
 
-        setTimeout(() => {
-          location.href = `./cockpit.html?slug=${encodeURIComponent(targetSlug)}`;
-        }, 350);
-      }catch(e){
-        console.error(e);
-        setStatus("Erreur de vérification PIN. Vérifie la RPC resa_pin_login ou contacte le support.", "err");
-      }finally{
-        setBusy(false);
+          if (!data?.ok) {
+            const err =
+              data?.error ||
+              data?.message ||
+              data?.reason ||
+              "PIN invalide ou accès refusé.";
+            setStatus(err, "err");
+            return;
+          }
+
+          const targetSlug = normalizeSlug(data?.slug || hintedSlug || "");
+
+          if (!targetSlug) {
+            setStatus("PIN reconnu, mais aucun slug RESA n’a été retourné.", "warn");
+            return;
+          }
+
+          localStorage.setItem("digiy_last_phone", phone);
+          localStorage.setItem("digiy_resa_last_slug", targetSlug);
+          sessionStorage.setItem("digiy_resa_phone", phone);
+          sessionStorage.setItem("digiy_resa_slug", targetSlug);
+
+          setStatus("PIN validé. Redirection vers le cockpit...", "ok");
+
+          setTimeout(() => {
+            location.href = `./cockpit.html?slug=${encodeURIComponent(targetSlug)}`;
+          }, 350);
+
+        } catch (e) {
+          console.error(e);
+          setStatus("Erreur de vérification PIN. Vérifie la RPC resa_pin_login ou contacte le support.", "err");
+        } finally {
+          setBusy(false);
+        }
       }
-    }
 
-    function initUi(){
-      const lastPhone = localStorage.getItem("digiy_last_phone") || "";
-      if (lastPhone) $("phone").value = lastPhone;
+      function initUi(){
+        const lastPhone = localStorage.getItem("digiy_last_phone") || "";
+        if (lastPhone) $("phone").value = lastPhone;
 
-      $("btnCockpit").href = hintedSlug
-        ? `./cockpit.html?slug=${encodeURIComponent(hintedSlug)}`
-        : "./cockpit.html";
+        $("btnCockpit").href = hintedSlug
+          ? `./cockpit.html?slug=${encodeURIComponent(hintedSlug)}`
+          : "./cockpit.html";
 
-      $("destText").textContent = hintedSlug
-        ? `cockpit.html?slug=${hintedSlug}`
-        : "cockpit.html?slug=...";
+        $("destText").textContent = hintedSlug
+          ? `cockpit.html?slug=${hintedSlug}`
+          : "cockpit.html?slug=...";
 
-      $("pillSlug").textContent = hintedSlug
-        ? `🧭 Slug guidé : ${hintedSlug}`
-        : "🧭 Route libre";
+        $("pillSlug").textContent = hintedSlug
+          ? `🧭 Slug guidé : ${hintedSlug}`
+          : "🧭 Route libre";
 
-      if (hintedSlug) {
-        setStatus(`Slug détecté : ${hintedSlug}. Entre ton téléphone et ton PIN.`, "warn");
+        if (hintedSlug) {
+          setStatus(`Slug détecté : ${hintedSlug}. Entre ton téléphone et ton PIN.`, "warn");
+        } else {
+          setStatus("Prêt.");
+        }
+
+        $("btnLogin").addEventListener("click", login);
+
+        $("pin").addEventListener("keydown", (e) => {
+          if (e.key === "Enter") login();
+        });
+
+        $("phone").addEventListener("keydown", (e) => {
+          if (e.key === "Enter") login();
+        });
       }
 
-      $("btnLogin").addEventListener("click", login);
+      const supabaseLib = window.supabase;
 
-      $("pin").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") login();
+      if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
+        console.error("Supabase JS non chargé.");
+        setStatus("Erreur : bibliothèque Supabase non chargée.", "err");
+        $("btnLogin").disabled = true;
+        return;
+      }
+
+      sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false,
+          storage: {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {}
+          }
+        }
       });
 
-      $("phone").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") login();
-      });
-    }
-
-    const supabaseLib = window.supabase;
-    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
-      console.error("Supabase JS non chargé.");
-      setStatus("Erreur : bibliothèque Supabase non chargée.", "err");
-      $("btnLogin").disabled = true;
-    } else {
-      const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       window.sb = sb;
       initUi();
-    }
+    })();
   </script>
 </body>
 </html>
