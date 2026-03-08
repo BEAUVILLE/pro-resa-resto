@@ -9,6 +9,8 @@
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./guard.js"></script>
@@ -450,525 +452,599 @@
   </div>
 
   <script>
-    const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
-    const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    (() => {
+      "use strict";
 
-    const $ = (id) => document.getElementById(id);
+      const MODULE = "RESA";
+      const SUPABASE_URL = window.DIGIY_SUPABASE_URL || "";
+      const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "";
+      const querySlug = new URL(location.href).searchParams.get("slug") || "";
 
-    let ALL_BOOKINGS = [];
-    let ACTIVE_FILTER = "all";
-    let PROFILE = null;
-    let RESOLVED_SLUG = "";
-    let IS_PREVIEW = true;
+      const $ = (id) => document.getElementById(id);
 
-    function escapeHtml(v){
-      return String(v ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
+      let sb = null;
+      let ALL_BOOKINGS = [];
+      let ACTIVE_FILTER = "all";
+      let PROFILE = null;
+      let RESOLVED_SLUG = "";
+      let IS_PREVIEW = true;
 
-    function fmtDate(v){
-      if(!v) return "—";
-      try{
-        return new Date(v).toLocaleDateString("fr-FR", {
-          year:"numeric", month:"2-digit", day:"2-digit"
-        });
-      }catch{
-        return String(v);
-      }
-    }
-
-    function fmtDateTime(v){
-      if(!v) return "—";
-      try{
-        return new Date(v).toLocaleString("fr-FR", {
-          year:"numeric", month:"2-digit", day:"2-digit",
-          hour:"2-digit", minute:"2-digit"
-        });
-      }catch{
-        return String(v);
-      }
-    }
-
-    function normStatus(v){
-      const s = String(v || "pending").toLowerCase().trim();
-      if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
-      return "pending";
-    }
-
-    function statusLabel(v){
-      const s = normStatus(v);
-      if(s === "pending") return "Pending";
-      if(s === "confirmed") return "Confirmée";
-      if(s === "cancelled") return "Annulée";
-      if(s === "done") return "Done";
-      if(s === "no_show") return "No-show";
-      return s;
-    }
-
-    function bookingIdOf(row){
-      return String(
-        row?.id ??
-        row?.booking_id ??
-        row?.reservation_id ??
-        ""
-      );
-    }
-
-    function normalizeRows(payload){
-      let rows = [];
-
-      if(Array.isArray(payload)) rows = payload;
-      else if(Array.isArray(payload?.rows)) rows = payload.rows;
-      else if(Array.isArray(payload?.bookings)) rows = payload.bookings;
-      else if(Array.isArray(payload?.data)) rows = payload.data;
-
-      return rows.map((r) => ({
-        id: bookingIdOf(r),
-        status: normStatus(r.status),
-        status_note: r.status_note || "",
-        created_at: r.created_at || r.inserted_at || r.requested_at || null,
-        customer_name: r.customer_name || r.client_name || r.full_name || r.name || "Sans nom",
-        customer_phone: r.customer_phone || r.phone || r.whatsapp || "",
-        booking_date: r.booking_date || r.reservation_date || r.date || "",
-        booking_time: r.booking_time || r.reservation_time || r.time || "",
-        guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
-        note: r.note || r.message || r.special_request || ""
-      }));
-    }
-
-    async function rpc(name, args){
-      const { data, error } = await sb.rpc(name, args);
-      if(error) throw error;
-      return data;
-    }
-
-    function resetStats(){
-      $("sTotal").textContent = "0";
-      $("sPending").textContent = "0";
-      $("sConfirmed").textContent = "0";
-      $("sDone").textContent = "0";
-      $("sNoShow").textContent = "0";
-      $("sCancelled").textContent = "0";
-    }
-
-    function resetView(){
-      $("emptyState").style.display = "none";
-      $("bookingList").innerHTML = "";
-      ALL_BOOKINGS = [];
-      PROFILE = null;
-    }
-
-    async function resolveGuardState(){
-      if(!window.DIGIY_GUARD?.ready){
-        return {
-          ok: false,
-          preview: true,
-          access_ok: false,
-          slug: "",
-          reason: "guard_missing"
-        };
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
       }
 
-      await window.DIGIY_GUARD.ready;
-      const st = window.DIGIY_GUARD.state;
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
 
-      return st || {
-        ok: false,
-        preview: true,
-        access_ok: false,
-        slug: "",
-        reason: "guard_empty"
-      };
-    }
-
-    function setPreviewHero(message = ""){
-      $("modeBadge").className = "mode";
-      $("modeBadge").textContent = "Mode aperçu";
-
-      $("heroName").textContent = "DIGIY RESA PRO";
-      $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, suivi terrain.";
-      $("heroMeta").textContent = "Slug : absent — aperçu visuel du logiciel";
-      $("topSub").textContent = message || "Aucun slug détecté. Tu vois le cockpit en mode aperçu élégant.";
-      $("panelTitle").textContent = "Aperçu des réservations";
-      $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le cockpit vivant.";
-      $("miniTitle").textContent = "Aperçu intelligent";
-      $("miniText").textContent =
-        "Pas de slug ? Pas grave. On ne jette pas le pro contre un mur. On lui montre le logiciel, puis on l’invite à entrer proprement par sa porte PIN.";
-
-      $("btnSettings").href = "./etablissement.html";
-      $("btnPin").href = "./pin.html";
-      $("heroSettings").href = "./etablissement.html";
-      $("heroPin").href = "./pin.html";
-    }
-
-    function setLiveHero(){
-      $("modeBadge").className = "mode live";
-      $("modeBadge").textContent = "Mode vivant";
-
-      $("heroMeta").textContent = `Slug : ${RESOLVED_SLUG}`;
-      $("topSub").textContent = `Cockpit chargé pour ${RESOLVED_SLUG}`;
-      $("panelTitle").textContent = "Réservations récentes";
-      $("footerNote").textContent = "Cockpit vivant branché sur les réservations réelles.";
-      $("miniTitle").textContent = "Lecture terrain";
-      $("miniText").textContent =
-        "Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes, tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.";
-
-      const settingsHref = `./etablissement.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`;
-      const pinHref = `./pin.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`;
-
-      $("btnSettings").href = settingsHref;
-      $("btnPin").href = pinHref;
-      $("heroSettings").href = settingsHref;
-      $("heroPin").href = pinHref;
-    }
-
-    function loadPreviewData(){
-      setPreviewHero();
-
-      const now = new Date();
-      const addHours = (n) => new Date(now.getTime() - (n * 3600 * 1000)).toISOString();
-
-      ALL_BOOKINGS = [
-        {
-          id: "preview-1",
-          status: "pending",
-          customer_name: "Awa Ndiaye",
-          customer_phone: "77 000 00 01",
-          booking_date: "2026-03-07",
-          booking_time: "20:30",
-          guests_count: 2,
-          note: "Table au calme si possible.",
-          created_at: addHours(2)
-        },
-        {
-          id: "preview-2",
-          status: "confirmed",
-          customer_name: "Moussa Fall",
-          customer_phone: "77 000 00 02",
-          booking_date: "2026-03-07",
-          booking_time: "21:00",
-          guests_count: 4,
-          note: "Anniversaire discret.",
-          created_at: addHours(4)
-        },
-        {
-          id: "preview-3",
-          status: "done",
-          customer_name: "Sokhna Diop",
-          customer_phone: "77 000 00 03",
-          booking_date: "2026-03-06",
-          booking_time: "13:00",
-          guests_count: 3,
-          note: "",
-          created_at: addHours(8)
-        },
-        {
-          id: "preview-4",
-          status: "no_show",
-          customer_name: "Cheikh Ba",
-          customer_phone: "77 000 00 04",
-          booking_date: "2026-03-06",
-          booking_time: "19:30",
-          guests_count: 2,
-          note: "Réservation faite tard.",
-          created_at: addHours(12)
-        },
-        {
-          id: "preview-5",
-          status: "cancelled",
-          customer_name: "Mariama Sarr",
-          customer_phone: "77 000 00 05",
-          booking_date: "2026-03-08",
-          booking_time: "12:30",
-          guests_count: 5,
-          note: "Le groupe a reporté.",
-          created_at: addHours(16)
+      function fmtDate(v){
+        if(!v) return "—";
+        try{
+          return new Date(v).toLocaleDateString("fr-FR", {
+            year:"numeric", month:"2-digit", day:"2-digit"
+          });
+        }catch{
+          return String(v);
         }
-      ];
+      }
 
-      $("sTotal").textContent = "18";
-      $("sPending").textContent = "4";
-      $("sConfirmed").textContent = "7";
-      $("sDone").textContent = "5";
-      $("sNoShow").textContent = "1";
-      $("sCancelled").textContent = "1";
+      function fmtDateTime(v){
+        if(!v) return "—";
+        try{
+          return new Date(v).toLocaleString("fr-FR", {
+            year:"numeric", month:"2-digit", day:"2-digit",
+            hour:"2-digit", minute:"2-digit"
+          });
+        }catch{
+          return String(v);
+        }
+      }
 
-      renderBookings();
-    }
+      function normStatus(v){
+        const s = String(v || "pending").toLowerCase().trim();
+        if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
+        return "pending";
+      }
 
-    async function loadProfile(){
-      try{
-        const data = await rpc("resa_get_profile_by_slug", { p_slug: RESOLVED_SLUG });
-        PROFILE = data?.profile || data || null;
-      }catch{
+      function statusLabel(v){
+        const s = normStatus(v);
+        if(s === "pending") return "Pending";
+        if(s === "confirmed") return "Confirmée";
+        if(s === "cancelled") return "Annulée";
+        if(s === "done") return "Done";
+        if(s === "no_show") return "No-show";
+        return s;
+      }
+
+      function bookingIdOf(row){
+        return String(
+          row?.id ??
+          row?.booking_id ??
+          row?.reservation_id ??
+          ""
+        );
+      }
+
+      function normalizeRows(payload){
+        let rows = [];
+
+        if(Array.isArray(payload)) rows = payload;
+        else if(Array.isArray(payload?.rows)) rows = payload.rows;
+        else if(Array.isArray(payload?.bookings)) rows = payload.bookings;
+        else if(Array.isArray(payload?.data)) rows = payload.data;
+
+        return rows.map((r) => ({
+          id: bookingIdOf(r),
+          status: normStatus(r.status),
+          status_note: r.status_note || "",
+          created_at: r.created_at || r.inserted_at || r.requested_at || null,
+          customer_name: r.customer_name || r.client_name || r.full_name || r.name || "Sans nom",
+          customer_phone: r.customer_phone || r.phone || r.whatsapp || "",
+          booking_date: r.booking_date || r.reservation_date || r.date || "",
+          booking_time: r.booking_time || r.reservation_time || r.time || "",
+          guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
+          note: r.note || r.message || r.special_request || ""
+        }));
+      }
+
+      function setPreviewLinks(slug = ""){
+        const clean = normalizeSlug(slug);
+        const pinHref = clean ? `./pin.html?slug=${encodeURIComponent(clean)}` : "./pin.html";
+        const settingsHref = clean ? `./etablissement.html?slug=${encodeURIComponent(clean)}` : "./etablissement.html";
+
+        $("btnPin").href = pinHref;
+        $("heroPin").href = pinHref;
+        $("btnSettings").href = settingsHref;
+        $("heroSettings").href = settingsHref;
+      }
+
+      async function rpc(name, args){
+        if(!sb) throw new Error("supabase_unavailable");
+        const { data, error } = await sb.rpc(name, args);
+        if(error) throw error;
+        return data;
+      }
+
+      function resetStats(){
+        $("sTotal").textContent = "0";
+        $("sPending").textContent = "0";
+        $("sConfirmed").textContent = "0";
+        $("sDone").textContent = "0";
+        $("sNoShow").textContent = "0";
+        $("sCancelled").textContent = "0";
+      }
+
+      function resetView(){
+        $("emptyState").style.display = "none";
+        $("bookingList").innerHTML = "";
+        ALL_BOOKINGS = [];
         PROFILE = null;
       }
 
-      const title =
-        PROFILE?.business_name ||
-        PROFILE?.name ||
-        PROFILE?.restaurant_name ||
-        "Établissement";
+      async function resolveGuardState(){
+        const cleanQuerySlug = normalizeSlug(querySlug);
+        const fallbackSlug =
+          cleanQuerySlug ||
+          normalizeSlug(sessionStorage.getItem("digiy_resa_slug") || "") ||
+          normalizeSlug(localStorage.getItem("digiy_resa_last_slug") || "");
 
-      $("heroName").textContent = title;
-      $("heroDesc").textContent = "Lecture des réservations, suivi terrain, actions rapides.";
-    }
-
-    async function loadStats(){
-      let data = null;
-
-      try{
-        data = await rpc("resa_stats_v2_by_slug", { p_slug: RESOLVED_SLUG });
-      }catch{
-        try{
-          data = await rpc("resa_stats_by_slug", { p_slug: RESOLVED_SLUG });
-        }catch{
-          data = null;
+        if(!window.DIGIY_GUARD?.ready){
+          return {
+            ok: false,
+            preview: true,
+            access_ok: false,
+            slug: fallbackSlug,
+            reason: "guard_missing"
+          };
         }
+
+        try{
+          await window.DIGIY_GUARD.ready;
+        }catch{
+          return {
+            ok: false,
+            preview: true,
+            access_ok: false,
+            slug: fallbackSlug,
+            reason: "guard_error"
+          };
+        }
+
+        const st = window.DIGIY_GUARD?.state || null;
+        if(!st){
+          return {
+            ok: false,
+            preview: true,
+            access_ok: false,
+            slug: fallbackSlug,
+            reason: "guard_empty"
+          };
+        }
+
+        return {
+          ...st,
+          slug: normalizeSlug(st.slug || fallbackSlug || "")
+        };
       }
 
-      $("sTotal").textContent = String(Number(data?.total || 0));
-      $("sPending").textContent = String(Number(data?.pending || 0));
-      $("sConfirmed").textContent = String(Number(data?.confirmed || 0));
-      $("sDone").textContent = String(Number(data?.done || 0));
-      $("sNoShow").textContent = String(Number(data?.no_show || 0));
-      $("sCancelled").textContent = String(Number(data?.cancelled || 0));
-    }
+      function setPreviewHero(message = "", slug = ""){
+        const clean = normalizeSlug(slug);
 
-    async function loadBookings(){
-      let data = null;
+        $("modeBadge").className = "mode";
+        $("modeBadge").textContent = "Mode aperçu";
 
-      try{
-        data = await rpc("resa_list_recent_bookings_v2_by_slug", {
-          p_slug: RESOLVED_SLUG,
-          p_limit: 100
-        });
-      }catch{
-        data = await rpc("resa_list_recent_bookings_by_slug", {
-          p_slug: RESOLVED_SLUG
-        });
+        $("heroName").textContent = "DIGIY RESA PRO";
+        $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, suivi terrain.";
+        $("heroMeta").textContent = clean ? `Slug détecté : ${clean}` : "Slug : absent — aperçu visuel du logiciel";
+        $("topSub").textContent = message || "Aucun slug détecté. Tu vois le cockpit en mode aperçu élégant.";
+        $("panelTitle").textContent = "Aperçu des réservations";
+        $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le cockpit vivant.";
+        $("miniTitle").textContent = "Aperçu intelligent";
+        $("miniText").textContent =
+          "Pas de slug ? Pas grave. On ne jette pas le pro contre un mur. On lui montre le logiciel, puis on l’invite à entrer proprement par sa porte PIN.";
+
+        setPreviewLinks(clean);
       }
 
-      ALL_BOOKINGS = normalizeRows(data);
-      renderBookings();
-    }
+      function setLiveHero(){
+        $("modeBadge").className = "mode live";
+        $("modeBadge").textContent = "Mode vivant";
 
-    function filterRows(rows){
-      if(ACTIVE_FILTER === "all") return rows;
-      return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
-    }
+        $("heroMeta").textContent = `Slug : ${RESOLVED_SLUG}`;
+        $("topSub").textContent = `Cockpit chargé pour ${RESOLVED_SLUG}`;
+        $("panelTitle").textContent = "Réservations récentes";
+        $("footerNote").textContent = "Cockpit vivant branché sur les réservations réelles.";
+        $("miniTitle").textContent = "Lecture terrain";
+        $("miniText").textContent =
+          "Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes, tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.";
 
-    function previewActionHtml(){
-      return `
-        <div class="booking-actions">
-          <a class="action-btn preview" href="./pin.html">Entrer par PIN pour agir</a>
-          <a class="action-btn preview" href="./etablissement.html">Voir les réglages</a>
-        </div>
-      `;
-    }
-
-    function liveActionHtml(id, status){
-      return `
-        <div class="booking-actions">
-          <button class="action-btn ok" data-id="${id}" data-status="confirmed" type="button" ${status === "confirmed" ? "disabled" : ""}>Confirmer</button>
-          <button class="action-btn danger" data-id="${id}" data-status="cancelled" type="button" ${status === "cancelled" ? "disabled" : ""}>Annuler</button>
-          <button class="action-btn info" data-id="${id}" data-status="done" type="button" ${status === "done" ? "disabled" : ""}>Done</button>
-          <button class="action-btn warn" data-id="${id}" data-status="no_show" type="button" ${status === "no_show" ? "disabled" : ""}>No-show</button>
-          <button class="action-btn" data-id="${id}" data-status="pending" type="button" ${status === "pending" ? "disabled" : ""}>Remettre pending</button>
-        </div>
-      `;
-    }
-
-    function renderBookings(){
-      const list = $("bookingList");
-      const empty = $("emptyState");
-      const rows = filterRows(ALL_BOOKINGS);
-
-      if(!rows.length){
-        list.innerHTML = "";
-        empty.style.display = "block";
-        empty.textContent = IS_PREVIEW
-          ? "Aperçu disponible, mais aucune ligne à afficher."
-          : "Aucune réservation pour l’instant.";
-        return;
+        setPreviewLinks(RESOLVED_SLUG);
       }
 
-      empty.style.display = "none";
+      function loadPreviewData(slug = ""){
+        setPreviewHero("", slug);
 
-      list.innerHTML = rows.map((row) => {
-        const id = escapeHtml(row.id);
-        const status = normStatus(row.status);
-        const customer = escapeHtml(row.customer_name);
-        const phone = escapeHtml(row.customer_phone || "—");
-        const date = escapeHtml(row.booking_date ? fmtDate(row.booking_date) : "—");
-        const time = escapeHtml(row.booking_time || "—");
-        const guests = escapeHtml(row.guests_count || "—");
-        const note = escapeHtml(row.note || "");
-        const created = escapeHtml(fmtDateTime(row.created_at));
+        const now = new Date();
+        const addHours = (n) => new Date(now.getTime() - (n * 3600 * 1000)).toISOString();
 
+        ALL_BOOKINGS = [
+          {
+            id: "preview-1",
+            status: "pending",
+            customer_name: "Awa Ndiaye",
+            customer_phone: "77 000 00 01",
+            booking_date: "2026-03-07",
+            booking_time: "20:30",
+            guests_count: 2,
+            note: "Table au calme si possible.",
+            created_at: addHours(2)
+          },
+          {
+            id: "preview-2",
+            status: "confirmed",
+            customer_name: "Moussa Fall",
+            customer_phone: "77 000 00 02",
+            booking_date: "2026-03-07",
+            booking_time: "21:00",
+            guests_count: 4,
+            note: "Anniversaire discret.",
+            created_at: addHours(4)
+          },
+          {
+            id: "preview-3",
+            status: "done",
+            customer_name: "Sokhna Diop",
+            customer_phone: "77 000 00 03",
+            booking_date: "2026-03-06",
+            booking_time: "13:00",
+            guests_count: 3,
+            note: "",
+            created_at: addHours(8)
+          },
+          {
+            id: "preview-4",
+            status: "no_show",
+            customer_name: "Cheikh Ba",
+            customer_phone: "77 000 00 04",
+            booking_date: "2026-03-06",
+            booking_time: "19:30",
+            guests_count: 2,
+            note: "Réservation faite tard.",
+            created_at: addHours(12)
+          },
+          {
+            id: "preview-5",
+            status: "cancelled",
+            customer_name: "Mariama Sarr",
+            customer_phone: "77 000 00 05",
+            booking_date: "2026-03-08",
+            booking_time: "12:30",
+            guests_count: 5,
+            note: "Le groupe a reporté.",
+            created_at: addHours(16)
+          }
+        ];
+
+        $("sTotal").textContent = "18";
+        $("sPending").textContent = "4";
+        $("sConfirmed").textContent = "7";
+        $("sDone").textContent = "5";
+        $("sNoShow").textContent = "1";
+        $("sCancelled").textContent = "1";
+
+        renderBookings();
+      }
+
+      async function loadProfile(){
+        try{
+          const data = await rpc("resa_get_profile_by_slug", { p_slug: RESOLVED_SLUG });
+          PROFILE = data?.profile || data || null;
+        }catch{
+          PROFILE = null;
+        }
+
+        const title =
+          PROFILE?.business_name ||
+          PROFILE?.name ||
+          PROFILE?.restaurant_name ||
+          "Établissement";
+
+        $("heroName").textContent = title;
+        $("heroDesc").textContent = "Lecture des réservations, suivi terrain, actions rapides.";
+      }
+
+      async function loadStats(){
+        let data = null;
+
+        try{
+          data = await rpc("resa_stats_v2_by_slug", { p_slug: RESOLVED_SLUG });
+        }catch{
+          try{
+            data = await rpc("resa_stats_by_slug", { p_slug: RESOLVED_SLUG });
+          }catch{
+            data = null;
+          }
+        }
+
+        $("sTotal").textContent = String(Number(data?.total || 0));
+        $("sPending").textContent = String(Number(data?.pending || 0));
+        $("sConfirmed").textContent = String(Number(data?.confirmed || 0));
+        $("sDone").textContent = String(Number(data?.done || 0));
+        $("sNoShow").textContent = String(Number(data?.no_show || 0));
+        $("sCancelled").textContent = String(Number(data?.cancelled || 0));
+      }
+
+      async function loadBookings(){
+        let data = null;
+
+        try{
+          data = await rpc("resa_list_recent_bookings_v2_by_slug", {
+            p_slug: RESOLVED_SLUG,
+            p_limit: 100
+          });
+        }catch{
+          data = await rpc("resa_list_recent_bookings_by_slug", {
+            p_slug: RESOLVED_SLUG
+          });
+        }
+
+        ALL_BOOKINGS = normalizeRows(data);
+        renderBookings();
+      }
+
+      function filterRows(rows){
+        if(ACTIVE_FILTER === "all") return rows;
+        return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+      }
+
+      function previewActionHtml(){
         return `
-          <article class="booking ${IS_PREVIEW ? "preview" : ""}" id="booking-${id}">
-            <div class="booking-top">
-              <div class="booking-main">
-                <div class="booking-name">${customer}</div>
-                <div class="meta">
-                  <span>📅 ${date}</span>
-                  <span>🕒 ${time}</span>
-                  <span>👥 ${guests}</span>
-                  <span>📞 ${phone}</span>
-                  <span>🧾 ${created}</span>
+          <div class="booking-actions">
+            <a class="action-btn preview" href="./pin.html">Entrer par PIN pour agir</a>
+            <a class="action-btn preview" href="./etablissement.html">Voir les réglages</a>
+          </div>
+        `;
+      }
+
+      function liveActionHtml(id, status){
+        return `
+          <div class="booking-actions">
+            <button class="action-btn ok" data-id="${id}" data-status="confirmed" type="button" ${status === "confirmed" ? "disabled" : ""}>Confirmer</button>
+            <button class="action-btn danger" data-id="${id}" data-status="cancelled" type="button" ${status === "cancelled" ? "disabled" : ""}>Annuler</button>
+            <button class="action-btn info" data-id="${id}" data-status="done" type="button" ${status === "done" ? "disabled" : ""}>Done</button>
+            <button class="action-btn warn" data-id="${id}" data-status="no_show" type="button" ${status === "no_show" ? "disabled" : ""}>No-show</button>
+            <button class="action-btn" data-id="${id}" data-status="pending" type="button" ${status === "pending" ? "disabled" : ""}>Remettre pending</button>
+          </div>
+        `;
+      }
+
+      function renderBookings(){
+        const list = $("bookingList");
+        const empty = $("emptyState");
+        const rows = filterRows(ALL_BOOKINGS);
+
+        if(!rows.length){
+          list.innerHTML = "";
+          empty.style.display = "block";
+          empty.textContent = IS_PREVIEW
+            ? "Aperçu disponible, mais aucune ligne à afficher."
+            : "Aucune réservation pour l’instant.";
+          return;
+        }
+
+        empty.style.display = "none";
+
+        list.innerHTML = rows.map((row) => {
+          const id = escapeHtml(row.id);
+          const status = normStatus(row.status);
+          const customer = escapeHtml(row.customer_name);
+          const phone = escapeHtml(row.customer_phone || "—");
+          const date = escapeHtml(row.booking_date ? fmtDate(row.booking_date) : "—");
+          const time = escapeHtml(row.booking_time || "—");
+          const guests = escapeHtml(row.guests_count || "—");
+          const note = escapeHtml(row.note || "");
+          const created = escapeHtml(fmtDateTime(row.created_at));
+
+          return `
+            <article class="booking ${IS_PREVIEW ? "preview" : ""}" id="booking-${id}">
+              <div class="booking-top">
+                <div class="booking-main">
+                  <div class="booking-name">${customer}</div>
+                  <div class="meta">
+                    <span>📅 ${date}</span>
+                    <span>🕒 ${time}</span>
+                    <span>👥 ${guests}</span>
+                    <span>📞 ${phone}</span>
+                    <span>🧾 ${created}</span>
+                  </div>
+                </div>
+
+                <div class="badge ${status}">
+                  ${escapeHtml(statusLabel(status))}
                 </div>
               </div>
 
-              <div class="badge ${status}">
-                ${escapeHtml(statusLabel(status))}
-              </div>
-            </div>
+              ${note ? `<div class="note">“${note}”</div>` : ""}
 
-            ${note ? `<div class="note">“${note}”</div>` : ""}
+              ${IS_PREVIEW ? previewActionHtml() : liveActionHtml(id, status)}
+            </article>
+          `;
+        }).join("");
 
-            ${IS_PREVIEW ? previewActionHtml() : liveActionHtml(id, status)}
-          </article>
-        `;
-      }).join("");
+        if(!IS_PREVIEW){
+          list.querySelectorAll("[data-id][data-status]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const bookingId = btn.getAttribute("data-id");
+              const status = btn.getAttribute("data-status");
+              await setBookingStatus(bookingId, status, btn);
+            });
+          });
+        }
+      }
 
-      if(!IS_PREVIEW){
-        list.querySelectorAll("[data-id][data-status]").forEach((btn) => {
-          btn.addEventListener("click", async () => {
-            const bookingId = btn.getAttribute("data-id");
-            const status = btn.getAttribute("data-status");
-            await setBookingStatus(bookingId, status, btn);
+      async function setBookingStatus(bookingId, status, btnEl){
+        if(!RESOLVED_SLUG) return;
+        if(!bookingId) return alert("Booking introuvable.");
+        if(btnEl?.dataset?.busy === "1") return;
+
+        const oldText = btnEl.textContent;
+        btnEl.dataset.busy = "1";
+        btnEl.disabled = true;
+        btnEl.textContent = "…";
+
+        try{
+          const data = await rpc("resa_set_booking_status_by_slug", {
+            p_slug: RESOLVED_SLUG,
+            p_booking_id: bookingId,
+            p_status: status,
+            p_status_note: null
+          });
+
+          if(!data?.ok){
+            throw new Error(data?.error || "update_failed");
+          }
+
+          ALL_BOOKINGS = ALL_BOOKINGS.map((r) => {
+            if(String(r.id) === String(bookingId)){
+              return { ...r, status };
+            }
+            return r;
+          });
+
+          await loadStats();
+          renderBookings();
+        }catch(err){
+          console.error(err);
+          alert("Impossible de changer le statut de cette réservation.");
+        }finally{
+          btnEl.dataset.busy = "0";
+          btnEl.textContent = oldText;
+        }
+      }
+
+      function initFilters(){
+        $("filters").querySelectorAll(".chip").forEach((chip) => {
+          chip.addEventListener("click", () => {
+            $("filters").querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            ACTIVE_FILTER = chip.dataset.filter || "all";
+            renderBookings();
           });
         });
       }
-    }
 
-    async function setBookingStatus(bookingId, status, btnEl){
-      if(!RESOLVED_SLUG) return;
-      if(!bookingId) return alert("Booking introuvable.");
-      if(btnEl?.dataset?.busy === "1") return;
+      async function boot(){
+        document.body.classList.add("loading");
+        resetView();
+        resetStats();
 
-      const oldText = btnEl.textContent;
-      btnEl.dataset.busy = "1";
-      btnEl.disabled = true;
-      btnEl.textContent = "…";
+        try{
+          const st = await resolveGuardState();
 
-      try{
-        const data = await rpc("resa_set_booking_status_by_slug", {
-          p_slug: RESOLVED_SLUG,
-          p_booking_id: bookingId,
-          p_status: status,
-          p_status_note: null
-        });
-
-        if(!data?.ok){
-          throw new Error(data?.error || "update_failed");
-        }
-
-        ALL_BOOKINGS = ALL_BOOKINGS.map((r) => {
-          if(String(r.id) === String(bookingId)){
-            return { ...r, status };
-          }
-          return r;
-        });
-
-        await loadStats();
-        renderBookings();
-      }catch(err){
-        console.error(err);
-        alert("Impossible de changer le statut de cette réservation.");
-      }finally{
-        btnEl.dataset.busy = "0";
-        btnEl.textContent = oldText;
-      }
-    }
-
-    function initFilters(){
-      $("filters").querySelectorAll(".chip").forEach((chip) => {
-        chip.addEventListener("click", () => {
-          $("filters").querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-          chip.classList.add("active");
-          ACTIVE_FILTER = chip.dataset.filter || "all";
-          renderBookings();
-        });
-      });
-    }
-
-    async function boot(){
-      document.body.classList.add("loading");
-      resetView();
-      resetStats();
-
-      try{
-        await window.DIGIY_GUARD.ready;
-        const st = window.DIGIY_GUARD.state;
-
-        if(st?.preview){
-          IS_PREVIEW = true;
-          RESOLVED_SLUG = "";
-          loadPreviewData();
-
-          if(st.reason === "preview_no_identity"){
-            $("topSub").textContent = "Aucun slug détecté. Aperçu affiché.";
-          }else if(st.reason === "unknown_identity"){
-            $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
-          }else if(st.reason === "guard_error"){
-            $("topSub").textContent = "Guard indisponible. Aperçu affiché.";
-          }
-
-          return;
-        }
-
-        if(st?.access_ok){
-          IS_PREVIEW = false;
-          RESOLVED_SLUG = st.slug || "";
-          if(!RESOLVED_SLUG){
+          if(st?.preview){
             IS_PREVIEW = true;
-            loadPreviewData();
-            $("topSub").textContent = "Accès OK mais slug absent. Aperçu affiché.";
+            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            loadPreviewData(RESOLVED_SLUG);
+
+            if(st.reason === "preview_no_identity"){
+              $("topSub").textContent = "Aucun slug détecté. Aperçu affiché.";
+            }else if(st.reason === "unknown_identity"){
+              $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
+            }else if(st.reason === "guard_error"){
+              $("topSub").textContent = "Guard indisponible. Aperçu affiché.";
+            }else if(st.reason === "guard_missing"){
+              $("topSub").textContent = "Guard absent. Aperçu affiché.";
+            }else{
+              $("topSub").textContent = RESOLVED_SLUG
+                ? `Slug détecté (${RESOLVED_SLUG}) mais accès non confirmé. Aperçu affiché.`
+                : "Aperçu affiché.";
+            }
+
             return;
           }
 
-          setLiveHero();
-          await loadProfile();
-          await Promise.all([
-            loadStats(),
-            loadBookings()
-          ]);
-          return;
+          if(st?.access_ok){
+            IS_PREVIEW = false;
+            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+
+            if(!RESOLVED_SLUG){
+              IS_PREVIEW = true;
+              loadPreviewData();
+              $("topSub").textContent = "Accès OK mais slug absent. Aperçu affiché.";
+              return;
+            }
+
+            localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG);
+            sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG);
+
+            setLiveHero();
+            await loadProfile();
+            await Promise.all([
+              loadStats(),
+              loadBookings()
+            ]);
+            return;
+          }
+
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = normalizeSlug(st?.slug || "");
+          loadPreviewData(RESOLVED_SLUG);
+
+          if(st?.reason === "no_subscription"){
+            $("topSub").textContent = "Accès non actif. Aperçu affiché.";
+          }else if(st?.reason === "unknown_identity"){
+            $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
+          }else{
+            $("topSub").textContent = "Accès indisponible. Aperçu affiché.";
+          }
+        }catch(err){
+          console.error(err);
+
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = "";
+          loadPreviewData();
+          $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
+        }finally{
+          document.body.classList.remove("loading");
         }
-
-        IS_PREVIEW = true;
-        RESOLVED_SLUG = "";
-        loadPreviewData();
-
-        if(st?.reason === "no_subscription"){
-          $("topSub").textContent = "Accès non actif. Aperçu affiché.";
-        }else if(st?.reason === "unknown_identity"){
-          $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
-        }else{
-          $("topSub").textContent = "Accès indisponible. Aperçu affiché.";
-        }
-      }catch(err){
-        console.error(err);
-
-        IS_PREVIEW = true;
-        RESOLVED_SLUG = "";
-        loadPreviewData();
-        $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
-      }finally{
-        document.body.classList.remove("loading");
       }
-    }
 
-    $("btnReload").addEventListener("click", boot);
-    initFilters();
-    boot();
+      $("btnReload").addEventListener("click", boot);
+      initFilters();
+
+      if(!window.supabase || typeof window.supabase.createClient !== "function"){
+        console.error("Supabase JS non chargé.");
+        loadPreviewData(normalizeSlug(querySlug));
+        $("topSub").textContent = "Supabase indisponible. Aperçu affiché.";
+      } else {
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false,
+            storage: {
+              getItem: () => null,
+              setItem: () => {},
+              removeItem: () => {}
+            }
+          }
+        });
+
+        window.sb = sb;
+        boot();
+      }
+    })();
   </script>
 </body>
 </html>
