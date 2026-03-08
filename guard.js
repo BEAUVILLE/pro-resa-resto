@@ -1,4 +1,6 @@
-/* DIGIY GUARD — UNIVERSAL (slug-first, page-safe, preview-safe) */
+/* DIGIY GUARD — UNIVERSAL (slug-first, page-safe, preview-safe)
+   VERSION: single shared Supabase client
+*/
 (() => {
   "use strict";
 
@@ -70,25 +72,6 @@
     }
   }
 
-  function createClient() {
-    if (!window.supabase?.createClient) {
-      throw new Error("Supabase SDK manquant.");
-    }
-
-    return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-        detectSessionInUrl: false,
-        storage: {
-          getItem: () => null,
-          setItem: () => {},
-          removeItem: () => {}
-        }
-      }
-    });
-  }
-
   function moduleStorageBase(moduleName) {
     const m = normModule(moduleName);
     return m ? `digiy_${m.toLowerCase()}` : "digiy_module";
@@ -143,6 +126,29 @@
 
     u.searchParams.set("return", location.href);
     return u.toString();
+  }
+
+  function createClient() {
+    if (!window.supabase?.createClient) {
+      throw new Error("Supabase SDK manquant.");
+    }
+
+    if (window.DIGIY_SB) return window.DIGIY_SB;
+
+    window.DIGIY_SB = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storage: {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {}
+        }
+      }
+    });
+
+    return window.DIGIY_SB;
   }
 
   async function resolveIdentityBySlug(sb, slug, moduleHint = "") {
@@ -225,12 +231,11 @@
       localStorage.setItem("digiy_last_phone", p);
     }
 
-    const packed = JSON.stringify({
+    localStorage.setItem("DIGIY_ACCESS", JSON.stringify({
       slug: s,
       phone: p,
       module: m
-    });
-    localStorage.setItem("DIGIY_ACCESS", packed);
+    }));
   }
 
   function enrichUrlIfMissingSlug(slug) {
@@ -291,7 +296,6 @@
       error: null
     };
 
-    /* 1) Aucun slug + aucun phone => mode aperçu possible */
     if (!slugQ && !phoneQ) {
       state.preview = !!ALLOW_PREVIEW_WITHOUT_IDENTITY;
       state.reason = ALLOW_PREVIEW_WITHOUT_IDENTITY ? "preview_no_identity" : "missing_identity";
@@ -301,7 +305,6 @@
 
     let identity = null;
 
-    /* 2) slug-first */
     if (slugQ) {
       identity = await resolveIdentityBySlug(sb, slugQ, moduleQ);
       if (!identity && !moduleQ) {
@@ -309,7 +312,6 @@
       }
     }
 
-    /* 3) fallback phone+module */
     if (!identity && phoneQ && moduleQ) {
       identity = await resolveIdentityByPhone(sb, phoneQ, moduleQ);
     }
@@ -337,11 +339,9 @@
     state.has_identity = true;
     state.pay_url = buildPayUrl(identity);
 
-    /* 4) enrichir URL et mémoire */
     rememberIdentity(identity);
     enrichUrlIfMissingSlug(identity.slug);
 
-    /* 5) session PIN */
     if (
       pinSession &&
       (
@@ -353,7 +353,6 @@
       state.pin_ok = true;
     }
 
-    /* 6) accès backend */
     const access = await hasAccess(sb, identity.phone, identity.module);
     state.access_ok = access;
 
