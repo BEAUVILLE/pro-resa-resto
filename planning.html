@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>DIGIY RESA PRO — Planning</title>
+  <meta name="theme-color" content="#061b14"/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_MODULE = "RESA";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js"></script>
+
+  <style>
+    :root{
+      --bg:#061b14;
+      --card:#0b2a1f;
+      --card2:#103428;
+      --line:rgba(255,255,255,.12);
+      --text:#eafff1;
+      --muted:rgba(234,255,241,.72);
+      --gold:#facc15;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --info:#38bdf8;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    .wrap{
+      width:min(1180px,92vw);
+      margin:0 auto;
+      padding:18px 0 48px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .brand{
+      display:grid;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:900;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.5rem,3.6vw,2.3rem);
+      line-height:1.05;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .actions-top{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#103428,#0c271e);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn.secondary{background:#0c241b}
+    .btn.warn{background:linear-gradient(180deg,#5a3d10,#3a2608)}
+    .btn.ghost{
+      background:rgba(255,255,255,.04);
+      border-style:dashed;
+      color:var(--muted);
+    }
+
+    .hero{
+      background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+    }
+
+    @media (max-width:980px){
+      .hero-grid{grid-template-columns:1fr}
+    }
+
+    .mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.10);
+      color:#fff1a8;
+      font-size:.9rem;
+      font-weight:900;
+    }
+
+    .mode.live{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+    }
+
+    .hero h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+
+    .hero p{
+      margin:0 0 8px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.14);
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:900;
+    }
+
+    .mini-card{
+      background:rgba(0,0,0,.14);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      display:grid;
+      gap:12px;
+    }
+
+    .mini-card strong{
+      display:block;
+      margin-bottom:6px;
+    }
+
+    .mini-stats{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
+
+    .mini-stat{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .mini-stat .k{
+      font-size:.8rem;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:800;
+    }
+
+    .mini-stat .v{
+      font-size:1.2rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .toolbar-left,
+    .toolbar-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .input,
+    .select{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:10px 12px;
+      font-weight:800;
+      outline:none;
+    }
+
+    .input:focus,
+    .select:focus{
+      border-color:rgba(250,204,21,.35);
+      box-shadow:0 0 0 3px rgba(250,204,21,.10);
+    }
+
+    .timeline{
+      display:grid;
+      gap:12px;
+    }
+
+    .slot{
+      display:grid;
+      grid-template-columns:110px 1fr;
+      gap:12px;
+      align-items:start;
+    }
+
+    @media (max-width:720px){
+      .slot{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .timebox{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      border-radius:16px;
+      padding:14px 12px;
+      text-align:center;
+      box-shadow:var(--shadow);
+    }
+
+    .timebox .time{
+      font-size:1.2rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .timebox .subtime{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:800;
+    }
+
+    .booking-card{
+      border:1px solid var(--line);
+      background:var(--card);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      display:grid;
+      gap:12px;
+    }
+
+    .booking-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+
+    .booking-main{
+      display:grid;
+      gap:6px;
+    }
+
+    .booking-name{
+      font-size:1.08rem;
+      font-weight:900;
+    }
+
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:900;
+      border:1px solid transparent;
+      white-space:nowrap;
+      font-size:.85rem;
+    }
+
+    .badge.pending{background:rgba(245,158,11,.14); color:#ffd38a; border-color:rgba(245,158,11,.25)}
+    .badge.confirmed{background:rgba(34,197,94,.14); color:#9ef2ba; border-color:rgba(34,197,94,.25)}
+    .badge.cancelled{background:rgba(239,68,68,.14); color:#ffb0b0; border-color:rgba(239,68,68,.25)}
+    .badge.done{background:rgba(56,189,248,.14); color:#b7ecff; border-color:rgba(56,189,248,.25)}
+    .badge.no_show{background:rgba(250,204,21,.12); color:#fff1a8; border-color:rgba(250,204,21,.24)}
+
+    .service-box{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .service-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:900;
+    }
+
+    .note{
+      border-left:3px solid rgba(250,204,21,.4);
+      padding-left:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .empty,
+    .empty-big{
+      border:1px dashed rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .empty{
+      padding:24px 18px;
+    }
+
+    .empty-big{
+      padding:34px 18px;
+    }
+
+    .footer-note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.92rem;
+      text-align:center;
+    }
+
+    .loading{
+      opacity:.72;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">DIGIY RESA PRO</div>
+        <h1>Planning du jour</h1>
+        <div class="sub" id="topSub">Chargement du planning…</div>
+      </div>
+
+      <div class="actions-top">
+        <button class="btn secondary" id="btnReload" type="button">Recharger</button>
+        <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
+        <a class="btn" id="btnCockpit" href="./cockpit.html">Cockpit</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="mode" id="modeBadge">Mode aperçu</div>
+          <h2 id="heroName">DIGIY RESA PRO</h2>
+          <p id="heroDesc">Vue agenda simple pour lire les réservations et les services dans l’ordre du jour.</p>
+
+          <div class="hero-meta">
+            <div class="pill" id="heroSlug">Slug : —</div>
+            <div class="pill" id="heroCity">Ville : —</div>
+            <div class="pill" id="heroType">Activité : —</div>
+            <div class="pill" id="heroDate">Date : —</div>
+          </div>
+        </div>
+
+        <div class="mini-card">
+          <strong id="miniTitle">Lecture rapide</strong>
+          <div id="miniText" style="color:var(--muted);line-height:1.55;">
+            Ici tu vois qui arrive, à quelle heure, pour quel service, et avec quel statut.
+          </div>
+
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <div class="k">Réservations</div>
+              <div class="v" id="sTotal">0</div>
+            </div>
+            <div class="mini-stat">
+              <div class="k">Services actifs</div>
+              <div class="v" id="sServices">0</div>
+            </div>
+            <div class="mini-stat">
+              <div class="k">Confirmées</div>
+              <div class="v" id="sConfirmed">0</div>
+            </div>
+            <div class="mini-stat">
+              <div class="k">Pending</div>
+              <div class="v" id="sPending">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <input class="input" id="dateInput" type="date"/>
+        <select class="select" id="filterStatus">
+          <option value="all">Tous les statuts</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmées</option>
+          <option value="done">Done</option>
+          <option value="no_show">No-show</option>
+          <option value="cancelled">Annulées</option>
+        </select>
+      </div>
+
+      <div class="toolbar-right">
+        <a class="btn ghost" id="btnSettings" href="./etablissement.html">Réglages</a>
+      </div>
+    </section>
+
+    <section class="timeline" id="timeline"></section>
+    <div class="empty-big" id="emptyState" style="display:none;">Aucune réservation pour cette date.</div>
+
+    <div class="footer-note" id="footerNote">
+      DIGIY RESA PRO — planning visuel multi business.
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const query = new URL(location.href).searchParams;
+      const querySlug = query.get("slug") || "";
+      const queryDate = query.get("date") || "";
+
+      const $ = (id) => document.getElementById(id);
+
+      let sb = null;
+      let PROFILE = null;
+      let SERVICES = [];
+      let BOOKINGS = [];
+      let RESOLVED_SLUG = "";
+      let ACTIVE_DATE = "";
+      let ACTIVE_FILTER = "all";
+      let IS_PREVIEW = true;
+
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
+      }
+
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+
+      function todayISO(){
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,"0");
+        const da = String(d.getDate()).padStart(2,"0");
+        return `${y}-${m}-${da}`;
+      }
+
+      function fmtDate(v){
+        if(!v) return "—";
+        try{
+          const d = new Date(v);
+          if (Number.isNaN(d.getTime())) return String(v);
+          return d.toLocaleDateString("fr-FR", {
+            year:"numeric", month:"2-digit", day:"2-digit"
+          });
+        }catch{
+          return String(v);
+        }
+      }
+
+      function fmtDateLong(v){
+        if(!v) return "—";
+        try{
+          const [y,m,d] = String(v).split("-");
+          const dt = new Date(Number(y), Number(m)-1, Number(d));
+          if (Number.isNaN(dt.getTime())) return String(v);
+          return dt.toLocaleDateString("fr-FR", {
+            weekday:"long", year:"numeric", month:"long", day:"numeric"
+          });
+        }catch{
+          return String(v);
+        }
+      }
+
+      function fmtTime(v){
+        const s = String(v || "").trim();
+        if(!s) return "—";
+        return s.slice(0,5);
+      }
+
+      function money(v){
+        const n = Number(v);
+        if(!Number.isFinite(n)) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
+
+      function normStatus(v){
+        const s = String(v || "pending").toLowerCase().trim();
+        if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
+        return "pending";
+      }
+
+      function statusLabel(v){
+        const s = normStatus(v);
+        if(s === "pending") return "Pending";
+        if(s === "confirmed") return "Confirmée";
+        if(s === "cancelled") return "Annulée";
+        if(s === "done") return "Done";
+        if(s === "no_show") return "No-show";
+        return s;
+      }
+
+      function initClient(){
+        if (window.DIGIY_SB) {
+          sb = window.DIGIY_SB;
+          return;
+        }
+
+        if (!window.supabase?.createClient) {
+          throw new Error("Supabase JS non chargé.");
+        }
+
+        sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+          {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: false,
+              storage: {
+                getItem: () => null,
+                setItem: () => {},
+                removeItem: () => {}
+              }
+            }
+          }
+        );
+
+        window.DIGIY_SB = sb;
+      }
+
+      async function rpc(name, args){
+        if(!sb) throw new Error("supabase_unavailable");
+        const { data, error } = await sb.rpc(name, args);
+        if(error) throw error;
+        return data;
+      }
+
+      function setLinks(slug = ""){
+        const clean = normalizeSlug(slug);
+        $("btnPin").href = clean ? `./pin.html?slug=${encodeURIComponent(clean)}` : "./pin.html";
+        $("btnCockpit").href = clean ? `./cockpit.html?slug=${encodeURIComponent(clean)}` : "./cockpit.html";
+        $("btnSettings").href = clean ? `./etablissement.html?slug=${encodeURIComponent(clean)}` : "./etablissement.html";
+      }
+
+      async function resolveGuardState(){
+        const cleanQuerySlug = normalizeSlug(querySlug);
+        const fallbackSlug =
+          cleanQuerySlug ||
+          normalizeSlug(sessionStorage.getItem("digiy_resa_slug") || "") ||
+          normalizeSlug(localStorage.getItem("digiy_resa_last_slug") || "");
+
+        if(!window.DIGIY_GUARD?.ready){
+          return {
+            ok:false,
+            preview:true,
+            access_ok:false,
+            slug:fallbackSlug,
+            reason:"guard_missing"
+          };
+        }
+
+        try{
+          await window.DIGIY_GUARD.ready;
+        }catch{
+          return {
+            ok:false,
+            preview:true,
+            access_ok:false,
+            slug:fallbackSlug,
+            reason:"guard_error"
+          };
+        }
+
+        const st = window.DIGIY_GUARD?.state || null;
+        if(!st){
+          return {
+            ok:false,
+            preview:true,
+            access_ok:false,
+            slug:fallbackSlug,
+            reason:"guard_empty"
+          };
+        }
+
+        return {
+          ...st,
+          slug: normalizeSlug(st.slug || fallbackSlug || "")
+        };
+      }
+
+      function setHeroData(name, desc, slug, city, type, dateText){
+        $("heroName").textContent = name || "DIGIY RESA PRO";
+        $("heroDesc").textContent = desc || "Lecture visuelle des réservations.";
+        $("heroSlug").textContent = "Slug : " + (slug || "—");
+        $("heroCity").textContent = "Ville : " + (city || "—");
+        $("heroType").textContent = "Activité : " + (type || "—");
+        $("heroDate").textContent = "Date : " + (dateText || "—");
+      }
+
+      function setPreviewHero(slug = ""){
+        $("modeBadge").className = "mode";
+        $("modeBadge").textContent = "Mode aperçu";
+        $("topSub").textContent = slug
+          ? `Slug détecté (${slug}) mais accès non confirmé. Aperçu affiché.`
+          : "Aucun slug détecté. Aperçu affiché.";
+        $("miniTitle").textContent = "Aperçu intelligent";
+        $("miniText").textContent = "On montre le planning sans exposer les vraies données tant que l’accès n’est pas ouvert.";
+        $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le planning vivant.";
+      }
+
+      function setLiveHero(){
+        $("modeBadge").className = "mode live";
+        $("modeBadge").textContent = "Mode vivant";
+        $("topSub").textContent = `Planning chargé pour ${RESOLVED_SLUG}`;
+        $("miniTitle").textContent = "Lecture terrain";
+        $("miniText").textContent = "Le planning montre l’ordre du jour, les services demandés, les statuts et les personnes à accueillir.";
+        $("footerNote").textContent = "Planning vivant branché sur les réservations réelles.";
+      }
+
+      function renderPreviewData(){
+        BOOKINGS = [
+          {
+            id:"p1",
+            booking_date:ACTIVE_DATE,
+            booking_time:"10:00:00",
+            customer_name:"Awa Ndiaye",
+            customer_phone:"770000001",
+            guests_count:1,
+            service_name:"Brushing",
+            duration_minutes:45,
+            price_fcfa:6000,
+            status:"pending",
+            note:"Si possible sans attente.",
+            created_at:new Date().toISOString()
+          },
+          {
+            id:"p2",
+            booking_date:ACTIVE_DATE,
+            booking_time:"12:30:00",
+            customer_name:"Moussa Fall",
+            customer_phone:"770000002",
+            guests_count:2,
+            service_name:"Table midi",
+            duration_minutes:60,
+            price_fcfa:"",
+            status:"confirmed",
+            note:"",
+            created_at:new Date().toISOString()
+          },
+          {
+            id:"p3",
+            booking_date:ACTIVE_DATE,
+            booking_time:"16:00:00",
+            customer_name:"Cheikh Ba",
+            customer_phone:"770000003",
+            guests_count:1,
+            service_name:"Diagnostic",
+            duration_minutes:15,
+            price_fcfa:5000,
+            status:"done",
+            note:"Contrôle rapide.",
+            created_at:new Date().toISOString()
+          }
+        ];
+
+        SERVICES = [
+          {service_name:"Brushing"},
+          {service_name:"Table midi"},
+          {service_name:"Diagnostic"}
+        ];
+
+        renderStats();
+        renderTimeline();
+      }
+
+      async function loadProfile(){
+        const data = await rpc("resa_public_profile_by_slug", { p_slug: RESOLVED_SLUG });
+        if(!data?.ok){
+          throw new Error(data?.error || "profile_not_found");
+        }
+        PROFILE = data.profile || {};
+      }
+
+      async function loadServices(){
+        const { data, error } = await sb
+          .from("digiy_resa_services")
+          .select("id, service_name, duration_minutes, price_fcfa, is_active")
+          .eq("slug", RESOLVED_SLUG)
+          .eq("is_active", true)
+          .order("service_name", { ascending:true });
+
+        if(error){
+          console.error(error);
+          SERVICES = [];
+          return;
+        }
+
+        SERVICES = Array.isArray(data) ? data : [];
+      }
+
+      async function loadBookings(){
+        const payload = await rpc("digiy_resa_get_bookings_by_day", {
+          p_slug: RESOLVED_SLUG,
+          p_date: ACTIVE_DATE
+        });
+
+        if(!payload?.ok){
+          throw new Error(payload?.error || "bookings_not_found");
+        }
+
+        const rows = Array.isArray(payload.bookings) ? payload.bookings : [];
+        BOOKINGS = rows.map((r) => ({
+          id: String(r.id || ""),
+          booking_date: r.booking_date || ACTIVE_DATE,
+          booking_time: r.booking_time || "",
+          customer_name: r.customer_name || "Sans nom",
+          customer_phone: r.customer_phone || "",
+          guests_count: r.guests_count ?? "",
+          service_name: r.service_name || "",
+          duration_minutes: r.duration_minutes ?? "",
+          price_fcfa: r.price_fcfa ?? "",
+          status: normStatus(r.status),
+          note: r.note_text || r.note || "",
+          created_at: r.created_at || null
+        }));
+      }
+
+      function renderStats(){
+        $("sTotal").textContent = String(BOOKINGS.length);
+        $("sServices").textContent = String(SERVICES.length);
+        $("sConfirmed").textContent = String(BOOKINGS.filter(b => normStatus(b.status) === "confirmed").length);
+        $("sPending").textContent = String(BOOKINGS.filter(b => normStatus(b.status) === "pending").length);
+      }
+
+      function filteredBookings(){
+        let rows = BOOKINGS.slice().sort((a,b) => String(a.booking_time).localeCompare(String(b.booking_time)));
+        if(ACTIVE_FILTER !== "all"){
+          rows = rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+        }
+        return rows;
+      }
+
+      function serviceHtml(row){
+        const bits = [];
+        if(row.service_name) bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
+        if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
+        if(money(row.price_fcfa)) bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
+        return bits.length ? `<div class="service-box">${bits.join("")}</div>` : "";
+      }
+
+      function renderTimeline(){
+        const rows = filteredBookings();
+        const box = $("timeline");
+        const empty = $("emptyState");
+
+        if(!rows.length){
+          box.innerHTML = "";
+          empty.style.display = "block";
+          return;
+        }
+
+        empty.style.display = "none";
+
+        box.innerHTML = rows.map((row) => `
+          <article class="slot">
+            <div class="timebox">
+              <div class="time">${escapeHtml(fmtTime(row.booking_time))}</div>
+              <div class="subtime">${escapeHtml(fmtDate(row.booking_date))}</div>
+            </div>
+
+            <div class="booking-card">
+              <div class="booking-top">
+                <div class="booking-main">
+                  <div class="booking-name">${escapeHtml(row.customer_name)}</div>
+                  <div class="meta">
+                    <span>📞 ${escapeHtml(row.customer_phone || "—")}</span>
+                    <span>👥 ${escapeHtml(String(row.guests_count || "—"))}</span>
+                    <span>🧾 ${escapeHtml(row.created_at ? fmtDate(row.created_at) : "—")}</span>
+                  </div>
+                </div>
+
+                <div class="badge ${escapeHtml(normStatus(row.status))}">
+                  ${escapeHtml(statusLabel(row.status))}
+                </div>
+              </div>
+
+              ${serviceHtml(row)}
+
+              ${row.note ? `<div class="note">“${escapeHtml(row.note)}”</div>` : ""}
+            </div>
+          </article>
+        `).join("");
+      }
+
+      async function boot(){
+        document.body.classList.add("loading");
+
+        try{
+          initClient();
+
+          ACTIVE_DATE = queryDate || todayISO();
+          $("dateInput").value = ACTIVE_DATE;
+
+          const st = await resolveGuardState();
+
+          if(st?.preview){
+            IS_PREVIEW = true;
+            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            setLinks(RESOLVED_SLUG);
+            setPreviewHero(RESOLVED_SLUG);
+            setHeroData(
+              "DIGIY RESA PRO",
+              "Vue agenda simple pour lire les réservations et les services dans l’ordre du jour.",
+              RESOLVED_SLUG || "—",
+              "—",
+              "Multi business",
+              fmtDateLong(ACTIVE_DATE)
+            );
+            renderPreviewData();
+            return;
+          }
+
+          if(st?.access_ok){
+            IS_PREVIEW = false;
+            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            if(!RESOLVED_SLUG){
+              IS_PREVIEW = true;
+              setPreviewHero("");
+              setHeroData("DIGIY RESA PRO", "Aperçu du planning.", "—", "—", "Multi business", fmtDateLong(ACTIVE_DATE));
+              renderPreviewData();
+              return;
+            }
+
+            localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG);
+            sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG);
+
+            setLinks(RESOLVED_SLUG);
+            setLiveHero();
+
+            await Promise.all([
+              loadProfile(),
+              loadServices(),
+              loadBookings()
+            ]);
+
+            setHeroData(
+              PROFILE?.display_name || "Commerce",
+              PROFILE?.bio || "Vue agenda simple pour lire les réservations et les services du jour.",
+              RESOLVED_SLUG,
+              PROFILE?.city || "—",
+              PROFILE?.business_type || PROFILE?.category || "Multi business",
+              fmtDateLong(ACTIVE_DATE)
+            );
+
+            renderStats();
+            renderTimeline();
+            return;
+          }
+
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = normalizeSlug(st?.slug || "");
+          setLinks(RESOLVED_SLUG);
+          setPreviewHero(RESOLVED_SLUG);
+          setHeroData(
+            "DIGIY RESA PRO",
+            "Aperçu du planning.",
+            RESOLVED_SLUG || "—",
+            "—",
+            "Multi business",
+            fmtDateLong(ACTIVE_DATE)
+          );
+          renderPreviewData();
+        }catch(err){
+          console.error(err);
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = "";
+          setLinks("");
+          setPreviewHero("");
+          setHeroData(
+            "DIGIY RESA PRO",
+            "Erreur de chargement. Aperçu affiché.",
+            "—",
+            "—",
+            "Multi business",
+            fmtDateLong(ACTIVE_DATE || todayISO())
+          );
+          renderPreviewData();
+        }finally{
+          document.body.classList.remove("loading");
+        }
+      }
+
+      $("btnReload").addEventListener("click", boot);
+      $("filterStatus").addEventListener("change", (e) => {
+        ACTIVE_FILTER = e.target.value || "all";
+        renderTimeline();
+      });
+      $("dateInput").addEventListener("change", () => {
+        ACTIVE_DATE = $("dateInput").value || todayISO();
+        boot();
+      });
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
