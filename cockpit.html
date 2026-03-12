@@ -175,6 +175,26 @@
       margin-top:12px;
     }
 
+    .hero-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.14);
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:900;
+    }
+
     .grid-stats{
       display:grid;
       grid-template-columns:repeat(6,1fr);
@@ -316,6 +336,25 @@
       line-height:1.5;
     }
 
+    .service-box{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .service-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:900;
+    }
+
     .booking-actions{
       display:flex;
       gap:8px;
@@ -399,9 +438,13 @@
       <div class="hero-grid">
         <div>
           <div class="mode" id="modeBadge">Mode aperçu</div>
-          <h2 id="heroName">Établissement</h2>
+          <h2 id="heroName">DIGIY RESA PRO</h2>
           <p id="heroDesc">Lecture des réservations, suivi terrain, actions rapides.</p>
-          <p id="heroMeta">Slug : —</p>
+          <div class="hero-meta">
+            <div class="hero-pill" id="heroSlug">Slug : —</div>
+            <div class="hero-pill" id="heroCity">Ville : —</div>
+            <div class="hero-pill" id="heroType">Activité : —</div>
+          </div>
 
           <div class="hero-cta" id="heroCta">
             <a class="btn warn" id="heroPin" href="./pin.html">Ouvrir ma porte PIN</a>
@@ -412,8 +455,7 @@
         <div class="mini-card">
           <strong id="miniTitle">Lecture terrain</strong>
           <div id="miniText" style="color:var(--muted);line-height:1.55;">
-            Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes,
-            tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.
+            Ici on lit les réservations du jour, on voit les services demandés, et on garde une lecture nette du terrain.
           </div>
         </div>
       </div>
@@ -430,7 +472,7 @@
 
     <section class="panel">
       <div class="panel-head">
-        <h3 id="panelTitle">Réservations récentes</h3>
+        <h3 id="panelTitle">Réservations du jour</h3>
 
         <div class="filters" id="filters">
           <button class="chip active" data-filter="all" type="button">Toutes</button>
@@ -447,7 +489,7 @@
     </section>
 
     <div class="footer-note" id="footerNote">
-      Module RESA Phase 2 — cockpit métier.
+      DIGIY RESA PRO — cockpit métier multi business.
     </div>
   </div>
 
@@ -456,7 +498,9 @@
       "use strict";
 
       const MODULE = "RESA";
-      const querySlug = new URL(location.href).searchParams.get("slug") || "";
+      const query = new URL(location.href).searchParams;
+      const querySlug = query.get("slug") || "";
+      const queryDate = query.get("date") || "";
 
       const $ = (id) => document.getElementById(id);
 
@@ -464,7 +508,9 @@
       let ALL_BOOKINGS = [];
       let ACTIVE_FILTER = "all";
       let PROFILE = null;
+      let SERVICES = [];
       let RESOLVED_SLUG = "";
+      let ACTIVE_DATE = "";
       let IS_PREVIEW = true;
 
       function normalizeSlug(v){
@@ -489,7 +535,9 @@
       function fmtDate(v){
         if(!v) return "—";
         try{
-          return new Date(v).toLocaleDateString("fr-FR", {
+          const d = new Date(v);
+          if (Number.isNaN(d.getTime())) return String(v);
+          return d.toLocaleDateString("fr-FR", {
             year:"numeric", month:"2-digit", day:"2-digit"
           });
         }catch{
@@ -526,12 +574,25 @@
       }
 
       function bookingIdOf(row){
-        return String(
-          row?.id ??
-          row?.booking_id ??
-          row?.reservation_id ??
-          ""
-        );
+        return String(row?.id ?? row?.booking_id ?? row?.reservation_id ?? "");
+      }
+
+      function serviceNameOf(row){
+        return String(row?.service_name || "").trim();
+      }
+
+      function money(v){
+        const n = Number(v);
+        if(!Number.isFinite(n)) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
+
+      function todayISO(){
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,"0");
+        const da = String(d.getDate()).padStart(2,"0");
+        return `${y}-${m}-${da}`;
       }
 
       function normalizeRows(payload){
@@ -552,7 +613,11 @@
           booking_date: r.booking_date || r.reservation_date || r.date || "",
           booking_time: r.booking_time || r.reservation_time || r.time || "",
           guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
-          note: r.note || r.message || r.special_request || ""
+          service_id: r.service_id || "",
+          service_name: r.service_name || "",
+          duration_minutes: r.duration_minutes ?? "",
+          price_fcfa: r.price_fcfa ?? "",
+          note: r.note || r.note_text || r.message || r.special_request || ""
         }));
       }
 
@@ -618,6 +683,7 @@
         $("bookingList").innerHTML = "";
         ALL_BOOKINGS = [];
         PROFILE = null;
+        SERVICES = [];
       }
 
       async function resolveGuardState(){
@@ -666,6 +732,12 @@
         };
       }
 
+      function setHeroPills(slug, city, type){
+        $("heroSlug").textContent = "Slug : " + (slug || "—");
+        $("heroCity").textContent = "Ville : " + (city || "—");
+        $("heroType").textContent = "Activité : " + (type || "—");
+      }
+
       function setPreviewHero(message = "", slug = ""){
         const clean = normalizeSlug(slug);
 
@@ -673,14 +745,14 @@
         $("modeBadge").textContent = "Mode aperçu";
 
         $("heroName").textContent = "DIGIY RESA PRO";
-        $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, suivi terrain.";
-        $("heroMeta").textContent = clean ? `Slug détecté : ${clean}` : "Slug : absent — aperçu visuel du logiciel";
-        $("topSub").textContent = message || "Aucun slug détecté. Tu vois le cockpit en mode aperçu élégant.";
+        $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, lecture terrain.";
+        setHeroPills(clean, "—", "Multi business");
+        $("topSub").textContent = message || "Aucun slug détecté. Tu vois le cockpit en mode aperçu.";
         $("panelTitle").textContent = "Aperçu des réservations";
         $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le cockpit vivant.";
         $("miniTitle").textContent = "Aperçu intelligent";
         $("miniText").textContent =
-          "Pas de slug ? Pas grave. On ne jette pas le pro contre un mur. On lui montre le logiciel, puis on l’invite à entrer proprement par sa porte PIN.";
+          "Pas de slug ? On montre l’outil sans exposer les vraies données. Le pro peut ensuite entrer proprement par sa porte PIN.";
 
         setPreviewLinks(clean);
       }
@@ -689,20 +761,18 @@
         $("modeBadge").className = "mode live";
         $("modeBadge").textContent = "Mode vivant";
 
-        $("heroMeta").textContent = `Slug : ${RESOLVED_SLUG}`;
         $("topSub").textContent = `Cockpit chargé pour ${RESOLVED_SLUG}`;
-        $("panelTitle").textContent = "Réservations récentes";
+        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
         $("footerNote").textContent = "Cockpit vivant branché sur les réservations réelles.";
         $("miniTitle").textContent = "Lecture terrain";
         $("miniText").textContent =
-          "Ici on ne rêve pas, on travaille : une réservation arrive, tu la confirmes, tu l’annules, tu la clôtures, ou tu marques no-show. Propre, net, sans tunnel de cirque.";
+          "Ici on lit les réservations du jour, les services choisis, et on garde une vue simple pour agir au bon moment.";
 
         setPreviewLinks(RESOLVED_SLUG);
       }
 
       function loadPreviewData(slug = ""){
         setPreviewHero("", slug);
-
         const now = new Date();
         const addHours = (n) => new Date(now.getTime() - (n * 3600 * 1000)).toISOString();
 
@@ -712,10 +782,13 @@
             status: "pending",
             customer_name: "Awa Ndiaye",
             customer_phone: "77 000 00 01",
-            booking_date: "2026-03-07",
-            booking_time: "20:30",
-            guests_count: 2,
-            note: "Table au calme si possible.",
+            booking_date: "2026-03-13",
+            booking_time: "14:00",
+            guests_count: 1,
+            service_name: "Brushing",
+            duration_minutes: 45,
+            price_fcfa: 6000,
+            note: "Brushing si possible sans attente.",
             created_at: addHours(2)
           },
           {
@@ -723,10 +796,13 @@
             status: "confirmed",
             customer_name: "Moussa Fall",
             customer_phone: "77 000 00 02",
-            booking_date: "2026-03-07",
-            booking_time: "21:00",
-            guests_count: 4,
-            note: "Anniversaire discret.",
+            booking_date: "2026-03-13",
+            booking_time: "10:00",
+            guests_count: 1,
+            service_name: "Diagnostic",
+            duration_minutes: 15,
+            price_fcfa: 5000,
+            note: "Voyant moteur.",
             created_at: addHours(4)
           },
           {
@@ -734,9 +810,12 @@
             status: "done",
             customer_name: "Sokhna Diop",
             customer_phone: "77 000 00 03",
-            booking_date: "2026-03-06",
-            booking_time: "13:00",
-            guests_count: 3,
+            booking_date: "2026-03-13",
+            booking_time: "12:30",
+            guests_count: 2,
+            service_name: "Table midi",
+            duration_minutes: 60,
+            price_fcfa: "",
             note: "",
             created_at: addHours(8)
           },
@@ -745,10 +824,13 @@
             status: "no_show",
             customer_name: "Cheikh Ba",
             customer_phone: "77 000 00 04",
-            booking_date: "2026-03-06",
-            booking_time: "19:30",
-            guests_count: 2,
-            note: "Réservation faite tard.",
+            booking_date: "2026-03-13",
+            booking_time: "16:00",
+            guests_count: 1,
+            service_name: "Consultation simple",
+            duration_minutes: 30,
+            price_fcfa: 10000,
+            note: "Pas venu.",
             created_at: addHours(12)
           },
           {
@@ -756,18 +838,21 @@
             status: "cancelled",
             customer_name: "Mariama Sarr",
             customer_phone: "77 000 00 05",
-            booking_date: "2026-03-08",
-            booking_time: "12:30",
-            guests_count: 5,
-            note: "Le groupe a reporté.",
+            booking_date: "2026-03-13",
+            booking_time: "18:00",
+            guests_count: 1,
+            service_name: "Entretien",
+            duration_minutes: 45,
+            price_fcfa: 7000,
+            note: "Report demandé.",
             created_at: addHours(16)
           }
         ];
 
-        $("sTotal").textContent = "18";
-        $("sPending").textContent = "4";
-        $("sConfirmed").textContent = "7";
-        $("sDone").textContent = "5";
+        $("sTotal").textContent = "5";
+        $("sPending").textContent = "1";
+        $("sConfirmed").textContent = "1";
+        $("sDone").textContent = "1";
         $("sNoShow").textContent = "1";
         $("sCancelled").textContent = "1";
 
@@ -775,60 +860,62 @@
       }
 
       async function loadProfile(){
-        try{
-          const data = await rpc("resa_get_profile_by_slug", { p_slug: RESOLVED_SLUG });
-          PROFILE = data?.profile || data || null;
-        }catch{
-          PROFILE = null;
+        const data = await rpc("resa_public_profile_by_slug", { p_slug: RESOLVED_SLUG });
+
+        if(!data?.ok){
+          throw new Error(data?.error || "profile_not_found");
         }
 
-        const title =
-          PROFILE?.business_name ||
-          PROFILE?.name ||
-          PROFILE?.restaurant_name ||
-          "Établissement";
+        PROFILE = data.profile || {};
+        const title = PROFILE?.display_name || "Commerce";
+        const city = PROFILE?.city || "—";
+        const type = PROFILE?.business_type || PROFILE?.category || "Multi business";
 
         $("heroName").textContent = title;
-        $("heroDesc").textContent = "Lecture des réservations, suivi terrain, actions rapides.";
+        $("heroDesc").textContent = PROFILE?.bio || "Lecture des réservations, suivi terrain, actions rapides.";
+        setHeroPills(RESOLVED_SLUG, city, type);
       }
 
-      async function loadStats(){
-        let data = null;
+      async function loadServices(){
+        const { data, error } = await sb
+          .from("digiy_resa_services")
+          .select("id, service_name, duration_minutes, price_fcfa, is_active")
+          .eq("slug", RESOLVED_SLUG)
+          .eq("is_active", true)
+          .order("service_name", { ascending:true });
 
-        try{
-          data = await rpc("resa_stats_v2_by_slug", { p_slug: RESOLVED_SLUG });
-        }catch{
-          try{
-            data = await rpc("resa_stats_by_slug", { p_slug: RESOLVED_SLUG });
-          }catch{
-            data = null;
-          }
+        if(error){
+          console.error(error);
+          SERVICES = [];
+          return;
         }
 
-        $("sTotal").textContent = String(Number(data?.total || 0));
-        $("sPending").textContent = String(Number(data?.pending || 0));
-        $("sConfirmed").textContent = String(Number(data?.confirmed || 0));
-        $("sDone").textContent = String(Number(data?.done || 0));
-        $("sNoShow").textContent = String(Number(data?.no_show || 0));
-        $("sCancelled").textContent = String(Number(data?.cancelled || 0));
+        SERVICES = Array.isArray(data) ? data : [];
       }
 
       async function loadBookings(){
-        let data = null;
+        const payload = await rpc("digiy_resa_get_bookings_by_day", {
+          p_slug: RESOLVED_SLUG,
+          p_date: ACTIVE_DATE
+        });
 
-        try{
-          data = await rpc("resa_list_recent_bookings_v2_by_slug", {
-            p_slug: RESOLVED_SLUG,
-            p_limit: 100
-          });
-        }catch{
-          data = await rpc("resa_list_recent_bookings_by_slug", {
-            p_slug: RESOLVED_SLUG
-          });
+        if(!payload?.ok){
+          throw new Error(payload?.error || "bookings_not_found");
         }
 
-        ALL_BOOKINGS = normalizeRows(data);
+        ALL_BOOKINGS = normalizeRows(payload.bookings || []);
+        renderStatsFromRows();
         renderBookings();
+      }
+
+      function renderStatsFromRows(){
+        const rows = ALL_BOOKINGS || [];
+        $("sTotal").textContent = String(rows.length);
+        $("sPending").textContent = String(rows.filter(r => normStatus(r.status) === "pending").length);
+        $("sConfirmed").textContent = String(rows.filter(r => normStatus(r.status) === "confirmed").length);
+        $("sDone").textContent = String(rows.filter(r => normStatus(r.status) === "done").length);
+        $("sNoShow").textContent = String(rows.filter(r => normStatus(r.status) === "no_show").length);
+        $("sCancelled").textContent = String(rows.filter(r => normStatus(r.status) === "cancelled").length);
       }
 
       function filterRows(rows){
@@ -847,22 +934,19 @@
 
         return `
           <div class="booking-actions">
-            <a class="action-btn preview" href="${pinHref}">Entrer par PIN pour agir</a>
+            <a class="action-btn preview" href="${pinHref}">Entrer par PIN</a>
             <a class="action-btn preview" href="${settingsHref}">Voir les réglages</a>
           </div>
         `;
       }
 
-      function liveActionHtml(id, status){
-        return `
-          <div class="booking-actions">
-            <button class="action-btn ok" data-id="${id}" data-status="confirmed" type="button" ${status === "confirmed" ? "disabled" : ""}>Confirmer</button>
-            <button class="action-btn danger" data-id="${id}" data-status="cancelled" type="button" ${status === "cancelled" ? "disabled" : ""}>Annuler</button>
-            <button class="action-btn info" data-id="${id}" data-status="done" type="button" ${status === "done" ? "disabled" : ""}>Done</button>
-            <button class="action-btn warn" data-id="${id}" data-status="no_show" type="button" ${status === "no_show" ? "disabled" : ""}>No-show</button>
-            <button class="action-btn" data-id="${id}" data-status="pending" type="button" ${status === "pending" ? "disabled" : ""}>Remettre pending</button>
-          </div>
-        `;
+      function serviceHtml(row){
+        const bits = [];
+        if(serviceNameOf(row)) bits.push(`<span class="service-pill">🧾 ${escapeHtml(serviceNameOf(row))}</span>`);
+        if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
+        if(money(row.price_fcfa)) bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
+        if(!bits.length) return "";
+        return `<div class="service-box">${bits.join("")}</div>`;
       }
 
       function renderBookings(){
@@ -875,14 +959,13 @@
           empty.style.display = "block";
           empty.textContent = IS_PREVIEW
             ? "Aperçu disponible, mais aucune ligne à afficher."
-            : "Aucune réservation pour l’instant.";
+            : "Aucune réservation pour cette date.";
           return;
         }
 
         empty.style.display = "none";
 
         list.innerHTML = rows.map((row) => {
-          const id = escapeHtml(row.id);
           const status = normStatus(row.status);
           const customer = escapeHtml(row.customer_name);
           const phone = escapeHtml(row.customer_phone || "—");
@@ -893,7 +976,7 @@
           const created = escapeHtml(fmtDateTime(row.created_at));
 
           return `
-            <article class="booking ${IS_PREVIEW ? "preview" : ""}" id="booking-${id}">
+            <article class="booking ${IS_PREVIEW ? "preview" : ""}">
               <div class="booking-top">
                 <div class="booking-main">
                   <div class="booking-name">${customer}</div>
@@ -911,62 +994,14 @@
                 </div>
               </div>
 
+              ${serviceHtml(row)}
+
               ${note ? `<div class="note">“${note}”</div>` : ""}
 
-              ${IS_PREVIEW ? previewActionHtml() : liveActionHtml(id, status)}
+              ${IS_PREVIEW ? previewActionHtml() : ""}
             </article>
           `;
         }).join("");
-
-        if(!IS_PREVIEW){
-          list.querySelectorAll("[data-id][data-status]").forEach((btn) => {
-            btn.addEventListener("click", async () => {
-              const bookingId = btn.getAttribute("data-id");
-              const status = btn.getAttribute("data-status");
-              await setBookingStatus(bookingId, status, btn);
-            });
-          });
-        }
-      }
-
-      async function setBookingStatus(bookingId, status, btnEl){
-        if(!RESOLVED_SLUG) return;
-        if(!bookingId) return alert("Booking introuvable.");
-        if(btnEl?.dataset?.busy === "1") return;
-
-        const oldText = btnEl.textContent;
-        btnEl.dataset.busy = "1";
-        btnEl.disabled = true;
-        btnEl.textContent = "…";
-
-        try{
-          const data = await rpc("resa_set_booking_status_by_slug", {
-            p_slug: RESOLVED_SLUG,
-            p_booking_id: bookingId,
-            p_status: status,
-            p_status_note: null
-          });
-
-          if(!data?.ok){
-            throw new Error(data?.error || "update_failed");
-          }
-
-          ALL_BOOKINGS = ALL_BOOKINGS.map((r) => {
-            if(String(r.id) === String(bookingId)){
-              return { ...r, status };
-            }
-            return r;
-          });
-
-          await loadStats();
-          renderBookings();
-        }catch(err){
-          console.error(err);
-          alert("Impossible de changer le statut de cette réservation.");
-        }finally{
-          btnEl.dataset.busy = "0";
-          btnEl.textContent = oldText;
-        }
       }
 
       function initFilters(){
@@ -984,6 +1019,7 @@
         document.body.classList.add("loading");
         resetView();
         resetStats();
+        ACTIVE_DATE = queryDate || todayISO();
 
         try{
           initClient();
@@ -1008,7 +1044,6 @@
                 ? `Slug détecté (${RESOLVED_SLUG}) mais accès non confirmé. Aperçu affiché.`
                 : "Aperçu affiché.";
             }
-
             return;
           }
 
@@ -1029,7 +1064,7 @@
             setLiveHero();
             await loadProfile();
             await Promise.all([
-              loadStats(),
+              loadServices(),
               loadBookings()
             ]);
             return;
@@ -1048,7 +1083,6 @@
           }
         }catch(err){
           console.error(err);
-
           IS_PREVIEW = true;
           RESOLVED_SLUG = "";
           loadPreviewData();
@@ -1060,14 +1094,7 @@
 
       $("btnReload").addEventListener("click", boot);
       initFilters();
-
-      try{
-        boot();
-      }catch(err){
-        console.error(err);
-        loadPreviewData(normalizeSlug(querySlug));
-        $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
-      }
+      boot();
     })();
   </script>
 </body>
