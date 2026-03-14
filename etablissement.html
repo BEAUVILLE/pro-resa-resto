@@ -7,6 +7,12 @@
   <meta name="theme-color" content="#07140f"/>
   <meta name="description" content="Fiche publique DIGIY RESA. Réservation simple, contact direct, services multi business."/>
 
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "RESA";
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -523,242 +529,159 @@
   </div>
 
   <script>
-    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+    (() => {
+      "use strict";
 
-    const supabaseLib = window.supabase;
-    if (!supabaseLib || typeof supabaseLib.createClient !== "function") {
-      console.error("Supabase JS non chargé.");
-    }
+      const MODULE = "RESA";
+      const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+      const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
 
-    const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth:{
-        persistSession:false,
-        autoRefreshToken:false,
-        detectSessionInUrl:false
+      const supabaseLib = window.supabase;
+      const qs = new URLSearchParams(location.search);
+
+      function storageGet(key){
+        try{
+          const s = sessionStorage.getItem(key);
+          if (s) return s;
+        }catch{}
+        try{
+          const l = localStorage.getItem(key);
+          if (l) return l;
+        }catch{}
+        return "";
       }
-    });
 
-    const qs = new URLSearchParams(location.search);
-    const slug = (qs.get("slug") || "").trim();
-
-    function safe(v, fallback="—"){
-      const s = String(v || "").trim();
-      return s || fallback;
-    }
-
-    function initials(name){
-      const s = safe(name, "RE");
-      return s.split(/\s+/).slice(0,2).map(x => (x[0] || "").toUpperCase()).join("") || "RE";
-    }
-
-    function waLink(phone, name){
-      const clean = String(phone || "").replace(/[^\d]/g, "");
-      if(!clean) return "";
-      const msg = `Bonjour ${name || ""}, je vous contacte via votre fiche DIGIY RESA.`;
-      return "https://wa.me/" + clean + "?text=" + encodeURIComponent(msg);
-    }
-
-    function reserverLink(slug){
-      const u = new URL("./reserver.html", location.href);
-      if (slug) u.searchParams.set("slug", slug);
-      return u.pathname + u.search;
-    }
-
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
-    }
-
-    function pickMainImage(p){
-      const candidates = [
-        p?.cover_url,
-        p?.photo_url,
-        p?.image_url,
-        p?.cover_image_url
-      ].filter(Boolean);
-
-      if (candidates.length) return candidates[0];
-      return "";
-    }
-
-    function setHeroImage(profile, displayName, city, activity){
-      const heroMedia = document.getElementById("heroMedia");
-      const imageUrl = pickMainImage(profile);
-
-      const badgeText = city && activity
-        ? `${activity} public • ${city}`
-        : city
-          ? `Commerce public • ${city}`
-          : "Commerce public";
-
-      if(imageUrl){
-        heroMedia.innerHTML = `
-          <img
-            src="${escapeHtml(imageUrl)}"
-            alt="${escapeHtml(displayName)}"
-            loading="eager"
-            onerror="this.outerHTML='<div class=&quot;hero-media-fallback&quot;>📅</div>';"
-          />
-          <div class="hero-badge" id="heroBadge">
-            <span class="dot"></span>
-            ${escapeHtml(badgeText)}
-          </div>
-        `;
-      }else{
-        heroMedia.innerHTML = `
-          <div class="hero-media-fallback">📅</div>
-          <div class="hero-badge" id="heroBadge">
-            <span class="dot"></span>
-            ${escapeHtml(badgeText)}
-          </div>
-        `;
+      function storageSet(key, value){
+        try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
+        try { localStorage.setItem(key, String(value ?? "")); } catch {}
       }
-    }
 
-    function setAvatar(profile, displayName){
-      const avatar = document.getElementById("avatar");
-      const photo = profile?.photo_url || profile?.logo_url || "";
-
-      if(photo){
-        avatar.innerHTML = `<img src="${escapeHtml(photo)}" alt="${escapeHtml(displayName)}" onerror="this.parentNode.textContent='${escapeHtml(initials(displayName))}'">`;
-      }else{
-        avatar.textContent = initials(displayName);
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
       }
-    }
 
-    function renderZones(zones){
-      const box = document.getElementById("zonesChips");
-      if(!zones || !zones.length){
-        box.innerHTML = `<div class="chip">Zone non précisée</div>`;
-        return;
+      const slug = normalizeSlug(
+        qs.get("slug") ||
+        storageGet("digiy_resa_slug") ||
+        storageGet("digiy_resa_last_slug") ||
+        storageGet("digiy_last_slug") ||
+        storageGet("DIGIY_SLUG") ||
+        ""
+      );
+
+      function safe(v, fallback="—"){
+        const s = String(v || "").trim();
+        return s || fallback;
       }
-      box.innerHTML = zones.map(z => `<div class="chip">${escapeHtml(z)}</div>`).join("");
-    }
 
-    function money(v){
-      const n = Number(v);
-      if(!Number.isFinite(n)) return "";
-      return n.toLocaleString("fr-FR") + " FCFA";
-    }
-
-    async function loadServices(slug){
-      if(!slug) return [];
-
-      try{
-        const { data, error } = await sb
-          .from("digiy_resa_services")
-          .select("id, service_name, duration_minutes, price_fcfa, is_active")
-          .eq("slug", slug)
-          .eq("is_active", true)
-          .order("service_name", { ascending:true });
-
-        if(error) throw error;
-        return Array.isArray(data) ? data : [];
-      }catch(e){
-        console.error(e);
-        return [];
+      function initials(name){
+        const s = safe(name, "RE");
+        return s.split(/\s+/).slice(0,2).map(x => (x[0] || "").toUpperCase()).join("") || "RE";
       }
-    }
 
-    function renderServices(services, businessType){
-      const box = document.getElementById("servicesBox");
+      function waLink(phone, name){
+        const clean = String(phone || "").replace(/[^\d]/g, "");
+        if(!clean) return "";
+        const msg = `Bonjour ${name || ""}, je vous contacte via votre fiche DIGIY RESA.`;
+        return "https://wa.me/" + clean + "?text=" + encodeURIComponent(msg);
+      }
 
-      if(!services.length){
-        box.innerHTML = `
-          <div class="service">
-            <div class="muted">
-              Aucun service détaillé n’est affiché pour l’instant. Le client peut passer par WhatsApp pour préciser son besoin.
+      function reserverLink(slugValue){
+        const u = new URL("./reserver.html", location.href);
+        if (slugValue) u.searchParams.set("slug", slugValue);
+        return u.pathname + u.search;
+      }
+
+      function escapeHtml(str){
+        return String(str ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#39;");
+      }
+
+      function pickMainImage(p){
+        const candidates = [
+          p?.cover_url,
+          p?.photo_url,
+          p?.image_url,
+          p?.cover_image_url
+        ].filter(Boolean);
+
+        if (candidates.length) return candidates[0];
+        return "";
+      }
+
+      function setHeroImage(profile, displayName, city, activity){
+        const heroMedia = document.getElementById("heroMedia");
+        const imageUrl = pickMainImage(profile);
+
+        const badgeText = city && activity
+          ? `${activity} public • ${city}`
+          : city
+            ? `Commerce public • ${city}`
+            : "Commerce public";
+
+        if(imageUrl){
+          heroMedia.innerHTML = `
+            <img
+              src="${escapeHtml(imageUrl)}"
+              alt="${escapeHtml(displayName)}"
+              loading="eager"
+              onerror="this.outerHTML='<div class=&quot;hero-media-fallback&quot;>📅</div>';"
+            />
+            <div class="hero-badge" id="heroBadge">
+              <span class="dot"></span>
+              ${escapeHtml(badgeText)}
             </div>
-          </div>
-        `;
-        return;
-      }
-
-      box.innerHTML = services.map(s => `
-        <article class="service">
-          <div class="service-top">
-            <div class="service-name">${escapeHtml(s.service_name || "Service")}</div>
-            <div class="service-meta">
-              ${s.duration_minutes ? `<span class="service-pill">⏱️ ${escapeHtml(String(s.duration_minutes))} min</span>` : ``}
-              ${money(s.price_fcfa) ? `<span class="service-pill">💰 ${escapeHtml(money(s.price_fcfa))}</span>` : ``}
+          `;
+        }else{
+          heroMedia.innerHTML = `
+            <div class="hero-media-fallback">📅</div>
+            <div class="hero-badge" id="heroBadge">
+              <span class="dot"></span>
+              ${escapeHtml(badgeText)}
             </div>
-          </div>
-          <div class="muted" style="margin-top:8px">
-            ${businessType ? `Prestation ${escapeHtml(String(businessType).toLowerCase())} disponible sur réservation.` : `Prestation disponible sur réservation.`}
-          </div>
-        </article>
-      `).join("");
-    }
-
-    async function boot(){
-      document.getElementById("slugPill").textContent = "slug : " + (slug || "—");
-      document.getElementById("btnReserve").href = reserverLink(slug);
-
-      if(!slug){
-        document.getElementById("name").textContent = "Slug manquant";
-        document.getElementById("subtitle").textContent = "Impossible d’ouvrir cette fiche sans identifiant commerce.";
-        document.getElementById("btnReserve").classList.add("hidden");
-        document.getElementById("btnWhatsApp").classList.add("hidden");
-        document.getElementById("servicesBox").innerHTML = `
-          <div class="service"><div class="muted">Aucun service à afficher.</div></div>
-        `;
-        return;
-      }
-
-      try{
-        const { data, error } = await sb.rpc("resa_public_profile_by_slug", { p_slug: slug });
-        if(error) throw error;
-        if(!data?.ok) throw new Error(data?.error || "not_found");
-
-        const p = data.profile || {};
-        const name = safe(p.display_name, "Commerce DIGIY");
-        const city = safe(p.city);
-        const businessType = safe(p.business_type, "Service local");
-
-        const zones = Array.isArray(p.zones)
-          ? p.zones
-          : String(p.zones_text || "").split(",").map(s => s.trim()).filter(Boolean);
-
-        document.title = `${name} — DIGIY RESA`;
-
-        setHeroImage(p, name, city, businessType);
-        setAvatar(p, name);
-
-        document.getElementById("name").textContent = name;
-        document.getElementById("subtitle").textContent = `${city} • ${businessType}`;
-        document.getElementById("cityPill").textContent = "Ville : " + city;
-        document.getElementById("typePill").textContent = "Activité : " + businessType;
-        document.getElementById("bio").textContent = safe(p.bio, "Présentation à découvrir.");
-        document.getElementById("address").textContent = safe(p.address_text, "Adresse à préciser");
-        document.getElementById("hours").textContent = safe(p.opening_hours_text, "Horaires à préciser");
-        document.getElementById("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : "Capacité à préciser";
-        document.getElementById("contactWhatsapp").textContent = safe(p.whatsapp, "WhatsApp à préciser");
-        document.getElementById("bookingHelp").textContent = `Réservation simple pour ${businessType.toLowerCase()}`;
-
-        renderZones(zones);
-
-        const wa = document.getElementById("btnWhatsApp");
-        const waHref = waLink(p.whatsapp, name);
-        if(waHref){
-          wa.href = waHref;
-        } else {
-          wa.removeAttribute("href");
-          wa.classList.remove("gold");
-          wa.textContent = "WhatsApp indisponible";
+          `;
         }
+      }
 
-        const services = await loadServices(slug);
-        renderServices(services, businessType);
+      function setAvatar(profile, displayName){
+        const avatar = document.getElementById("avatar");
+        const photo = profile?.photo_url || profile?.logo_url || "";
 
-      }catch(e){
-        console.error(e);
-        document.getElementById("name").textContent = "Commerce indisponible";
-        document.getElementById("subtitle").textContent = "Cette fiche n’est pas disponible publiquement.";
+        if(photo){
+          avatar.innerHTML = `<img src="${escapeHtml(photo)}" alt="${escapeHtml(displayName)}" onerror="this.parentNode.textContent='${escapeHtml(initials(displayName))}'">`;
+        }else{
+          avatar.textContent = initials(displayName);
+        }
+      }
+
+      function renderZones(zones){
+        const box = document.getElementById("zonesChips");
+        if(!zones || !zones.length){
+          box.innerHTML = `<div class="chip">Zone non précisée</div>`;
+          return;
+        }
+        box.innerHTML = zones.map(z => `<div class="chip">${escapeHtml(z)}</div>`).join("");
+      }
+
+      function money(v){
+        const n = Number(v);
+        if(!Number.isFinite(n)) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
+
+      function setUnavailableState(title, subtitle){
+        document.getElementById("name").textContent = title;
+        document.getElementById("subtitle").textContent = subtitle;
         document.getElementById("btnReserve").classList.add("hidden");
         document.getElementById("btnWhatsApp").classList.add("hidden");
         document.getElementById("heroMedia").innerHTML = `
@@ -769,9 +692,145 @@
           <div class="service"><div class="muted">Services indisponibles.</div></div>
         `;
       }
-    }
 
-    boot();
+      async function loadServices(sb, slugValue){
+        if(!slugValue) return [];
+
+        try{
+          const { data, error } = await sb
+            .from("digiy_resa_services")
+            .select("id, service_name, duration_minutes, price_fcfa, is_active")
+            .eq("slug", slugValue)
+            .eq("is_active", true)
+            .order("service_name", { ascending:true });
+
+          if(error) throw error;
+          return Array.isArray(data) ? data : [];
+        }catch(e){
+          console.error(e);
+          return [];
+        }
+      }
+
+      function renderServices(services, businessType){
+        const box = document.getElementById("servicesBox");
+
+        if(!services.length){
+          box.innerHTML = `
+            <div class="service">
+              <div class="muted">
+                Aucun service détaillé n’est affiché pour l’instant. Le client peut passer par WhatsApp pour préciser son besoin.
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        box.innerHTML = services.map(s => `
+          <article class="service">
+            <div class="service-top">
+              <div class="service-name">${escapeHtml(s.service_name || "Service")}</div>
+              <div class="service-meta">
+                ${s.duration_minutes ? `<span class="service-pill">⏱️ ${escapeHtml(String(s.duration_minutes))} min</span>` : ``}
+                ${money(s.price_fcfa) ? `<span class="service-pill">💰 ${escapeHtml(money(s.price_fcfa))}</span>` : ``}
+              </div>
+            </div>
+            <div class="muted" style="margin-top:8px">
+              ${businessType ? `Prestation ${escapeHtml(String(businessType).toLowerCase())} disponible sur réservation.` : `Prestation disponible sur réservation.`}
+            </div>
+          </article>
+        `).join("");
+      }
+
+      async function boot(){
+        document.getElementById("slugPill").textContent = "slug : " + (slug || "—");
+        document.getElementById("btnReserve").href = reserverLink(slug);
+
+        if(!supabaseLib || typeof supabaseLib.createClient !== "function"){
+          console.error("Supabase JS non chargé.");
+          setUnavailableState("Service indisponible", "La bibliothèque de connexion n’est pas chargée.");
+          return;
+        }
+
+        const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth:{
+            persistSession:false,
+            autoRefreshToken:false,
+            detectSessionInUrl:false,
+            storage:{
+              getItem:() => null,
+              setItem:() => {},
+              removeItem:() => {}
+            }
+          }
+        });
+
+        if(!slug){
+          setUnavailableState("Slug manquant", "Impossible d’ouvrir cette fiche sans identifiant commerce.");
+          document.getElementById("servicesBox").innerHTML = `
+            <div class="service"><div class="muted">Aucun service à afficher.</div></div>
+          `;
+          return;
+        }
+
+        try{
+          storageSet("digiy_resa_last_slug", slug);
+          storageSet("digiy_resa_slug", slug);
+          storageSet("digiy_last_slug", slug);
+          storageSet("DIGIY_SLUG", slug);
+
+          const { data, error } = await sb.rpc("resa_public_profile_by_slug", { p_slug: slug });
+          if(error) throw error;
+          if(!data?.ok) throw new Error(data?.error || "not_found");
+
+          const p = data.profile || {};
+          const name = safe(p.display_name, "Commerce DIGIY");
+          const city = safe(p.city);
+          const businessType = safe(p.business_type || p.category, "Service local");
+
+          const zones = Array.isArray(p.zones)
+            ? p.zones
+            : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
+
+          document.title = `${name} — DIGIY RESA`;
+
+          setHeroImage(p, name, city, businessType);
+          setAvatar(p, name);
+
+          document.getElementById("name").textContent = name;
+          document.getElementById("subtitle").textContent = `${city} • ${businessType}`;
+          document.getElementById("cityPill").textContent = "Ville : " + city;
+          document.getElementById("typePill").textContent = "Activité : " + businessType;
+          document.getElementById("bio").textContent = safe(p.bio, "Présentation à découvrir.");
+          document.getElementById("address").textContent = safe(p.address_text || p.address, "Adresse à préciser");
+          document.getElementById("hours").textContent = safe(p.opening_hours_text || p.hours_text, "Horaires à préciser");
+          document.getElementById("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : "Capacité à préciser";
+          document.getElementById("contactWhatsapp").textContent = safe(p.whatsapp, "WhatsApp à préciser");
+          document.getElementById("bookingHelp").textContent = `Réservation simple pour ${businessType.toLowerCase()}`;
+
+          renderZones(zones);
+
+          const wa = document.getElementById("btnWhatsApp");
+          const waHref = waLink(p.whatsapp, name);
+          if(waHref){
+            wa.href = waHref;
+          } else {
+            wa.removeAttribute("href");
+            wa.classList.remove("gold");
+            wa.textContent = "WhatsApp indisponible";
+          }
+
+          const services = await loadServices(sb, slug);
+          renderServices(services, businessType);
+
+        }catch(e){
+          console.error(e);
+          setUnavailableState("Commerce indisponible", "Cette fiche n’est pas disponible publiquement.");
+        }
+      }
+
+      boot();
+    })();
   </script>
 </body>
 </html>
