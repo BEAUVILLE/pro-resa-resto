@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>DIGIY RÉSA PRO — Accès professionnel</title>
   <meta name="theme-color" content="#0b5d3b"/>
-  <meta name="description" content="DIGIY RÉSA PRO — accès professionnel premium pour la gestion des réservations de tables."/>
+  <meta name="description" content="DIGIY RÉSA PRO — accès professionnel premium pour la gestion multi-business des réservations."/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -471,18 +477,19 @@
       </div>
 
       <div class="hero">
-        <h1>La porte premium de tes réservations</h1>
+        <h1>La porte premium de tes réservations multi-business</h1>
         <p>
           Ici, on entre proprement dans l’espace professionnel DIGIY RÉSA.
-          Tu peux passer par la porte PIN, ouvrir ton cockpit avec ton slug,
-          ou vérifier ton accès avant d’entrer.
+          Restaurant, lounge, salon, plage privée, rooftop, service terrain :
+          tu peux passer par le slug, par le PIN, ou vérifier ton accès avant d’ouvrir ton cockpit.
         </p>
 
         <div class="badges">
-          <span class="tag gold">📅 Réservation de tables</span>
+          <span class="tag gold">📅 Réservations multi-business</span>
           <span class="tag">🔐 Accès par PIN</span>
           <span class="tag">🧭 Accès par slug</span>
           <span class="tag">🛡️ Vérification d’abonnement</span>
+          <span class="tag">💳 Activation directe</span>
         </div>
       </div>
 
@@ -500,7 +507,7 @@
           <div class="sectionTitle">Accès direct</div>
           <p class="lead">
             Mets ton <span class="mono">slug</span> si tu l’as déjà.
-            Sinon, prends la porte PIN et DIGIY te remet sur les rails.
+            Sinon, prends la porte PIN, vérifie ton accès, ou active ton module pour remonter sur le rail.
           </p>
 
           <div style="margin-top:14px;">
@@ -521,6 +528,7 @@
             <button class="btn ok" id="btnOpenSlug">🚀 Ouvrir mon cockpit</button>
             <button class="btn gold" id="btnVerify">✅ Vérifier mon accès</button>
             <button class="btn" id="btnPin">🔐 Entrer par PIN</button>
+            <button class="btn gold" id="btnPay">💳 Activer mon module</button>
             <button class="btn bad" id="btnSupport">💬 Support WhatsApp</button>
           </div>
 
@@ -532,6 +540,10 @@
             <div class="miniBox">
               <div class="miniLabel">Destination cockpit</div>
               <div class="miniValue mono" id="cockpitTarget">https://pro-resa-resto.digiylyfe.com/cockpit.html</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Activation module</div>
+              <div class="miniValue mono" id="payTarget">https://commencer-a-payer.digiylyfe.com/?module=RESA</div>
             </div>
           </div>
         </div>
@@ -582,6 +594,7 @@
       </div>
       <div class="stickyActions">
         <button class="btn" id="btnPinSticky">PIN</button>
+        <button class="btn gold" id="btnPaySticky">Activer</button>
         <button class="btn ok" id="btnOpenSticky">Cockpit</button>
       </div>
     </div>
@@ -593,13 +606,13 @@
 
       const MODULE = "RESA";
 
-      const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-      const SUPABASE_ANON_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+      const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+      const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
 
       const PUBLIC_URL  = "https://resa-table-resto.digiylyfe.com/";
       const PIN_URL     = "https://pro-resa-resto.digiylyfe.com/pin.html";
       const PRO_URL     = "https://pro-resa-resto.digiylyfe.com/cockpit.html";
+      const PAY_URL     = "https://commencer-a-payer.digiylyfe.com/?module=RESA";
       const SUPPORT_WA  = "+221771342889";
 
       if (!window.supabase) {
@@ -630,7 +643,6 @@
       function setStatus(text, tone, mini){
         const box = $("statusBox");
         const miniBox = $("statusMini");
-
         box.className = "status " + (tone || "warn");
         $("statusText").textContent = text || "";
         miniBox.textContent = mini || "INFO";
@@ -656,25 +668,58 @@
 
       function rememberSlug(slug){
         if (!slug) return;
-        localStorage.setItem("digiy_resa_last_slug", slug);
-        savedSlugBox.textContent = slug;
+        const clean = normSlug(slug);
+        localStorage.setItem("digiy_resa_last_slug", clean);
+        localStorage.setItem("digiy_last_slug", clean);
+        localStorage.setItem("DIGIY_SLUG", clean);
+        localStorage.setItem("digiy_slug", clean);
+        savedSlugBox.textContent = clean;
       }
 
       function readRememberedSlug(){
-        const s = normSlug(localStorage.getItem("digiy_resa_last_slug") || "");
+        const s = normSlug(
+          qp.get("slug") ||
+          localStorage.getItem("digiy_resa_last_slug") ||
+          localStorage.getItem("digiy_last_slug") ||
+          localStorage.getItem("DIGIY_SLUG") ||
+          localStorage.getItem("digiy_slug") ||
+          ""
+        );
         savedSlugBox.textContent = s || "—";
         return s;
       }
 
       function fillSlugFromMemory(){
-        const fromQuery = normSlug(qp.get("slug") || "");
-        const fromMemory = readRememberedSlug();
-        const candidate = fromQuery || fromMemory;
+        const candidate = readRememberedSlug();
         if (candidate) slugInput.value = candidate;
       }
 
+      function pinUrlWithSlug(){
+        const slug = normSlug(slugInput.value || "");
+        if (!slug) return PIN_URL;
+        return PIN_URL + "?slug=" + encodeURIComponent(slug);
+      }
+
+      function payUrlWithSlug(){
+        const slug = normSlug(slugInput.value || "");
+        if (!slug) return PAY_URL;
+
+        try{
+          const u = new URL(PAY_URL);
+          u.searchParams.set("slug", slug);
+          u.searchParams.set("return", PRO_URL + "?slug=" + encodeURIComponent(slug));
+          return u.toString();
+        }catch{
+          return PAY_URL + "&slug=" + encodeURIComponent(slug);
+        }
+      }
+
       function openPin(){
-        location.href = PIN_URL;
+        location.href = pinUrlWithSlug();
+      }
+
+      function openPay(){
+        location.href = payUrlWithSlug();
       }
 
       function openCockpit(slug){
@@ -687,8 +732,9 @@
         msg += "Module: " + MODULE + "\n";
         msg += "Page: index PRO\n";
         if (slug) msg += "Slug: " + slug + "\n";
-        msg += "PIN URL: " + PIN_URL + "\n";
+        msg += "PIN URL: " + pinUrlWithSlug() + "\n";
         msg += "Cockpit URL: " + PRO_URL + "\n";
+        msg += "Activation URL: " + payUrlWithSlug() + "\n";
         msg += "\nJ’ai besoin d’aide pour accéder à mon espace professionnel.";
         return msg;
       }
@@ -700,14 +746,11 @@
 
       async function resolveSlug(slug){
         const cleanSlug = normSlug(slug);
-        if (!cleanSlug) {
-          throw new Error("slug_missing");
-        }
+        if (!cleanSlug) throw new Error("slug_missing");
 
         const { data, error } = await sb
           .from("digiy_subscriptions_public")
           .select("phone,module,slug")
-          .eq("module", MODULE)
           .eq("slug", cleanSlug)
           .limit(1)
           .maybeSingle();
@@ -772,13 +815,13 @@
           const msg = String(err?.message || err || "");
 
           if (msg === "slug_not_found") {
-            setStatus("❌ Slug introuvable. Passe par la porte PIN.", "bad", "INCONNU");
+            setStatus("❌ Slug introuvable. Passe par la porte PIN ou vérifie ton lien.", "bad", "INCONNU");
             setSticky("Slug introuvable");
             return;
           }
 
           if (msg === "access_denied") {
-            setStatus("🔒 Abonnement non actif sur RESA. Vérifie ton accès.", "bad", "BLOQUÉ");
+            setStatus("🔒 Abonnement non actif sur RESA. Active ton module ou passe par le support.", "bad", "BLOQUÉ");
             setSticky("Abonnement non actif");
             return;
           }
@@ -789,13 +832,16 @@
             return;
           }
 
-          setStatus("⚠️ Vérification impossible pour le moment. Support ou porte PIN.", "bad", "ERREUR");
+          setStatus("⚠️ Vérification impossible pour le moment. Porte PIN, activation ou support.", "bad", "ERREUR");
           setSticky("Erreur de vérification");
         }
       }
 
       $("btnPin").addEventListener("click", openPin);
       $("btnPinSticky").addEventListener("click", openPin);
+
+      $("btnPay").addEventListener("click", openPay);
+      $("btnPaySticky").addEventListener("click", openPay);
 
       $("btnSupport").addEventListener("click", () => {
         wa(makeSupportMessage());
@@ -831,10 +877,10 @@
       if (autoSlug && autoOpen) {
         setTimeout(() => handleVerify(true), 300);
       } else if (autoSlug) {
-        setStatus("🧭 Slug détecté. Tu peux vérifier ou ouvrir ton cockpit.", "ok", "SLUG");
+        setStatus("🧭 Slug détecté. Tu peux vérifier, ouvrir ton cockpit ou passer par le PIN.", "ok", "SLUG");
         setSticky("Slug détecté : " + autoSlug);
       } else {
-        setStatus("💳 Porte PRO prête. Slug ou PIN, à toi de jouer.", "warn", "MANUEL");
+        setStatus("💳 Porte PRO prête. Slug, PIN ou activation : à toi de jouer.", "warn", "MANUEL");
         setSticky("Prêt à ouvrir la porte PRO");
       }
     })();
