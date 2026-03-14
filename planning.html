@@ -8,12 +8,12 @@
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js"></script>
+  <script src="./guard.js?v=resa-planning-v2"></script>
 
   <style>
     :root{
@@ -492,6 +492,20 @@
     (() => {
       "use strict";
 
+      const MODULE = "RESA";
+
+      try {
+        window.DIGIY_GUARD?.boot?.({
+          module: "RESA",
+          login: "./pin.html",
+          dashboard: "./cockpit.html",
+          requireSlug: true,
+          checkSubscription: true,
+          storageSlugKey: "digiy_resa_slug",
+          storageLastSlugKey: "digiy_last_slug"
+        });
+      } catch {}
+
       const query = new URL(location.href).searchParams;
       const querySlug = query.get("slug") || "";
       const queryDate = query.get("date") || "";
@@ -589,6 +603,49 @@
         return s;
       }
 
+      function storageGet(key){
+        try{
+          const s = sessionStorage.getItem(key);
+          if (s) return s;
+        }catch{}
+        try{
+          const l = localStorage.getItem(key);
+          if (l) return l;
+        }catch{}
+        return "";
+      }
+
+      function safeJsonParse(value){
+        try{
+          return typeof value === "string" ? JSON.parse(value) : value;
+        }catch{
+          return null;
+        }
+      }
+
+      function getSessionSlug(){
+        const resaSession = safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
+        if (resaSession?.slug) return normalizeSlug(resaSession.slug);
+
+        const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
+        if (generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+
+        return "";
+      }
+
+      function getFallbackSlug(){
+        return normalizeSlug(
+          querySlug ||
+          storageGet("digiy_resa_slug") ||
+          storageGet("digiy_resa_last_slug") ||
+          storageGet("digiy_last_slug") ||
+          storageGet("DIGIY_SLUG") ||
+          storageGet("digiy_slug") ||
+          getSessionSlug() ||
+          ""
+        );
+      }
+
       function initClient(){
         if (window.DIGIY_SB) {
           sb = window.DIGIY_SB;
@@ -634,13 +691,9 @@
       }
 
       async function resolveGuardState(){
-        const cleanQuerySlug = normalizeSlug(querySlug);
-        const fallbackSlug =
-          cleanQuerySlug ||
-          normalizeSlug(sessionStorage.getItem("digiy_resa_slug") || "") ||
-          normalizeSlug(localStorage.getItem("digiy_resa_last_slug") || "");
+        const fallbackSlug = getFallbackSlug();
 
-        if(!window.DIGIY_GUARD?.ready){
+        if(!window.DIGIY_GUARD){
           return {
             ok:false,
             preview:true,
@@ -651,7 +704,9 @@
         }
 
         try{
-          await window.DIGIY_GUARD.ready;
+          if (window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function") {
+            await window.DIGIY_GUARD.ready;
+          }
         }catch{
           return {
             ok:false,
@@ -889,14 +944,14 @@
         try{
           initClient();
 
-          ACTIVE_DATE = queryDate || todayISO();
+          ACTIVE_DATE = $("dateInput").value || queryDate || todayISO();
           $("dateInput").value = ACTIVE_DATE;
 
           const st = await resolveGuardState();
 
           if(st?.preview){
             IS_PREVIEW = true;
-            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
             setLinks(RESOLVED_SLUG);
             setPreviewHero(RESOLVED_SLUG);
             setHeroData(
@@ -913,17 +968,28 @@
 
           if(st?.access_ok){
             IS_PREVIEW = false;
-            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
+
             if(!RESOLVED_SLUG){
               IS_PREVIEW = true;
+              setLinks("");
               setPreviewHero("");
-              setHeroData("DIGIY RESA PRO", "Aperçu du planning.", "—", "—", "Multi business", fmtDateLong(ACTIVE_DATE));
+              setHeroData(
+                "DIGIY RESA PRO",
+                "Aperçu du planning.",
+                "—",
+                "—",
+                "Multi business",
+                fmtDateLong(ACTIVE_DATE)
+              );
               renderPreviewData();
               return;
             }
 
-            localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG);
-            sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG);
+            try { localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG); } catch {}
+            try { sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG); } catch {}
+            try { localStorage.setItem("DIGIY_SLUG", RESOLVED_SLUG); } catch {}
+            try { sessionStorage.setItem("DIGIY_SLUG", RESOLVED_SLUG); } catch {}
 
             setLinks(RESOLVED_SLUG);
             setLiveHero();
@@ -949,7 +1015,7 @@
           }
 
           IS_PREVIEW = true;
-          RESOLVED_SLUG = normalizeSlug(st?.slug || "");
+          RESOLVED_SLUG = normalizeSlug(st?.slug || getFallbackSlug() || "");
           setLinks(RESOLVED_SLUG);
           setPreviewHero(RESOLVED_SLUG);
           setHeroData(
@@ -964,13 +1030,13 @@
         }catch(err){
           console.error(err);
           IS_PREVIEW = true;
-          RESOLVED_SLUG = "";
-          setLinks("");
-          setPreviewHero("");
+          RESOLVED_SLUG = getFallbackSlug();
+          setLinks(RESOLVED_SLUG);
+          setPreviewHero(RESOLVED_SLUG);
           setHeroData(
             "DIGIY RESA PRO",
             "Erreur de chargement. Aperçu affiché.",
-            "—",
+            RESOLVED_SLUG || "—",
             "—",
             "Multi business",
             fmtDateLong(ACTIVE_DATE || todayISO())
