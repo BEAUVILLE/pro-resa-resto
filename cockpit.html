@@ -8,12 +8,12 @@
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js"></script>
+  <script src="./guard.js?v=resa-cockpit-v2"></script>
 
   <style>
     :root{
@@ -455,7 +455,7 @@
         <div class="mini-card">
           <strong id="miniTitle">Lecture terrain</strong>
           <div id="miniText" style="color:var(--muted);line-height:1.55;">
-            Ici on lit les réservations du jour, on voit les services demandés, et on garde une lecture nette du terrain.
+            Ici on lit les réservations du jour, les services choisis, et on garde une vue simple pour agir au bon moment.
           </div>
         </div>
       </div>
@@ -498,6 +498,19 @@
       "use strict";
 
       const MODULE = "RESA";
+
+      try {
+        window.DIGIY_GUARD?.boot?.({
+          module: "RESA",
+          login: "./pin.html",
+          dashboard: "./cockpit.html",
+          requireSlug: true,
+          checkSubscription: true,
+          storageSlugKey: "digiy_resa_slug",
+          storageLastSlugKey: "digiy_last_slug"
+        });
+      } catch {}
+
       const query = new URL(location.href).searchParams;
       const querySlug = query.get("slug") || "";
       const queryDate = query.get("date") || "";
@@ -530,6 +543,54 @@
           .replaceAll(">","&gt;")
           .replaceAll('"',"&quot;")
           .replaceAll("'","&#039;");
+      }
+
+      function safeJsonParse(value){
+        try{
+          return typeof value === "string" ? JSON.parse(value) : value;
+        }catch{
+          return null;
+        }
+      }
+
+      function storageGet(key){
+        try{
+          const s = sessionStorage.getItem(key);
+          if (s) return s;
+        }catch{}
+        try{
+          const l = localStorage.getItem(key);
+          if (l) return l;
+        }catch{}
+        return "";
+      }
+
+      function storageSet(key, value){
+        try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
+        try { localStorage.setItem(key, String(value ?? "")); } catch {}
+      }
+
+      function getSessionSlug(){
+        const resaSession = safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
+        if (resaSession?.slug) return normalizeSlug(resaSession.slug);
+
+        const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
+        if (generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+
+        return "";
+      }
+
+      function getFallbackSlug(){
+        return normalizeSlug(
+          querySlug ||
+          storageGet("digiy_resa_slug") ||
+          storageGet("digiy_resa_last_slug") ||
+          storageGet("digiy_last_slug") ||
+          storageGet("DIGIY_SLUG") ||
+          storageGet("digiy_slug") ||
+          getSessionSlug() ||
+          ""
+        );
       }
 
       function fmtDate(v){
@@ -651,7 +712,7 @@
         window.DIGIY_SB = sb;
       }
 
-      function setPreviewLinks(slug = ""){
+      function setLinks(slug = ""){
         const clean = normalizeSlug(slug);
         const pinHref = clean ? `./pin.html?slug=${encodeURIComponent(clean)}` : "./pin.html";
         const settingsHref = clean ? `./etablissement.html?slug=${encodeURIComponent(clean)}` : "./etablissement.html";
@@ -687,13 +748,9 @@
       }
 
       async function resolveGuardState(){
-        const cleanQuerySlug = normalizeSlug(querySlug);
-        const fallbackSlug =
-          cleanQuerySlug ||
-          normalizeSlug(sessionStorage.getItem("digiy_resa_slug") || "") ||
-          normalizeSlug(localStorage.getItem("digiy_resa_last_slug") || "");
+        const fallbackSlug = getFallbackSlug();
 
-        if(!window.DIGIY_GUARD?.ready){
+        if(!window.DIGIY_GUARD){
           return {
             ok: false,
             preview: true,
@@ -704,7 +761,9 @@
         }
 
         try{
-          await window.DIGIY_GUARD.ready;
+          if (window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function") {
+            await window.DIGIY_GUARD.ready;
+          }
         }catch{
           return {
             ok: false,
@@ -754,7 +813,7 @@
         $("miniText").textContent =
           "Pas de slug ? On montre l’outil sans exposer les vraies données. Le pro peut ensuite entrer proprement par sa porte PIN.";
 
-        setPreviewLinks(clean);
+        setLinks(clean);
       }
 
       function setLiveHero(){
@@ -768,11 +827,12 @@
         $("miniText").textContent =
           "Ici on lit les réservations du jour, les services choisis, et on garde une vue simple pour agir au bon moment.";
 
-        setPreviewLinks(RESOLVED_SLUG);
+        setLinks(RESOLVED_SLUG);
       }
 
       function loadPreviewData(slug = ""){
         setPreviewHero("", slug);
+
         const now = new Date();
         const addHours = (n) => new Date(now.getTime() - (n * 3600 * 1000)).toISOString();
 
@@ -782,7 +842,7 @@
             status: "pending",
             customer_name: "Awa Ndiaye",
             customer_phone: "77 000 00 01",
-            booking_date: "2026-03-13",
+            booking_date: ACTIVE_DATE,
             booking_time: "14:00",
             guests_count: 1,
             service_name: "Brushing",
@@ -796,7 +856,7 @@
             status: "confirmed",
             customer_name: "Moussa Fall",
             customer_phone: "77 000 00 02",
-            booking_date: "2026-03-13",
+            booking_date: ACTIVE_DATE,
             booking_time: "10:00",
             guests_count: 1,
             service_name: "Diagnostic",
@@ -810,7 +870,7 @@
             status: "done",
             customer_name: "Sokhna Diop",
             customer_phone: "77 000 00 03",
-            booking_date: "2026-03-13",
+            booking_date: ACTIVE_DATE,
             booking_time: "12:30",
             guests_count: 2,
             service_name: "Table midi",
@@ -824,7 +884,7 @@
             status: "no_show",
             customer_name: "Cheikh Ba",
             customer_phone: "77 000 00 04",
-            booking_date: "2026-03-13",
+            booking_date: ACTIVE_DATE,
             booking_time: "16:00",
             guests_count: 1,
             service_name: "Consultation simple",
@@ -838,7 +898,7 @@
             status: "cancelled",
             customer_name: "Mariama Sarr",
             customer_phone: "77 000 00 05",
-            booking_date: "2026-03-13",
+            booking_date: ACTIVE_DATE,
             booking_time: "18:00",
             guests_count: 1,
             service_name: "Entretien",
@@ -849,13 +909,7 @@
           }
         ];
 
-        $("sTotal").textContent = "5";
-        $("sPending").textContent = "1";
-        $("sConfirmed").textContent = "1";
-        $("sDone").textContent = "1";
-        $("sNoShow").textContent = "1";
-        $("sCancelled").textContent = "1";
-
+        renderStatsFromRows();
         renderBookings();
       }
 
@@ -1028,7 +1082,7 @@
 
           if(st?.preview){
             IS_PREVIEW = true;
-            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
             loadPreviewData(RESOLVED_SLUG);
 
             if(st.reason === "preview_no_identity"){
@@ -1049,7 +1103,7 @@
 
           if(st?.access_ok){
             IS_PREVIEW = false;
-            RESOLVED_SLUG = normalizeSlug(st.slug || "");
+            RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
 
             if(!RESOLVED_SLUG){
               IS_PREVIEW = true;
@@ -1058,8 +1112,10 @@
               return;
             }
 
-            localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG);
-            sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG);
+            storageSet("digiy_resa_last_slug", RESOLVED_SLUG);
+            storageSet("digiy_resa_slug", RESOLVED_SLUG);
+            storageSet("digiy_last_slug", RESOLVED_SLUG);
+            storageSet("DIGIY_SLUG", RESOLVED_SLUG);
 
             setLiveHero();
             await loadProfile();
@@ -1071,7 +1127,7 @@
           }
 
           IS_PREVIEW = true;
-          RESOLVED_SLUG = normalizeSlug(st?.slug || "");
+          RESOLVED_SLUG = normalizeSlug(st?.slug || getFallbackSlug() || "");
           loadPreviewData(RESOLVED_SLUG);
 
           if(st?.reason === "no_subscription"){
@@ -1084,8 +1140,8 @@
         }catch(err){
           console.error(err);
           IS_PREVIEW = true;
-          RESOLVED_SLUG = "";
-          loadPreviewData();
+          RESOLVED_SLUG = getFallbackSlug();
+          loadPreviewData(RESOLVED_SLUG);
           $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
         }finally{
           document.body.classList.remove("loading");
