@@ -8,12 +8,12 @@
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js"></script>
+  <script src="./guard.js?v=resa-dashboard-v2"></script>
 
   <style>
     :root{
@@ -221,6 +221,18 @@
   let RESOLVED_PHONE = "";
   let CURRENT_STATE = null;
 
+  try {
+    window.DIGIY_GUARD?.boot?.({
+      module: "RESA",
+      login: "./pin.html",
+      dashboard: "./cockpit.html",
+      requireSlug: true,
+      checkSubscription: true,
+      storageSlugKey: "digiy_resa_slug",
+      storageLastSlugKey: "digiy_last_slug"
+    });
+  } catch {}
+
   function normalizeSlug(v){
     return String(v || "")
       .trim()
@@ -229,6 +241,55 @@
       .replace(/[^a-z0-9-]/g, "")
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
+  }
+
+  function safeJsonParse(v){
+    try{
+      return typeof v === "string" ? JSON.parse(v) : v;
+    }catch{
+      return null;
+    }
+  }
+
+  function storageGet(key){
+    try{
+      const s = sessionStorage.getItem(key);
+      if (s) return s;
+    }catch{}
+    try{
+      const l = localStorage.getItem(key);
+      if (l) return l;
+    }catch{}
+    return "";
+  }
+
+  function storageSet(key, value){
+    try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
+    try { localStorage.setItem(key, String(value ?? "")); } catch {}
+  }
+
+  function getSessionSlug(){
+    const resa = safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
+    if (resa?.slug) return normalizeSlug(resa.slug);
+
+    const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
+    if (generic?.module === MODULE_CODE && generic?.slug) return normalizeSlug(generic.slug);
+
+    return "";
+  }
+
+  function getFallbackSlug(){
+    const querySlug = new URL(location.href).searchParams.get("slug") || "";
+    return normalizeSlug(
+      querySlug ||
+      storageGet("digiy_resa_slug") ||
+      storageGet("digiy_resa_last_slug") ||
+      storageGet("digiy_last_slug") ||
+      storageGet("DIGIY_SLUG") ||
+      storageGet("digiy_slug") ||
+      getSessionSlug() ||
+      ""
+    );
   }
 
   function setDot(mode){
@@ -359,10 +420,7 @@
   }
 
   async function manualFallbackCheck(){
-    const slug =
-      normalizeSlug(new URL(location.href).searchParams.get("slug") || "") ||
-      normalizeSlug(sessionStorage.getItem("digiy_resa_slug") || "") ||
-      normalizeSlug(localStorage.getItem("digiy_resa_last_slug") || "");
+    const slug = getFallbackSlug();
 
     if(!slug || !window.supabase?.createClient){
       return {
@@ -447,7 +505,10 @@
   async function getGuardState(){
     if(window.DIGIY_GUARD?.ready){
       try{
-        return await window.DIGIY_GUARD.ready;
+        if (typeof window.DIGIY_GUARD.ready.then === "function") {
+          return await window.DIGIY_GUARD.ready;
+        }
+        return window.DIGIY_GUARD.state || await manualFallbackCheck();
       }catch{
         return await manualFallbackCheck();
       }
@@ -466,30 +527,21 @@
 
     RESOLVED_SLUG = normalizeSlug(
       CURRENT_STATE?.slug ||
-      new URL(location.href).searchParams.get("slug") ||
-      sessionStorage.getItem("digiy_resa_slug") ||
-      localStorage.getItem("digiy_resa_last_slug") ||
-      ""
+      getFallbackSlug()
     );
 
     RESOLVED_PHONE = String(CURRENT_STATE?.phone || "").replace(/[^\d]/g, "");
 
-    const pinHref = RESOLVED_SLUG
-      ? `./pin.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
-      : "./pin.html";
-
-    const settingsHref = RESOLVED_SLUG
-      ? `./etablissement.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
-      : "./etablissement.html";
-
-    $("btnSettings").onclick = () => {
-      location.href = settingsHref;
-    };
-
     if(CURRENT_STATE?.access_ok && RESOLVED_SLUG){
-      localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG);
-      sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG);
-      if(RESOLVED_PHONE) localStorage.setItem("digiy_last_phone", RESOLVED_PHONE);
+      storageSet("digiy_resa_last_slug", RESOLVED_SLUG);
+      storageSet("digiy_resa_slug", RESOLVED_SLUG);
+      storageSet("digiy_last_slug", RESOLVED_SLUG);
+      storageSet("DIGIY_SLUG", RESOLVED_SLUG);
+      if(RESOLVED_PHONE){
+        storageSet("digiy_last_phone", RESOLVED_PHONE);
+        storageSet("DIGIY_PHONE", RESOLVED_PHONE);
+        storageSet("DIGIY_RESA_PHONE", RESOLVED_PHONE);
+      }
 
       setLiveState(RESOLVED_SLUG, RESOLVED_PHONE);
       return;
@@ -516,6 +568,13 @@
 
     setBlockedState("Contrôle indisponible pour le moment.", "error");
   }
+
+  $("btnSettings").onclick = () => {
+    const settingsHref = RESOLVED_SLUG
+      ? `./etablissement.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+      : "./etablissement.html";
+    location.href = settingsHref;
+  };
 
   $("btnManageSub").onclick = () => {
     const url =
