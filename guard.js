@@ -1,47 +1,43 @@
-/* DIGIY GUARD — UNIVERSAL (slug-first, page-safe, preview-safe)
-   VERSION: single shared Supabase client
+/* DIGIY GUARD — UNIVERSAL MASTER (slug-first, page-safe, preview-safe)
+   VERSION: shared Supabase client + boot/getSb/rpc/getPinUrl/getPayUrl/go/logout
 */
 (() => {
   "use strict";
 
-  /* ===== Supabase ===== */
-  const SUPABASE_URL =
-    window.DIGIY_SUPABASE_URL ||
-    "https://wesqmwjjtsefyjnluosj.supabase.co";
+  const FALLBACK_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+  const FALLBACK_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
 
-  const SUPABASE_ANON =
-    window.DIGIY_SUPABASE_ANON_KEY ||
-    window.DIGIY_SUPABASE_ANON ||
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+  const DEFAULT_PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
+  const DEFAULT_PIN_URL = "./pin.html";
+  const DEFAULT_DASHBOARD_URL = "./cockpit.html";
 
-  const PAY_URL_BASE = "https://commencer-a-payer.digiylyfe.com/";
-
-  /* ===== Mode =====
-     true  = sans identité => aperçu autorisé
-     false = sans identité => non exploitable
-  */
   const ALLOW_PREVIEW_WITHOUT_IDENTITY = true;
 
-  /* ===== Helpers ===== */
+  let _sb = null;
+  let _bootPromise = null;
 
-  function getQuery() {
-    return new URL(location.href).searchParams;
-  }
+  const config = {
+    module: "",
+    pin: DEFAULT_PIN_URL,
+    pay: DEFAULT_PAY_URL,
+    dashboard: DEFAULT_DASHBOARD_URL,
+    requireSlug: false,
+    checkSubscription: true,
+    storageSlugKey: "",
+    storageLastSlugKey: ""
+  };
 
-  function normPhone(v) {
-    const d = String(v || "").replace(/[^\d]/g, "");
-    return d.length >= 9 ? d : "";
-  }
-
-  function normSlug(v) {
-    return String(v || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
-  }
+  const state = {
+    module: "",
+    preview: true,
+    access_ok: false,
+    pin_ok: false,
+    has_identity: false,
+    slug: "",
+    phone: "",
+    reason: "booting",
+    ts: 0
+  };
 
   function normModule(v) {
     const raw = String(v || "").trim().toUpperCase();
@@ -64,12 +60,59 @@
     return alias[raw] || raw || "";
   }
 
+  function qps() {
+    try {
+      return new URLSearchParams(location.search || "");
+    } catch {
+      return new URLSearchParams();
+    }
+  }
+
   function safeJsonParse(v) {
     try {
-      return JSON.parse(v);
+      return typeof v === "string" ? JSON.parse(v) : v;
     } catch {
       return null;
     }
+  }
+
+  function normSlug(v) {
+    return String(v || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  function normPhone(v) {
+    return String(v || "").replace(/[^\d]/g, "");
+  }
+
+  function storageGet(key) {
+    if (!key) return "";
+    try {
+      const s = sessionStorage.getItem(key);
+      if (s) return s;
+    } catch {}
+    try {
+      const l = localStorage.getItem(key);
+      if (l) return l;
+    } catch {}
+    return "";
+  }
+
+  function storageSet(key, value) {
+    if (!key) return;
+    try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
+    try { localStorage.setItem(key, String(value ?? "")); } catch {}
+  }
+
+  function storageRemove(key) {
+    if (!key) return;
+    try { sessionStorage.removeItem(key); } catch {}
+    try { localStorage.removeItem(key); } catch {}
   }
 
   function moduleStorageBase(moduleName) {
@@ -77,65 +120,74 @@
     return m ? `digiy_${m.toLowerCase()}` : "digiy_module";
   }
 
-  function readPinSession(moduleHint = "") {
-    const m = normModule(moduleHint);
-    const keyBase = moduleStorageBase(m);
-
-    const raw = localStorage.getItem("DIGIY_ACCESS");
-    const s = safeJsonParse(raw);
-
-    if (s && typeof s === "object") {
-      const payload = {
-        slug: normSlug(s.slug || ""),
-        module: normModule(s.module || m),
-        phone: normPhone(s.phone || "")
-      };
-
-      if (payload.slug || payload.phone) return payload;
-    }
-
-    const sessionSlug =
-      normSlug(sessionStorage.getItem(`${keyBase}_slug`) || "") ||
-      normSlug(sessionStorage.getItem(`${keyBase}_last_slug`) || "") ||
-      normSlug(localStorage.getItem(`${keyBase}_last_slug`) || "");
-
-    const sessionPhone =
-      normPhone(sessionStorage.getItem(`${keyBase}_phone`) || "") ||
-      normPhone(localStorage.getItem(`${keyBase}_phone`) || "") ||
-      normPhone(localStorage.getItem("digiy_last_phone") || "");
-
-    if (!sessionSlug && !sessionPhone && !m) return null;
-
-    return {
-      slug: sessionSlug,
-      module: m,
-      phone: sessionPhone
-    };
+  function getModuleSessionKey(moduleName) {
+    const m = normModule(moduleName);
+    return m ? `DIGIY_${m}_PRO_SESSION` : "DIGIY_PRO_SESSION";
   }
 
-  function buildPayUrl({ module, slug, phone }) {
-    const u = new URL(PAY_URL_BASE);
+  function applyOptions(opts = {}) {
+    const moduleFromOpts = normModule(opts.module || "");
+    const moduleFromWindow = normModule(window.DIGIY_MODULE || "");
+    const moduleFromQuery = normModule(qps().get("module") || "");
+    const finalModule = moduleFromOpts || moduleFromWindow || moduleFromQuery || config.module || "";
 
-    const m = normModule(module);
-    const s = normSlug(slug);
-    const p = normPhone(phone);
+    config.module = finalModule;
+    config.pin = String(opts.login || opts.pin || config.pin || DEFAULT_PIN_URL).trim() || DEFAULT_PIN_URL;
+    config.pay = String(opts.pay || config.pay || DEFAULT_PAY_URL).trim() || DEFAULT_PAY_URL;
+    config.dashboard = String(opts.dashboard || config.dashboard || DEFAULT_DASHBOARD_URL).trim() || DEFAULT_DASHBOARD_URL;
 
-    if (m) u.searchParams.set("module", m);
-    if (s) u.searchParams.set("slug", s);
-    if (p) u.searchParams.set("phone", p);
-
-    u.searchParams.set("return", location.href);
-    return u.toString();
-  }
-
-  function createClient() {
-    if (!window.supabase?.createClient) {
-      throw new Error("Supabase SDK manquant.");
+    if (Object.prototype.hasOwnProperty.call(opts, "requireSlug")) {
+      config.requireSlug = !!opts.requireSlug;
     }
 
-    if (window.DIGIY_SB) return window.DIGIY_SB;
+    if (Object.prototype.hasOwnProperty.call(opts, "checkSubscription")) {
+      config.checkSubscription = !!opts.checkSubscription;
+    }
 
-    window.DIGIY_SB = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    config.storageSlugKey =
+      String(
+        opts.storageSlugKey ||
+        config.storageSlugKey ||
+        `${moduleStorageBase(config.module)}_slug`
+      ).trim();
+
+    config.storageLastSlugKey =
+      String(
+        opts.storageLastSlugKey ||
+        config.storageLastSlugKey ||
+        `${moduleStorageBase(config.module)}_last_slug`
+      ).trim();
+
+    state.module = config.module;
+  }
+
+  function getConfig() {
+    const url =
+      String(window.DIGIY_SUPABASE_URL || "").trim() ||
+      FALLBACK_SUPABASE_URL;
+
+    const key =
+      String(window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON || "").trim() ||
+      FALLBACK_SUPABASE_ANON_KEY;
+
+    return { url, key };
+  }
+
+  function ensureSupabaseClient() {
+    if (_sb) return _sb;
+    if (window.DIGIY_SB) {
+      _sb = window.DIGIY_SB;
+      return _sb;
+    }
+
+    if (!window.supabase || typeof window.supabase.createClient !== "function") {
+      throw new Error("supabase_lib_missing");
+    }
+
+    const { url, key } = getConfig();
+    if (!url || !key) throw new Error("supabase_config_missing");
+
+    _sb = window.supabase.createClient(url, key, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
@@ -148,12 +200,128 @@
       }
     });
 
-    return window.DIGIY_SB;
+    window.DIGIY_SB = _sb;
+    if (!window.sb) window.sb = _sb;
+    return _sb;
+  }
+
+  function readStructuredSession(moduleHint = "") {
+    const m = normModule(moduleHint || config.module || "");
+    const moduleSessionKey = getModuleSessionKey(m);
+    const candidates = [
+      moduleSessionKey,
+      "DIGIY_PRO_SESSION",
+      "DIGIY_ACCESS"
+    ];
+
+    for (const key of candidates) {
+      const raw = storageGet(key);
+      if (!raw) continue;
+
+      const parsed = safeJsonParse(raw);
+      if (!parsed || typeof parsed !== "object") continue;
+
+      if (parsed.expires_at && Number(parsed.expires_at) > 0 && Date.now() > Number(parsed.expires_at)) {
+        storageRemove(key);
+        continue;
+      }
+
+      const moduleValue = normModule(parsed.module || m);
+      const slugValue = normSlug(parsed.slug || "");
+      const phoneValue = normPhone(parsed.phone || "");
+
+      if (!slugValue && !phoneValue) continue;
+
+      return {
+        slug: slugValue,
+        phone: phoneValue,
+        module: moduleValue
+      };
+    }
+
+    return null;
+  }
+
+  function readSimpleSession(moduleHint = "") {
+    const m = normModule(moduleHint || config.module || "");
+    const keyBase = moduleStorageBase(m);
+
+    const slug =
+      normSlug(storageGet(`${keyBase}_slug`) || "") ||
+      normSlug(storageGet(`${keyBase}_last_slug`) || "") ||
+      normSlug(storageGet("digiy_last_slug") || "") ||
+      normSlug(storageGet("DIGIY_SLUG") || "") ||
+      normSlug(storageGet("digiy_slug") || "");
+
+    const phone =
+      normPhone(storageGet(`${keyBase}_phone`) || "") ||
+      normPhone(storageGet("DIGIY_PHONE") || "") ||
+      normPhone(storageGet(`DIGIY_${m}_PHONE`) || "") ||
+      normPhone(storageGet("digiy_last_phone") || "");
+
+    if (!slug && !phone && !m) return null;
+
+    return {
+      slug,
+      phone,
+      module: m
+    };
+  }
+
+  function getSession(moduleHint = "") {
+    return (
+      readStructuredSession(moduleHint) ||
+      readSimpleSession(moduleHint) ||
+      null
+    );
+  }
+
+  function rememberIdentity({ slug, phone, module }) {
+    const s = normSlug(slug);
+    const p = normPhone(phone);
+    const m = normModule(module || config.module || "");
+    const keyBase = moduleStorageBase(m);
+
+    if (s) {
+      storageSet(config.storageSlugKey, s);
+      storageSet(config.storageLastSlugKey, s);
+      storageSet(`${keyBase}_slug`, s);
+      storageSet(`${keyBase}_last_slug`, s);
+      storageSet("digiy_last_slug", s);
+      storageSet("DIGIY_SLUG", s);
+      storageSet("digiy_slug", s);
+    }
+
+    if (p) {
+      storageSet(`${keyBase}_phone`, p);
+      storageSet("DIGIY_PHONE", p);
+      if (m) storageSet(`DIGIY_${m}_PHONE`, p);
+      storageSet("digiy_last_phone", p);
+    }
+
+    storageSet("DIGIY_ACCESS", JSON.stringify({
+      slug: s,
+      phone: p,
+      module: m
+    }));
+  }
+
+  function enrichUrlIfMissingSlug(slug) {
+    const s = normSlug(slug);
+    if (!s) return;
+
+    try {
+      const u = new URL(location.href);
+      const current = normSlug(u.searchParams.get("slug") || "");
+      if (current === s) return;
+      u.searchParams.set("slug", s);
+      history.replaceState({}, "", u.toString());
+    } catch {}
   }
 
   async function resolveIdentityBySlug(sb, slug, moduleHint = "") {
     const s = normSlug(slug);
-    const m = normModule(moduleHint);
+    const m = normModule(moduleHint || "");
     if (!s) return null;
 
     let query = sb
@@ -165,12 +333,11 @@
     if (m) query = query.eq("module", m);
 
     const { data, error } = await query.maybeSingle();
-
     if (error) throw error;
-    if (!data) return null;
+    if (!data?.phone) return null;
 
     return {
-      slug: normSlug(data.slug || ""),
+      slug: normSlug(data.slug || s),
       phone: normPhone(data.phone || ""),
       module: normModule(data.module || m)
     };
@@ -178,7 +345,7 @@
 
   async function resolveIdentityByPhone(sb, phone, moduleHint = "") {
     const p = normPhone(phone);
-    const m = normModule(moduleHint);
+    const m = normModule(moduleHint || "");
     if (!p || !m) return null;
 
     const { data, error } = await sb
@@ -190,16 +357,16 @@
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) return null;
+    if (!data?.phone) return null;
 
     return {
       slug: normSlug(data.slug || ""),
-      phone: normPhone(data.phone || ""),
+      phone: normPhone(data.phone || p),
       module: normModule(data.module || m)
     };
   }
 
-  async function hasAccess(sb, phone, module) {
+  async function hasAccessRaw(sb, phone, module) {
     const p = normPhone(phone);
     const m = normModule(module);
     if (!p || !m) return false;
@@ -213,211 +380,365 @@
     return data === true;
   }
 
-  function rememberIdentity({ slug, phone, module }) {
-    const s = normSlug(slug);
-    const p = normPhone(phone);
-    const m = normModule(module);
-    const keyBase = moduleStorageBase(m);
-
-    if (s) {
-      sessionStorage.setItem(`${keyBase}_slug`, s);
-      sessionStorage.setItem(`${keyBase}_last_slug`, s);
-      localStorage.setItem(`${keyBase}_last_slug`, s);
-    }
-
-    if (p) {
-      sessionStorage.setItem(`${keyBase}_phone`, p);
-      localStorage.setItem(`${keyBase}_phone`, p);
-      localStorage.setItem("digiy_last_phone", p);
-    }
-
-    localStorage.setItem("DIGIY_ACCESS", JSON.stringify({
-      slug: s,
-      phone: p,
-      module: m
-    }));
+  function resetState() {
+    state.module = config.module;
+    state.preview = true;
+    state.access_ok = false;
+    state.pin_ok = false;
+    state.has_identity = false;
+    state.slug = "";
+    state.phone = "";
+    state.reason = "booting";
+    state.ts = Date.now();
   }
 
-  function enrichUrlIfMissingSlug(slug) {
-    const s = normSlug(slug);
-    if (!s) return;
+  function currentIdentity() {
+    const qs = qps();
+    const session = getSession(config.module);
 
-    const u = new URL(location.href);
-    const currentSlug = normSlug(u.searchParams.get("slug") || "");
-    if (currentSlug === s) return;
+    const slug =
+      normSlug(qs.get("slug") || "") ||
+      normSlug(session?.slug || "") ||
+      normSlug(storageGet(config.storageSlugKey) || "") ||
+      normSlug(storageGet(config.storageLastSlugKey) || "");
 
-    u.searchParams.set("slug", s);
-    history.replaceState(null, "", u.toString());
+    const phone =
+      normPhone(qs.get("phone") || "") ||
+      normPhone(session?.phone || "");
+
+    const module =
+      normModule(qs.get("module") || "") ||
+      normModule(session?.module || "") ||
+      normModule(config.module || "");
+
+    return { slug, phone, module };
   }
 
-  function fallbackSnapshot() {
-    const qs = getQuery();
-    const moduleHint = normModule(qs.get("module") || window.DIGIY_MODULE || "");
-    const pinSession = readPinSession(moduleHint);
+  function withSlug(target = "") {
+    const slug = state.slug || currentIdentity().slug;
+    if (!target || !slug) return target;
+
+    try {
+      const u = new URL(target, location.href);
+      if (!u.searchParams.get("slug")) u.searchParams.set("slug", slug);
+      if (u.origin === location.origin) return u.pathname + u.search + u.hash;
+      return u.toString();
+    } catch {
+      const sep = String(target).includes("?") ? "&" : "?";
+      return `${target}${sep}slug=${encodeURIComponent(slug)}`;
+    }
+  }
+
+  function getPinUrl(slug = "") {
+    const finalSlug = normSlug(slug || state.slug || currentIdentity().slug);
+    try {
+      const u = new URL(config.pin || DEFAULT_PIN_URL, location.href);
+      if (finalSlug && !u.searchParams.get("slug")) u.searchParams.set("slug", finalSlug);
+      if (u.origin === location.origin) return u.pathname + u.search + u.hash;
+      return u.toString();
+    } catch {
+      return withSlug(config.pin || DEFAULT_PIN_URL);
+    }
+  }
+
+  function getPayUrl(slug = "", phone = "") {
+    const finalSlug = normSlug(slug || state.slug || currentIdentity().slug);
+    const finalPhone = normPhone(phone || state.phone || currentIdentity().phone);
+    const finalModule = normModule(config.module || currentIdentity().module || "");
+
+    try {
+      const u = new URL(config.pay || DEFAULT_PAY_URL, location.href);
+      if (finalModule) u.searchParams.set("module", finalModule);
+      if (finalSlug) u.searchParams.set("slug", finalSlug);
+      if (finalPhone) u.searchParams.set("phone", finalPhone);
+      u.searchParams.set("return", location.href);
+      return u.toString();
+    } catch {
+      return config.pay || DEFAULT_PAY_URL;
+    }
+  }
+
+  function setPreview(reason, extra = {}) {
+    state.preview = true;
+    state.access_ok = false;
+    state.pin_ok = !!extra.pin_ok;
+    state.has_identity = !!(extra.slug || extra.phone);
+    state.slug = extra.slug ?? state.slug ?? "";
+    state.phone = extra.phone ?? state.phone ?? "";
+    state.reason = reason || "preview";
+    state.ts = Date.now();
 
     return {
-      slug:
-        normSlug(qs.get("slug") || "") ||
-        normSlug(pinSession?.slug || ""),
-      phone:
-        normPhone(qs.get("phone") || "") ||
-        normPhone(pinSession?.phone || ""),
-      module:
-        moduleHint ||
-        normModule(pinSession?.module || "")
+      ok: reason === "preview_no_identity" ? ALLOW_PREVIEW_WITHOUT_IDENTITY : false,
+      preview: state.preview,
+      access_ok: state.access_ok,
+      pin_ok: state.pin_ok,
+      has_identity: state.has_identity,
+      slug: state.slug,
+      phone: state.phone,
+      module: config.module,
+      should_pay: reason === "no_subscription" || reason === "unknown_identity",
+      pay_url: getPayUrl(state.slug, state.phone),
+      reason: state.reason,
+      error: null
     };
   }
 
-  /* ===== Core ===== */
+  function setAccessOk(extra = {}) {
+    state.preview = false;
+    state.access_ok = true;
+    state.pin_ok = !!extra.pin_ok;
+    state.has_identity = true;
+    state.slug = extra.slug ?? state.slug ?? "";
+    state.phone = extra.phone ?? state.phone ?? "";
+    state.reason = "access_ok";
+    state.ts = Date.now();
 
-  async function guardCheck() {
-    const sb = createClient();
-    const qs = getQuery();
-
-    const moduleHint = normModule(qs.get("module") || window.DIGIY_MODULE || "");
-    const pinSession = readPinSession(moduleHint);
-
-    const slugQ = normSlug(qs.get("slug") || "") || normSlug(pinSession?.slug || "");
-    const phoneQ = normPhone(qs.get("phone") || "") || normPhone(pinSession?.phone || "");
-    const moduleQ = moduleHint || normModule(pinSession?.module || "");
-
-    const state = {
+    return {
       ok: true,
-      preview: false,
-      has_identity: false,
-      slug: "",
-      phone: "",
-      module: "",
-      pin_ok: false,
-      access_ok: false,
+      preview: state.preview,
+      access_ok: state.access_ok,
+      pin_ok: state.pin_ok,
+      has_identity: state.has_identity,
+      slug: state.slug,
+      phone: state.phone,
+      module: config.module,
       should_pay: false,
-      pay_url: buildPayUrl({ module: moduleQ, slug: slugQ, phone: phoneQ }),
-      reason: null,
+      pay_url: getPayUrl(state.slug, state.phone),
+      reason: state.reason,
       error: null
     };
+  }
 
-    if (!slugQ && !phoneQ) {
-      state.preview = !!ALLOW_PREVIEW_WITHOUT_IDENTITY;
-      state.reason = ALLOW_PREVIEW_WITHOUT_IDENTITY ? "preview_no_identity" : "missing_identity";
-      state.ok = ALLOW_PREVIEW_WITHOUT_IDENTITY;
-      return state;
+  async function guardCheck() {
+    applyOptions({});
+    resetState();
+
+    const sb = ensureSupabaseClient();
+    const identity = currentIdentity();
+
+    if (!identity.slug && !identity.phone) {
+      return setPreview("preview_no_identity", {
+        slug: "",
+        phone: "",
+        pin_ok: false
+      });
     }
 
-    let identity = null;
+    let bridged = null;
 
-    if (slugQ) {
-      identity = await resolveIdentityBySlug(sb, slugQ, moduleQ);
-      if (!identity && !moduleQ) {
-        identity = await resolveIdentityBySlug(sb, slugQ, "");
+    if (identity.slug) {
+      bridged = await resolveIdentityBySlug(sb, identity.slug, identity.module);
+      if (!bridged && !identity.module) {
+        bridged = await resolveIdentityBySlug(sb, identity.slug, "");
       }
     }
 
-    if (!identity && phoneQ && moduleQ) {
-      identity = await resolveIdentityByPhone(sb, phoneQ, moduleQ);
+    if (!bridged && identity.phone && identity.module) {
+      bridged = await resolveIdentityByPhone(sb, identity.phone, identity.module);
     }
 
-    if (!identity) {
-      state.ok = false;
-      state.preview = false;
-      state.slug = slugQ;
-      state.phone = phoneQ;
-      state.module = moduleQ;
-      state.has_identity = !!(slugQ || phoneQ);
-      state.reason = "unknown_identity";
-      state.should_pay = !!(slugQ || phoneQ);
-      state.pay_url = buildPayUrl({
-        module: moduleQ,
-        slug: slugQ,
-        phone: phoneQ
+    if (!bridged) {
+      return setPreview("unknown_identity", {
+        slug: identity.slug,
+        phone: identity.phone,
+        pin_ok: false
       });
-      return state;
     }
 
-    state.slug = identity.slug;
-    state.phone = identity.phone;
-    state.module = identity.module;
-    state.has_identity = true;
-    state.pay_url = buildPayUrl(identity);
+    rememberIdentity(bridged);
+    enrichUrlIfMissingSlug(bridged.slug);
 
-    rememberIdentity(identity);
-    enrichUrlIfMissingSlug(identity.slug);
-
-    if (
-      pinSession &&
+    const session = getSession(bridged.module || config.module);
+    const pin_ok = !!(
+      session &&
       (
-        (pinSession.slug && pinSession.slug === identity.slug) ||
-        (pinSession.phone && pinSession.phone === identity.phone)
-      ) &&
-      (!pinSession.module || normModule(pinSession.module) === identity.module)
-    ) {
-      state.pin_ok = true;
+        (session.slug && normSlug(session.slug) === bridged.slug) ||
+        (session.phone && normPhone(session.phone) === bridged.phone)
+      )
+    );
+
+    if (config.checkSubscription === false) {
+      return setAccessOk({
+        slug: bridged.slug,
+        phone: bridged.phone,
+        pin_ok
+      });
     }
 
-    const access = await hasAccess(sb, identity.phone, identity.module);
-    state.access_ok = access;
+    const access = await hasAccessRaw(sb, bridged.phone, bridged.module || config.module);
 
     if (!access) {
-      state.ok = false;
-      state.reason = "no_subscription";
-      state.should_pay = true;
-      return state;
+      return setPreview("no_subscription", {
+        slug: bridged.slug,
+        phone: bridged.phone,
+        pin_ok
+      });
     }
 
-    state.reason = "access_ok";
-    return state;
+    return setAccessOk({
+      slug: bridged.slug,
+      phone: bridged.phone,
+      pin_ok
+    });
   }
 
-  /* ===== Public API ===== */
+  async function bootOnce(force = false, opts = {}) {
+    if (_bootPromise && !force) return _bootPromise;
+
+    applyOptions(opts);
+
+    _bootPromise = (async () => {
+      try {
+        const result = await guardCheck();
+        window.DIGIY_GUARD.state = result;
+        return result;
+      } catch (e) {
+        const identity = currentIdentity();
+        const fallback = {
+          ok: false,
+          preview: !!ALLOW_PREVIEW_WITHOUT_IDENTITY,
+          access_ok: false,
+          pin_ok: false,
+          has_identity: !!(identity.slug || identity.phone),
+          slug: identity.slug,
+          phone: identity.phone,
+          module: config.module,
+          should_pay: false,
+          pay_url: getPayUrl(identity.slug, identity.phone),
+          reason: "guard_error",
+          error: String(e?.message || e)
+        };
+        window.DIGIY_GUARD.state = fallback;
+        return fallback;
+      }
+    })();
+
+    window.DIGIY_GUARD.ready = _bootPromise;
+    return _bootPromise;
+  }
 
   async function refresh() {
-    try {
-      const state = await guardCheck();
-      window.DIGIY_GUARD.state = state;
-      return state;
-    } catch (e) {
-      const snap = fallbackSnapshot();
+    return bootOnce(true, {});
+  }
 
-      const fallback = {
-        ok: false,
-        preview: !!ALLOW_PREVIEW_WITHOUT_IDENTITY,
-        has_identity: !!(snap.slug || snap.phone),
-        slug: snap.slug,
-        phone: snap.phone,
-        module: snap.module,
-        pin_ok: false,
-        access_ok: false,
-        should_pay: false,
-        pay_url: buildPayUrl(snap),
-        reason: "guard_error",
-        error: String(e?.message || e)
-      };
+  async function boot(opts = {}) {
+    return bootOnce(true, opts);
+  }
 
-      window.DIGIY_GUARD.state = fallback;
-      return fallback;
+  async function checkAccess() {
+    await window.DIGIY_GUARD.ready;
+    return refresh();
+  }
+
+  async function rpc(fnName, args = {}) {
+    const sb = ensureSupabaseClient();
+    const { data, error } = await sb.rpc(fnName, args);
+    if (error) throw error;
+    return typeof data === "string" ? (safeJsonParse(data) ?? data) : data;
+  }
+
+  async function digiyRequireAccess(options = {}) {
+    await window.DIGIY_GUARD.ready;
+    const st = window.DIGIY_GUARD.state || {};
+
+    if (st.access_ok) return st;
+
+    const mode = options.mode || "none";
+
+    if (mode === "pin") {
+      location.assign(getPinUrl(st.slug));
+      return st;
     }
+
+    if (mode === "pay") {
+      location.assign(getPayUrl(st.slug, st.phone));
+      return st;
+    }
+
+    return st;
   }
 
   async function requirePaidAccess() {
-    const state = await refresh();
+    const st = await refresh();
 
-    if (state.preview) return state;
-    if (state.access_ok) return state;
+    if (st.preview) return st;
+    if (st.access_ok) return st;
 
-    if (state.should_pay && state.pay_url) {
-      location.replace(state.pay_url);
-      return state;
+    if (st.should_pay && st.pay_url) {
+      location.replace(st.pay_url);
+      return st;
     }
 
-    return state;
+    return st;
+  }
+
+  function go(target, mode = "assign") {
+    let finalTarget = target;
+
+    if (!finalTarget || finalTarget === "__back__") {
+      finalTarget = config.dashboard || DEFAULT_DASHBOARD_URL;
+    }
+
+    finalTarget = withSlug(finalTarget);
+
+    if (mode === "replace") location.replace(finalTarget);
+    else location.assign(finalTarget);
+  }
+
+  function logout(redirect = "") {
+    const m = normModule(config.module || "");
+    const keyBase = moduleStorageBase(m);
+
+    [
+      config.storageSlugKey,
+      config.storageLastSlugKey,
+      `${keyBase}_slug`,
+      `${keyBase}_last_slug`,
+      `${keyBase}_phone`,
+      "DIGIY_SLUG",
+      "digiy_slug",
+      "digiy_last_slug",
+      "DIGIY_PHONE",
+      `DIGIY_${m}_PHONE`,
+      "digiy_last_phone",
+      getModuleSessionKey(m),
+      "DIGIY_PRO_SESSION",
+      "DIGIY_ACCESS"
+    ].forEach(storageRemove);
+
+    state.preview = true;
+    state.access_ok = false;
+    state.pin_ok = false;
+    state.has_identity = false;
+    state.slug = "";
+    state.phone = "";
+    state.reason = "logout";
+    state.ts = Date.now();
+
+    const target = redirect || getPinUrl("");
+    location.replace(target);
   }
 
   window.DIGIY_GUARD = {
     state: null,
     ready: null,
+    boot,
     refresh,
-    requirePaidAccess
+    checkAccess,
+    rpc,
+    requirePaidAccess,
+    getSb: () => ensureSupabaseClient(),
+    getSupabase: () => ensureSupabaseClient(),
+    getSlug: () => state.slug || currentIdentity().slug,
+    getSession: () => getSession(config.module),
+    getPayUrl: (slug = "", phone = "") => getPayUrl(slug, phone),
+    getPinUrl: (slug = "") => getPinUrl(slug),
+    withSlug,
+    go,
+    logout
   };
 
-  window.digiyRequireAccess = async () => await window.DIGIY_GUARD.refresh();
-  window.DIGIY_GUARD.ready = window.digiyRequireAccess();
+  window.digiyRequireAccess = digiyRequireAccess;
+  window.DIGIY_GUARD.ready = bootOnce(false, {});
 })();
