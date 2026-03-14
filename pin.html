@@ -9,8 +9,8 @@
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON;
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -448,7 +448,7 @@
         </div>
 
         <div class="statusbox warn" style="margin-top:16px">
-          Le contrôle officiel passe par la RPC <strong style="margin-left:6px">resa_pin_login</strong>.
+          Le rail PIN renvoie ensuite vers le cockpit RESA avec le bon slug.
         </div>
       </section>
     </section>
@@ -465,6 +465,10 @@
       const MODULE = "RESA";
       const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
       const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+
+      const SESSION_KEY = "DIGIY_RESA_PRO_SESSION";
+      const GENERIC_SESSION_KEY = "DIGIY_PRO_SESSION";
+      const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 
       const $ = (id) => document.getElementById(id);
 
@@ -484,6 +488,36 @@
           .replace(/[^a-z0-9-]/g, "")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
+      }
+
+      function safeJsonParse(value){
+        try{
+          return typeof value === "string" ? JSON.parse(value) : value;
+        }catch{
+          return null;
+        }
+      }
+
+      function storageSet(key, value){
+        try { localStorage.setItem(key, String(value ?? "")); } catch {}
+        try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
+      }
+
+      function storageRemove(key){
+        try { localStorage.removeItem(key); } catch {}
+        try { sessionStorage.removeItem(key); } catch {}
+      }
+
+      function storageGet(key){
+        try{
+          const s = sessionStorage.getItem(key);
+          if (s) return s;
+        }catch{}
+        try{
+          const l = localStorage.getItem(key);
+          if (l) return l;
+        }catch{}
+        return "";
       }
 
       const hintedSlug = normalizeSlug(new URL(location.href).searchParams.get("slug") || "");
@@ -529,9 +563,7 @@
       }
 
       async function callResaPinLogin(phone, pin){
-        if (!sb) {
-          throw new Error("Supabase client indisponible");
-        }
+        if (!sb) throw new Error("Supabase client indisponible");
 
         const tries = [
           { p_phone: phone, p_pin: pin },
@@ -547,6 +579,64 @@
         }
 
         throw lastError || new Error("RPC resa_pin_login indisponible");
+      }
+
+      function clearOldSessionKeys(){
+        [
+          SESSION_KEY,
+          GENERIC_SESSION_KEY,
+          "DIGIY_ACCESS",
+          "digiy_last_phone",
+          "digiy_resa_last_slug",
+          "digiy_last_slug",
+          "DIGIY_SLUG",
+          "digiy_slug",
+          "digiy_resa_slug",
+          "DIGIY_PHONE",
+          "DIGIY_RESA_PHONE",
+          "digiy_resa_phone"
+        ].forEach(storageRemove);
+      }
+
+      function saveSession(payload){
+        const slug = normalizeSlug(payload.slug || hintedSlug || "");
+        const phone = normalizePhone(payload.phone || "");
+        const title = String(payload.title || payload.business_name || payload.name || "DIGIY RESA PRO").trim();
+
+        const session = {
+          ok: true,
+          module: MODULE,
+          slug,
+          phone,
+          title,
+          business_name: title,
+          created_at: Date.now(),
+          expires_at: Date.now() + SESSION_TTL_MS
+        };
+
+        clearOldSessionKeys();
+
+        storageSet(SESSION_KEY, JSON.stringify(session));
+        storageSet(GENERIC_SESSION_KEY, JSON.stringify(session));
+
+        storageSet("digiy_last_phone", phone);
+        storageSet("DIGIY_PHONE", phone);
+        storageSet("DIGIY_RESA_PHONE", phone);
+        storageSet("digiy_resa_phone", phone);
+
+        storageSet("digiy_resa_last_slug", slug);
+        storageSet("digiy_last_slug", slug);
+        storageSet("DIGIY_SLUG", slug);
+        storageSet("digiy_slug", slug);
+        storageSet("digiy_resa_slug", slug);
+
+        storageSet("DIGIY_ACCESS", JSON.stringify({
+          slug,
+          phone,
+          module: MODULE
+        }));
+
+        return session;
       }
 
       async function login(){
@@ -568,39 +658,35 @@
 
         try{
           const data = await callResaPinLogin(phone, pin);
+          const parsed = safeJsonParse(data) || data || {};
 
-          if (!data?.ok) {
+          if (!parsed?.ok) {
             const err =
-              data?.error ||
-              data?.message ||
-              data?.reason ||
+              parsed?.error ||
+              parsed?.message ||
+              parsed?.reason ||
               "PIN invalide ou accès refusé.";
             setStatus(err, "err");
             return;
           }
 
-          const targetSlug = normalizeSlug(data?.slug || hintedSlug || "");
+          const targetSlug = normalizeSlug(parsed?.slug || hintedSlug || "");
 
           if (!targetSlug) {
             setStatus("PIN reconnu, mais aucun slug RESA n’a été retourné.", "warn");
             return;
           }
 
-          localStorage.setItem("digiy_last_phone", phone);
-          localStorage.setItem("digiy_resa_last_slug", targetSlug);
-          sessionStorage.setItem("digiy_resa_phone", phone);
-          sessionStorage.setItem("digiy_resa_slug", targetSlug);
-
-          localStorage.setItem("DIGIY_ACCESS", JSON.stringify({
+          const session = saveSession({
             slug: targetSlug,
             phone,
-            module: MODULE
-          }));
+            title: parsed?.business_name || parsed?.title || "DIGIY RESA PRO"
+          });
 
           setStatus("PIN validé. Redirection vers le cockpit...", "ok");
 
           setTimeout(() => {
-            location.href = `./cockpit.html?slug=${encodeURIComponent(targetSlug)}`;
+            location.href = `./cockpit.html?slug=${encodeURIComponent(session.slug)}`;
           }, 350);
 
         } catch (e) {
@@ -612,7 +698,12 @@
       }
 
       function initUi(){
-        const lastPhone = localStorage.getItem("digiy_last_phone") || "";
+        const lastPhone =
+          storageGet("DIGIY_PHONE") ||
+          storageGet("DIGIY_RESA_PHONE") ||
+          storageGet("digiy_last_phone") ||
+          "";
+
         if (lastPhone) $("phone").value = lastPhone;
 
         $("btnCockpit").href = hintedSlug
