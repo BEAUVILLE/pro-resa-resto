@@ -13,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-planning-v2"></script>
+  <script src="./guard.js?v=resa-planning-v3"></script>
 
   <style>
     :root{
@@ -54,7 +54,7 @@
       align-items:center;
       gap:12px;
       flex-wrap:wrap;
-      margin-bottom:18px;
+      margin-bottom:14px;
     }
 
     .brand{
@@ -97,6 +97,10 @@
       font-weight:800;
       cursor:pointer;
       box-shadow:var(--shadow);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
 
     .btn:hover{transform:translateY(-1px)}
@@ -106,6 +110,38 @@
       background:rgba(255,255,255,.04);
       border-style:dashed;
       color:var(--muted);
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .nav-link.active{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.34);
+      color:#fff1a8;
     }
 
     .hero{
@@ -176,6 +212,13 @@
       color:var(--muted);
       font-size:.84rem;
       font-weight:900;
+    }
+
+    .hero-cta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
     }
 
     .mini-card{
@@ -401,6 +444,12 @@
       opacity:.72;
       pointer-events:none;
     }
+
+    @media (max-width:640px){
+      .wrap{width:min(96vw,96vw)}
+      .actions-top,.nav-rail,.hero-cta,.toolbar-left,.toolbar-right{width:100%}
+      .actions-top > *, .nav-rail > *, .hero-cta > *, .toolbar-left > *, .toolbar-right > *{flex:1 1 auto}
+    }
   </style>
 </head>
 <body>
@@ -414,10 +463,20 @@
 
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
+        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
         <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
         <a class="btn" id="btnCockpit" href="./cockpit.html">Cockpit</a>
       </div>
     </div>
+
+    <nav class="nav-rail" aria-label="Navigation PRO RESA">
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
+      <a class="nav-link active" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
+      <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
+      <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
+    </nav>
 
     <section class="hero">
       <div class="hero-grid">
@@ -431,6 +490,12 @@
             <div class="pill" id="heroCity">Ville : —</div>
             <div class="pill" id="heroType">Activité : —</div>
             <div class="pill" id="heroDate">Date : —</div>
+          </div>
+
+          <div class="hero-cta">
+            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Voir le dashboard</a>
+            <a class="btn secondary" id="heroCockpit" href="./cockpit.html">Ouvrir le cockpit</a>
+            <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir le profil</a>
           </div>
         </div>
 
@@ -476,7 +541,7 @@
       </div>
 
       <div class="toolbar-right">
-        <a class="btn ghost" id="btnSettings" href="./etablissement.html">Réglages</a>
+        <a class="btn ghost" id="btnSettings" href="./etablissement.html">Profil / établissement</a>
       </div>
     </section>
 
@@ -615,6 +680,11 @@
         return "";
       }
 
+      function storageSet(key, value){
+        try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
+        try { localStorage.setItem(key, String(value ?? "")); } catch {}
+      }
+
       function safeJsonParse(value){
         try{
           return typeof value === "string" ? JSON.parse(value) : value;
@@ -644,6 +714,22 @@
           getSessionSlug() ||
           ""
         );
+      }
+
+      function withSlug(path, slug = "", extra = {}){
+        const clean = normalizeSlug(slug);
+        const url = new URL(path, location.href);
+
+        if (clean) url.searchParams.set("slug", clean);
+
+        Object.entries(extra || {}).forEach(([k, v]) => {
+          if (v !== null && v !== undefined && String(v).trim() !== "") {
+            url.searchParams.set(k, String(v));
+          }
+        });
+
+        const sameOrigin = url.origin === location.origin;
+        return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
       }
 
       function initClient(){
@@ -685,9 +771,29 @@
 
       function setLinks(slug = ""){
         const clean = normalizeSlug(slug);
-        $("btnPin").href = clean ? `./pin.html?slug=${encodeURIComponent(clean)}` : "./pin.html";
-        $("btnCockpit").href = clean ? `./cockpit.html?slug=${encodeURIComponent(clean)}` : "./cockpit.html";
-        $("btnSettings").href = clean ? `./etablissement.html?slug=${encodeURIComponent(clean)}` : "./etablissement.html";
+
+        const planningHref = withSlug("./planning.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
+        const dashboardHref = withSlug("./dashboard-pro.html", clean);
+        const cockpitHref = withSlug("./cockpit.html", clean);
+        const settingsHref = withSlug("./etablissement.html", clean);
+        const pinHref = withSlug("./pin.html", clean);
+        const homeHref = withSlug("./index.html", clean);
+
+        $("navCockpit").href = cockpitHref;
+        $("navDashboard").href = dashboardHref;
+        $("navPlanning").href = planningHref;
+        $("navSettings").href = settingsHref;
+        $("navPin").href = pinHref;
+        $("navHome").href = homeHref;
+
+        $("btnDashboardTop").href = dashboardHref;
+        $("btnPin").href = pinHref;
+        $("btnCockpit").href = cockpitHref;
+        $("btnSettings").href = settingsHref;
+
+        $("heroDashboard").href = dashboardHref;
+        $("heroCockpit").href = cockpitHref;
+        $("heroSettings").href = settingsHref;
       }
 
       async function resolveGuardState(){
@@ -986,10 +1092,10 @@
               return;
             }
 
-            try { localStorage.setItem("digiy_resa_last_slug", RESOLVED_SLUG); } catch {}
-            try { sessionStorage.setItem("digiy_resa_slug", RESOLVED_SLUG); } catch {}
-            try { localStorage.setItem("DIGIY_SLUG", RESOLVED_SLUG); } catch {}
-            try { sessionStorage.setItem("DIGIY_SLUG", RESOLVED_SLUG); } catch {}
+            storageSet("digiy_resa_last_slug", RESOLVED_SLUG);
+            storageSet("digiy_resa_slug", RESOLVED_SLUG);
+            storageSet("digiy_last_slug", RESOLVED_SLUG);
+            storageSet("DIGIY_SLUG", RESOLVED_SLUG);
 
             setLinks(RESOLVED_SLUG);
             setLiveHero();
@@ -1048,12 +1154,15 @@
       }
 
       $("btnReload").addEventListener("click", boot);
+
       $("filterStatus").addEventListener("change", (e) => {
         ACTIVE_FILTER = e.target.value || "all";
         renderTimeline();
       });
+
       $("dateInput").addEventListener("change", () => {
         ACTIVE_DATE = $("dateInput").value || todayISO();
+        setLinks(RESOLVED_SLUG);
         boot();
       });
 
