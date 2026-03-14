@@ -56,6 +56,81 @@
       margin:auto;
     }
 
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+      padding:6px 2px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:950;
+    }
+
+    .brand-title{
+      font-size:clamp(20px,2.8vw,30px);
+      font-weight:1000;
+      line-height:1.05;
+    }
+
+    .brand-sub{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.14);
+      color:var(--text);
+      font-weight:950;
+    }
+
+    .nav-link.active{
+      background:rgba(34,197,94,.12);
+      border-color:rgba(34,197,94,.28);
+      color:#bbf7d0;
+    }
+
     .hero,
     .card{
       border:1px solid var(--line);
@@ -424,10 +499,38 @@
     }
 
     .hidden{display:none !important}
+
+    @media(max-width:720px){
+      .top-actions,.nav-rail,.hero-actions{width:100%}
+      .top-actions > *, .nav-rail > *, .hero-actions > *{flex:1 1 auto}
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">DIGIY RESA PRO</div>
+        <div class="brand-title">Profil / établissement</div>
+        <div class="brand-sub" id="topSub">Lecture publique + repères PRO recousus.</div>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
+        <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
+        <a class="btn" id="btnPinTop" href="./pin.html">PIN</a>
+      </div>
+    </div>
+
+    <nav class="nav-rail" aria-label="Navigation PRO RESA">
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link active" id="navSettings" href="./etablissement.html">Profil / établissement</a>
+      <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
+      <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
+    </nav>
 
     <section class="hero">
       <div class="hero-grid-main">
@@ -460,7 +563,10 @@
             <div class="hero-actions">
               <a class="btn primary" id="btnReserve" href="./reserver.html">📅 Réserver</a>
               <a class="btn gold" id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
-              <a class="btn" href="./index.html">🏠 Retour vitrine</a>
+              <a class="btn" id="btnCockpitHero" href="./cockpit.html">🧭 Cockpit</a>
+              <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Dashboard</a>
+              <a class="btn" id="btnPlanningHero" href="./planning.html">🗓️ Planning</a>
+              <a class="btn" id="btnHomeHero" href="./index.html">🏠 Retour vitrine</a>
             </div>
           </div>
 
@@ -575,6 +681,51 @@
         ""
       );
 
+      function withSlug(path, slugValue = "", extra = {}){
+        const clean = normalizeSlug(slugValue);
+        const url = new URL(path, location.href);
+
+        if (clean) url.searchParams.set("slug", clean);
+
+        Object.entries(extra || {}).forEach(([k, v]) => {
+          if (v !== null && v !== undefined && String(v).trim() !== "") {
+            url.searchParams.set(k, String(v));
+          }
+        });
+
+        const sameOrigin = url.origin === location.origin;
+        return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
+      }
+
+      function setNavLinks(slugValue){
+        const clean = normalizeSlug(slugValue);
+
+        const cockpitHref = withSlug("./cockpit.html", clean);
+        const dashboardHref = withSlug("./dashboard-pro.html", clean);
+        const planningHref = withSlug("./planning.html", clean);
+        const settingsHref = withSlug("./etablissement.html", clean);
+        const pinHref = withSlug("./pin.html", clean);
+        const homeHref = withSlug("./index.html", clean);
+        const reserveHref = withSlug("./reserver.html", clean);
+
+        document.getElementById("navCockpit").href = cockpitHref;
+        document.getElementById("navDashboard").href = dashboardHref;
+        document.getElementById("navPlanning").href = planningHref;
+        document.getElementById("navSettings").href = settingsHref;
+        document.getElementById("navPin").href = pinHref;
+        document.getElementById("navHome").href = homeHref;
+
+        document.getElementById("btnCockpitTop").href = cockpitHref;
+        document.getElementById("btnDashboardTop").href = dashboardHref;
+        document.getElementById("btnPinTop").href = pinHref;
+
+        document.getElementById("btnCockpitHero").href = cockpitHref;
+        document.getElementById("btnDashboardHero").href = dashboardHref;
+        document.getElementById("btnPlanningHero").href = planningHref;
+        document.getElementById("btnHomeHero").href = homeHref;
+        document.getElementById("btnReserve").href = reserveHref;
+      }
+
       function safe(v, fallback="—"){
         const s = String(v || "").trim();
         return s || fallback;
@@ -590,12 +741,6 @@
         if(!clean) return "";
         const msg = `Bonjour ${name || ""}, je vous contacte via votre fiche DIGIY RESA.`;
         return "https://wa.me/" + clean + "?text=" + encodeURIComponent(msg);
-      }
-
-      function reserverLink(slugValue){
-        const u = new URL("./reserver.html", location.href);
-        if (slugValue) u.searchParams.set("slug", slugValue);
-        return u.pathname + u.search;
       }
 
       function escapeHtml(str){
@@ -682,6 +827,7 @@
       function setUnavailableState(title, subtitle){
         document.getElementById("name").textContent = title;
         document.getElementById("subtitle").textContent = subtitle;
+        document.getElementById("topSub").textContent = subtitle;
         document.getElementById("btnReserve").classList.add("hidden");
         document.getElementById("btnWhatsApp").classList.add("hidden");
         document.getElementById("heroMedia").innerHTML = `
@@ -743,8 +889,8 @@
       }
 
       async function boot(){
+        setNavLinks(slug);
         document.getElementById("slugPill").textContent = "slug : " + (slug || "—");
-        document.getElementById("btnReserve").href = reserverLink(slug);
 
         if(!supabaseLib || typeof supabaseLib.createClient !== "function"){
           console.error("Supabase JS non chargé.");
@@ -793,6 +939,7 @@
             : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
 
           document.title = `${name} — DIGIY RESA`;
+          document.getElementById("topSub").textContent = `Profil établissement chargé pour ${slug}`;
 
           setHeroImage(p, name, city, businessType);
           setAvatar(p, name);
