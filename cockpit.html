@@ -13,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-cockpit-v2"></script>
+  <script src="./guard.js?v=resa-cockpit-v3"></script>
 
   <style>
     :root{
@@ -55,7 +55,7 @@
       justify-content:space-between;
       align-items:center;
       flex-wrap:wrap;
-      margin-bottom:18px;
+      margin-bottom:14px;
     }
 
     .brand{
@@ -99,6 +99,10 @@
       font-weight:800;
       cursor:pointer;
       box-shadow:var(--shadow);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
 
     .btn:hover{transform:translateY(-1px)}
@@ -108,6 +112,38 @@
       background:rgba(255,255,255,.04);
       border-style:dashed;
       color:var(--muted);
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .nav-link.active{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.34);
+      color:#fff1a8;
     }
 
     .hero{
@@ -413,8 +449,8 @@
       .wrap{width:min(96vw,96vw)}
       .grid-stats{grid-template-columns:repeat(2,1fr)}
       .booking-top{flex-direction:column}
-      .actions-top,.filters,.booking-actions,.hero-cta{width:100%}
-      .actions-top > *, .booking-actions > *, .hero-cta > *{flex:1 1 auto}
+      .actions-top,.filters,.booking-actions,.hero-cta,.nav-rail{width:100%}
+      .actions-top > *, .booking-actions > *, .hero-cta > *, .nav-rail > *{flex:1 1 auto}
     }
   </style>
 </head>
@@ -429,10 +465,20 @@
 
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
+        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
         <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
-        <a class="btn" id="btnSettings" href="./etablissement.html">Réglages établissement</a>
+        <a class="btn" id="btnSettings" href="./etablissement.html">Profil / établissement</a>
       </div>
     </div>
+
+    <nav class="nav-rail" aria-label="Navigation PRO RESA">
+      <a class="nav-link active" id="navCockpit" href="./cockpit.html">Cockpit</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
+      <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
+      <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
+    </nav>
 
     <section class="hero">
       <div class="hero-grid">
@@ -447,8 +493,10 @@
           </div>
 
           <div class="hero-cta" id="heroCta">
+            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Ouvrir le dashboard</a>
+            <a class="btn secondary" id="heroPlanning" href="./planning.html">Voir le planning</a>
             <a class="btn warn" id="heroPin" href="./pin.html">Ouvrir ma porte PIN</a>
-            <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir les réglages</a>
+            <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir le profil</a>
           </div>
         </div>
 
@@ -712,14 +760,46 @@
         window.DIGIY_SB = sb;
       }
 
+      function withSlug(path, slug = "", extra = {}){
+        const clean = normalizeSlug(slug);
+        const url = new URL(path, location.href);
+
+        if (clean) url.searchParams.set("slug", clean);
+
+        Object.entries(extra || {}).forEach(([k, v]) => {
+          if (v !== null && v !== undefined && String(v).trim() !== "") {
+            url.searchParams.set(k, String(v));
+          }
+        });
+
+        const sameOrigin = url.origin === location.origin;
+        return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
+      }
+
       function setLinks(slug = ""){
         const clean = normalizeSlug(slug);
-        const pinHref = clean ? `./pin.html?slug=${encodeURIComponent(clean)}` : "./pin.html";
-        const settingsHref = clean ? `./etablissement.html?slug=${encodeURIComponent(clean)}` : "./etablissement.html";
 
+        const cockpitHref = withSlug("./cockpit.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
+        const dashboardHref = withSlug("./dashboard-pro.html", clean);
+        const planningHref = withSlug("./planning.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
+        const pinHref = withSlug("./pin.html", clean);
+        const settingsHref = withSlug("./etablissement.html", clean);
+        const homeHref = withSlug("./index.html", clean);
+
+        $("navCockpit").href = cockpitHref;
+        $("navDashboard").href = dashboardHref;
+        $("navPlanning").href = planningHref;
+        $("navSettings").href = settingsHref;
+        $("navPin").href = pinHref;
+        $("navHome").href = homeHref;
+
+        $("btnDashboardTop").href = dashboardHref;
         $("btnPin").href = pinHref;
-        $("heroPin").href = pinHref;
         $("btnSettings").href = settingsHref;
+
+        $("heroDashboard").href = dashboardHref;
+        $("heroPlanning").href = planningHref;
+        $("heroPin").href = pinHref;
         $("heroSettings").href = settingsHref;
       }
 
@@ -979,17 +1059,22 @@
 
       function previewActionHtml(){
         const pinHref = RESOLVED_SLUG
-          ? `./pin.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+          ? withSlug("./pin.html", RESOLVED_SLUG)
           : "./pin.html";
 
         const settingsHref = RESOLVED_SLUG
-          ? `./etablissement.html?slug=${encodeURIComponent(RESOLVED_SLUG)}`
+          ? withSlug("./etablissement.html", RESOLVED_SLUG)
           : "./etablissement.html";
+
+        const dashboardHref = RESOLVED_SLUG
+          ? withSlug("./dashboard-pro.html", RESOLVED_SLUG)
+          : "./dashboard-pro.html";
 
         return `
           <div class="booking-actions">
+            <a class="action-btn preview" href="${dashboardHref}">Dashboard</a>
             <a class="action-btn preview" href="${pinHref}">Entrer par PIN</a>
-            <a class="action-btn preview" href="${settingsHref}">Voir les réglages</a>
+            <a class="action-btn preview" href="${settingsHref}">Voir le profil</a>
           </div>
         `;
       }
