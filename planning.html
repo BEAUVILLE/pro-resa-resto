@@ -433,6 +433,97 @@
       padding:34px 18px;
     }
 
+    .claw{
+      margin-bottom:18px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:16px;
+    }
+
+    @media (max-width:980px){
+      .claw{grid-template-columns:1fr}
+    }
+
+    .claw-card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(56,189,248,.08),rgba(34,197,94,.05));
+      border-radius:20px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      display:grid;
+      gap:12px;
+    }
+
+    .claw-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .claw-title{
+      font-size:1rem;
+      font-weight:900;
+      margin:0;
+    }
+
+    .claw-kicker{
+      font-size:.8rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#b7ecff;
+      font-weight:900;
+    }
+
+    .claw-text{
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .claw-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .claw-item{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .claw-item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:.95rem;
+    }
+
+    .claw-item span{
+      color:var(--muted);
+      line-height:1.5;
+      display:block;
+    }
+
+    .claw-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .claw-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      font-size:.82rem;
+      font-weight:900;
+    }
+
     .footer-note{
       margin-top:14px;
       color:var(--muted);
@@ -543,6 +634,28 @@
       <div class="toolbar-right">
         <a class="btn ghost" id="btnSettings" href="./etablissement.html">Profil / établissement</a>
       </div>
+    </section>
+
+    <section class="claw" id="clawWrap">
+      <article class="claw-card">
+        <div class="claw-head">
+          <div>
+            <div class="claw-kicker">CLAW DIGIY</div>
+            <h3 class="claw-title">Aide légère sur le jour</h3>
+          </div>
+          <div class="pill" id="clawMode">Lecture neutre</div>
+        </div>
+
+        <div class="claw-text" id="clawSummary">
+          CLAW lit le jour en silence : charge visible, points d’attention, respiration du planning.
+        </div>
+
+        <div class="claw-pills" id="clawPills"></div>
+      </article>
+
+      <article class="claw-card">
+        <div class="claw-list" id="clawList"></div>
+      </article>
     </section>
 
     <section class="timeline" id="timeline"></section>
@@ -853,11 +966,11 @@
         $("modeBadge").className = "mode";
         $("modeBadge").textContent = "Mode aperçu";
         $("topSub").textContent = slug
-          ? `Slug détecté (${slug}) mais accès non confirmé. Aperçu affiché.`
-          : "Aucun slug détecté. Aperçu affiché.";
-        $("miniTitle").textContent = "Aperçu intelligent";
-        $("miniText").textContent = "On montre le planning sans exposer les vraies données tant que l’accès n’est pas ouvert.";
-        $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le planning vivant.";
+          ? `Slug détecté (${slug}) mais accès non confirmé. Aucune donnée réelle affichée.`
+          : "Aucun slug détecté. Aucune donnée réelle affichée.";
+        $("miniTitle").textContent = "Accès protégé";
+        $("miniText").textContent = "Le planning reste lisible sans inventer de fausses réservations. Entre par PIN pour ouvrir le jour vivant.";
+        $("footerNote").textContent = "Mode aperçu actif — zéro démo, zéro fausse réservation.";
       }
 
       function setLiveHero(){
@@ -869,60 +982,202 @@
         $("footerNote").textContent = "Planning vivant branché sur les réservations réelles.";
       }
 
-      function renderPreviewData(){
-        BOOKINGS = [
+      function resetData(){
+        PROFILE = null;
+        SERVICES = [];
+        BOOKINGS = [];
+      }
+
+      function renderEmptyState(message){
+        const box = $("timeline");
+        const empty = $("emptyState");
+        box.innerHTML = "";
+        empty.textContent = message || "Aucune réservation pour cette date.";
+        empty.style.display = "block";
+      }
+
+      function setClawMode(label){
+        $("clawMode").textContent = label || "Lecture neutre";
+      }
+
+      function setClaw(summary, items = [], pills = []){
+        $("clawSummary").textContent = summary || "CLAW lit le jour en silence.";
+
+        $("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
+          .filter(Boolean)
+          .map((txt) => `<span class="claw-pill">${escapeHtml(txt)}</span>`)
+          .join("");
+
+        $("clawList").innerHTML = (Array.isArray(items) ? items : [])
+          .filter(Boolean)
+          .map((item) => `
+            <div class="claw-item">
+              <strong>${escapeHtml(item.title || "Point utile")}</strong>
+              <span>${escapeHtml(item.text || "—")}</span>
+            </div>
+          `).join("");
+      }
+
+      function minutesFromTime(v){
+        const s = String(v || "").trim();
+        if(!s) return null;
+        const m = s.match(/^(\d{1,2}):(\d{2})/);
+        if(!m) return null;
+        const hh = Number(m[1]);
+        const mm = Number(m[2]);
+        if(!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
+        return (hh * 60) + mm;
+      }
+
+      function timeFromMinutes(total){
+        const n = Number(total);
+        if(!Number.isFinite(n)) return "—";
+        const hh = Math.max(0, Math.floor(n / 60));
+        const mm = Math.max(0, n % 60);
+        return `${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")}`;
+      }
+
+      function computeDayWindows(rows){
+        const startDay = 8 * 60;
+        const endDay = 19 * 60;
+
+        const items = rows
+          .map((row) => {
+            const start = minutesFromTime(row.booking_time);
+            if(start === null) return null;
+            const duration = Number(row.duration_minutes) > 0 ? Number(row.duration_minutes) : 60;
+            return {
+              start,
+              end: Math.min(endDay, start + duration)
+            };
+          })
+          .filter(Boolean)
+          .sort((a,b) => a.start - b.start);
+
+        const free = [];
+        let cursor = startDay;
+
+        for(const item of items){
+          if(item.start > cursor){
+            free.push({ start: cursor, end: item.start });
+          }
+          cursor = Math.max(cursor, item.end);
+        }
+
+        if(cursor < endDay){
+          free.push({ start: cursor, end: endDay });
+        }
+
+        return free.filter((slot) => (slot.end - slot.start) >= 30);
+      }
+
+      function buildClawFromData(){
+        const rows = BOOKINGS.slice().sort((a,b) => String(a.booking_time).localeCompare(String(b.booking_time)));
+        const confirmed = rows.filter((r) => normStatus(r.status) === "confirmed").length;
+        const pending = rows.filter((r) => normStatus(r.status) === "pending").length;
+        const done = rows.filter((r) => normStatus(r.status) === "done").length;
+        const cancelled = rows.filter((r) => normStatus(r.status) === "cancelled").length;
+        const windows = computeDayWindows(rows);
+
+        if(IS_PREVIEW){
+          setClawMode("Aide en attente d’accès");
+          setClaw(
+            "CLAW reste branché au rail RESA, mais sans accès ouvert il ne montre aucune donnée inventée. Il garde juste le cadre prêt.",
+            [
+              {
+                title:"Lecture des disponibilités",
+                text:"Entre par PIN pour lire le jour réel et voir où le planning respire."
+              },
+              {
+                title:"Préparation réservation",
+                text:"Le rail réel peut ensuite aider à choisir un créneau et préparer l’accueil sans casser le slug."
+              },
+              {
+                title:"Discipline DIGIY",
+                text:"Ici on n’invente pas de faux clients. Soit c’est vivant, soit c’est vide propre."
+              }
+            ],
+            [
+              ACTIVE_DATE ? `Date : ${fmtDate(ACTIVE_DATE)}` : "Date : —",
+              RESOLVED_SLUG ? `Slug : ${RESOLVED_SLUG}` : "Slug non confirmé",
+              "Zéro démo"
+            ]
+          );
+          return;
+        }
+
+        if(!rows.length){
+          setClawMode("Jour calme");
+          setClaw(
+            "Aucune réservation pour cette date. Le jour est respirable et peut accueillir de nouveaux créneaux.",
+            [
+              {
+                title:"Disponibilités",
+                text:"Le planning est libre sur cette date. Tu peux ouvrir des créneaux sans froisser le rail existant."
+              },
+              {
+                title:"Préparation",
+                text:"Profite du calme pour vérifier les services actifs, les horaires, et la bonne lisibilité de la page de réservation."
+              },
+              {
+                title:"Action simple",
+                text:"Tu peux orienter le client vers un créneau clair plutôt que laisser un jour vide sans lecture."
+              }
+            ],
+            [
+              `Jour : ${fmtDate(ACTIVE_DATE)}`,
+              "0 réservation",
+              "Planning respirable"
+            ]
+          );
+          return;
+        }
+
+        const longestWindow = windows.slice().sort((a,b) => (b.end - b.start) - (a.end - a.start))[0] || null;
+
+        const items = [
           {
-            id:"p1",
-            booking_date:ACTIVE_DATE,
-            booking_time:"10:00:00",
-            customer_name:"Awa Ndiaye",
-            customer_phone:"770000001",
-            guests_count:1,
-            service_name:"Brushing",
-            duration_minutes:45,
-            price_fcfa:6000,
-            status:"pending",
-            note:"Si possible sans attente.",
-            created_at:new Date().toISOString()
-          },
-          {
-            id:"p2",
-            booking_date:ACTIVE_DATE,
-            booking_time:"12:30:00",
-            customer_name:"Moussa Fall",
-            customer_phone:"770000002",
-            guests_count:2,
-            service_name:"Table midi",
-            duration_minutes:60,
-            price_fcfa:"",
-            status:"confirmed",
-            note:"",
-            created_at:new Date().toISOString()
-          },
-          {
-            id:"p3",
-            booking_date:ACTIVE_DATE,
-            booking_time:"16:00:00",
-            customer_name:"Cheikh Ba",
-            customer_phone:"770000003",
-            guests_count:1,
-            service_name:"Diagnostic",
-            duration_minutes:15,
-            price_fcfa:5000,
-            status:"done",
-            note:"Contrôle rapide.",
-            created_at:new Date().toISOString()
+            title:"Charge du jour",
+            text:`${rows.length} réservation(s), dont ${confirmed} confirmée(s), ${pending} en attente, ${done} terminée(s) et ${cancelled} annulée(s).`
           }
         ];
 
-        SERVICES = [
-          {service_name:"Brushing"},
-          {service_name:"Table midi"},
-          {service_name:"Diagnostic"}
-        ];
+        if(longestWindow){
+          items.push({
+            title:"Plus grand souffle",
+            text:`Le plus grand créneau libre visible est entre ${timeFromMinutes(longestWindow.start)} et ${timeFromMinutes(longestWindow.end)}.`
+          });
+        }else{
+          items.push({
+            title:"Lecture des espaces",
+            text:"La journée paraît dense. Peu ou pas de respiration de 30 minutes détectée entre 08:00 et 19:00."
+          });
+        }
 
-        renderStats();
-        renderTimeline();
+        if(pending > 0){
+          items.push({
+            title:"Point d’attention",
+            text:`${pending} réservation(s) restent à confirmer. C’est le premier levier simple pour nettoyer le jour.`
+          });
+        }else{
+          items.push({
+            title:"Point d’attention",
+            text:"Aucune réservation en attente de confirmation. La lecture du jour est plus propre."
+          });
+        }
+
+        setClawMode("Lecture vivante");
+        setClaw(
+          "CLAW lit le jour sans parler trop fort : charge, respiration, confirmations en attente et préparation simple.",
+          items,
+          [
+            `Jour : ${fmtDate(ACTIVE_DATE)}`,
+            `Réservations : ${rows.length}`,
+            `Confirmées : ${confirmed}`,
+            pending ? `À confirmer : ${pending}` : "Aucune en attente",
+            windows.length ? `Respirations : ${windows.length}` : "Journée serrée"
+          ]
+        );
       }
 
       async function loadProfile(){
@@ -1068,7 +1323,10 @@
               "Multi business",
               fmtDateLong(ACTIVE_DATE)
             );
-            renderPreviewData();
+            resetData();
+            renderStats();
+            buildClawFromData();
+            renderEmptyState("Accès non ouvert. Entre par PIN pour lire le planning vivant.");
             return;
           }
 
@@ -1088,7 +1346,10 @@
                 "Multi business",
                 fmtDateLong(ACTIVE_DATE)
               );
-              renderPreviewData();
+              resetData();
+              renderStats();
+              buildClawFromData();
+              renderEmptyState("Slug manquant. Ouvre le module avec un slug valide puis recharge.");
               return;
             }
 
@@ -1116,6 +1377,7 @@
             );
 
             renderStats();
+            buildClawFromData();
             renderTimeline();
             return;
           }
@@ -1132,7 +1394,10 @@
             "Multi business",
             fmtDateLong(ACTIVE_DATE)
           );
-          renderPreviewData();
+          resetData();
+          renderStats();
+          buildClawFromData();
+          renderEmptyState("Accès non confirmé. Le planning réel reste protégé.");
         }catch(err){
           console.error(err);
           IS_PREVIEW = true;
@@ -1147,7 +1412,10 @@
             "Multi business",
             fmtDateLong(ACTIVE_DATE || todayISO())
           );
-          renderPreviewData();
+          resetData();
+          renderStats();
+          buildClawFromData();
+          renderEmptyState("Erreur de chargement. Recharge ou repasse par PIN.");
         }finally{
           document.body.classList.remove("loading");
         }
