@@ -8,32 +8,39 @@
 (() => {
   "use strict";
 
-  const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+  const SUPABASE_URL = String(
+    window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co"
+  ).trim();
+
+  const SUPABASE_ANON_KEY = String(
+    window.DIGIY_SUPABASE_ANON ||
+    window.DIGIY_SUPABASE_ANON_KEY ||
+    "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3"
+  ).trim();
 
   const MODULE_CODE = "RESA";
-  const LOGIN_URL = window.DIGIY_LOGIN_URL || "./pin.html";
-  const PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
+  const MODULE_PREFIX = "digiy_resa";
 
-  const ALLOW_PREVIEW_WITHOUT_IDENTITY = false;
+  const DEFAULT_LOGIN_URL = window.DIGIY_LOGIN_URL || "./pin.html";
+  const DEFAULT_PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
+  const DEFAULT_DASHBOARD_URL = "./dashboard-pro.html";
+  const DEFAULT_ALLOW_PREVIEW = true;
 
   const SESSION_KEY = `DIGIY_${MODULE_CODE}_SESSION`;
   const ACCESS_KEY = `DIGIY_${MODULE_CODE}_ACCESS`;
-  const MODULE_PREFIX = "digiy_resa";
-  const ALLOW_PREVIEW_WITHOUT_IDENTITY = true;
 
-  let _sb = null;
-  let _bootPromise = null;
+  let bootPromise = null;
 
   const config = {
-    module: "",
-    pin: DEFAULT_PIN_URL,
+    module: MODULE_CODE,
+    pin: DEFAULT_LOGIN_URL,
     pay: DEFAULT_PAY_URL,
     dashboard: DEFAULT_DASHBOARD_URL,
     requireSlug: false,
     checkSubscription: true,
-    storageSlugKey: "",
-    storageLastSlugKey: ""
+    storageSlugKey: `${MODULE_PREFIX}_slug`,
+    storageLastSlugKey: `${MODULE_PREFIX}_last_slug`,
+    allowPreviewWithoutIdentity: DEFAULT_ALLOW_PREVIEW
   };
 
   const state = {
@@ -45,20 +52,11 @@
     module: MODULE_CODE
   };
 
-  let bootPromise = null;
-
-  const api = {
-    state,
-    ready,
-    getSession,
-    loginWithPin,
-    logout,
-    getSlug: () => state.slug || "",
-    getPhone: () => state.phone || "",
-    getModule: () => MODULE_CODE
-  };
-
-  window.DIGIY_GUARD = api;
+  function hidePage() {
+    try {
+      document.documentElement.style.visibility = "hidden";
+    } catch (_) {}
+  }
 
   function showPage() {
     try {
@@ -66,11 +64,7 @@
     } catch (_) {}
   }
 
-  function hidePage() {
-    try {
-      document.documentElement.style.visibility = "hidden";
-    } catch (_) {}
-  }
+  hidePage();
 
   function normPhone(v) {
     return String(v || "").replace(/[^\d]/g, "");
@@ -143,27 +137,61 @@
     window.DIGIY_GUARD.state = state;
   }
 
+  function safeJsonParse(v) {
+    try {
+      return typeof v === "string" ? JSON.parse(v) : v;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function storageSet(key, value) {
+    try { sessionStorage.setItem(key, String(value ?? "")); } catch (_) {}
+    try { localStorage.setItem(key, String(value ?? "")); } catch (_) {}
+  }
+
+  function storageGet(key) {
+    try {
+      const s = sessionStorage.getItem(key);
+      if (s) return s;
+    } catch (_) {}
+    try {
+      const l = localStorage.getItem(key);
+      if (l) return l;
+    } catch (_) {}
+    return "";
+  }
+
+  function storageRemove(key) {
+    try { sessionStorage.removeItem(key); } catch (_) {}
+    try { localStorage.removeItem(key); } catch (_) {}
+  }
+
   function rememberIdentity({ slug, phone }) {
     const s = normSlug(slug);
     const p = normPhone(phone);
 
-    try {
-      const sessionObj = {
-        module: MODULE_CODE,
-        slug: s || "",
-        phone: p || "",
-        at: nowIso()
-      };
+    const sessionObj = {
+      module: MODULE_CODE,
+      slug: s || "",
+      phone: p || "",
+      at: nowIso()
+    };
 
+    try {
       if (s) {
-        sessionStorage.setItem(`${MODULE_PREFIX}_slug`, s);
-        sessionStorage.setItem(`${MODULE_PREFIX}_last_slug`, s);
-        localStorage.setItem(`${MODULE_PREFIX}_last_slug`, s);
+        storageSet(config.storageSlugKey, s);
+        storageSet(config.storageLastSlugKey, s);
+        storageSet("digiy_last_slug", s);
+        storageSet("DIGIY_SLUG", s);
+        storageSet("digiy_slug", s);
       }
 
       if (p) {
-        sessionStorage.setItem(`${MODULE_PREFIX}_phone`, p);
-        localStorage.setItem(`${MODULE_PREFIX}_phone`, p);
+        storageSet(`${MODULE_PREFIX}_phone`, p);
+        storageSet("digiy_last_phone", p);
+        storageSet("DIGIY_PHONE", p);
+        storageSet(`DIGIY_${MODULE_CODE}_PHONE`, p);
       }
 
       localStorage.setItem(SESSION_KEY, JSON.stringify(sessionObj));
@@ -173,14 +201,21 @@
   }
 
   function clearIdentity() {
+    [
+      config.storageSlugKey,
+      config.storageLastSlugKey,
+      `${MODULE_PREFIX}_phone`,
+      "digiy_last_slug",
+      "DIGIY_SLUG",
+      "digiy_slug",
+      "digiy_last_phone",
+      "DIGIY_PHONE",
+      `DIGIY_${MODULE_CODE}_PHONE`,
+      SESSION_KEY,
+      ACCESS_KEY
+    ].forEach(storageRemove);
+
     try {
-      sessionStorage.removeItem(`${MODULE_PREFIX}_slug`);
-      sessionStorage.removeItem(`${MODULE_PREFIX}_last_slug`);
-      sessionStorage.removeItem(`${MODULE_PREFIX}_phone`);
-      localStorage.removeItem(`${MODULE_PREFIX}_last_slug`);
-      localStorage.removeItem(`${MODULE_PREFIX}_phone`);
-      localStorage.removeItem(SESSION_KEY);
-      localStorage.removeItem(ACCESS_KEY);
       delete window.DIGIY_ACCESS;
     } catch (_) {}
   }
@@ -189,30 +224,35 @@
     const qs = getQs();
 
     const fromUrlSlug = normSlug(qs.get("slug") || "");
-    const fromUrlPhone = normPhone(qs.get("phone") || "");
+    const fromUrlPhone = normPhone(
+      qs.get("phone") ||
+      qs.get("tel") ||
+      ""
+    );
 
     let stored = null;
-
     try {
       const raw = localStorage.getItem(SESSION_KEY) || localStorage.getItem(ACCESS_KEY);
       if (raw) stored = JSON.parse(raw);
     } catch (_) {}
 
+    const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
+
     const sessionSlug = normSlug(
       fromUrlSlug ||
-      sessionStorage.getItem(`${MODULE_PREFIX}_slug`) ||
-      sessionStorage.getItem(`${MODULE_PREFIX}_last_slug`) ||
-      localStorage.getItem(`${MODULE_PREFIX}_last_slug`) ||
+      storageGet(config.storageSlugKey) ||
+      storageGet(config.storageLastSlugKey) ||
       stored?.slug ||
+      generic?.slug ||
       window.DIGIY_ACCESS?.slug ||
       ""
     );
 
     const sessionPhone = normPhone(
       fromUrlPhone ||
-      sessionStorage.getItem(`${MODULE_PREFIX}_phone`) ||
-      localStorage.getItem(`${MODULE_PREFIX}_phone`) ||
+      storageGet(`${MODULE_PREFIX}_phone`) ||
       stored?.phone ||
+      generic?.phone ||
       window.DIGIY_ACCESS?.phone ||
       ""
     );
@@ -237,8 +277,15 @@
     history.replaceState(null, "", u.toString());
   }
 
+  function withSlug(path, slug) {
+    const s = normSlug(slug);
+    const u = new URL(path, window.location.href);
+    if (s) u.searchParams.set("slug", s);
+    return u.toString();
+  }
+
   function buildLoginUrl(slug) {
-    const u = new URL(LOGIN_URL, window.location.href);
+    const u = new URL(config.pin || DEFAULT_LOGIN_URL, window.location.href);
     const s = normSlug(slug);
 
     if (s) u.searchParams.set("slug", s);
@@ -252,7 +299,7 @@
   }
 
   function buildPayUrl({ slug, phone }) {
-    const u = new URL(PAY_URL);
+    const u = new URL(config.pay || DEFAULT_PAY_URL);
     const s = normSlug(slug);
     const p = normPhone(phone);
 
@@ -312,6 +359,10 @@
     const p = normPhone(phone);
     if (!p) return false;
 
+    if (config.checkSubscription === false) {
+      return true;
+    }
+
     const tries = [
       { name: "digiy_has_access", body: { p_phone: p, p_module: MODULE_CODE } },
       { name: "digiy_has_access", body: { phone: p, module: MODULE_CODE } }
@@ -336,27 +387,23 @@
     if (!ph || !p) return null;
 
     const tries = [
-      {
-        name: "digiy_verify_pin",
-        body: { p_phone: ph, p_module: MODULE_CODE, p_pin: p }
-      },
-      {
-        name: "digiy_verify_pin",
-        body: { p_phone: ph, p_module: MODULE_CODE.toLowerCase(), p_pin: p }
-      }
+      { name: "digiy_verify_pin", body: { p_phone: ph, p_module: MODULE_CODE, p_pin: p } },
+      { name: "digiy_verify_pin", body: { p_phone: ph, p_module: MODULE_CODE.toLowerCase(), p_pin: p } },
+      { name: "digiy_verify_pin", body: { phone: ph, module: MODULE_CODE, pin: p } }
     ];
 
     for (const t of tries) {
       const res = await rpc(t.name, t.body);
       if (!res.ok) continue;
 
-      const d = res.data;
-      const row = Array.isArray(d) ? d[0] : d;
-
-      if (row?.ok === true) {
+      const row = Array.isArray(res.data) ? res.data[0] : res.data;
+      if (row === true) {
+        return { ok: true, slug: s, phone: ph };
+      }
+      if (row?.ok === true || row?.access === true || row?.valid === true) {
         return {
           ok: true,
-          slug: s,
+          slug: normSlug(row.slug || s),
           phone: normPhone(row.phone || ph)
         };
       }
@@ -365,39 +412,48 @@
     return null;
   }
 
-  async function attemptPinLoginTable(slug, pin, phone) {
+  async function attemptPinLoginTable(_slug, _pin, _phone) {
     return null;
   }
 
-  async function loginWithPin(slug, pin) {
-    const s = normSlug(slug);
+  async function loginWithPin(slug, pin, phoneHint = "") {
+    let s = normSlug(slug);
     const p = normPin(pin);
+    let ph = normPhone(phoneHint);
 
-    if (!s) return { ok: false, error: "Slug manquant." };
+    if (!s && !ph) return { ok: false, error: "Slug manquant." };
     if (!p) return { ok: false, error: "PIN manquant." };
 
-    const sub = await resolveSubBySlug(s);
-    const phone = normPhone(sub?.phone);
-
-    if (!phone) {
-      return { ok: false, error: "Slug inconnu." };
+    if (s && !ph) {
+      const sub = await resolveSubBySlug(s);
+      ph = normPhone(sub?.phone);
+      s = normSlug(sub?.slug || s);
     }
 
-    let auth = await attemptPinLoginRPCs(s, p, phone);
+    if (!s && ph) {
+      const sub = await resolveSubByPhone(ph);
+      s = normSlug(sub?.slug || "");
+      ph = normPhone(sub?.phone || ph);
+    }
+
+    if (!s) return { ok: false, error: "Slug inconnu." };
+    if (!ph) return { ok: false, error: "Téléphone introuvable pour ce slug." };
+
+    let auth = await attemptPinLoginRPCs(s, p, ph);
     if (!auth) {
-      auth = await attemptPinLoginTable(s, p, phone);
+      auth = await attemptPinLoginTable(s, p, ph);
     }
 
     if (!auth?.ok) {
       return { ok: false, error: "PIN invalide." };
     }
 
-    const hasAccess = await checkAccess(phone);
+    const hasAccess = await checkAccess(ph);
     if (!hasAccess) {
       return { ok: false, error: "Abonnement inactif." };
     }
 
-    rememberIdentity({ slug: s, phone });
+    rememberIdentity({ slug: s, phone: ph });
     enrichUrlIfMissingSlug(s);
 
     setState({
@@ -405,7 +461,7 @@
       access_ok: true,
       reason: "pin_ok",
       slug: s,
-      phone
+      phone: ph
     });
 
     showPage();
@@ -413,11 +469,13 @@
     return {
       ok: true,
       slug: s,
-      phone
+      phone: ph,
+      next: withSlug(config.dashboard || DEFAULT_DASHBOARD_URL, s)
     };
   }
 
   function logout() {
+    const oldSlug = state.slug || "";
     clearIdentity();
 
     setState({
@@ -429,14 +487,15 @@
     });
 
     showPage();
-    goLogin("");
+    goLogin(oldSlug);
   }
 
-  async function boot() {
+  async function runBoot() {
     hidePage();
 
     try {
       let { slug, phone } = getSession();
+      const allowPreview = !!config.allowPreviewWithoutIdentity;
 
       if (slug && !phone) {
         const sub = await resolveSubBySlug(slug);
@@ -447,14 +506,33 @@
       if (phone && !slug) {
         const sub = await resolveSubByPhone(phone);
         if (sub?.slug) slug = normSlug(sub.slug);
+        if (sub?.phone) phone = normPhone(sub.phone);
       }
 
       if (slug || phone) {
         rememberIdentity({ slug, phone });
       }
 
+      if (config.requireSlug && !slug) {
+        if (allowPreview) {
+          setState({
+            preview: true,
+            access_ok: false,
+            reason: "preview_no_identity",
+            slug: "",
+            phone: phone || ""
+          });
+          showPage();
+          return state;
+        }
+
+        showPage();
+        goLogin("");
+        return null;
+      }
+
       if (!slug && !phone) {
-        if (ALLOW_PREVIEW_WITHOUT_IDENTITY) {
+        if (allowPreview) {
           setState({
             preview: true,
             access_ok: false,
@@ -489,7 +567,7 @@
           return state;
         }
 
-        if (ALLOW_PREVIEW_WITHOUT_IDENTITY) {
+        if (allowPreview) {
           setState({
             preview: true,
             access_ok: false,
@@ -502,11 +580,11 @@
         }
 
         showPage();
-        goLogin(slug || "");
+        goPay({ slug, phone });
         return null;
       }
 
-      if (ALLOW_PREVIEW_WITHOUT_IDENTITY) {
+      if (allowPreview) {
         setState({
           preview: true,
           access_ok: false,
@@ -519,10 +597,22 @@
       }
 
       showPage();
-      goPay({ slug, phone: "" });
+      goLogin(slug || "");
       return null;
     } catch (e) {
       console.error("DIGIY_GUARD boot error:", e);
+
+      if (config.allowPreviewWithoutIdentity) {
+        setState({
+          preview: true,
+          access_ok: false,
+          reason: "guard_error",
+          slug: normSlug(getSession().slug),
+          phone: normPhone(getSession().phone)
+        });
+        showPage();
+        return state;
+      }
 
       setState({
         preview: false,
@@ -532,19 +622,47 @@
         phone: ""
       });
 
-      // très important : ne jamais laisser l'écran noir
       showPage();
       goLogin("");
       return null;
     }
   }
 
-  function ready() {
-    if (!bootPromise) {
-      bootPromise = boot();
+  function boot(userConfig = {}) {
+    if (userConfig && typeof userConfig === "object") {
+      Object.assign(config, userConfig);
     }
+
+    if (!bootPromise) {
+      bootPromise = runBoot();
+    }
+
     return bootPromise;
   }
 
-  ready();
+  function ready() {
+    return boot();
+  }
+
+  ready.then = (...args) => boot().then(...args);
+  ready.catch = (...args) => boot().catch(...args);
+  ready.finally = (...args) => boot().finally(...args);
+
+  const api = {
+    state,
+    boot,
+    ready,
+    getSession,
+    loginWithPin,
+    logout,
+    getSlug: () => state.slug || "",
+    getPhone: () => state.phone || "",
+    getModule: () => MODULE_CODE
+  };
+
+  window.DIGIY_GUARD = api;
+
+  setTimeout(() => {
+    if (!bootPromise) boot();
+  }, 0);
 })();
