@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>DIGIY RÉSA PRO — Accès professionnel</title>
+  <title>DIGIY RESA PRO — Accès professionnel</title>
   <meta name="theme-color" content="#0b5d3b"/>
-  <meta name="description" content="DIGIY RÉSA PRO — accès professionnel premium pour la gestion multi-business des réservations."/>
+  <meta name="description" content="DIGIY RESA PRO — porte professionnelle premium pour la gestion multi-business des réservations."/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -32,6 +32,7 @@
       --ok:#22c55e;
       --warn:#f59e0b;
       --bad:#ef4444;
+      --info:#38bdf8;
 
       --radius:24px;
       --shadow:0 24px 70px rgba(0,0,0,.38);
@@ -50,6 +51,8 @@
         linear-gradient(180deg, #0a6f39 0%, #0d4f2f 17%, #0d2318 48%, #04120c 100%);
       min-height:100vh;
     }
+
+    a{color:inherit;text-decoration:none}
 
     .site-back-float{
       position:fixed;
@@ -83,12 +86,10 @@
       color:#fff4dc;
     }
 
-    .site-back-float:active{
-      transform:scale(.97);
-    }
+    .site-back-float:active{transform:scale(.97)}
 
     .wrap{
-      max-width:960px;
+      max-width:1020px;
       margin:0 auto;
       padding:16px 14px 120px;
     }
@@ -140,6 +141,40 @@
       border-color:rgba(0,166,81,.32);
       background:rgba(0,166,81,.11);
       color:#d9ffea;
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:0 14px 32px rgba(0,0,0,.20);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:1000;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+
+    .nav-link.active{
+      background:rgba(0,166,81,.12);
+      border-color:rgba(0,166,81,.30);
+      color:#d8ffea;
     }
 
     .hero{
@@ -195,6 +230,12 @@
       background:rgba(244,223,181,.06);
     }
 
+    .tag.info{
+      color:#d8f2ff;
+      border-color:rgba(56,189,248,.28);
+      background:rgba(56,189,248,.08);
+    }
+
     .hr{
       height:1px;
       background:var(--line);
@@ -229,6 +270,11 @@
       background:rgba(239,68,68,.06);
     }
 
+    .status.info{
+      border-color:rgba(56,189,248,.35);
+      background:rgba(56,189,248,.08);
+    }
+
     .status .mini{
       font-size:11px;
       padding:6px 10px;
@@ -237,10 +283,124 @@
       color:var(--muted);
     }
 
+    .claw-grid{
+      display:grid;
+      grid-template-columns:1.06fr .94fr;
+      gap:14px;
+      margin-top:16px;
+    }
+
+    @media (max-width:860px){
+      .claw-grid{grid-template-columns:1fr}
+    }
+
+    .claw-card{
+      border:1px solid rgba(56,189,248,.18);
+      border-radius:22px;
+      padding:16px;
+      background:linear-gradient(180deg, rgba(56,189,248,.08), rgba(0,166,81,.06));
+      box-shadow:0 16px 38px rgba(0,0,0,.20);
+    }
+
+    .claw-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .claw-kicker{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#d9f0ff;
+      font-weight:950;
+      margin-bottom:6px;
+    }
+
+    .claw-title{
+      margin:0;
+      font-size:18px;
+      font-weight:950;
+      line-height:1.2;
+    }
+
+    .claw-mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(56,189,248,.24);
+      background:rgba(56,189,248,.10);
+      color:#d8f2ff;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .claw-text{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.65;
+      font-weight:750;
+    }
+
+    .claw-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .claw-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .claw-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .claw-item{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .claw-item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:950;
+      color:var(--text);
+    }
+
+    .claw-item span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:750;
+    }
+
     .grid{
       display:grid;
       grid-template-columns:1.1fr .9fr;
       gap:14px;
+      margin-top:16px;
     }
 
     @media (max-width:820px){
@@ -336,6 +496,12 @@
       background:rgba(239,68,68,.07);
     }
 
+    .btn.info{
+      border-color:rgba(56,189,248,.34);
+      background:rgba(56,189,248,.08);
+      color:#d8f2ff;
+    }
+
     .input{
       width:100%;
       padding:13px 14px;
@@ -405,7 +571,7 @@
     }
 
     .stickyInner{
-      max-width:960px;
+      max-width:1020px;
       margin:0 auto;
       display:flex;
       gap:10px;
@@ -450,8 +616,6 @@
       padding:10px 14px;
     }
 
-    .hide{display:none !important}
-
     @media (max-width:700px){
       .wrap{
         padding:86px 12px 120px;
@@ -472,16 +636,27 @@
   <div class="wrap">
     <div class="shell">
       <div class="topbar">
-        <span class="pill">DIGIY RÉSA PRO</span>
+        <span class="pill">DIGIY RESA PRO</span>
         <span class="pill ok">Module RESA</span>
       </div>
+
+      <nav class="nav-rail" aria-label="Navigation PRO RESA">
+        <a class="nav-link active" id="navAccess" href="./index.html">Accès PRO</a>
+        <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
+        <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
+        <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+        <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+        <a class="nav-link" id="navSettings" href="./etablissement.html">Profil</a>
+        <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
+        <a class="nav-link" id="navPublic" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Vitrine</a>
+      </nav>
 
       <div class="hero">
         <h1>La porte premium de tes réservations multi-business</h1>
         <p>
-          Ici, on entre proprement dans l’espace professionnel DIGIY RÉSA.
+          Ici, on entre proprement dans l’espace professionnel DIGIY RESA.
           Restaurant, lounge, salon, plage privée, rooftop, service terrain :
-          tu peux passer par le slug, par le PIN, ou vérifier ton accès avant d’ouvrir ton cockpit.
+          tu peux passer par le slug, par le PIN, vérifier ton accès, ouvrir ton dashboard, ou préparer ton QR.
         </p>
 
         <div class="badges">
@@ -490,6 +665,7 @@
           <span class="tag">🧭 Accès par slug</span>
           <span class="tag">🛡️ Vérification d’abonnement</span>
           <span class="tag">💳 Activation directe</span>
+          <span class="tag info">📎 QR branché</span>
         </div>
       </div>
 
@@ -500,6 +676,33 @@
         <span class="mini" id="statusMini">EN COURS</span>
       </div>
 
+      <section class="claw-grid" id="clawSection">
+        <article class="claw-card">
+          <div class="claw-head">
+            <div>
+              <div class="claw-kicker">CLAW DIGIY</div>
+              <h2 class="claw-title">Lecture légère de la porte PRO</h2>
+            </div>
+            <div class="claw-mode" id="clawMode">Analyse légère</div>
+          </div>
+
+          <div class="claw-text" id="clawSummary">
+            CLAW lit la porte d’entrée RESA : slug, accès, QR, dashboard, cockpit et prochaine action utile.
+          </div>
+
+          <div class="claw-pills" id="clawPills"></div>
+        </article>
+
+        <article class="claw-card">
+          <div class="claw-list" id="clawList">
+            <div class="claw-item">
+              <strong>Chargement</strong>
+              <span>CLAW attend le slug réel pour te guider proprement sur le bon rail.</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
       <div class="hr"></div>
 
       <div class="grid">
@@ -507,7 +710,7 @@
           <div class="sectionTitle">Accès direct</div>
           <p class="lead">
             Mets ton <span class="mono">slug</span> si tu l’as déjà.
-            Sinon, prends la porte PIN, vérifie ton accès, ou active ton module pour remonter sur le rail.
+            Sinon, prends la porte PIN, vérifie ton accès, ouvre le dashboard, ou prépare ton QR terrain.
           </p>
 
           <div style="margin-top:14px;">
@@ -525,11 +728,13 @@
           </div>
 
           <div class="actionGrid">
-            <button class="btn ok" id="btnOpenSlug">🚀 Ouvrir mon cockpit</button>
-            <button class="btn gold" id="btnVerify">✅ Vérifier mon accès</button>
-            <button class="btn" id="btnPin">🔐 Entrer par PIN</button>
-            <button class="btn gold" id="btnPay">💳 Activer mon module</button>
-            <button class="btn bad" id="btnSupport">💬 Support WhatsApp</button>
+            <button class="btn ok" id="btnOpenSlug" type="button">🚀 Ouvrir mon cockpit</button>
+            <button class="btn gold" id="btnVerify" type="button">✅ Vérifier mon accès</button>
+            <button class="btn" id="btnPin" type="button">🔐 Entrer par PIN</button>
+            <button class="btn info" id="btnDashboard" type="button">📊 Ouvrir dashboard</button>
+            <button class="btn info" id="btnQr" type="button">📎 Ouvrir QR</button>
+            <button class="btn gold" id="btnPay" type="button">💳 Activer mon module</button>
+            <button class="btn bad" id="btnSupport" type="button">💬 Support WhatsApp</button>
           </div>
 
           <div class="infoList">
@@ -538,8 +743,16 @@
               <div class="miniValue mono" id="savedSlug">—</div>
             </div>
             <div class="miniBox">
+              <div class="miniLabel">Destination dashboard</div>
+              <div class="miniValue mono" id="dashboardTarget">./dashboard-pro.html</div>
+            </div>
+            <div class="miniBox">
               <div class="miniLabel">Destination cockpit</div>
-              <div class="miniValue mono" id="cockpitTarget">https://pro-resa-resto.digiylyfe.com/cockpit.html</div>
+              <div class="miniValue mono" id="cockpitTarget">./cockpit.html</div>
+            </div>
+            <div class="miniBox">
+              <div class="miniLabel">Destination QR</div>
+              <div class="miniValue mono" id="qrTarget">./qr.html</div>
             </div>
             <div class="miniBox">
               <div class="miniLabel">Activation module</div>
@@ -555,7 +768,8 @@
             <li>Tu saisis ton slug ou tu passes par le PIN</li>
             <li>DIGIY retrouve le téléphone lié au slug</li>
             <li>DIGIY vérifie l’accès sur le module <span class="mono">RESA</span></li>
-            <li>Tu entres dans le cockpit professionnel</li>
+            <li>Tu entres dans le dashboard ou dans le cockpit professionnel</li>
+            <li>Tu peux ensuite sortir ton QR terrain sans rester devant la porte</li>
           </ol>
 
           <div class="hr"></div>
@@ -569,19 +783,29 @@
 
             <div class="miniBox">
               <div class="miniLabel">Porte PIN</div>
-              <div class="miniValue mono">https://pro-resa-resto.digiylyfe.com/pin.html</div>
+              <div class="miniValue mono">./pin.html?slug=...</div>
+            </div>
+
+            <div class="miniBox">
+              <div class="miniLabel">Dashboard pro</div>
+              <div class="miniValue mono">./dashboard-pro.html?slug=...</div>
             </div>
 
             <div class="miniBox">
               <div class="miniLabel">Cockpit pro</div>
-              <div class="miniValue mono">https://pro-resa-resto.digiylyfe.com/cockpit.html</div>
+              <div class="miniValue mono">./cockpit.html?slug=...</div>
+            </div>
+
+            <div class="miniBox">
+              <div class="miniLabel">QR terrain</div>
+              <div class="miniValue mono">./qr.html?slug=...</div>
             </div>
           </div>
         </div>
       </div>
 
       <p class="footerNote">
-        DIGIYLYFE • RÉSA PRO • rail premium, simple, propre et terrain.
+        DIGIYLYFE • RESA PRO • rail premium, simple, propre et terrain.
       </p>
     </div>
   </div>
@@ -593,9 +817,10 @@
         <div class="stickyValue" id="stickyValue">Prêt à ouvrir la porte PRO</div>
       </div>
       <div class="stickyActions">
-        <button class="btn" id="btnPinSticky">PIN</button>
-        <button class="btn gold" id="btnPaySticky">Activer</button>
-        <button class="btn ok" id="btnOpenSticky">Cockpit</button>
+        <button class="btn" id="btnPinSticky" type="button">PIN</button>
+        <button class="btn info" id="btnQrSticky" type="button">QR</button>
+        <button class="btn gold" id="btnPaySticky" type="button">Activer</button>
+        <button class="btn ok" id="btnOpenSticky" type="button">Cockpit</button>
       </div>
     </div>
   </div>
@@ -609,11 +834,16 @@
       const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
       const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
 
-      const PUBLIC_URL  = "https://resa-table-resto.digiylyfe.com/";
-      const PIN_URL     = "https://pro-resa-resto.digiylyfe.com/pin.html";
-      const PRO_URL     = "https://pro-resa-resto.digiylyfe.com/cockpit.html";
-      const PAY_URL     = "https://commencer-a-payer.digiylyfe.com/?module=RESA";
-      const SUPPORT_WA  = "+221771342889";
+      const PUBLIC_URL    = "https://resa-table-resto.digiylyfe.com/";
+      const ACCESS_URL    = "./index.html";
+      const PIN_URL       = "./pin.html";
+      const DASHBOARD_URL = "./dashboard-pro.html";
+      const PRO_URL       = "./cockpit.html";
+      const PLANNING_URL  = "./planning.html";
+      const QR_URL        = "./qr.html";
+      const SETTINGS_URL  = "./etablissement.html";
+      const PAY_URL       = "https://commencer-a-payer.digiylyfe.com/?module=RESA";
+      const SUPPORT_WA    = "+221771342889";
 
       if (!window.supabase) {
         alert("Librairie Supabase non chargée.");
@@ -666,6 +896,156 @@
         return String(v || "").replace(/[^\d]/g, "");
       }
 
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#39;");
+      }
+
+      function withSlug(path, slug){
+        const clean = normSlug(slug);
+        const u = new URL(path, location.href);
+        if (clean) u.searchParams.set("slug", clean);
+        return u.toString();
+      }
+
+      function setNavLinks(slug){
+        const clean = normSlug(slug);
+
+        $("navAccess").href = withSlug(ACCESS_URL, clean);
+        $("navDashboard").href = withSlug(DASHBOARD_URL, clean);
+        $("navCockpit").href = withSlug(PRO_URL, clean);
+        $("navPlanning").href = withSlug(PLANNING_URL, clean);
+        $("navQr").href = withSlug(QR_URL, clean);
+        $("navSettings").href = withSlug(SETTINGS_URL, clean);
+        $("navPin").href = withSlug(PIN_URL, clean);
+
+        $("dashboardTarget").textContent = clean ? `./dashboard-pro.html?slug=${clean}` : "./dashboard-pro.html";
+        $("cockpitTarget").textContent = clean ? `./cockpit.html?slug=${clean}` : "./cockpit.html";
+        $("qrTarget").textContent = clean ? `./qr.html?slug=${clean}` : "./qr.html";
+      }
+
+      function setClaw(mode, summary, pills = [], items = []){
+        $("clawMode").textContent = mode || "Analyse légère";
+        $("clawSummary").textContent = summary || "CLAW lit le rail sans bavarder.";
+
+        $("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
+          .filter(Boolean)
+          .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
+          .join("");
+
+        $("clawList").innerHTML = (Array.isArray(items) ? items : [])
+          .filter(Boolean)
+          .map(item => `
+            <div class="claw-item">
+              <strong>${escapeHtml(item.title || "Point utile")}</strong>
+              <span>${escapeHtml(item.text || "—")}</span>
+            </div>
+          `).join("");
+      }
+
+      function setClawLoading(){
+        setClaw(
+          "Chargement",
+          "CLAW attend ton slug réel pour te pousser la bonne porte : PIN, dashboard, cockpit ou QR.",
+          ["Module : RESA", "Accès PRO", "Rail en préparation"],
+          [
+            {
+              title:"Lecture du rail",
+              text:"Cette page sert de porte propre avant le cockpit."
+            },
+            {
+              title:"Navigation utile",
+              text:"Dashboard, cockpit, planning, QR et PIN sont maintenant branchés sur le même slug."
+            }
+          ]
+        );
+      }
+
+      function setClawNoSlug(){
+        setClaw(
+          "Slug manquant",
+          "CLAW ne voit pas encore de slug. La porte reste utile, mais le vrai contexte viendra du slug ou du PIN.",
+          ["Slug absent", "PIN disponible", "QR en attente"],
+          [
+            {
+              title:"État actuel",
+              text:"Tu peux soit coller un slug connu, soit passer par la porte PIN."
+            },
+            {
+              title:"Action utile",
+              text:"Le plus propre est d’entrer un slug RESA valide puis de vérifier l’accès."
+            }
+          ]
+        );
+      }
+
+      function setClawSlugReady(slug){
+        setClaw(
+          "Slug prêt",
+          "CLAW voit un slug propre. Tu peux maintenant ouvrir le dashboard, le cockpit ou préparer le QR terrain.",
+          [
+            `Slug : ${slug}`,
+            "Dashboard prêt",
+            "QR prêt"
+          ],
+          [
+            {
+              title:"Lecture du rail",
+              text:"Le slug est en place. Les pages PRO peuvent toutes suivre ce contexte."
+            },
+            {
+              title:"Action utile",
+              text:"Vérifie l’accès si tu veux confirmer l’abonnement avant d’ouvrir le cockpit."
+            }
+          ]
+        );
+      }
+
+      function setClawVerified(slug, phone){
+        setClaw(
+          "Accès confirmé",
+          "CLAW voit un rail vivant : téléphone trouvé, accès RESA confirmé, cockpit et QR prêts.",
+          [
+            `Slug : ${slug}`,
+            `Téléphone : ${phone}`,
+            "Accès OK",
+            "Rail vivant"
+          ],
+          [
+            {
+              title:"Lecture du rail",
+              text:"L’abonnement est bien actif sur RESA pour ce slug."
+            },
+            {
+              title:"Suite logique",
+              text:"Tu peux ouvrir le cockpit, le dashboard ou le QR sans rester bloqué devant la porte."
+            }
+          ]
+        );
+      }
+
+      function setClawBlocked(message){
+        setClaw(
+          "Blocage",
+          "CLAW voit un blocage de rail. Il faut remettre l’accès d’équerre avant de forcer le cockpit.",
+          ["Accès refusé", "Activation possible", "Support dispo"],
+          [
+            {
+              title:"Blocage principal",
+              text: message || "Le slug n’a pas ouvert l’accès."
+            },
+            {
+              title:"Action utile",
+              text:"Passe par l’activation module, puis reviens avec le bon slug ou le bon PIN."
+            }
+          ]
+        );
+      }
+
       function rememberSlug(slug){
         if (!slug) return;
         const clean = normSlug(slug);
@@ -674,6 +1054,7 @@
         localStorage.setItem("DIGIY_SLUG", clean);
         localStorage.setItem("digiy_slug", clean);
         savedSlugBox.textContent = clean;
+        setNavLinks(clean);
       }
 
       function readRememberedSlug(){
@@ -686,6 +1067,7 @@
           ""
         );
         savedSlugBox.textContent = s || "—";
+        setNavLinks(s);
         return s;
       }
 
@@ -696,21 +1078,33 @@
 
       function pinUrlWithSlug(){
         const slug = normSlug(slugInput.value || "");
-        if (!slug) return PIN_URL;
-        return PIN_URL + "?slug=" + encodeURIComponent(slug);
+        return withSlug(PIN_URL, slug);
+      }
+
+      function dashboardUrlWithSlug(){
+        const slug = normSlug(slugInput.value || "");
+        return withSlug(DASHBOARD_URL, slug);
+      }
+
+      function cockpitUrlWithSlug(){
+        const slug = normSlug(slugInput.value || "");
+        return withSlug(PRO_URL, slug);
+      }
+
+      function qrUrlWithSlug(){
+        const slug = normSlug(slugInput.value || "");
+        return withSlug(QR_URL, slug);
       }
 
       function payUrlWithSlug(){
         const slug = normSlug(slugInput.value || "");
-        if (!slug) return PAY_URL;
-
         try{
           const u = new URL(PAY_URL);
-          u.searchParams.set("slug", slug);
-          u.searchParams.set("return", PRO_URL + "?slug=" + encodeURIComponent(slug));
+          if (slug) u.searchParams.set("slug", slug);
+          u.searchParams.set("return", cockpitUrlWithSlug());
           return u.toString();
         }catch{
-          return PAY_URL + "&slug=" + encodeURIComponent(slug);
+          return slug ? PAY_URL + "&slug=" + encodeURIComponent(slug) : PAY_URL;
         }
       }
 
@@ -722,18 +1116,28 @@
         location.href = payUrlWithSlug();
       }
 
+      function openDashboard(){
+        location.href = dashboardUrlWithSlug();
+      }
+
+      function openQr(){
+        location.href = qrUrlWithSlug();
+      }
+
       function openCockpit(slug){
-        location.href = PRO_URL + "?slug=" + encodeURIComponent(slug);
+        location.href = withSlug(PRO_URL, slug);
       }
 
       function makeSupportMessage(){
         const slug = normSlug(slugInput.value || "");
-        let msg = "DIGIY RÉSA PRO — Support\n\n";
+        let msg = "DIGIY RESA PRO — Support\n\n";
         msg += "Module: " + MODULE + "\n";
         msg += "Page: index PRO\n";
         if (slug) msg += "Slug: " + slug + "\n";
         msg += "PIN URL: " + pinUrlWithSlug() + "\n";
-        msg += "Cockpit URL: " + PRO_URL + "\n";
+        msg += "Dashboard URL: " + dashboardUrlWithSlug() + "\n";
+        msg += "Cockpit URL: " + cockpitUrlWithSlug() + "\n";
+        msg += "QR URL: " + qrUrlWithSlug() + "\n";
         msg += "Activation URL: " + payUrlWithSlug() + "\n";
         msg += "\nJ’ai besoin d’aide pour accéder à mon espace professionnel.";
         return msg;
@@ -752,6 +1156,7 @@
           .from("digiy_subscriptions_public")
           .select("phone,module,slug")
           .eq("slug", cleanSlug)
+          .eq("module", MODULE)
           .limit(1)
           .maybeSingle();
 
@@ -790,6 +1195,7 @@
         if (!slug) {
           setStatus("⚠️ Mets ton slug ou passe par la porte PIN.", "warn", "SLUG");
           setSticky("Slug manquant");
+          setClawNoSlug();
           slugInput.focus();
           return;
         }
@@ -797,14 +1203,16 @@
         try{
           setStatus("⏳ Vérification du slug et de l’abonnement…", "warn", "CHECK");
           setSticky("Vérification en cours…");
+          setClawSlugReady(slug);
 
           const result = await verifyAccessBySlug(slug);
 
           rememberSlug(result.slug);
           slugInput.value = result.slug;
 
-          setStatus("✅ Accès confirmé. Rail propre vers le cockpit.", "ok", "ACTIF");
+          setStatus("✅ Accès confirmé. Rail propre vers dashboard, cockpit et QR.", "ok", "ACTIF");
           setSticky(result.slug + " • accès OK");
+          setClawVerified(result.slug, result.phone);
 
           if (redirectAfter) {
             openCockpit(result.slug);
@@ -817,23 +1225,27 @@
           if (msg === "slug_not_found") {
             setStatus("❌ Slug introuvable. Passe par la porte PIN ou vérifie ton lien.", "bad", "INCONNU");
             setSticky("Slug introuvable");
+            setClawBlocked("Slug introuvable. Vérifie le lien ou passe par le PIN.");
             return;
           }
 
           if (msg === "access_denied") {
             setStatus("🔒 Abonnement non actif sur RESA. Active ton module ou passe par le support.", "bad", "BLOQUÉ");
             setSticky("Abonnement non actif");
+            setClawBlocked("Abonnement RESA non actif pour ce slug.");
             return;
           }
 
           if (msg === "slug_missing") {
             setStatus("⚠️ Slug manquant.", "warn", "SLUG");
             setSticky("Slug manquant");
+            setClawNoSlug();
             return;
           }
 
           setStatus("⚠️ Vérification impossible pour le moment. Porte PIN, activation ou support.", "bad", "ERREUR");
           setSticky("Erreur de vérification");
+          setClawBlocked("Vérification impossible pour le moment.");
         }
       }
 
@@ -842,6 +1254,10 @@
 
       $("btnPay").addEventListener("click", openPay);
       $("btnPaySticky").addEventListener("click", openPay);
+
+      $("btnDashboard").addEventListener("click", openDashboard);
+      $("btnQr").addEventListener("click", openQr);
+      $("btnQrSticky").addEventListener("click", openQr);
 
       $("btnSupport").addEventListener("click", () => {
         wa(makeSupportMessage());
@@ -863,12 +1279,16 @@
         const s = normSlug(slugInput.value);
         if (s !== slugInput.value) slugInput.value = s;
         setSticky(s ? ("Slug prêt : " + s) : "Prêt à ouvrir la porte PRO");
+        setNavLinks(s);
+        if (s) setClawSlugReady(s);
+        else setClawNoSlug();
       });
 
       slugInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") handleVerify(true);
       });
 
+      setClawLoading();
       fillSlugFromMemory();
 
       const autoSlug = normSlug(qp.get("slug") || "");
@@ -877,11 +1297,13 @@
       if (autoSlug && autoOpen) {
         setTimeout(() => handleVerify(true), 300);
       } else if (autoSlug) {
-        setStatus("🧭 Slug détecté. Tu peux vérifier, ouvrir ton cockpit ou passer par le PIN.", "ok", "SLUG");
+        setStatus("🧭 Slug détecté. Tu peux vérifier, ouvrir ton cockpit, ton dashboard ou ton QR.", "ok", "SLUG");
         setSticky("Slug détecté : " + autoSlug);
+        setClawSlugReady(autoSlug);
       } else {
-        setStatus("💳 Porte PRO prête. Slug, PIN ou activation : à toi de jouer.", "warn", "MANUEL");
+        setStatus("💳 Porte PRO prête. Slug, PIN, dashboard, QR ou activation : à toi de jouer.", "info", "MANUEL");
         setSticky("Prêt à ouvrir la porte PRO");
+        setClawNoSlug();
       }
     })();
   </script>
