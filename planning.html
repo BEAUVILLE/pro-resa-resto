@@ -13,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-planning-v3"></script>
+  <script src="./guard.js?v=resa-planning-v4"></script>
 
   <style>
     :root{
@@ -554,14 +554,12 @@
 
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
-        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
+        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Retour dashboard</a>
         <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
-        <a class="btn" id="btnCockpit" href="./cockpit.html">Cockpit</a>
       </div>
     </div>
 
     <nav class="nav-rail" aria-label="Navigation PRO RESA">
-      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
       <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
       <a class="nav-link active" id="navPlanning" href="./planning.html">Planning</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
@@ -584,8 +582,7 @@
           </div>
 
           <div class="hero-cta">
-            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Voir le dashboard</a>
-            <a class="btn secondary" id="heroCockpit" href="./cockpit.html">Ouvrir le cockpit</a>
+            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Retour dashboard</a>
             <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir le profil</a>
           </div>
         </div>
@@ -676,7 +673,7 @@
         window.DIGIY_GUARD?.boot?.({
           module: "RESA",
           login: "./pin.html",
-          dashboard: "./cockpit.html",
+          dashboard: "./dashboard-pro.html",
           requireSlug: true,
           checkSubscription: true,
           storageSlugKey: "digiy_resa_slug",
@@ -887,12 +884,10 @@
 
         const planningHref = withSlug("./planning.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
         const dashboardHref = withSlug("./dashboard-pro.html", clean);
-        const cockpitHref = withSlug("./cockpit.html", clean);
         const settingsHref = withSlug("./etablissement.html", clean);
         const pinHref = withSlug("./pin.html", clean);
         const homeHref = withSlug("./index.html", clean);
 
-        $("navCockpit").href = cockpitHref;
         $("navDashboard").href = dashboardHref;
         $("navPlanning").href = planningHref;
         $("navSettings").href = settingsHref;
@@ -901,11 +896,9 @@
 
         $("btnDashboardTop").href = dashboardHref;
         $("btnPin").href = pinHref;
-        $("btnCockpit").href = cockpitHref;
         $("btnSettings").href = settingsHref;
 
         $("heroDashboard").href = dashboardHref;
-        $("heroCockpit").href = cockpitHref;
         $("heroSettings").href = settingsHref;
       }
 
