@@ -490,6 +490,120 @@
       font-weight:950;
     }
 
+    .claw-grid{
+      display:grid;
+      gap:14px;
+      margin-top:14px;
+      grid-template-columns:1.12fr .88fr;
+    }
+
+    @media(max-width:920px){
+      .claw-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .claw-card{
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background:linear-gradient(180deg, rgba(96,165,250,.08), rgba(34,197,94,.06));
+      box-shadow:var(--shadow);
+    }
+
+    .claw-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .claw-kicker{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#b7ecff;
+      font-weight:1000;
+      margin-bottom:6px;
+    }
+
+    .claw-title{
+      margin:0;
+      font-size:20px;
+      font-weight:1000;
+    }
+
+    .claw-mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid rgba(96,165,250,.18);
+      background:rgba(96,165,250,.08);
+      color:#d7efff;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .claw-text{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+      line-height:1.65;
+    }
+
+    .claw-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .claw-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .claw-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .claw-item{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+    }
+
+    .claw-item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:1000;
+      color:#ecfff4;
+    }
+
+    .claw-item span{
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+      line-height:1.55;
+      display:block;
+    }
+
     .footer{
       margin-top:16px;
       text-align:center;
@@ -517,14 +631,12 @@
       </div>
 
       <div class="top-actions">
-        <a class="btn" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
         <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
         <a class="btn" id="btnPinTop" href="./pin.html">PIN</a>
       </div>
     </div>
 
     <nav class="nav-rail" aria-label="Navigation PRO RESA">
-      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
       <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
       <a class="nav-link active" id="navSettings" href="./etablissement.html">Profil / établissement</a>
@@ -563,7 +675,6 @@
             <div class="hero-actions">
               <a class="btn primary" id="btnReserve" href="./reserver.html">📅 Réserver</a>
               <a class="btn gold" id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
-              <a class="btn" id="btnCockpitHero" href="./cockpit.html">🧭 Cockpit</a>
               <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Dashboard</a>
               <a class="btn" id="btnPlanningHero" href="./planning.html">🗓️ Planning</a>
               <a class="btn" id="btnHomeHero" href="./index.html">🏠 Retour vitrine</a>
@@ -617,6 +728,33 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="claw-grid" id="clawSection">
+      <article class="claw-card">
+        <div class="claw-head">
+          <div>
+            <div class="claw-kicker">CLAW DIGIY</div>
+            <h2 class="claw-title">Lecture légère de l’établissement</h2>
+          </div>
+          <div class="claw-mode" id="clawMode">Analyse légère</div>
+        </div>
+
+        <div class="claw-text" id="clawSummary">
+          CLAW prépare une lecture simple du commerce : lisibilité de la fiche, accueil, réservation et repères utiles.
+        </div>
+
+        <div class="claw-pills" id="clawPills"></div>
+      </article>
+
+      <article class="claw-card">
+        <div class="claw-list" id="clawList">
+          <div class="claw-item">
+            <strong>Chargement</strong>
+            <span>CLAW attend les vraies données du rail RESA.</span>
+          </div>
+        </div>
+      </article>
     </section>
 
     <section class="card" style="margin-top:14px">
@@ -700,7 +838,6 @@
       function setNavLinks(slugValue){
         const clean = normalizeSlug(slugValue);
 
-        const cockpitHref = withSlug("./cockpit.html", clean);
         const dashboardHref = withSlug("./dashboard-pro.html", clean);
         const planningHref = withSlug("./planning.html", clean);
         const settingsHref = withSlug("./etablissement.html", clean);
@@ -708,18 +845,15 @@
         const homeHref = withSlug("./index.html", clean);
         const reserveHref = withSlug("./reserver.html", clean);
 
-        document.getElementById("navCockpit").href = cockpitHref;
         document.getElementById("navDashboard").href = dashboardHref;
         document.getElementById("navPlanning").href = planningHref;
         document.getElementById("navSettings").href = settingsHref;
         document.getElementById("navPin").href = pinHref;
         document.getElementById("navHome").href = homeHref;
 
-        document.getElementById("btnCockpitTop").href = cockpitHref;
         document.getElementById("btnDashboardTop").href = dashboardHref;
         document.getElementById("btnPinTop").href = pinHref;
 
-        document.getElementById("btnCockpitHero").href = cockpitHref;
         document.getElementById("btnDashboardHero").href = dashboardHref;
         document.getElementById("btnPlanningHero").href = planningHref;
         document.getElementById("btnHomeHero").href = homeHref;
@@ -818,6 +952,125 @@
         box.innerHTML = zones.map(z => `<div class="chip">${escapeHtml(z)}</div>`).join("");
       }
 
+      function setClaw(mode, summary, pills = [], items = []){
+        const modeEl = document.getElementById("clawMode");
+        const summaryEl = document.getElementById("clawSummary");
+        const pillsEl = document.getElementById("clawPills");
+        const listEl = document.getElementById("clawList");
+
+        modeEl.textContent = mode || "Analyse légère";
+        summaryEl.textContent = summary || "CLAW lit le terrain sans bavarder.";
+
+        pillsEl.innerHTML = (Array.isArray(pills) ? pills : [])
+          .filter(Boolean)
+          .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
+          .join("");
+
+        listEl.innerHTML = (Array.isArray(items) ? items : [])
+          .filter(Boolean)
+          .map(item => `
+            <div class="claw-item">
+              <strong>${escapeHtml(item.title || "Point utile")}</strong>
+              <span>${escapeHtml(item.text || "—")}</span>
+            </div>
+          `).join("");
+      }
+
+      function setClawLoading(){
+        setClaw(
+          "Chargement",
+          "CLAW prépare la lecture de la fiche établissement à partir du rail RESA.",
+          ["Fiche", "Réservation", "Repères terrain"],
+          [
+            {
+              title:"Lecture du commerce",
+              text:"CLAW attend le profil réel pour résumer le terrain proprement."
+            },
+            {
+              title:"Préparation réservation",
+              text:"CLAW reliera ensuite le type d’activité, les services et le canal de prise de contact."
+            }
+          ]
+        );
+      }
+
+      function setClawUnavailable(message = "Commerce indisponible."){
+        setClaw(
+          "Lecture limitée",
+          message,
+          ["Rail protégé", "Données indisponibles"],
+          [
+            {
+              title:"État actuel",
+              text:"La fiche n’est pas exploitable pour une lecture utile tant que le slug ou le profil public ne répond pas."
+            },
+            {
+              title:"Action simple",
+              text:"Vérifier le slug, la publication publique et la cohérence du profil RESA."
+            }
+          ]
+        );
+      }
+
+      function buildClawFromProfile(profile, services){
+        const p = profile || {};
+        const list = Array.isArray(services) ? services : [];
+
+        const businessType = safe(p.business_type || p.category, "Service local");
+        const city = safe(p.city, "Ville à préciser");
+        const hasWhatsapp = !!String(p.whatsapp || "").trim();
+        const hasAddress = !!String(p.address_text || p.address || "").trim();
+        const hasHours = !!String(p.opening_hours_text || p.hours_text || "").trim();
+        const hasBio = !!String(p.bio || "").trim();
+
+        const zones = Array.isArray(p.zones)
+          ? p.zones
+          : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
+
+        const pills = [
+          `Ville : ${city}`,
+          `Activité : ${businessType}`,
+          list.length ? `Services : ${list.length}` : "Services non détaillés",
+          hasWhatsapp ? "WhatsApp prêt" : "WhatsApp à préciser"
+        ];
+
+        const items = [
+          {
+            title:"Lecture commerce",
+            text:`La fiche présente un rail ${businessType.toLowerCase()} à ${city}. ${hasBio ? "La présentation est posée." : "La présentation mérite encore une phrase métier claire."}`
+          },
+          {
+            title:"Accueil client",
+            text:`${hasAddress ? "Adresse visible." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : "Capacité encore floue."}`
+          },
+          {
+            title:"Réservation",
+            text: list.length
+              ? "Le client voit des services concrets, donc la réservation est plus facile à comprendre."
+              : "La fiche renvoie surtout vers WhatsApp ; ajouter ou garder quelques services clairs aide le choix du client."
+          }
+        ];
+
+        if(zones.length){
+          items.push({
+            title:"Repères terrain",
+            text:`Zones visibles : ${zones.slice(0,4).join(", ")}${zones.length > 4 ? "…" : ""}.`
+          });
+        }else{
+          items.push({
+            title:"Repères terrain",
+            text:"Les zones ne sont pas encore précisées. Un ou deux repères locaux peuvent aider le client à se situer vite."
+          });
+        }
+
+        setClaw(
+          "Lecture vivante",
+          "CLAW lit la fiche établissement sans créer un nouveau système : il résume le terrain, la qualité d’accueil et la clarté de la réservation.",
+          pills,
+          items
+        );
+      }
+
       function money(v){
         const n = Number(v);
         if(!Number.isFinite(n)) return "";
@@ -837,6 +1090,7 @@
         document.getElementById("servicesBox").innerHTML = `
           <div class="service"><div class="muted">Services indisponibles.</div></div>
         `;
+        setClawUnavailable(subtitle || "Commerce indisponible.");
       }
 
       async function loadServices(sb, slugValue){
@@ -891,6 +1145,7 @@
       async function boot(){
         setNavLinks(slug);
         document.getElementById("slugPill").textContent = "slug : " + (slug || "—");
+        setClawLoading();
 
         if(!supabaseLib || typeof supabaseLib.createClient !== "function"){
           console.error("Supabase JS non chargé.");
@@ -916,6 +1171,7 @@
           document.getElementById("servicesBox").innerHTML = `
             <div class="service"><div class="muted">Aucun service à afficher.</div></div>
           `;
+          setClawUnavailable("Impossible de lire l’établissement sans slug valide.");
           return;
         }
 
@@ -961,7 +1217,7 @@
           const waHref = waLink(p.whatsapp, name);
           if(waHref){
             wa.href = waHref;
-          } else {
+          }else{
             wa.removeAttribute("href");
             wa.classList.remove("gold");
             wa.textContent = "WhatsApp indisponible";
@@ -969,6 +1225,7 @@
 
           const services = await loadServices(sb, slug);
           renderServices(services, businessType);
+          buildClawFromProfile(p, services);
 
         }catch(e){
           console.error(e);
