@@ -18,21 +18,25 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-  <script src="./guard.js?v=resa-qr-final"></script>
+  <script src="./guard.js?v=resa-qr-claw-v1"></script>
 
   <style>
     :root{
       --bg:#020617;
       --card:#0f172a;
+      --card2:#111c33;
       --accent:#facc15;
       --muted:#9ca3af;
       --text:#e5e7eb;
       --line:rgba(148,163,184,0.18);
       --danger:#ef4444;
       --ok:#22c55e;
+      --info:#38bdf8;
       --shadow:0 18px 60px rgba(0,0,0,.45);
     }
+
     *{box-sizing:border-box;margin:0;padding:0}
+
     body{
       font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       background:
@@ -42,20 +46,39 @@
       color:var(--text);
       min-height:100vh;
     }
-    .wrap{max-width:760px;margin:auto;padding:18px}
-    h1{font-size:1.4rem;margin-bottom:6px}
-    p{color:var(--muted);margin-bottom:14px;line-height:1.35}
+
+    .wrap{
+      max-width:860px;
+      margin:auto;
+      padding:18px;
+    }
+
+    h1{
+      font-size:1.5rem;
+      margin-bottom:6px;
+    }
+
+    p{
+      color:var(--muted);
+      margin-bottom:14px;
+      line-height:1.5;
+    }
 
     .card{
       background:rgba(255,255,255,0.03);
       border:1px solid var(--line);
-      border-radius:16px;
+      border-radius:18px;
       padding:16px;
       margin-top:14px;
       box-shadow:var(--shadow);
     }
 
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
 
     .btn{
       width:100%;
@@ -72,22 +95,43 @@
       justify-content:center;
       transition:transform .12s ease, filter .12s ease, opacity .12s ease;
     }
-    .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.05)}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
-    .btn.primary{background:var(--accent);color:#111827}
+
+    .btn:hover:not(:disabled){
+      transform:translateY(-1px);
+      filter:brightness(1.05);
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .btn.primary{
+      background:var(--accent);
+      color:#111827;
+    }
+
     .btn.ghost{
       background:transparent;
       border:1px solid rgba(250,204,21,0.35);
       color:#fff;
     }
+
     .btn.good{
       background:rgba(34,197,94,.14);
       border:1px solid rgba(34,197,94,.35);
       color:#bbf7d0;
     }
 
-    .mini{margin-top:10px;color:var(--muted);font-size:.9rem}
-    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace}
+    .mini{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .mono{
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
 
     .note{
       margin-top:10px;
@@ -96,12 +140,30 @@
       border:1px solid var(--line);
       display:none;
       white-space:pre-wrap;
-      line-height:1.35;
+      line-height:1.4;
       font-weight:850;
     }
-    .note.ok{display:block;border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.08)}
-    .note.bad{display:block;border-color:rgba(239,68,68,.35);color:#fecaca;background:rgba(239,68,68,.08)}
-    .note.warn{display:block;border-color:rgba(250,204,21,.35);color:#fde68a;background:rgba(250,204,21,.08)}
+
+    .note.ok{
+      display:block;
+      border-color:rgba(34,197,94,.35);
+      color:#bbf7d0;
+      background:rgba(34,197,94,.08);
+    }
+
+    .note.bad{
+      display:block;
+      border-color:rgba(239,68,68,.35);
+      color:#fecaca;
+      background:rgba(239,68,68,.08);
+    }
+
+    .note.warn{
+      display:block;
+      border-color:rgba(250,204,21,.35);
+      color:#fde68a;
+      background:rgba(250,204,21,.08);
+    }
 
     .qrbox{
       display:flex;
@@ -114,6 +176,7 @@
       margin-top:12px;
       min-height:220px;
     }
+
     .qrImg{
       max-width:100%;
       width:320px;
@@ -131,17 +194,25 @@
       border-radius:12px;
       border:1px solid var(--line);
       background:rgba(0,0,0,0.12);
-      line-height:1.35;
+      line-height:1.4;
       word-break:break-all;
     }
+
     .label b{color:#fff}
-    .hr{height:1px;background:rgba(148,163,184,0.18);margin-top:12px}
+
+    .hr{
+      height:1px;
+      background:rgba(148,163,184,0.18);
+      margin-top:12px;
+    }
+
     .pillRow{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       margin-bottom:10px;
     }
+
     .pill{
       padding:8px 12px;
       border-radius:999px;
@@ -150,6 +221,121 @@
       color:#cbd5e1;
       font-weight:900;
       font-size:.9rem;
+    }
+
+    .claw-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    @media (max-width:860px){
+      .claw-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .claw-card{
+      background:linear-gradient(180deg, rgba(56,189,248,.09), rgba(34,197,94,.06));
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .claw-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .claw-kicker{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#cfe8ff;
+      font-weight:950;
+      margin-bottom:6px;
+    }
+
+    .claw-title{
+      margin:0;
+      font-size:18px;
+      font-weight:950;
+      line-height:1.2;
+    }
+
+    .claw-mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(56,189,248,.24);
+      background:rgba(56,189,248,.10);
+      color:#d8f2ff;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .claw-text{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.65;
+      font-weight:750;
+    }
+
+    .claw-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .claw-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .claw-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .claw-item{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .claw-item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:950;
+      color:var(--text);
+    }
+
+    .claw-item span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:750;
     }
 
     @media (max-width:680px){
@@ -162,7 +348,7 @@
 <body>
 <div class="wrap">
   <h1>📎 QR RESA</h1>
-  <p>Un seul QR = <b>QR-PRO</b>. Derrière, QR-PRO propose <b>Dashboard / Public / Accès</b>.</p>
+  <p>Un seul QR = <b>QR-PRO</b>. Derrière, QR-PRO propose <b>Dashboard / Public / Accès</b>, et CLAW te résume le rail en silence.</p>
 
   <div class="card">
     <div class="pillRow">
@@ -190,6 +376,33 @@
     <div class="label mono" id="urlBox">URL: —</div>
     <div class="note warn" id="note"></div>
 
+    <section class="claw-grid" id="clawSection">
+      <article class="claw-card">
+        <div class="claw-head">
+          <div>
+            <div class="claw-kicker">CLAW DIGIY</div>
+            <h2 class="claw-title">Lecture légère du QR</h2>
+          </div>
+          <div class="claw-mode" id="clawMode">Analyse légère</div>
+        </div>
+
+        <div class="claw-text" id="clawSummary">
+          CLAW lit le rail QR sans bavarder : slug, session, destination dashboard, porte PIN et lien public.
+        </div>
+
+        <div class="claw-pills" id="clawPills"></div>
+      </article>
+
+      <article class="claw-card">
+        <div class="claw-list" id="clawList">
+          <div class="claw-item">
+            <strong>Chargement</strong>
+            <span>CLAW attend le slug réel pour résumer le QR correctement.</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
     <div class="hr"></div>
     <div class="mini mono" id="dbg"></div>
   </div>
@@ -200,8 +413,9 @@
   "use strict";
 
   const QR_PRO_BASE = "https://beauville.github.io/digiy-qr-pro/";
-  const APP_RETURN_PATH = "./dashboard-pro.html";
+  const DASHBOARD_PATH = "./dashboard-pro.html";
   const PUBLIC_PATH = "./index.html";
+  const PIN_PATH = "./pin.html";
 
   const qrImg = document.getElementById("qrImg");
   const qrAnchor = document.getElementById("qrAnchor");
@@ -220,6 +434,9 @@
   let slug = "";
   let phone = "";
   let url = "";
+  let dashboardUrl = "";
+  let publicUrl = "";
+  let pinUrl = "";
   let busy = false;
   let qrNormalDataUrl = "";
   let qrXLDataUrl = "";
@@ -237,6 +454,119 @@
     btnCopy.disabled = on;
     btnOpen.disabled = on;
     btnBack.disabled = on;
+  }
+
+  function setClaw(mode, summary, pills = [], items = []){
+    document.getElementById("clawMode").textContent = mode || "Analyse légère";
+    document.getElementById("clawSummary").textContent = summary || "CLAW lit le rail sans bavarder.";
+
+    document.getElementById("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
+      .filter(Boolean)
+      .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
+      .join("");
+
+    document.getElementById("clawList").innerHTML = (Array.isArray(items) ? items : [])
+      .filter(Boolean)
+      .map(item => `
+        <div class="claw-item">
+          <strong>${escapeHtml(item.title || "Point utile")}</strong>
+          <span>${escapeHtml(item.text || "—")}</span>
+        </div>
+      `).join("");
+  }
+
+  function setClawLoading(){
+    setClaw(
+      "Chargement",
+      "CLAW attend le slug réel pour construire le QR RESA, le retour dashboard et les portes utiles.",
+      ["Module : RESA", "QR-PRO", "Rail en préparation"],
+      [
+        {
+          title:"Lecture du rail",
+          text:"Le QR doit rester unique et s’appuyer sur le slug réel."
+        },
+        {
+          title:"Navigation utile",
+          text:"CLAW prépare le retour dashboard, la porte PIN et le lien public sans casser le rail."
+        }
+      ]
+    );
+  }
+
+  function setClawMissingSlug(){
+    setClaw(
+      "Slug manquant",
+      "Sans slug, le QR RESA n’a pas de contexte propre. CLAW bloque la fabrication pour éviter un faux rail.",
+      ["Slug absent", "QR bloqué", "Vérifier le lien"],
+      [
+        {
+          title:"Blocage principal",
+          text:"Le fichier a besoin d’un slug réel pour fabriquer un QR propre."
+        },
+        {
+          title:"Action utile",
+          text:"Ouvre ce fichier depuis dashboard-pro.html ou avec ?slug=... dans l’URL."
+        }
+      ]
+    );
+  }
+
+  function setClawReady(sessionOk){
+    setClaw(
+      sessionOk ? "QR prêt + session OK" : "QR prêt",
+      "CLAW voit un QR RESA propre : un seul QR, puis derrière dashboard, public et accès selon le rail vivant.",
+      [
+        slug ? `Slug : ${slug}` : "Slug : —",
+        phone ? `Téléphone : ${phone}` : "Téléphone : —",
+        sessionOk ? "Session vivante" : "Slug seul",
+        "Retour dashboard"
+      ],
+      [
+        {
+          title:"Rail QR",
+          text:"Le QR ouvre QR-PRO avec module RESA et le bon slug."
+        },
+        {
+          title:"Retour métier",
+          text:"Le retour principal pointe vers dashboard-pro.html, pas vers LOC."
+        },
+        {
+          title:"Circulation utile",
+          text:"QR-PRO reçoit aussi le lien public index.html et la porte d’accès reste pin.html."
+        }
+      ]
+    );
+  }
+
+  function setClawError(message){
+    setClaw(
+      "Erreur",
+      "CLAW a détecté un blocage dans la génération locale du QR.",
+      [
+        slug ? `Slug : ${slug}` : "Slug : —",
+        "Génération locale",
+        "Contrôle à faire"
+      ],
+      [
+        {
+          title:"Blocage",
+          text: message || "Le QR n’a pas pu être généré."
+        },
+        {
+          title:"Action utile",
+          text:"Vérifie la librairie QR, puis recharge avec un slug réel."
+        }
+      ]
+    );
+  }
+
+  function escapeHtml(v){
+    return String(v ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
   }
 
   function getGuardSession(){
@@ -376,13 +706,20 @@
     });
   }
 
+  setClawLoading();
   await bootGuardSafe();
 
   slug = getSlugSafe();
   phone = getPhoneSafe();
 
   if(!slug){
-    alert("❌ slug manquant. Ouvre via le dashboard RESA (slug obligatoire).");
+    pillSlug.textContent = "slug: —";
+    pillState.textContent = "session: impossible";
+    urlBox.textContent = "URL: slug manquant";
+    dbgEl.textContent = "module: RESA | slug manquant | ouvre depuis dashboard-pro.html ou ajoute ?slug=...";
+    note("❌ slug manquant. Ouvre ce fichier via le dashboard RESA ou avec ?slug=...", "bad");
+    setClawMissingSlug();
+    setBusy(true);
     return;
   }
 
@@ -390,33 +727,31 @@
   pillSlug.textContent = "slug: " + slug;
   pillState.textContent = sess.ok
     ? ("session: OK" + (phone ? " · " + phone : ""))
-    : "session: aperçu / slug";
+    : "session: slug seul";
 
   syncOwnSlug();
+
+  dashboardUrl = withSlug(DASHBOARD_PATH);
+  publicUrl = withSlug(PUBLIC_PATH);
+  pinUrl = withSlug(PIN_PATH);
 
   const qrProUrl = new URL(QR_PRO_BASE);
   qrProUrl.searchParams.set("slug", slug);
   qrProUrl.searchParams.set("module", "RESA");
   if (phone) qrProUrl.searchParams.set("tel", phone);
-
-  const appUrl = new URL(APP_RETURN_PATH, location.href);
-  appUrl.searchParams.set("slug", slug);
-
-  const publicUrl = new URL(PUBLIC_PATH, location.href);
-  publicUrl.searchParams.set("slug", slug);
-
-  qrProUrl.searchParams.set("return", appUrl.toString());
-  qrProUrl.searchParams.set("public", publicUrl.toString());
+  qrProUrl.searchParams.set("return", dashboardUrl);
+  qrProUrl.searchParams.set("public", publicUrl);
 
   url = qrProUrl.toString();
 
-  urlBox.textContent = "URL: " + url;
+  urlBox.innerHTML = "<b>URL:</b> " + escapeHtml(url);
   dbgEl.textContent =
     "slug: " + slug +
     " | module: RESA" +
     " | qr-base: " + QR_PRO_BASE +
-    " | return: " + APP_RETURN_PATH +
+    " | return: " + DASHBOARD_PATH +
     " | public: " + PUBLIC_PATH +
+    " | pin: " + PIN_PATH +
     (phone ? " | tel: " + phone : "");
 
   qrAnchor.href = url;
@@ -434,28 +769,54 @@
 
     qrImg.onload = () => {
       note("✅ QR-PRO RESA prêt. Test téléphone avant impression.", "ok");
+      setClawReady(sess.ok);
     };
 
     qrImg.onerror = () => {
       note("❌ Impossible d’afficher l’image QR locale.", "bad");
+      setClawError("Impossible d’afficher l’image QR locale.");
     };
 
     qrImg.src = qrNormalDataUrl;
   }catch(e){
     console.error(e);
     note("❌ Génération QR locale impossible : " + (e?.message || e), "bad");
+    setClawError(e?.message || "Génération QR locale impossible.");
   }finally{
     setBusy(false);
   }
 
   btnBack.onclick = () => {
-    location.href = withSlug(APP_RETURN_PATH);
+    location.href = dashboardUrl;
   };
 
   btnCopy.onclick = async () => {
     try{
       await copyText(url);
       note("✅ Lien QR-PRO copié.", "ok");
+      setClaw(
+        "Lien copié",
+        "CLAW confirme que le lien QR-PRO RESA est prêt à être partagé.",
+        [
+          `Slug : ${slug}`,
+          "Lien copié",
+          sess.ok ? "Session OK" : "Slug seul"
+        ],
+        [
+          {
+            title:"Partage",
+            text:"Le lien QR-PRO est maintenant dans le presse-papiers."
+          },
+          {
+            title:"Usage",
+            text:"Tu peux l’envoyer ou l’imprimer sans perdre le retour dashboard."
+          },
+          {
+            title:"Rail",
+            text:"Le QR garde RESA comme module et le slug réel comme contexte."
+          }
+        ]
+      );
     }catch(e){
       console.error(e);
       note("⚠️ Clipboard bloqué. Copie manuelle dans l’URL.", "warn");
@@ -470,6 +831,7 @@
     if(busy) return;
     if(!qrNormalDataUrl){
       note("❌ QR normal non prêt.", "bad");
+      setClawError("QR normal non prêt.");
       return;
     }
     setBusy(true);
@@ -480,6 +842,7 @@
     }catch(e){
       console.error(e);
       note("❌ Download KO: " + (e?.message || e), "bad");
+      setClawError(e?.message || "Téléchargement QR impossible.");
     }finally{
       setBusy(false);
     }
@@ -489,6 +852,7 @@
     if(busy) return;
     if(!qrXLDataUrl){
       note("❌ Sticker XL non prêt.", "bad");
+      setClawError("Sticker XL non prêt.");
       return;
     }
     setBusy(true);
@@ -499,6 +863,7 @@
     }catch(e){
       console.error(e);
       note("❌ Sticker XL KO: " + (e?.message || e), "bad");
+      setClawError(e?.message || "Sticker XL impossible.");
     }finally{
       setBusy(false);
     }
