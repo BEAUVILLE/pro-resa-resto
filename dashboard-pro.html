@@ -13,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-dashboard-v3"></script>
+  <script src="./guard.js?v=resa-dashboard-v4-claw"></script>
 
   <style>
     :root{
@@ -206,6 +206,121 @@
       gap:10px;
       flex-wrap:wrap;
       margin-top:14px;
+    }
+
+    .claw-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:12px;
+      margin:0 0 12px;
+    }
+
+    @media(max-width:920px){
+      .claw-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .claw-card{
+      background:linear-gradient(180deg, rgba(96,165,250,.09), rgba(34,197,94,.06));
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .claw-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .claw-kicker{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#cfe0ff;
+      font-weight:950;
+      margin-bottom:6px;
+    }
+
+    .claw-title{
+      margin:0;
+      font-size:18px;
+      font-weight:950;
+      line-height:1.2;
+    }
+
+    .claw-mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(99,102,241,.28);
+      background:rgba(99,102,241,.14);
+      color:#dfe3ff;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .claw-text{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.65;
+      font-weight:750;
+    }
+
+    .claw-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .claw-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .claw-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .claw-item{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .claw-item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:950;
+      color:var(--text);
+    }
+
+    .claw-item span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:750;
     }
 
     .grid{
@@ -408,6 +523,33 @@
       </div>
     </section>
 
+    <section class="claw-grid" id="clawSection">
+      <article class="claw-card">
+        <div class="claw-head">
+          <div>
+            <div class="claw-kicker">CLAW DIGIY</div>
+            <h2 class="claw-title">Lecture légère du dashboard</h2>
+          </div>
+          <div class="claw-mode" id="clawMode">Analyse légère</div>
+        </div>
+
+        <div class="claw-text" id="clawSummary">
+          CLAW lit le rail RESA sans bavarder : état d’accès, prochaine action logique et circulation utile entre les pages.
+        </div>
+
+        <div class="claw-pills" id="clawPills"></div>
+      </article>
+
+      <article class="claw-card">
+        <div class="claw-list" id="clawList">
+          <div class="claw-item">
+            <strong>Chargement</strong>
+            <span>CLAW attend l’état réel du rail pour te pousser la bonne action.</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
     <div class="grid">
       <div class="card" id="cardStatus">
         <h3>Statut & sécurité</h3>
@@ -521,6 +663,15 @@
       .replace(/^-|-$/g, "");
   }
 
+  function escapeHtml(v){
+    return String(v ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+
   function safeJsonParse(v){
     try{
       return typeof v === "string" ? JSON.parse(v) : v;
@@ -626,7 +777,7 @@
   }
 
   function setPill(label){
-    $("pillStatus").innerHTML = `Statut : <b>${label}</b>`;
+    $("pillStatus").innerHTML = `Statut : <b>${escapeHtml(label)}</b>`;
   }
 
   function setNotifs(items){
@@ -652,13 +803,129 @@
       div.className = "notif";
       div.innerHTML = `
         <div>
-          <b>${it.title}</b>
-          <div class="muted" style="font-weight:750;margin-top:2px">${it.text}</div>
+          <b>${escapeHtml(it.title)}</b>
+          <div class="muted" style="font-weight:750;margin-top:2px">${escapeHtml(it.text)}</div>
         </div>
-        <div class="tag ${tagClass}">${it.tag}</div>
+        <div class="tag ${tagClass}">${escapeHtml(it.tag)}</div>
       `;
       box.appendChild(div);
     }
+  }
+
+  function setClaw(mode, summary, pills = [], items = []){
+    $("clawMode").textContent = mode || "Analyse légère";
+    $("clawSummary").textContent = summary || "CLAW lit le rail sans bavarder.";
+
+    $("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
+      .filter(Boolean)
+      .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
+      .join("");
+
+    $("clawList").innerHTML = (Array.isArray(items) ? items : [])
+      .filter(Boolean)
+      .map(item => `
+        <div class="claw-item">
+          <strong>${escapeHtml(item.title || "Point utile")}</strong>
+          <span>${escapeHtml(item.text || "—")}</span>
+        </div>
+      `).join("");
+  }
+
+  function setClawLoading(){
+    setClaw(
+      "Chargement",
+      "CLAW attend la lecture réelle du rail RESA pour te pousser une action nette.",
+      ["Rail RESA", "Dashboard", "Lecture simple"],
+      [
+        {
+          title:"Lecture du moment",
+          text:"Le dashboard charge l’état d’accès, le slug et la prochaine étape utile."
+        },
+        {
+          title:"Ce que CLAW prépare",
+          text:"Un résumé propre : accès vivant, aperçu, blocage abonnement ou erreur de contrôle."
+        }
+      ]
+    );
+  }
+
+  function setClawPreview(message){
+    setClaw(
+      "Aperçu",
+      "CLAW voit un cadre prêt, mais pas encore une identité ouverte. Il évite la fausse lecture et te pousse vers le PIN.",
+      [
+        RESOLVED_SLUG ? `Slug : ${RESOLVED_SLUG}` : "Slug non détecté",
+        "PIN conseillé",
+        "Zéro démo"
+      ],
+      [
+        {
+          title:"État du rail",
+          text: message || "Le dashboard reste visible sans inventer un accès vivant."
+        },
+        {
+          title:"Action utile",
+          text:"Passe par PIN pour ouvrir proprement le rail et récupérer l’identité réelle."
+        },
+        {
+          title:"Navigation",
+          text:"Le dashboard est lisible, mais la vraie circulation métier commence quand l’accès est confirmé."
+        }
+      ]
+    );
+  }
+
+  function setClawBlocked(message, level = "warn"){
+    setClaw(
+      level === "warn" ? "Accès fermé" : "Contrôle perturbé",
+      "CLAW te renvoie vers l’action de base : remettre l’accès sur les rails avant de vouloir piloter le reste.",
+      [
+        RESOLVED_SLUG ? `Slug : ${RESOLVED_SLUG}` : "Slug à vérifier",
+        "Backbone PAY",
+        level === "warn" ? "Abonnement requis" : "Erreur de contrôle"
+      ],
+      [
+        {
+          title:"Blocage principal",
+          text: message || "L’accès n’est pas actif pour ce module."
+        },
+        {
+          title:"Action utile",
+          text:"Passe par le rail de paiement/activation puis reviens sur ce dashboard avec le bon slug."
+        },
+        {
+          title:"Discipline rail",
+          text:"On ne force pas un cockpit fermé. On remet d’abord l’accès en ordre."
+        }
+      ]
+    );
+  }
+
+  function setClawLive(slug, phone){
+    setClaw(
+      "Lecture vivante",
+      "CLAW voit un accès actif. Le dashboard joue alors son vrai rôle : lire l’état vite et pousser vers la bonne page métier.",
+      [
+        slug ? `Slug : ${slug}` : "Slug : —",
+        phone ? `Téléphone : ${phone}` : "Téléphone : —",
+        "Accès actif",
+        "Navigation ouverte"
+      ],
+      [
+        {
+          title:"Lecture du rail",
+          text:"L’accès RESA est confirmé. Le dashboard est stable et le slug est bien reconnu."
+        },
+        {
+          title:"Action principale",
+          text:"Le cockpit reste la porte métier centrale pour piloter les réservations et le flux du jour."
+        },
+        {
+          title:"Navigation utile",
+          text:"Planning pour lire le terrain, profil pour vérifier la vitrine, dashboard pour garder la vue synthèse."
+        }
+      ]
+    );
   }
 
   function buildPayUrl(module, phone, slug){
@@ -692,6 +959,8 @@
         text:"Le module ne plante pas. Il attend simplement ton identité ou ton accès actif."
       }
     ]);
+
+    setClawPreview(message);
   }
 
   function setBlockedState(message, level = "warn"){
@@ -716,6 +985,8 @@
         text:message
       }
     ]);
+
+    setClawBlocked(message, level);
   }
 
   function setLiveState(slug, phone){
@@ -746,6 +1017,8 @@
         text:"La nav du haut te laisse circuler entre dashboard, cockpit, planning et profil."
       }
     ]);
+
+    setClawLive(slug, phone);
   }
 
   async function manualFallbackCheck(){
@@ -851,6 +1124,7 @@
     $("btnPrimaryAction").textContent = "Chargement…";
     $("actionHint").textContent = PRIMARY_ACTION_HINT;
     setPill("…");
+    setClawLoading();
 
     CURRENT_STATE = await getGuardState();
 
