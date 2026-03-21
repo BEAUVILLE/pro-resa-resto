@@ -13,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-cockpit-v3"></script>
+  <script src="./guard.js?v=resa-cockpit-v4-qr"></script>
 
   <style>
     :root{
@@ -406,6 +406,11 @@
       padding:10px 12px;
       cursor:pointer;
       font-weight:900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
 
     .action-btn.ok{background:#103525}
@@ -466,6 +471,7 @@
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
         <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
+        <a class="btn secondary" id="btnQr" href="./qr.html">QR</a>
         <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
         <a class="btn" id="btnSettings" href="./etablissement.html">Profil / établissement</a>
       </div>
@@ -475,6 +481,7 @@
       <a class="nav-link active" id="navCockpit" href="./cockpit.html">Cockpit</a>
       <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
       <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
       <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
@@ -495,6 +502,7 @@
           <div class="hero-cta" id="heroCta">
             <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Ouvrir le dashboard</a>
             <a class="btn secondary" id="heroPlanning" href="./planning.html">Voir le planning</a>
+            <a class="btn secondary" id="heroQr" href="./qr.html">Ouvrir le QR</a>
             <a class="btn warn" id="heroPin" href="./pin.html">Ouvrir ma porte PIN</a>
             <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir le profil</a>
           </div>
@@ -546,6 +554,7 @@
       "use strict";
 
       const MODULE = "RESA";
+      const QR_PATH = "./qr.html";
 
       try {
         window.DIGIY_GUARD?.boot?.({
@@ -686,10 +695,6 @@
         return String(row?.id ?? row?.booking_id ?? row?.reservation_id ?? "");
       }
 
-      function serviceNameOf(row){
-        return String(row?.service_name || "").trim();
-      }
-
       function money(v){
         const n = Number(v);
         if(!Number.isFinite(n)) return "";
@@ -782,6 +787,7 @@
         const cockpitHref = withSlug("./cockpit.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
         const dashboardHref = withSlug("./dashboard-pro.html", clean);
         const planningHref = withSlug("./planning.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
+        const qrHref = withSlug(QR_PATH, clean);
         const pinHref = withSlug("./pin.html", clean);
         const settingsHref = withSlug("./etablissement.html", clean);
         const homeHref = withSlug("./index.html", clean);
@@ -789,16 +795,19 @@
         $("navCockpit").href = cockpitHref;
         $("navDashboard").href = dashboardHref;
         $("navPlanning").href = planningHref;
+        $("navQr").href = qrHref;
         $("navSettings").href = settingsHref;
         $("navPin").href = pinHref;
         $("navHome").href = homeHref;
 
         $("btnDashboardTop").href = dashboardHref;
+        $("btnQr").href = qrHref;
         $("btnPin").href = pinHref;
         $("btnSettings").href = settingsHref;
 
         $("heroDashboard").href = dashboardHref;
         $("heroPlanning").href = planningHref;
+        $("heroQr").href = qrHref;
         $("heroPin").href = pinHref;
         $("heroSettings").href = settingsHref;
       }
@@ -1058,6 +1067,18 @@
       }
 
       function previewActionHtml(){
+        const dashboardHref = RESOLVED_SLUG
+          ? withSlug("./dashboard-pro.html", RESOLVED_SLUG)
+          : "./dashboard-pro.html";
+
+        const planningHref = RESOLVED_SLUG
+          ? withSlug("./planning.html", RESOLVED_SLUG, ACTIVE_DATE ? { date: ACTIVE_DATE } : {})
+          : "./planning.html";
+
+        const qrHref = RESOLVED_SLUG
+          ? withSlug(QR_PATH, RESOLVED_SLUG)
+          : QR_PATH;
+
         const pinHref = RESOLVED_SLUG
           ? withSlug("./pin.html", RESOLVED_SLUG)
           : "./pin.html";
@@ -1066,13 +1087,11 @@
           ? withSlug("./etablissement.html", RESOLVED_SLUG)
           : "./etablissement.html";
 
-        const dashboardHref = RESOLVED_SLUG
-          ? withSlug("./dashboard-pro.html", RESOLVED_SLUG)
-          : "./dashboard-pro.html";
-
         return `
           <div class="booking-actions">
             <a class="action-btn preview" href="${dashboardHref}">Dashboard</a>
+            <a class="action-btn preview" href="${planningHref}">Planning</a>
+            <a class="action-btn preview" href="${qrHref}">QR</a>
             <a class="action-btn preview" href="${pinHref}">Entrer par PIN</a>
             <a class="action-btn preview" href="${settingsHref}">Voir le profil</a>
           </div>
@@ -1081,7 +1100,7 @@
 
       function serviceHtml(row){
         const bits = [];
-        if(serviceNameOf(row)) bits.push(`<span class="service-pill">🧾 ${escapeHtml(serviceNameOf(row))}</span>`);
+        if(row.service_name) bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
         if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
         if(money(row.price_fcfa)) bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
         if(!bits.length) return "";
