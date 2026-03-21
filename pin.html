@@ -29,6 +29,7 @@
       --gold:#facc15;
       --gold-soft:rgba(250,204,21,.12);
       --danger:#ef4444;
+      --info:#38bdf8;
       --shadow:0 20px 60px rgba(0,0,0,.38);
       --r:24px;
       --max:1100px;
@@ -56,6 +57,79 @@
       margin:auto;
       display:grid;
       gap:14px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:6px 2px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:950;
+    }
+
+    .brand-title{
+      font-size:clamp(20px,2.8vw,30px);
+      font-weight:1000;
+      line-height:1.05;
+    }
+
+    .brand-sub{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.14);
+      color:var(--text);
+      font-weight:950;
+    }
+
+    .nav-link.active{
+      background:rgba(34,197,94,.12);
+      border-color:rgba(34,197,94,.28);
+      color:#bbf7d0;
     }
 
     .hero,
@@ -193,6 +267,12 @@
       font-weight:900;
     }
 
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
     .layout{
       display:grid;
       gap:14px;
@@ -287,6 +367,12 @@
       border-color:rgba(250,204,21,.22);
     }
 
+    .btn.info{
+      background:rgba(56,189,248,.10);
+      color:#d8f2ff;
+      border-color:rgba(56,189,248,.25);
+    }
+
     .btn:disabled{
       opacity:.6;
       cursor:not-allowed;
@@ -352,6 +438,108 @@
       background:rgba(239,68,68,.08);
     }
 
+    .claw-card{
+      margin-top:16px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid rgba(56,189,248,.18);
+      background:linear-gradient(180deg, rgba(56,189,248,.08), rgba(34,197,94,.06));
+    }
+
+    .claw-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .claw-kicker{
+      font-size:11px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:#d9f0ff;
+      font-weight:950;
+      margin-bottom:6px;
+    }
+
+    .claw-title{
+      margin:0;
+      font-size:18px;
+      font-weight:950;
+      line-height:1.2;
+    }
+
+    .claw-mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(56,189,248,.24);
+      background:rgba(56,189,248,.10);
+      color:#d8f2ff;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .claw-text{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.65;
+      font-weight:750;
+    }
+
+    .claw-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .claw-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .claw-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .claw-item{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+    }
+
+    .claw-item strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:950;
+      color:var(--text);
+    }
+
+    .claw-item span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      font-weight:750;
+    }
+
     .footer{
       text-align:center;
       color:var(--muted);
@@ -359,10 +547,39 @@
       font-weight:800;
       padding:6px 0 2px;
     }
+
+    @media(max-width:720px){
+      .top-actions,.nav-rail,.hero-actions,.actions{width:100%}
+      .top-actions > *, .nav-rail > *, .hero-actions > *, .actions > *{flex:1 1 auto}
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">DIGIY RESA PRO</div>
+        <div class="brand-title">Entrée PIN</div>
+        <div class="brand-sub" id="topSub">Téléphone + PIN → cockpit établissement.</div>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
+        <a class="btn info" id="btnQrTop" href="./qr.html">QR</a>
+        <a class="btn" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
+      </div>
+    </div>
+
+    <nav class="nav-rail" aria-label="Navigation PRO RESA">
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+      <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
+      <a class="nav-link active" id="navPin" href="./pin.html">PIN</a>
+      <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
+    </nav>
 
     <section class="hero">
       <div class="hero-grid">
@@ -386,6 +603,13 @@
             <div class="pill">📱 Téléphone reconnu</div>
             <div class="pill">🏠 Redirection cockpit</div>
             <div class="pill" id="pillSlug">🧭 Route libre</div>
+          </div>
+
+          <div class="hero-actions">
+            <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">Dashboard</a>
+            <a class="btn info" id="btnQrHero" href="./qr.html">QR</a>
+            <a class="btn" id="btnCockpitHero" href="./cockpit.html">Cockpit</a>
+            <a class="btn" id="btnPlanningHero" href="./planning.html">Planning</a>
           </div>
         </div>
       </div>
@@ -414,6 +638,7 @@
           <button class="btn primary" id="btnLogin" type="button">🔑 Ouvrir mon cockpit</button>
           <a class="btn gold" id="btnSupport" href="https://wa.me/221771342889?text=Salut%20DIGIY%20RESA%20PRO%2C%20j%27ai%20besoin%20d%27aide%20pour%20mon%20PIN." target="_blank" rel="noopener">💬 Support WhatsApp</a>
           <a class="btn" id="btnCockpit" href="./cockpit.html">🏠 Cockpit</a>
+          <a class="btn info" id="btnQr" href="./qr.html">📎 QR</a>
         </div>
 
         <div id="statusBox" class="statusbox">Prêt.</div>
@@ -442,8 +667,36 @@
           </div>
 
           <div class="fact">
+            <div class="k">QR</div>
+            <div class="v" id="qrText">qr.html?slug=...</div>
+          </div>
+
+          <div class="fact">
             <div class="k">Support</div>
             <div class="v">WhatsApp DIGIY si blocage PIN</div>
+          </div>
+        </div>
+
+        <div class="claw-card">
+          <div class="claw-head">
+            <div>
+              <div class="claw-kicker">CLAW DIGIY</div>
+              <h3 class="claw-title">Lecture légère de l’entrée PIN</h3>
+            </div>
+            <div class="claw-mode" id="clawMode">Analyse légère</div>
+          </div>
+
+          <div class="claw-text" id="clawSummary">
+            CLAW lit la porte d’entrée : slug, destination cockpit, QR branché et prochaine action utile.
+          </div>
+
+          <div class="claw-pills" id="clawPills"></div>
+
+          <div class="claw-list" id="clawList">
+            <div class="claw-item">
+              <strong>Chargement</strong>
+              <span>CLAW attend le slug réel ou le téléphone connu pour te guider proprement.</span>
+            </div>
           </div>
         </div>
 
@@ -469,6 +722,14 @@
       const SESSION_KEY = "DIGIY_RESA_PRO_SESSION";
       const GENERIC_SESSION_KEY = "DIGIY_PRO_SESSION";
       const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+
+      const DASHBOARD_PATH = "./dashboard-pro.html";
+      const COCKPIT_PATH = "./cockpit.html";
+      const PLANNING_PATH = "./planning.html";
+      const QR_PATH = "./qr.html";
+      const SETTINGS_PATH = "./etablissement.html";
+      const HOME_PATH = "./index.html";
+      const PIN_PATH = "./pin.html";
 
       const $ = (id) => document.getElementById(id);
 
@@ -520,7 +781,194 @@
         return "";
       }
 
-      const hintedSlug = normalizeSlug(new URL(location.href).searchParams.get("slug") || "");
+      function withSlug(path, slugValue = ""){
+        const clean = normalizeSlug(slugValue);
+        const url = new URL(path, location.href);
+        if(clean) url.searchParams.set("slug", clean);
+        const sameOrigin = url.origin === location.origin;
+        return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
+      }
+
+      function setLinks(slugValue = ""){
+        const dashboardHref = withSlug(DASHBOARD_PATH, slugValue);
+        const cockpitHref = withSlug(COCKPIT_PATH, slugValue);
+        const planningHref = withSlug(PLANNING_PATH, slugValue);
+        const qrHref = withSlug(QR_PATH, slugValue);
+        const settingsHref = withSlug(SETTINGS_PATH, slugValue);
+        const pinHref = withSlug(PIN_PATH, slugValue);
+        const homeHref = withSlug(HOME_PATH, slugValue);
+
+        $("btnDashboardTop").href = dashboardHref;
+        $("btnQrTop").href = qrHref;
+        $("btnCockpitTop").href = cockpitHref;
+
+        $("navDashboard").href = dashboardHref;
+        $("navCockpit").href = cockpitHref;
+        $("navPlanning").href = planningHref;
+        $("navQr").href = qrHref;
+        $("navSettings").href = settingsHref;
+        $("navPin").href = pinHref;
+        $("navHome").href = homeHref;
+
+        $("btnDashboardHero").href = dashboardHref;
+        $("btnQrHero").href = qrHref;
+        $("btnCockpitHero").href = cockpitHref;
+        $("btnPlanningHero").href = planningHref;
+
+        $("btnCockpit").href = cockpitHref;
+        $("btnQr").href = qrHref;
+
+        $("destText").textContent = slugValue
+          ? `cockpit.html?slug=${slugValue}`
+          : "cockpit.html?slug=...";
+        $("qrText").textContent = slugValue
+          ? `qr.html?slug=${slugValue}`
+          : "qr.html?slug=...";
+      }
+
+      function setClaw(mode, summary, pills = [], items = []){
+        $("clawMode").textContent = mode || "Analyse légère";
+        $("clawSummary").textContent = summary || "CLAW lit le rail sans bavarder.";
+
+        $("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
+          .filter(Boolean)
+          .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
+          .join("");
+
+        $("clawList").innerHTML = (Array.isArray(items) ? items : [])
+          .filter(Boolean)
+          .map(item => `
+            <div class="claw-item">
+              <strong>${escapeHtml(item.title || "Point utile")}</strong>
+              <span>${escapeHtml(item.text || "—")}</span>
+            </div>
+          `).join("");
+      }
+
+      function setClawLoading(){
+        setClaw(
+          "Chargement",
+          "CLAW attend le slug réel ou le téléphone connu pour te guider proprement.",
+          ["PIN", "Cockpit", "QR branché"],
+          [
+            {
+              title:"Lecture de la porte",
+              text:"Le rail PIN sert à rouvrir l’accès métier sans bricoler les URLs."
+            },
+            {
+              title:"Navigation utile",
+              text:"Dashboard, cockpit, planning et QR sont recousus autour de la même porte."
+            }
+          ]
+        );
+      }
+
+      function setClawHinted(slugValue){
+        setClaw(
+          "Slug détecté",
+          "CLAW a déjà repéré un slug. La porte PIN peut donc te renvoyer exactement au bon cockpit.",
+          [
+            `Slug : ${slugValue}`,
+            "Route cockpit",
+            "QR prêt"
+          ],
+          [
+            {
+              title:"Lecture du rail",
+              text:"Le slug est déjà connu. Après validation PIN, la redirection sera propre."
+            },
+            {
+              title:"Action utile",
+              text:"Entrer le téléphone et le PIN, puis laisser le rail t’ouvrir le cockpit."
+            }
+          ]
+        );
+      }
+
+      function setClawNoSlug(){
+        setClaw(
+          "Route libre",
+          "CLAW ne voit pas encore de slug. La page reste utile, mais le vrai contexte viendra du PIN.",
+          [
+            "Slug non guidé",
+            "Téléphone requis",
+            "PIN requis"
+          ],
+          [
+            {
+              title:"Lecture actuelle",
+              text:"La porte PIN peut toujours fonctionner, mais le slug sera attendu du rail SQL."
+            },
+            {
+              title:"Action utile",
+              text:"Saisir le téléphone abonné puis le PIN reçu après activation."
+            }
+          ]
+        );
+      }
+
+      function setClawSuccess(slugValue, phoneValue){
+        setClaw(
+          "Accès validé",
+          "CLAW voit une ouverture propre : slug reconnu, téléphone aligné et cockpit prêt.",
+          [
+            `Slug : ${slugValue}`,
+            `Téléphone : ${phoneValue}`,
+            "Cockpit ouvert",
+            "QR recousu"
+          ],
+          [
+            {
+              title:"Lecture du rail",
+              text:"Le PIN a validé l’accès RESA et la session locale est maintenant propre."
+            },
+            {
+              title:"Suite logique",
+              text:"Le cockpit devient la porte métier centrale. Le QR reste disponible pour l’affichage terrain."
+            }
+          ]
+        );
+      }
+
+      function setClawError(message){
+        setClaw(
+          "Blocage",
+          "CLAW voit un blocage d’entrée. Il faut remettre le rail PIN d’équerre avant d’aller plus loin.",
+          [
+            "Accès refusé",
+            "Support dispo",
+            "Rail à vérifier"
+          ],
+          [
+            {
+              title:"Blocage principal",
+              text: message || "Le PIN n’a pas encore ouvert l’accès."
+            },
+            {
+              title:"Action utile",
+              text:"Vérifier téléphone, PIN, puis la RPC côté RESA si besoin."
+            }
+          ]
+        );
+      }
+
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#39;");
+      }
+
+      const hintedSlug = normalizeSlug(
+        new URL(location.href).searchParams.get("slug") ||
+        storageGet("digiy_resa_slug") ||
+        storageGet("digiy_resa_last_slug") ||
+        storageGet("digiy_last_slug") ||
+        storageGet("DIGIY_SLUG") ||
+        ""
+      );
 
       let sb = null;
 
@@ -645,11 +1093,13 @@
 
         if (!phone) {
           setStatus("Téléphone manquant.", "err");
+          setClawError("Téléphone manquant.");
           return;
         }
 
         if (!pin) {
           setStatus("PIN manquant.", "err");
+          setClawError("PIN manquant.");
           return;
         }
 
@@ -667,6 +1117,7 @@
               parsed?.reason ||
               "PIN invalide ou accès refusé.";
             setStatus(err, "err");
+            setClawError(err);
             return;
           }
 
@@ -674,6 +1125,7 @@
 
           if (!targetSlug) {
             setStatus("PIN reconnu, mais aucun slug RESA n’a été retourné.", "warn");
+            setClawError("PIN reconnu, mais aucun slug RESA n’a été retourné.");
             return;
           }
 
@@ -683,6 +1135,9 @@
             title: parsed?.business_name || parsed?.title || "DIGIY RESA PRO"
           });
 
+          setLinks(session.slug);
+          $("pillSlug").textContent = `🧭 Slug guidé : ${session.slug}`;
+          setClawSuccess(session.slug, phone);
           setStatus("PIN validé. Redirection vers le cockpit...", "ok");
 
           setTimeout(() => {
@@ -692,6 +1147,7 @@
         } catch (e) {
           console.error(e);
           setStatus("Erreur de vérification PIN. Vérifie la RPC resa_pin_login ou contacte le support.", "err");
+          setClawError("Erreur de vérification PIN. Vérifie la RPC resa_pin_login.");
         } finally {
           setBusy(false);
         }
@@ -706,13 +1162,7 @@
 
         if (lastPhone) $("phone").value = lastPhone;
 
-        $("btnCockpit").href = hintedSlug
-          ? `./cockpit.html?slug=${encodeURIComponent(hintedSlug)}`
-          : "./cockpit.html";
-
-        $("destText").textContent = hintedSlug
-          ? `cockpit.html?slug=${hintedSlug}`
-          : "cockpit.html?slug=...";
+        setLinks(hintedSlug);
 
         $("pillSlug").textContent = hintedSlug
           ? `🧭 Slug guidé : ${hintedSlug}`
@@ -720,8 +1170,11 @@
 
         if (hintedSlug) {
           setStatus(`Slug détecté : ${hintedSlug}. Entre ton téléphone et ton PIN.`, "warn");
+          setClawHinted(hintedSlug);
+          $("topSub").textContent = `Slug détecté : ${hintedSlug}. La porte PIN peut te ramener directement au bon cockpit.`;
         } else {
           setStatus("Prêt.");
+          setClawNoSlug();
         }
 
         $("btnLogin").addEventListener("click", login);
@@ -737,10 +1190,12 @@
 
       try{
         initClient();
+        setClawLoading();
         initUi();
       }catch(err){
         console.error(err);
         setStatus("Erreur : bibliothèque Supabase non chargée.", "err");
+        setClawError("Bibliothèque Supabase non chargée.");
         $("btnLogin").disabled = true;
       }
     })();
