@@ -116,7 +116,7 @@
 
     <div class="links">
       <a class="btn" id="fallbackPin" href="./pin.html">Aller à la porte PIN</a>
-      <a class="btn alt" id="fallbackCockpit" href="./cockpit.html">Voir le cockpit</a>
+      <a class="btn alt" id="fallbackTarget" href="./cockpit.html">Voir la cible</a>
     </div>
   </div>
 
@@ -136,35 +136,86 @@
           .replace(/^-|-$/g, "");
       }
 
-      const qs = new URLSearchParams(location.search);
-      const slug = normalizeSlug(qs.get("slug") || "");
-
-      const PIN_URL = slug
-        ? "./pin.html?slug=" + encodeURIComponent(slug)
-        : "./pin.html";
-
-      const COCKPIT_URL = slug
-        ? "./cockpit.html?slug=" + encodeURIComponent(slug)
-        : "./cockpit.html";
-
-      const fallbackPin = $("fallbackPin");
-      const fallbackCockpit = $("fallbackCockpit");
-      const msg = $("msg");
-
-      fallbackPin.href = PIN_URL;
-      fallbackCockpit.href = COCKPIT_URL;
-
-      if (slug) {
-        localStorage.setItem("digiy_resa_last_slug", slug);
-        sessionStorage.setItem("digiy_resa_slug", slug);
+      function normalizePhone(v){
+        const raw = String(v || "").trim();
+        const cleaned = raw.replace(/[^\d+]/g, "");
+        const digits = cleaned.replace(/[^\d]/g, "");
+        if (!digits) return "";
+        return cleaned.startsWith("+") ? `+${digits}` : digits;
       }
 
-      msg.textContent = slug
-        ? "Slug détecté. Redirection vers votre porte PIN sécurisée."
-        : "Aucun slug fourni. Redirection vers la porte PIN générale.";
+      function normalizeTarget(v){
+        const t = String(v || "").trim().toLowerCase();
+        if (t === "planning") return "planning";
+        if (t === "dashboard") return "dashboard";
+        if (t === "public") return "public";
+        return "cockpit";
+      }
+
+      function storageSet(key, value){
+        if (value == null || value === "") return;
+        try { localStorage.setItem(key, String(value)); } catch (_) {}
+        try { sessionStorage.setItem(key, String(value)); } catch (_) {}
+      }
+
+      const qs = new URLSearchParams(location.search);
+
+      const slug = normalizeSlug(qs.get("slug") || "");
+      const phone = normalizePhone(qs.get("phone") || "");
+      const target = normalizeTarget(qs.get("target") || "");
+
+      let targetPath = "./cockpit.html";
+      if (target === "planning") targetPath = "./planning.html";
+      if (target === "dashboard") targetPath = "./dashboard-pro.html";
+      if (target === "public") targetPath = "./fiche.html";
+
+      const pinUrl = new URL("./pin.html", location.href);
+      const targetUrl = new URL(targetPath, location.href);
+
+      if (slug) {
+        pinUrl.searchParams.set("slug", slug);
+        targetUrl.searchParams.set("slug", slug);
+
+        storageSet("digiy_resa_slug", slug);
+        storageSet("digiy_resa_last_slug", slug);
+        storageSet("digiy_last_slug", slug);
+        storageSet("DIGIY_SLUG", slug);
+      }
+
+      if (phone) {
+        pinUrl.searchParams.set("phone", phone);
+        targetUrl.searchParams.set("phone", phone);
+
+        storageSet("digiy_resa_phone", phone);
+      }
+
+      if (target) {
+        pinUrl.searchParams.set("target", target);
+      }
+
+      const fallbackPin = $("fallbackPin");
+      const fallbackTarget = $("fallbackTarget");
+      const msg = $("msg");
+
+      fallbackPin.href = pinUrl.toString();
+      fallbackTarget.href = targetUrl.toString();
+
+      const targetLabel =
+        target === "planning" ? "planning" :
+        target === "dashboard" ? "dashboard" :
+        target === "public" ? "fiche publique" :
+        "cockpit";
+
+      if (slug && phone) {
+        msg.textContent = `Slug et téléphone détectés. Redirection vers la porte PIN sécurisée, puis vers ${targetLabel}.`;
+      } else if (slug) {
+        msg.textContent = `Slug détecté. Redirection vers la porte PIN sécurisée, puis vers ${targetLabel}.`;
+      } else {
+        msg.textContent = "Aucun slug fourni. Redirection vers la porte PIN générale.";
+      }
 
       setTimeout(() => {
-        location.replace(PIN_URL);
+        location.replace(pinUrl.toString());
       }, 250);
     })();
   </script>
