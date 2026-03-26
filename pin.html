@@ -32,8 +32,10 @@
       --shadow:0 20px 60px rgba(0,0,0,.35);
       --max:560px;
     }
+
     *{box-sizing:border-box}
     html,body{margin:0;padding:0}
+
     body{
       min-height:100dvh;
       color:var(--text);
@@ -46,7 +48,9 @@
       justify-content:center;
       padding:20px;
     }
+
     .wrap{width:100%;max-width:var(--max)}
+
     .card{
       background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
       border:1px solid var(--line);
@@ -55,62 +59,141 @@
       overflow:hidden;
       backdrop-filter:blur(12px);
     }
+
     .hero{
       padding:22px 22px 10px;
       border-bottom:1px solid rgba(255,255,255,.06);
       background:radial-gradient(circle at top right, rgba(34,211,238,.16), transparent 36%);
     }
+
     .brand{display:flex;align-items:center;gap:12px}
+
     .logo{
-      width:50px;height:50px;border-radius:16px;display:grid;place-items:center;
+      width:50px;
+      height:50px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
       background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(103,232,249,.12));
       border:1px solid rgba(34,211,238,.24);
       font-size:24px;
     }
+
     h1{margin:0;font-size:1.1rem}
     .sub{margin:4px 0 0;color:var(--muted);font-size:.92rem}
     .body{padding:20px}
     .intro{margin:0 0 16px;color:var(--muted);line-height:1.5}
     .field{margin-bottom:12px}
     label{display:block;margin-bottom:7px;font-weight:700;font-size:.92rem}
+
     input{
-      width:100%;min-height:52px;border-radius:16px;border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);color:var(--text);padding:0 14px;font-size:1rem;outline:none;
+      width:100%;
+      min-height:52px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:0 14px;
+      font-size:1rem;
+      outline:none;
     }
-    input:focus{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 4px rgba(34,211,238,.12)}
+
+    input:focus{
+      border-color:rgba(34,211,238,.55);
+      box-shadow:0 0 0 4px rgba(34,211,238,.12);
+    }
+
     .pin-row{display:flex;gap:10px}
-    .pin-row input{flex:1;text-align:center;letter-spacing:.25em;font-weight:800}
+    .pin-row input{
+      flex:1;
+      text-align:center;
+      letter-spacing:.25em;
+      font-weight:800;
+    }
+
     .mini{
-      min-width:56px;min-height:52px;border:none;border-radius:16px;cursor:pointer;
-      background:rgba(255,255,255,.06);color:var(--text);font-size:1rem;font-weight:800;
+      min-width:56px;
+      min-height:52px;
+      border:none;
+      border-radius:16px;
+      cursor:pointer;
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-size:1rem;
+      font-weight:800;
     }
+
     .actions{display:grid;gap:10px;margin-top:16px}
+
     .btn{
-      appearance:none;border:none;min-height:54px;border-radius:18px;padding:0 16px;
-      text-decoration:none;display:flex;align-items:center;justify-content:center;cursor:pointer;
-      font-weight:800;font-size:1rem;
+      appearance:none;
+      border:none;
+      min-height:54px;
+      border-radius:18px;
+      padding:0 16px;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-weight:800;
+      font-size:1rem;
     }
+
     .btn.primary{background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:#082f49}
     .btn.secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.08)}
     .btn.ghost{background:transparent;color:#a5f3fc;border:1px solid rgba(165,243,252,.25)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
     .status{
-      margin-top:16px;border-radius:16px;padding:12px 14px;min-height:48px;line-height:1.5;
-      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--muted);
+      margin-top:16px;
+      border-radius:16px;
+      padding:12px 14px;
+      min-height:48px;
+      line-height:1.5;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
       white-space:pre-line;
     }
-    .status.ok{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.28);color:#dcfce7}
-    .status.err{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.28);color:#fee2e2}
-    .meta{
-      display:grid;gap:8px;margin-top:16px;padding:14px;border-radius:18px;
-      background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)
+
+    .status.ok{
+      background:rgba(34,197,94,.10);
+      border-color:rgba(34,197,94,.28);
+      color:#dcfce7;
     }
+
+    .status.err{
+      background:rgba(239,68,68,.10);
+      border-color:rgba(239,68,68,.28);
+      color:#fee2e2;
+    }
+
+    .meta{
+      display:grid;
+      gap:8px;
+      margin-top:16px;
+      padding:14px;
+      border-radius:18px;
+      background:rgba(255,255,255,.025);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
     .row{display:flex;justify-content:space-between;gap:12px}
     .k{color:var(--muted)}
     .v{font-weight:700;text-align:right;word-break:break-word}
     .hidden{display:none!important}
     .foot{padding:0 20px 20px;text-align:center;color:#94a3b8;font-size:.84rem}
-    @media (max-width:560px){.grid{grid-template-columns:1fr}}
+
+    @media (max-width:560px){
+      .grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
@@ -215,6 +298,7 @@
         togglePin: document.getElementById("togglePin"),
         btnOpen: document.getElementById("btnOpen"),
         btnReturn: document.getElementById("btnReturn"),
+        btnPay: document.getElementById("btnPay"),
         btnCockpit: document.getElementById("btnCockpit"),
         btnPlanning: document.getElementById("btnPlanning"),
         btnDashboard: document.getElementById("btnDashboard"),
@@ -239,11 +323,11 @@
       }
 
       function normPhone(value) {
-        const raw = String(value || "").trim();
-        const cleaned = raw.replace(/[^\d+]/g, "");
-        const digits = cleaned.replace(/[^\d]/g, "");
+        const digits = String(value || "").replace(/[^\d]/g, "");
         if (!digits) return "";
-        return cleaned.startsWith("+") ? `+${digits}` : digits;
+        if (digits.startsWith("221") && digits.length === 12) return digits;
+        if (digits.length === 9) return "221" + digits;
+        return digits;
       }
 
       function normPin(value) {
@@ -251,7 +335,7 @@
       }
 
       function safeJsonParse(raw) {
-        try { return JSON.parse(raw); } catch { return null; }
+        try { return JSON.parse(raw); } catch (_) { return null; }
       }
 
       function setStatus(message, type = "") {
@@ -281,9 +365,11 @@
           access_ok: true,
           ok: true,
           verified: true,
+          preview: false,
 
           verified_at: t,
           validated_at: new Date(t).toISOString(),
+          validated_at_ms: t,
           ts: t,
 
           reason: "pin_ok"
@@ -315,6 +401,7 @@
       function readSession() {
         for (const key of CFG.STORAGE_KEYS) {
           let parsed = null;
+
           try {
             parsed = safeJsonParse(localStorage.getItem(key));
             if (!parsed) parsed = safeJsonParse(sessionStorage.getItem(key));
@@ -331,6 +418,7 @@
 
           let recent = false;
           if (verifiedAt && isRecent(verifiedAt)) recent = true;
+
           if (!recent && validatedAt) {
             const dt = new Date(validatedAt).getTime();
             if (dt && isRecent(dt)) recent = true;
@@ -346,6 +434,7 @@
             validated_at: validatedAt
           };
         }
+
         return null;
       }
 
@@ -374,6 +463,7 @@
             };
           }
         }
+
         return null;
       }
 
@@ -402,6 +492,7 @@
             };
           }
         }
+
         return null;
       }
 
@@ -418,6 +509,7 @@
               owner_id: data.owner_id || null
             };
           }
+
           const vals = Object.values(data);
           if (vals.length >= 3) {
             const okLike = vals[0] === true || vals[0] === "t" || vals[0] === "true" || vals[0] === 1;
@@ -441,6 +533,7 @@
               const moduleToken = String(m[2] || "").trim().replace(/^"|"$/g, "");
               const phoneToken = String(m[3] || "").trim().replace(/^"|"$/g, "");
               const okLike = okToken === "t" || okToken === "true" || okToken === "1";
+
               if (okLike) {
                 return {
                   ok: true,
@@ -468,6 +561,7 @@
         for (const body of tries) {
           const { data, error } = await supabase.rpc(CFG.RPC_VERIFY_PIN, body);
           if (error) continue;
+
           const parsed = parseVerifyPinPayload(data, p);
           if (parsed?.ok) return parsed;
         }
@@ -489,6 +583,7 @@
 
       function buildReturnUrl(session) {
         const ret = qs("return");
+
         if (ret) {
           try {
             const u = new URL(ret, location.href);
@@ -504,6 +599,7 @@
 
         const target = (qs("target") || "").trim().toLowerCase();
         let next = CFG.DEFAULT_NEXT;
+
         if (target === "planning") next = "./planning.html";
         if (target === "dashboard") next = "./dashboard-pro.html";
         if (target === "public") next = "./fiche.html";
@@ -520,6 +616,7 @@
       function refreshLinks(slug, phone) {
         const s = normSlug(slug);
         const p = normPhone(phone);
+
         const add = (base) => {
           const u = new URL(base, location.href);
           if (s) u.searchParams.set("slug", s);
@@ -531,6 +628,7 @@
         el.btnPlanning.href = add("./planning.html");
         el.btnDashboard.href = add("./dashboard-pro.html");
         el.btnPublic.href = add("./fiche.html");
+        el.btnPay.href = CFG.PAY_URL;
 
         if (s) {
           el.btnCockpit.classList.remove("hidden");
@@ -542,7 +640,9 @@
         const dummy = { slug: s, phone: p };
         el.btnReturn.href = buildReturnUrl(dummy);
         el.btnReturn.classList.remove("hidden");
-        el.returnInfo.textContent = new URL(el.btnReturn.href).pathname.split("/").pop() || "cockpit.html";
+
+        const path = new URL(el.btnReturn.href).pathname.split("/").pop() || "cockpit.html";
+        el.returnInfo.textContent = path;
       }
 
       function hydrate() {
@@ -550,20 +650,35 @@
         const qPhone = normPhone(qs("phone"));
         const saved = readSession();
 
-        el.slug.value =
-          qSlug ||
-          saved?.slug ||
-          normSlug(sessionStorage.getItem(CFG.SLUG_KEY) || localStorage.getItem(CFG.SLUG_KEY) || localStorage.getItem(CFG.LAST_SLUG_KEY) || "");
+        let storedSlug = "";
+        let storedPhone = "";
 
-        el.phone.value =
-          qPhone ||
-          saved?.phone ||
-          normPhone(sessionStorage.getItem(CFG.PHONE_KEY) || localStorage.getItem(CFG.PHONE_KEY) || "");
+        try {
+          storedSlug = normSlug(
+            sessionStorage.getItem(CFG.SLUG_KEY) ||
+            localStorage.getItem(CFG.SLUG_KEY) ||
+            localStorage.getItem(CFG.LAST_SLUG_KEY) ||
+            ""
+          );
+        } catch (_) {}
+
+        try {
+          storedPhone = normPhone(
+            sessionStorage.getItem(CFG.PHONE_KEY) ||
+            localStorage.getItem(CFG.PHONE_KEY) ||
+            ""
+          );
+        } catch (_) {}
+
+        el.slug.value = qSlug || saved?.slug || storedSlug;
+        el.phone.value = qPhone || saved?.phone || storedPhone;
 
         if (saved?.slug || saved?.phone) {
           refreshLinks(saved.slug || el.slug.value, saved.phone || el.phone.value);
         } else if (el.slug.value || el.phone.value) {
           refreshLinks(el.slug.value, el.phone.value);
+        } else {
+          el.btnPay.href = CFG.PAY_URL;
         }
 
         if (saved?.verified_at || saved?.validated_at) {
@@ -645,11 +760,13 @@
       });
 
       el.btnOpen.addEventListener("click", login);
-      [el.slug, el.phone, el.pin].forEach(node => {
+
+      [el.slug, el.phone, el.pin].forEach((node) => {
         node.addEventListener("keydown", (e) => {
           if (e.key === "Enter") login();
         });
       });
+
       el.slug.addEventListener("input", () => refreshLinks(el.slug.value, el.phone.value));
       el.phone.addEventListener("input", () => refreshLinks(el.slug.value, el.phone.value));
 
