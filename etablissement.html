@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>DIGIY RESA — Fiche multi business</title>
+  <title>DIGIY RESA PRO — Profil / établissement</title>
   <meta name="theme-color" content="#07140f"/>
-  <meta name="description" content="Fiche publique DIGIY RESA. Réservation simple, contact direct, services multi business."/>
+  <meta name="description" content="Profil / établissement DIGIY RESA PRO. Passerelle propre entre le rail professionnel et la fiche publique." />
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -351,7 +351,7 @@
       transition:.18s ease;
     }
 
-    .btn:hover{ transform:translateY(-1px); }
+    .btn:hover{transform:translateY(-1px)}
 
     .btn.primary{
       background:linear-gradient(135deg, var(--primary), var(--primary-2));
@@ -627,21 +627,26 @@
       <div class="brand">
         <div class="eyebrow">DIGIY RESA PRO</div>
         <div class="brand-title">Profil / établissement</div>
-        <div class="brand-sub" id="topSub">Lecture publique + repères PRO recousus.</div>
+        <div class="brand-sub" id="topSub">Passerelle PRO vers la vraie fiche publique et la réservation publique.</div>
       </div>
 
       <div class="top-actions">
+        <a class="btn" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
         <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
-        <a class="btn" id="btnPinTop" href="./pin.html">PIN</a>
+        <a class="btn" id="btnQrTop" href="./qr.html">QR</a>
+        <a class="btn" id="btnClawTop" href="./claw.html">CLAW</a>
       </div>
     </div>
 
     <nav class="nav-rail" aria-label="Navigation PRO RESA">
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
       <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+      <a class="nav-link" id="navClaw" href="./claw.html">CLAW</a>
       <a class="nav-link active" id="navSettings" href="./etablissement.html">Profil / établissement</a>
-      <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
       <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
+      <a class="nav-link" id="navPublic" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Vitrine</a>
     </nav>
 
     <section class="hero">
@@ -673,11 +678,14 @@
             </div>
 
             <div class="hero-actions">
-              <a class="btn primary" id="btnReserve" href="./reserver.html">📅 Réserver</a>
+              <a class="btn primary" id="btnReserve" href="https://resa-table-resto.digiylyfe.com/reserver.html" target="_blank" rel="noopener">📅 Réserver</a>
               <a class="btn gold" id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
+              <a class="btn" id="btnCockpitHero" href="./cockpit.html">🧭 Cockpit</a>
               <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Dashboard</a>
               <a class="btn" id="btnPlanningHero" href="./planning.html">🗓️ Planning</a>
-              <a class="btn" id="btnHomeHero" href="./index.html">🏠 Retour vitrine</a>
+              <a class="btn" id="btnQrHero" href="./qr.html">📎 QR</a>
+              <a class="btn" id="btnClawHero" href="./claw.html">🦅 CLAW</a>
+              <a class="btn" id="btnPublicHero" href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Voir la fiche publique</a>
             </div>
           </div>
 
@@ -780,6 +788,11 @@
       const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
       const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
 
+      const PUBLIC_BASE_URL = "https://resa-table-resto.digiylyfe.com";
+      const PUBLIC_INDEX_URL = `${PUBLIC_BASE_URL}/`;
+      const PUBLIC_FICHE_PATH = "fiche.html";
+      const PUBLIC_RESERVER_PATH = "reserver.html";
+
       const supabaseLib = window.supabase;
       const qs = new URLSearchParams(location.search);
 
@@ -835,32 +848,60 @@
         return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
       }
 
+      function buildPublicUrl(page, slugValue = "", extra = {}){
+        const clean = normalizeSlug(slugValue);
+        const url = new URL(page, PUBLIC_INDEX_URL);
+
+        if (clean) url.searchParams.set("slug", clean);
+
+        Object.entries(extra || {}).forEach(([k, v]) => {
+          if (v !== null && v !== undefined && String(v).trim() !== "") {
+            url.searchParams.set(k, String(v));
+          }
+        });
+
+        return url.toString();
+      }
+
       function setNavLinks(slugValue){
         const clean = normalizeSlug(slugValue);
 
+        const cockpitHref = withSlug("./cockpit.html", clean);
         const dashboardHref = withSlug("./dashboard-pro.html", clean);
         const planningHref = withSlug("./planning.html", clean);
+        const qrHref = withSlug("./qr.html", clean);
+        const clawHref = withSlug("./claw.html", clean);
         const settingsHref = withSlug("./etablissement.html", clean);
-        const pinHref = withSlug("./pin.html", clean);
         const homeHref = withSlug("./index.html", clean);
-        const reserveHref = withSlug("./reserver.html", clean);
 
+        const publicIndexHref = PUBLIC_INDEX_URL;
+        const publicFicheHref = buildPublicUrl(PUBLIC_FICHE_PATH, clean);
+        const reserveHref = buildPublicUrl(PUBLIC_RESERVER_PATH, clean);
+
+        document.getElementById("navCockpit").href = cockpitHref;
         document.getElementById("navDashboard").href = dashboardHref;
         document.getElementById("navPlanning").href = planningHref;
+        document.getElementById("navQr").href = qrHref;
+        document.getElementById("navClaw").href = clawHref;
         document.getElementById("navSettings").href = settingsHref;
-        document.getElementById("navPin").href = pinHref;
         document.getElementById("navHome").href = homeHref;
+        document.getElementById("navPublic").href = publicIndexHref;
 
+        document.getElementById("btnCockpitTop").href = cockpitHref;
         document.getElementById("btnDashboardTop").href = dashboardHref;
-        document.getElementById("btnPinTop").href = pinHref;
+        document.getElementById("btnQrTop").href = qrHref;
+        document.getElementById("btnClawTop").href = clawHref;
 
+        document.getElementById("btnCockpitHero").href = cockpitHref;
         document.getElementById("btnDashboardHero").href = dashboardHref;
         document.getElementById("btnPlanningHero").href = planningHref;
-        document.getElementById("btnHomeHero").href = homeHref;
+        document.getElementById("btnQrHero").href = qrHref;
+        document.getElementById("btnClawHero").href = clawHref;
+        document.getElementById("btnPublicHero").href = publicFicheHref;
         document.getElementById("btnReserve").href = reserveHref;
       }
 
-      function safe(v, fallback="—"){
+      function safe(v, fallback = "—"){
         const s = String(v || "").trim();
         return s || fallback;
       }
