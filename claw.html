@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#061b14"/>
+  <meta name="description" content="CLAW by DIGIY — L’aide intelligente pour poser ton activité RESA."/>
+  <title>CLAW by DIGIY — RESA PRO</title>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "RESA";
+    window.DIGIY_LOGIN_URL = "./pin.html";
+    document.documentElement.style.visibility = "hidden";
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js"></script>
+
+  <style>
+    :root{
+      --bg:#061b14;
+      --bg2:#082117;
+      --card:#0d2b20;
+      --card2:#103427;
+      --line:rgba(255,255,255,.10);
+      --line2:rgba(250,204,21,.24);
+      --text:#ebfff1;
+      --muted:rgba(235,255,241,.72);
+      --soft:rgba(235,255,241,.52);
+      --gold:#facc15;
+      --gold2:#fde68a;
+      --green:#16a34a;
+      --green2:#22c55e;
+      --danger:#ef4444;
+      --dangerBg:rgba(239,68,68,.10);
+      --okBg:rgba(34,197,94,.10);
+      --shadow:0 18px 48px rgba(0,0,0,.28);
+      --radius:22px;
+      --radiusSm:14px;
+      --max:1180px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:
+      radial-gradient(circle at top right, rgba(250,204,21,.08), transparent 30%),
+      linear-gradient(180deg, var(--bg) 0%, #04130d 100%);
+      color:var(--text);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      min-height:100%;
+    }
+
+    a{color:inherit;text-decoration:none}
+    button,input,textarea,select{font:inherit}
+
+    .page{
+      width:min(var(--max), calc(100% - 24px));
+      margin:0 auto;
+      padding:18px 0 38px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    .top-left,.top-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .back-btn,.ghost-btn,.chip-link,.action-btn,.small-btn,.intent-btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      transition:.18s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:42px;
+    }
+
+    .back-btn:hover,.ghost-btn:hover,.chip-link:hover,.action-btn:hover,.small-btn:hover,.intent-btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+    }
+
+    .gold-btn{
+      appearance:none;
+      border:none;
+      background:linear-gradient(135deg, var(--gold) 0%, #f59e0b 100%);
+      color:#1d1500;
+      font-weight:900;
+      padding:12px 16px;
+      border-radius:999px;
+      cursor:pointer;
+      min-height:44px;
+      box-shadow:0 10px 24px rgba(250,204,21,.22);
+      transition:.18s ease;
+    }
+
+    .gold-btn:hover{transform:translateY(-1px)}
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:16px;
+      margin-bottom:16px;
+    }
+
+    .hero-card,.status-card,.card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+    }
+
+    .hero-card{
+      padding:20px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -40px auto;
+      width:170px;height:170px;
+      background:radial-gradient(circle, rgba(250,204,21,.16), transparent 68%);
+      pointer-events:none;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border:1px solid var(--line2);
+      border-radius:999px;
+      background:rgba(250,204,21,.10);
+      color:var(--gold2);
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:.92rem;
+      margin-bottom:12px;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(1.8rem, 4vw, 3rem);
+      line-height:1.04;
+      letter-spacing:-.03em;
+    }
+
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:1rem;
+    }
+
+    .status-card{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      justify-content:center;
+    }
+
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:max-content;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      font-weight:800;
+      font-size:.95rem;
+    }
+
+    .status-pill.ok{
+      background:var(--okBg);
+      border-color:rgba(34,197,94,.26);
+      color:#b7f7c9;
+    }
+
+    .status-pill.bad{
+      background:var(--dangerBg);
+      border-color:rgba(239,68,68,.26);
+      color:#fecaca;
+    }
+
+    .status-pill.warn{
+      background:rgba(250,204,21,.10);
+      border-color:rgba(250,204,21,.25);
+      color:#fde68a;
+    }
+
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .meta-box{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      padding:12px;
+      min-height:78px;
+    }
+
+    .meta-label{
+      color:var(--soft);
+      font-size:.82rem;
+      margin-bottom:6px;
+    }
+
+    .meta-value{
+      font-weight:800;
+      word-break:break-word;
+      line-height:1.35;
+    }
+
+    .nav-strip{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:0 0 16px;
+    }
+
+    .chip-link{
+      background:rgba(255,255,255,.04);
+      border-color:rgba(255,255,255,.08);
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+    }
+
+    .card{
+      padding:18px;
+    }
+
+    .card h2{
+      margin:0 0 8px;
+      font-size:1.18rem;
+      letter-spacing:-.02em;
+    }
+
+    .card p.lead{
+      margin:0 0 14px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .intent-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .intent-btn{
+      border-radius:18px;
+      padding:14px;
+      justify-content:flex-start;
+      align-items:flex-start;
+      flex-direction:column;
+      gap:4px;
+      min-height:84px;
+      text-align:left;
+    }
+
+    .intent-btn strong{
+      font-size:.98rem;
+      line-height:1.2;
+    }
+
+    .intent-btn span{
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.35;
+    }
+
+    .intent-btn.active{
+      background:rgba(250,204,21,.11);
+      border-color:rgba(250,204,21,.28);
+      color:var(--gold2);
+    }
+
+    .workspace{
+      display:grid;
+      gap:12px;
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    label{
+      font-weight:800;
+      font-size:.95rem;
+    }
+
+    textarea,input{
+      width:100%;
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px 15px;
+      outline:none;
+      transition:.16s ease;
+    }
+
+    textarea{
+      min-height:180px;
+      resize:vertical;
+      line-height:1.55;
+    }
+
+    input:focus,textarea:focus{
+      border-color:rgba(250,204,21,.30);
+      box-shadow:0 0 0 4px rgba(250,204,21,.08);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .action-btn,.small-btn{
+      border-radius:14px;
+      font-weight:800;
+    }
+
+    .action-btn.primary{
+      background:rgba(34,197,94,.11);
+      border-color:rgba(34,197,94,.24);
+      color:#c8f8d6;
+    }
+
+    .action-btn.warn{
+      background:rgba(250,204,21,.10);
+      border-color:rgba(250,204,21,.25);
+      color:#fde68a;
+    }
+
+    .action-btn.danger{
+      background:rgba(239,68,68,.09);
+      border-color:rgba(239,68,68,.20);
+      color:#fecaca;
+    }
+
+    .output{
+      background:#071c14;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      white-space:pre-wrap;
+      line-height:1.6;
+      min-height:110px;
+      color:#f4fff7;
+    }
+
+    .output.muted{
+      color:var(--muted);
+    }
+
+    .mini-title{
+      margin:0 0 8px;
+      font-size:.96rem;
+      color:var(--gold2);
+      font-weight:900;
+      letter-spacing:.02em;
+      text-transform:uppercase;
+    }
+
+    .stack{
+      display:grid;
+      gap:14px;
+    }
+
+    .help-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .help-item{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:12px;
+    }
+
+    .help-item strong{
+      display:block;
+      margin-bottom:5px;
+    }
+
+    .footer-note{
+      margin-top:16px;
+      color:var(--soft);
+      font-size:.92rem;
+      line-height:1.5;
+      text-align:center;
+    }
+
+    .sep{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      margin:8px 0;
+    }
+
+    .hidden{display:none!important}
+
+    @media (max-width:980px){
+      .hero,.layout{grid-template-columns:1fr}
+    }
+
+    @media (max-width:720px){
+      .page{width:min(100% - 18px, var(--max))}
+      .meta,.intent-grid{grid-template-columns:1fr}
+      .hero-card,.status-card,.card{padding:15px}
+      h1{font-size:1.7rem}
+      .back-btn,.ghost-btn,.chip-link,.action-btn,.small-btn,.gold-btn{width:100%;justify-content:center}
+      .top-left,.top-right,.row,.nav-strip{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="top-left">
+        <a class="back-btn" href="https://digiylyfe.com/">← Retour DIGIYLYFE</a>
+        <a class="ghost-btn" id="btnOpenCockpitTop" href="./cockpit.html">Cockpit RESA</a>
+      </div>
+      <div class="top-right">
+        <button class="gold-btn" id="btnGenerateTop">Générer mon plan CLAW</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">CLAW by DIGIY · RESA PRO</div>
+        <h1>L’aide intelligente pour poser ton activité</h1>
+        <p>
+          Ici on reste terrain, clair et utile. Pas de démo, pas de cinéma.
+          CLAW t’aide à préparer une réponse client, une organisation simple,
+          un brief WhatsApp ou une check-list opérationnelle autour de ton activité RESA.
+        </p>
+      </div>
+
+      <aside class="status-card">
+        <div id="accessPill" class="status-pill warn">Chargement de l’accès…</div>
+
+        <div class="meta">
+          <div class="meta-box">
+            <div class="meta-label">Établissement</div>
+            <div class="meta-value" id="metaLabel">—</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Module</div>
+            <div class="meta-value">RESA</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Slug</div>
+            <div class="meta-value" id="metaSlug">—</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Téléphone</div>
+            <div class="meta-value" id="metaPhone">—</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <nav class="nav-strip">
+      <a class="chip-link" id="lnkDashboard" href="./dashboard-pro.html">Dashboard pro</a>
+      <a class="chip-link" id="lnkCockpit" href="./cockpit.html">Cockpit</a>
+      <a class="chip-link" id="lnkPlanning" href="./planning.html">Planning</a>
+      <a class="chip-link" id="lnkFiche" href="./fiche.html">Fiche publique</a>
+      <a class="chip-link" id="lnkReserver" href="./reserver.html">Réserver</a>
+    </nav>
+
+    <main class="layout">
+      <section class="stack">
+        <article class="card">
+          <h2>Choisis un besoin terrain</h2>
+          <p class="lead">
+            Tu cliques, CLAW te prépare une base propre. Ensuite tu ajustes avec ton contexte réel.
+          </p>
+
+          <div class="intent-grid" id="intentGrid">
+            <button class="intent-btn" data-intent="slots">
+              <strong>Répondre à une demande de créneau</strong>
+              <span>Quand un client te demande “vous avez quelle dispo ?”</span>
+            </button>
+
+            <button class="intent-btn" data-intent="confirm">
+              <strong>Confirmer une réservation</strong>
+              <span>Message clair, propre, sans bavardage</span>
+            </button>
+
+            <button class="intent-btn" data-intent="followup">
+              <strong>Relancer un client</strong>
+              <span>Suivi après échange, devis ou hésitation</span>
+            </button>
+
+            <button class="intent-btn" data-intent="service">
+              <strong>Présenter un service</strong>
+              <span>Donner envie sans faire roman</span>
+            </button>
+
+            <button class="intent-btn" data-intent="no_show">
+              <strong>Gérer absence / retard</strong>
+              <span>Rester ferme, simple, pro</span>
+            </button>
+
+            <button class="intent-btn" data-intent="ops">
+              <strong>Organiser la journée</strong>
+              <span>Mini plan d’action opérationnel</span>
+            </button>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Atelier CLAW</h2>
+          <p class="lead">
+            Mets le vrai contexte : service, date, client, question, contrainte, urgence, équipe, prix ou notes utiles.
+          </p>
+
+          <div class="workspace">
+            <div class="field">
+              <label for="inputTitle">Titre du besoin</label>
+              <input id="inputTitle" type="text" placeholder="Exemple : Cliente demande un créneau samedi 16h pour brushing"/>
+            </div>
+
+            <div class="field">
+              <label for="inputContext">Contexte brut</label>
+              <textarea id="inputContext" placeholder="Écris ici le contexte réel : ce que le client demande, ce qui est déjà décidé, les contraintes, ce que tu veux envoyer ou organiser."></textarea>
+            </div>
+
+            <div class="row">
+              <button class="action-btn primary" id="btnGenerate">Générer</button>
+              <button class="action-btn warn" id="btnSave">Enregistrer</button>
+              <button class="action-btn" id="btnCopyBrief">Copier le brief</button>
+              <button class="action-btn" id="btnWhatsAppBrief">WhatsApp</button>
+              <button class="action-btn danger" id="btnClear">Vider</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Sortie CLAW</h2>
+          <p class="lead">
+            Ici tu récupères du concret : message client, plan d’action et points à vérifier.
+          </p>
+
+          <div class="stack">
+            <div>
+              <div class="mini-title">Message prêt à envoyer</div>
+              <div class="output muted" id="outClient">Aucune génération pour le moment.</div>
+              <div class="row" style="margin-top:10px">
+                <button class="small-btn" id="btnCopyClient">Copier le message</button>
+                <button class="small-btn" id="btnWhatsAppClient">Envoyer sur WhatsApp</button>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div>
+              <div class="mini-title">Plan d’action interne</div>
+              <div class="output muted" id="outPlan">Aucune génération pour le moment.</div>
+              <div class="row" style="margin-top:10px">
+                <button class="small-btn" id="btnCopyPlan">Copier le plan</button>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div>
+              <div class="mini-title">Points de contrôle</div>
+              <div class="output muted" id="outChecks">Aucune génération pour le moment.</div>
+              <div class="row" style="margin-top:10px">
+                <button class="small-btn" id="btnCopyChecks">Copier les points</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <aside class="stack">
+        <article class="card">
+          <h2>Repères utiles</h2>
+          <p class="lead">
+            CLAW ne remplace pas ton métier. Il t’aide à aller plus vite, plus proprement.
+          </p>
+
+          <div class="help-list">
+            <div class="help-item">
+              <strong>1. Dis le besoin clairement</strong>
+              Deux phrases vraies valent mieux qu’un paragraphe flou.
+            </div>
+            <div class="help-item">
+              <strong>2. Garde l’angle terrain</strong>
+              Heure, service, prix, durée, disponibilité, confirmation.
+            </div>
+            <div class="help-item">
+              <strong>3. Laisse une porte simple au client</strong>
+              Réponse attendue, créneau, confirmation, acompte ou rappel.
+            </div>
+            <div class="help-item">
+              <strong>4. Reste cohérent avec le planning</strong>
+              CLAW aide, mais c’est le planning réel qui commande.
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Contexte chargé</h2>
+          <p class="lead" id="contextResume">
+            En attente de lecture de session…
+          </p>
+
+          <div class="meta">
+            <div class="meta-box">
+              <div class="meta-label">Accès</div>
+              <div class="meta-value" id="accessText">—</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Mode</div>
+              <div class="meta-value" id="modeText">—</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Source session</div>
+              <div class="meta-value" id="sessionText">—</div>
+            </div>
+            <div class="meta-box">
+              <div class="meta-label">Dernier brouillon</div>
+              <div class="meta-value" id="draftText">Aucun</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <h2>Accès secours</h2>
+          <p class="lead">
+            En cas de session cassée, repasse par la porte PIN. Dans la circulation normale, tu restes en navigation interne.
+          </p>
+          <div class="row">
+            <a class="ghost-btn" id="lnkPin" href="./pin.html">Ouvrir la porte PIN</a>
+            <a class="ghost-btn" id="btnOpenCockpit" href="./cockpit.html">Retour cockpit</a>
+          </div>
+        </article>
+      </aside>
+    </main>
+
+    <div class="footer-note">
+      CLAW by DIGIY · RESA PRO · rail simple, utile, sans démo.
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      "use strict";
+
+      const MODULE = "RESA";
+      const params = new URLSearchParams(window.location.search);
+      const SUPABASE_URL = window.DIGIY_SUPABASE_URL || "";
+      const SUPABASE_KEY = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY || "";
+      const supabase = (window.supabase && SUPABASE_URL && SUPABASE_KEY)
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+        : null;
+
+      const els = {
+        accessPill: document.getElementById("accessPill"),
+        metaLabel: document.getElementById("metaLabel"),
+        metaSlug: document.getElementById("metaSlug"),
+        metaPhone: document.getElementById("metaPhone"),
+        contextResume: document.getElementById("contextResume"),
+        accessText: document.getElementById("accessText"),
+        modeText: document.getElementById("modeText"),
+        sessionText: document.getElementById("sessionText"),
+        draftText: document.getElementById("draftText"),
+
+        inputTitle: document.getElementById("inputTitle"),
+        inputContext: document.getElementById("inputContext"),
+
+        outClient: document.getElementById("outClient"),
+        outPlan: document.getElementById("outPlan"),
+        outChecks: document.getElementById("outChecks"),
+
+        btnGenerateTop: document.getElementById("btnGenerateTop"),
+        btnGenerate: document.getElementById("btnGenerate"),
+        btnSave: document.getElementById("btnSave"),
+        btnCopyBrief: document.getElementById("btnCopyBrief"),
+        btnWhatsAppBrief: document.getElementById("btnWhatsAppBrief"),
+        btnClear: document.getElementById("btnClear"),
+
+        btnCopyClient: document.getElementById("btnCopyClient"),
+        btnWhatsAppClient: document.getElementById("btnWhatsAppClient"),
+        btnCopyPlan: document.getElementById("btnCopyPlan"),
+        btnCopyChecks: document.getElementById("btnCopyChecks"),
+
+        lnkDashboard: document.getElementById("lnkDashboard"),
+        lnkCockpit: document.getElementById("lnkCockpit"),
+        lnkPlanning: document.getElementById("lnkPlanning"),
+        lnkFiche: document.getElementById("lnkFiche"),
+        lnkReserver: document.getElementById("lnkReserver"),
+        lnkPin: document.getElementById("lnkPin"),
+        btnOpenCockpit: document.getElementById("btnOpenCockpit"),
+        btnOpenCockpitTop: document.getElementById("btnOpenCockpitTop")
+      };
+
+      const intentButtons = Array.from(document.querySelectorAll(".intent-btn"));
+
+      const state = {
+        slug: "",
+        phone: "",
+        access_ok: false,
+        preview: false,
+        sessionSource: "query",
+        label: "RESA PRO",
+        intent: "slots"
+      };
+
+      function normalizeSlug(v){
+        return String(v || "").trim().toLowerCase();
+      }
+
+      function normalizePhone(v){
+        return String(v || "").replace(/[^\d]/g, "");
+      }
+
+      function safeJsonParse(v){
+        try{ return JSON.parse(v); }catch(_){ return null; }
+      }
+
+      function storageKey(){
+        return "digiy_claw_resa:" + normalizeSlug(state.slug || "global");
+      }
+
+      function text(v, fallback){
+        const s = String(v || "").trim();
+        return s || (fallback || "");
+      }
+
+      function setOutput(el, value){
+        if(!el) return;
+        const clean = String(value || "").trim();
+        el.textContent = clean || "Aucune génération pour le moment.";
+        el.classList.toggle("muted", !clean);
+      }
+
+      function setPill(kind, message){
+        els.accessPill.className = "status-pill " + kind;
+        els.accessPill.textContent = message;
+      }
+
+      function setIntent(nextIntent){
+        state.intent = nextIntent || "slots";
+        intentButtons.forEach(btn => {
+          btn.classList.toggle("active", btn.dataset.intent === state.intent);
+        });
+
+        const presets = {
+          slots: {
+            title: "Client demande un créneau disponible",
+            context: "Le client demande les créneaux disponibles. Je veux une réponse claire, courte, professionnelle, avec prochaine étape simple."
+          },
+          confirm: {
+            title: "Confirmer une réservation client",
+            context: "Je veux confirmer la réservation avec date, heure, service, conditions simples, et invitation à répondre OK."
+          },
+          followup: {
+            title: "Relancer un client après échange",
+            context: "Le client a demandé un service mais n'a pas encore confirmé. Je veux une relance sobre, utile, sans pression inutile."
+          },
+          service: {
+            title: "Présenter un service au client",
+            context: "Je veux présenter un service clairement : bénéfice, durée, prix si utile, et comment réserver."
+          },
+          no_show: {
+            title: "Gérer un retard ou une absence",
+            context: "Le client est en retard ou absent. Je veux un message ferme mais correct, avec solution propre."
+          },
+          ops: {
+            title: "Organiser la journée RESA",
+            context: "Je veux un mini plan terrain pour gérer mes rendez-vous, confirmations, trous de planning, et suivi client."
+          }
+        };
+
+        const preset = presets[state.intent];
+        if(preset && !els.inputTitle.value.trim() && !els.inputContext.value.trim()){
+          els.inputTitle.value = preset.title;
+          els.inputContext.value = preset.context;
+        }
+      }
+
+      function buildUrl(path, withPhone){
+        const slug = normalizeSlug(state.slug);
+        const phone = normalizePhone(state.phone);
+        const q = new URLSearchParams();
+        if(slug) q.set("slug", slug);
+        if(withPhone && phone) q.set("phone", phone);
+        const query = q.toString();
+        return query ? (path + "?" + query) : path;
+      }
+
+      function hydrateLinks(){
+        els.lnkDashboard.href = buildUrl("./dashboard-pro.html", true);
+        els.lnkCockpit.href = buildUrl("./cockpit.html", true);
+        els.lnkPlanning.href = buildUrl("./planning.html", true);
+        els.lnkFiche.href = buildUrl("./fiche.html", false);
+        els.lnkReserver.href = buildUrl("./reserver.html", false);
+        els.lnkPin.href = buildUrl("./pin.html", true);
+        els.btnOpenCockpit.href = buildUrl("./cockpit.html", true);
+        els.btnOpenCockpitTop.href = buildUrl("./cockpit.html", true);
+      }
+
+      function readLocalDraft(){
+        const saved = safeJsonParse(localStorage.getItem(storageKey()));
+        if(!saved) return null;
+        return saved;
+      }
+
+      function saveLocalDraft(){
+        const payload = {
+          slug: state.slug,
+          phone: state.phone,
+          label: state.label,
+          intent: state.intent,
+          title: els.inputTitle.value.trim(),
+          context: els.inputContext.value.trim(),
+          outClient: els.outClient.textContent.trim(),
+          outPlan: els.outPlan.textContent.trim(),
+          outChecks: els.outChecks.textContent.trim(),
+          ts: Date.now()
+        };
+
+        localStorage.setItem(storageKey(), JSON.stringify(payload));
+        updateDraftText(payload.ts);
+      }
+
+      function clearLocalDraft(){
+        localStorage.removeItem(storageKey());
+        updateDraftText(null);
+      }
+
+      function updateDraftText(ts){
+        if(!ts){
+          els.draftText.textContent = "Aucun";
+          return;
+        }
+        const d = new Date(ts);
+        els.draftText.textContent = d.toLocaleString("fr-FR");
+      }
+
+      function restoreLocalDraft(){
+        const saved = readLocalDraft();
+        if(!saved) return;
+
+        if(saved.intent) setIntent(saved.intent);
+        if(saved.title) els.inputTitle.value = saved.title;
+        if(saved.context) els.inputContext.value = saved.context;
+        setOutput(els.outClient, saved.outClient || "");
+        setOutput(els.outPlan, saved.outPlan || "");
+        setOutput(els.outChecks, saved.outChecks || "");
+        updateDraftText(saved.ts || null);
+      }
+
+      function buildClientMessage(intent, title, context){
+        const label = text(state.label, "RESA PRO");
+        const intro = "Bonjour, ici " + label + ".";
+        const cleanTitle = text(title, "votre demande");
+        const cleanContext = text(context, "");
+
+        const map = {
+          slots:
+            intro + "\n\n" +
+            "Merci pour votre message concernant " + cleanTitle.toLowerCase() + ".\n" +
+            "Nous pouvons vous proposer un créneau selon les disponibilités du planning.\n" +
+            "Envoyez-nous simplement le jour souhaité, l’heure idéale et le service demandé, puis nous vous confirmons rapidement.\n\n" +
+            "À très vite.",
+          confirm:
+            intro + "\n\n" +
+            "Votre réservation pour " + cleanTitle.toLowerCase() + " est bien notée.\n" +
+            "Merci de nous répondre par OK pour validation finale si tout est bon de votre côté.\n" +
+            "En cas de changement, prévenez-nous dès que possible afin d’ajuster le planning proprement.\n\n" +
+            "Merci.",
+          followup:
+            intro + "\n\n" +
+            "Petit retour concernant votre demande : nous restons disponibles pour finaliser " + cleanTitle.toLowerCase() + ".\n" +
+            "Dites-nous simplement si vous souhaitez confirmer, déplacer ou reprendre plus tard.\n\n" +
+            "Nous restons à votre écoute.",
+          service:
+            intro + "\n\n" +
+            "Concernant " + cleanTitle.toLowerCase() + ", nous pouvons vous accompagner avec une prise en charge simple et claire.\n" +
+            "Dites-nous votre besoin exact, le jour souhaité et votre disponibilité, puis nous vous orientons vers la meilleure option.\n\n" +
+            "Au plaisir.",
+          no_show:
+            intro + "\n\n" +
+            "Nous vous écrivons au sujet de " + cleanTitle.toLowerCase() + ".\n" +
+            "Comme le créneau était réservé, merci de nous confirmer rapidement si vous maintenez, reportez ou annulez.\n" +
+            "Cela nous permet de garder un planning propre pour tout le monde.\n\n" +
+            "Merci pour votre retour.",
+          ops:
+            intro + "\n\n" +
+            "Message prêt pour gestion interne ou coordination de la journée.\n" +
+            "Le point prioritaire reste : confirmation, disponibilité réelle et ordre de passage.\n\n" +
+            cleanContext
+        };
+
+        return map[intent] || map.slots;
+      }
+
+      function buildPlan(intent, title, context){
+        const t = text(title, "Besoin RESA");
+        const c = text(context, "Pas de détail supplémentaire.");
+
+        const map = {
+          slots:
+            "PLAN D’ACTION — " + t + "\n\n" +
+            "1. Vérifier le planning réel avant toute promesse.\n" +
+            "2. Identifier le service exact demandé.\n" +
+            "3. Proposer 1 à 3 créneaux maximum, pas plus.\n" +
+            "4. Demander une confirmation simple au client.\n" +
+            "5. Noter la réponse dans le suivi.\n\n" +
+            "Contexte reçu :\n" + c,
+
+          confirm:
+            "PLAN D’ACTION — " + t + "\n\n" +
+            "1. Recontrôler date, heure, service et durée.\n" +
+            "2. Vérifier que le créneau n’a pas été pris ailleurs.\n" +
+            "3. Envoyer la confirmation courte.\n" +
+            "4. Demander une réponse claire : OK / report / annulation.\n" +
+            "5. Mettre le planning à jour immédiatement.\n\n" +
+            "Contexte reçu :\n" + c,
+
+          followup:
+            "PLAN D’ACTION — " + t + "\n\n" +
+            "1. Relancer sans pression inutile.\n" +
+            "2. Rappeler le besoin traité.\n" +
+            "3. Ouvrir une porte simple : confirmer / déplacer / reprendre plus tard.\n" +
+            "4. Éviter les longs messages.\n" +
+            "5. Passer à autre chose si aucune réponse après un délai raisonnable.\n\n" +
+            "Contexte reçu :\n" + c,
+
+          service:
+            "PLAN D’ACTION — " + t + "\n\n" +
+            "1. Présenter le service en langage simple.\n" +
+            "2. Mettre le bénéfice client avant les détails techniques.\n" +
+            "3. Donner la durée et le cadre si utile.\n" +
+            "4. Finir par une action simple : réserver / demander un créneau.\n" +
+            "5. Garder le ton sobre et pro.\n\n" +
+            "Contexte reçu :\n" + c,
+
+          no_show:
+            "PLAN D’ACTION — " + t + "\n\n" +
+            "1. Vérifier si le client a prévenu.\n" +
+            "2. Contacter une seule fois proprement.\n" +
+            "3. Proposer report ou annulation selon les règles terrain.\n" +
+            "4. Libérer le créneau si besoin.\n" +
+            "5. Noter l’incident pour le suivi futur.\n\n" +
+            "Contexte reçu :\n" + c,
+
+          ops:
+            "PLAN D’ACTION — " + t + "\n\n" +
+            "1. Lister les rendez-vous confirmés.\n" +
+            "2. Distinguer : confirmé / à relancer / en attente.\n" +
+            "3. Remplir les trous de planning par relance ciblée.\n" +
+            "4. Prévoir les retards et marges entre rendez-vous.\n" +
+            "5. Fin de journée : vérifier ce qui doit être reporté à demain.\n\n" +
+            "Contexte reçu :\n" + c
+        };
+
+        return map[intent] || map.slots;
+      }
+
+      function buildChecks(intent){
+        const common =
+          "- Le slug affiché est-il le bon ?\n" +
+          "- Le planning réel a-t-il été vérifié ?\n" +
+          "- Le message demande-t-il une action simple au client ?\n" +
+          "- La promesse faite correspond-elle à la réalité du terrain ?\n" +
+          "- Le suivi sera-t-il mis à jour après réponse ?";
+
+        const extra = {
+          slots: "- Ne pas proposer trop de créneaux.\n- Toujours confirmer après retour client.",
+          confirm: "- Vérifier heure + service + conditions.\n- Éviter toute ambiguïté.",
+          followup: "- Une relance propre suffit.\n- Ne pas noyer le client.",
+          service: "- Garder l’offre lisible.\n- Finir par un appel à l’action clair.",
+          no_show: "- Rester calme.\n- Libérer le créneau si nécessaire.",
+          ops: "- Prioriser les rendez-vous confirmés.\n- Revoir les trous de planning."
+        };
+
+        return common + "\n" + (extra[intent] || "");
+      }
+
+      async function copyText(value){
+        const clean = String(value || "").trim();
+        if(!clean) return;
+        try{
+          await navigator.clipboard.writeText(clean);
+        }catch(_){}
+      }
+
+      function openWhatsApp(textValue){
+        const phone = normalizePhone(state.phone);
+        const clean = String(textValue || "").trim();
+        const msg = encodeURIComponent(clean || "Bonjour");
+        const url = phone ? ("https://wa.me/" + phone + "?text=" + msg) : ("https://wa.me/?text=" + msg);
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      function generate(){
+        const title = els.inputTitle.value.trim();
+        const context = els.inputContext.value.trim();
+        const client = buildClientMessage(state.intent, title, context);
+        const plan = buildPlan(state.intent, title, context);
+        const checks = buildChecks(state.intent);
+
+        setOutput(els.outClient, client);
+        setOutput(els.outPlan, plan);
+        setOutput(els.outChecks, checks);
+
+        saveLocalDraft();
+      }
+
+      async function getGuardState(){
+        if(!window.DIGIY_GUARD || typeof window.DIGIY_GUARD.ready !== "function"){
+          return null;
+        }
+
+        try{
+          await window.DIGIY_GUARD.ready();
+        }catch(_){}
+
+        return window.DIGIY_GUARD.state || null;
+      }
+
+      async function tryHydratePublicProfile(){
+        if(!supabase || !state.slug) return;
+
+        try{
+          let result = await supabase.rpc("resa_public_profile_by_slug", { p_slug: state.slug });
+          if(result && result.error){
+            result = await supabase.rpc("resa_public_profile_by_slug", { slug: state.slug });
+          }
+
+          const raw = result && result.data;
+          let profile = null;
+
+          if(Array.isArray(raw)) profile = raw[0] || null;
+          else if(raw && typeof raw === "object" && Array.isArray(raw.data)) profile = raw.data[0] || null;
+          else if(raw && typeof raw === "object" && raw.profile) profile = raw.profile;
+          else if(raw && typeof raw === "object") profile = raw;
+
+          if(!profile) return;
+
+          const label =
+            text(profile.business_name) ||
+            text(profile.establishment_name) ||
+            text(profile.label) ||
+            text(profile.name) ||
+            text(profile.public_label);
+
+          if(label){
+            state.label = label;
+            els.metaLabel.textContent = label;
+          }
+        }catch(_){}
+      }
+
+      function hydrateContextCards(){
+        els.metaSlug.textContent = state.slug || "—";
+        els.metaPhone.textContent = state.phone || "—";
+        els.metaLabel.textContent = state.label || "RESA PRO";
+
+        els.accessText.textContent = state.access_ok ? "Actif" : (state.preview ? "Aperçu" : "À vérifier");
+        els.modeText.textContent = state.preview ? "preview" : "réel";
+        els.sessionText.textContent = state.sessionSource || "query";
+        els.contextResume.textContent =
+          (state.label || "RESA PRO") + " · " +
+          (state.slug || "slug absent") + " · " +
+          (state.access_ok ? "accès validé" : (state.preview ? "mode aperçu" : "accès non confirmé"));
+      }
+
+      function applyStateFromGuard(guard){
+        const qSlug = normalizeSlug(params.get("slug"));
+        const qPhone = normalizePhone(params.get("phone"));
+
+        state.slug = normalizeSlug((guard && guard.slug) || qSlug);
+        state.phone = normalizePhone((guard && guard.phone) || qPhone);
+        state.access_ok = !!(guard && guard.access_ok);
+        state.preview = !!(guard && guard.preview);
+        state.sessionSource = guard ? "guard" : "query";
+
+        if(state.access_ok){
+          setPill("ok", "Accès RESA validé");
+        }else if(state.preview){
+          setPill("warn", "Mode aperçu");
+        }else if(state.slug){
+          setPill("warn", "Slug lu, accès à confirmer");
+        }else{
+          setPill("bad", "Aucun slug détecté");
+        }
+      }
+
+      function wireActions(){
+        intentButtons.forEach(btn => {
+          btn.addEventListener("click", function(){
+            const previousTitle = els.inputTitle.value.trim();
+            const previousContext = els.inputContext.value.trim();
+
+            setIntent(btn.dataset.intent || "slots");
+
+            if(previousTitle || previousContext){
+              els.inputTitle.value = previousTitle;
+              els.inputContext.value = previousContext;
+            }
+
+            saveLocalDraft();
+          });
+        });
+
+        els.btnGenerateTop.addEventListener("click", generate);
+        els.btnGenerate.addEventListener("click", generate);
+
+        els.btnSave.addEventListener("click", function(){
+          saveLocalDraft();
+          els.btnSave.textContent = "Enregistré";
+          setTimeout(() => { els.btnSave.textContent = "Enregistrer"; }, 1200);
+        });
+
+        els.btnCopyBrief.addEventListener("click", function(){
+          const payload =
+            "TITRE\n" + text(els.inputTitle.value, "Sans titre") + "\n\n" +
+            "CONTEXTE\n" + text(els.inputContext.value, "Aucun contexte");
+          copyText(payload);
+        });
+
+        els.btnWhatsAppBrief.addEventListener("click", function(){
+          const payload =
+            "Brief CLAW RESA\n\n" +
+            "Titre : " + text(els.inputTitle.value, "Sans titre") + "\n\n" +
+            text(els.inputContext.value, "Aucun contexte");
+          openWhatsApp(payload);
+        });
+
+        els.btnClear.addEventListener("click", function(){
+          els.inputTitle.value = "";
+          els.inputContext.value = "";
+          setOutput(els.outClient, "");
+          setOutput(els.outPlan, "");
+          setOutput(els.outChecks, "");
+          clearLocalDraft();
+          setIntent(state.intent || "slots");
+        });
+
+        els.btnCopyClient.addEventListener("click", function(){
+          copyText(els.outClient.textContent);
+        });
+
+        els.btnWhatsAppClient.addEventListener("click", function(){
+          openWhatsApp(els.outClient.textContent);
+        });
+
+        els.btnCopyPlan.addEventListener("click", function(){
+          copyText(els.outPlan.textContent);
+        });
+
+        els.btnCopyChecks.addEventListener("click", function(){
+          copyText(els.outChecks.textContent);
+        });
+
+        els.inputTitle.addEventListener("input", saveLocalDraft);
+        els.inputContext.addEventListener("input", saveLocalDraft);
+      }
+
+      async function boot(){
+        try{
+          setIntent(state.intent);
+
+          const guard = await getGuardState();
+          applyStateFromGuard(guard);
+          hydrateLinks();
+          hydrateContextCards();
+          restoreLocalDraft();
+
+          if(!state.slug){
+            els.contextResume.textContent = "Aucun slug détecté. Ouvre la page avec une session valide ou repasse par la porte PIN.";
+            setPill("bad", "Slug manquant");
+          }
+
+          await tryHydratePublicProfile();
+          hydrateContextCards();
+          wireActions();
+        }catch(err){
+          console.error("[CLAW RESA] boot error", err);
+          setPill("bad", "Erreur de chargement");
+          els.contextResume.textContent = "Une erreur a bloqué le chargement de CLAW.";
+        }finally{
+          document.documentElement.style.visibility = "visible";
+        }
+      }
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
