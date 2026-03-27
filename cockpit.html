@@ -12,8 +12,9 @@
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-cockpit-v4-qr"></script>
+  <script src="./guard.js?v=resa-cockpit-final-vierge"></script>
 
   <style>
     :root{
@@ -33,6 +34,7 @@
     }
 
     *{box-sizing:border-box}
+
     html,body{
       margin:0;
       padding:0;
@@ -107,7 +109,6 @@
 
     .btn:hover{transform:translateY(-1px)}
     .btn.secondary{background:#0c241b}
-    .btn.warn{background:linear-gradient(180deg,#5a3d10,#3a2608)}
     .btn.ghost{
       background:rgba(255,255,255,.04);
       border-style:dashed;
@@ -318,10 +319,6 @@
       gap:14px;
     }
 
-    .booking.preview{
-      opacity:.96;
-    }
-
     .booking-top{
       display:flex;
       justify-content:space-between;
@@ -391,42 +388,6 @@
       font-weight:900;
     }
 
-    .booking-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .action-btn{
-      appearance:none;
-      border:1px solid var(--line);
-      background:#0a2119;
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      cursor:pointer;
-      font-weight:900;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-    }
-
-    .action-btn.ok{background:#103525}
-    .action-btn.warn{background:#3a280d}
-    .action-btn.danger{background:#3a1414}
-    .action-btn.info{background:#0d2d38}
-    .action-btn.preview{
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-      border-style:dashed;
-    }
-    .action-btn:disabled{
-      opacity:.45;
-      cursor:not-allowed;
-    }
-
     .empty{
       padding:28px 18px;
       color:var(--muted);
@@ -454,8 +415,8 @@
       .wrap{width:min(96vw,96vw)}
       .grid-stats{grid-template-columns:repeat(2,1fr)}
       .booking-top{flex-direction:column}
-      .actions-top,.filters,.booking-actions,.hero-cta,.nav-rail{width:100%}
-      .actions-top > *, .booking-actions > *, .hero-cta > *, .nav-rail > *{flex:1 1 auto}
+      .actions-top,.filters,.hero-cta,.nav-rail{width:100%}
+      .actions-top > *, .hero-cta > *, .nav-rail > *{flex:1 1 auto}
     }
   </style>
 </head>
@@ -471,8 +432,8 @@
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
         <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
+        <a class="btn secondary" id="btnPlanningTop" href="./planning.html">Planning</a>
         <a class="btn secondary" id="btnQr" href="./qr.html">QR</a>
-        <a class="btn warn" id="btnPin" href="./pin.html">Entrer par PIN</a>
         <a class="btn" id="btnSettings" href="./etablissement.html">Profil / établissement</a>
       </div>
     </div>
@@ -483,7 +444,6 @@
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
       <a class="nav-link" id="navQr" href="./qr.html">QR</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
-      <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
       <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
     </nav>
 
@@ -493,6 +453,7 @@
           <div class="mode" id="modeBadge">Mode aperçu</div>
           <h2 id="heroName">DIGIY RESA PRO</h2>
           <p id="heroDesc">Lecture des réservations, suivi terrain, actions rapides.</p>
+
           <div class="hero-meta">
             <div class="hero-pill" id="heroSlug">Slug : —</div>
             <div class="hero-pill" id="heroCity">Ville : —</div>
@@ -503,7 +464,6 @@
             <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Ouvrir le dashboard</a>
             <a class="btn secondary" id="heroPlanning" href="./planning.html">Voir le planning</a>
             <a class="btn secondary" id="heroQr" href="./qr.html">Ouvrir le QR</a>
-            <a class="btn warn" id="heroPin" href="./pin.html">Ouvrir ma porte PIN</a>
             <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir le profil</a>
           </div>
         </div>
@@ -556,7 +516,7 @@
       const MODULE = "RESA";
       const QR_PATH = "./qr.html";
 
-      try {
+      try{
         window.DIGIY_GUARD?.boot?.({
           module: "RESA",
           login: "./pin.html",
@@ -566,7 +526,7 @@
           storageSlugKey: "digiy_resa_slug",
           storageLastSlugKey: "digiy_last_slug"
         });
-      } catch {}
+      }catch{}
 
       const query = new URL(location.href).searchParams;
       const querySlug = query.get("slug") || "";
@@ -578,7 +538,6 @@
       let ALL_BOOKINGS = [];
       let ACTIVE_FILTER = "all";
       let PROFILE = null;
-      let SERVICES = [];
       let RESOLVED_SLUG = "";
       let ACTIVE_DATE = "";
       let IS_PREVIEW = true;
@@ -613,26 +572,26 @@
       function storageGet(key){
         try{
           const s = sessionStorage.getItem(key);
-          if (s) return s;
+          if(s) return s;
         }catch{}
         try{
           const l = localStorage.getItem(key);
-          if (l) return l;
+          if(l) return l;
         }catch{}
         return "";
       }
 
       function storageSet(key, value){
-        try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
-        try { localStorage.setItem(key, String(value ?? "")); } catch {}
+        try{ sessionStorage.setItem(key, String(value ?? "")); }catch{}
+        try{ localStorage.setItem(key, String(value ?? "")); }catch{}
       }
 
       function getSessionSlug(){
         const resaSession = safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
-        if (resaSession?.slug) return normalizeSlug(resaSession.slug);
+        if(resaSession?.slug) return normalizeSlug(resaSession.slug);
 
         const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
-        if (generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+        if(generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
 
         return "";
       }
@@ -654,9 +613,11 @@
         if(!v) return "—";
         try{
           const d = new Date(v);
-          if (Number.isNaN(d.getTime())) return String(v);
+          if(Number.isNaN(d.getTime())) return String(v);
           return d.toLocaleDateString("fr-FR", {
-            year:"numeric", month:"2-digit", day:"2-digit"
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit"
           });
         }catch{
           return String(v);
@@ -667,8 +628,11 @@
         if(!v) return "—";
         try{
           return new Date(v).toLocaleString("fr-FR", {
-            year:"numeric", month:"2-digit", day:"2-digit",
-            hour:"2-digit", minute:"2-digit"
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+            hour:"2-digit",
+            minute:"2-digit"
           });
         }catch{
           return String(v);
@@ -704,7 +668,7 @@
       function todayISO(){
         const d = new Date();
         const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2,"0");
+        const m = String(d.getMonth() + 1).padStart(2,"0");
         const da = String(d.getDate()).padStart(2,"0");
         return `${y}-${m}-${da}`;
       }
@@ -736,12 +700,12 @@
       }
 
       function initClient(){
-        if (window.DIGIY_SB) {
+        if(window.DIGIY_SB){
           sb = window.DIGIY_SB;
           return;
         }
 
-        if (!window.supabase?.createClient) {
+        if(!window.supabase?.createClient){
           throw new Error("Supabase JS non chargé.");
         }
 
@@ -749,14 +713,14 @@
           window.DIGIY_SUPABASE_URL,
           window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
           {
-            auth: {
-              persistSession: false,
-              autoRefreshToken: false,
-              detectSessionInUrl: false,
-              storage: {
-                getItem: () => null,
-                setItem: () => {},
-                removeItem: () => {}
+            auth:{
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false,
+              storage:{
+                getItem:() => null,
+                setItem:() => {},
+                removeItem:() => {}
               }
             }
           }
@@ -769,16 +733,17 @@
         const clean = normalizeSlug(slug);
         const url = new URL(path, location.href);
 
-        if (clean) url.searchParams.set("slug", clean);
+        if(clean) url.searchParams.set("slug", clean);
 
         Object.entries(extra || {}).forEach(([k, v]) => {
-          if (v !== null && v !== undefined && String(v).trim() !== "") {
+          if(v !== null && v !== undefined && String(v).trim() !== ""){
             url.searchParams.set(k, String(v));
           }
         });
 
-        const sameOrigin = url.origin === location.origin;
-        return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
+        return url.origin === location.origin
+          ? `${url.pathname.split("/").pop()}${url.search}`
+          : url.toString();
       }
 
       function setLinks(slug = ""){
@@ -788,7 +753,6 @@
         const dashboardHref = withSlug("./dashboard-pro.html", clean);
         const planningHref = withSlug("./planning.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
         const qrHref = withSlug(QR_PATH, clean);
-        const pinHref = withSlug("./pin.html", clean);
         const settingsHref = withSlug("./etablissement.html", clean);
         const homeHref = withSlug("./index.html", clean);
 
@@ -797,18 +761,16 @@
         $("navPlanning").href = planningHref;
         $("navQr").href = qrHref;
         $("navSettings").href = settingsHref;
-        $("navPin").href = pinHref;
         $("navHome").href = homeHref;
 
         $("btnDashboardTop").href = dashboardHref;
+        $("btnPlanningTop").href = planningHref;
         $("btnQr").href = qrHref;
-        $("btnPin").href = pinHref;
         $("btnSettings").href = settingsHref;
 
         $("heroDashboard").href = dashboardHref;
         $("heroPlanning").href = planningHref;
         $("heroQr").href = qrHref;
-        $("heroPin").href = pinHref;
         $("heroSettings").href = settingsHref;
       }
 
@@ -833,7 +795,6 @@
         $("bookingList").innerHTML = "";
         ALL_BOOKINGS = [];
         PROFILE = null;
-        SERVICES = [];
       }
 
       async function resolveGuardState(){
@@ -841,36 +802,36 @@
 
         if(!window.DIGIY_GUARD){
           return {
-            ok: false,
-            preview: true,
-            access_ok: false,
-            slug: fallbackSlug,
-            reason: "guard_missing"
+            ok:false,
+            preview:true,
+            access_ok:false,
+            slug:fallbackSlug,
+            reason:"guard_missing"
           };
         }
 
         try{
-          if (window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function") {
+          if(window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function"){
             await window.DIGIY_GUARD.ready;
           }
         }catch{
           return {
-            ok: false,
-            preview: true,
-            access_ok: false,
-            slug: fallbackSlug,
-            reason: "guard_error"
+            ok:false,
+            preview:true,
+            access_ok:false,
+            slug:fallbackSlug,
+            reason:"guard_error"
           };
         }
 
         const st = window.DIGIY_GUARD?.state || null;
         if(!st){
           return {
-            ok: false,
-            preview: true,
-            access_ok: false,
-            slug: fallbackSlug,
-            reason: "guard_empty"
+            ok:false,
+            preview:true,
+            access_ok:false,
+            slug:fallbackSlug,
+            reason:"guard_empty"
           };
         }
 
@@ -893,14 +854,15 @@
         $("modeBadge").textContent = "Mode aperçu";
 
         $("heroName").textContent = "DIGIY RESA PRO";
-        $("heroDesc").textContent = "Aperçu du cockpit professionnel : réservations, statuts, lecture terrain.";
+        $("heroDesc").textContent = "Moule vierge du cockpit professionnel. Aucune donnée de démonstration n’est injectée.";
         setHeroPills(clean, "—", "Multi business");
-        $("topSub").textContent = message || "Aucun slug détecté. Tu vois le cockpit en mode aperçu.";
-        $("panelTitle").textContent = "Aperçu des réservations";
-        $("footerNote").textContent = "Mode aperçu actif — entre par PIN pour ouvrir le cockpit vivant.";
-        $("miniTitle").textContent = "Aperçu intelligent";
+
+        $("topSub").textContent = message || "Aperçu du cockpit sans données.";
+        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("footerNote").textContent = "Mode aperçu actif — moule vierge sans démo.";
+        $("miniTitle").textContent = "Moule doctrine DIGIY";
         $("miniText").textContent =
-          "Pas de slug ? On montre l’outil sans exposer les vraies données. Le pro peut ensuite entrer proprement par sa porte PIN.";
+          "Ici, on garde une coquille propre : pas de fausses réservations, pas de brouillage, pas de mélange. Les vraies données n’entrent que si l’accès est confirmé.";
 
         setLinks(clean);
       }
@@ -919,89 +881,6 @@
         setLinks(RESOLVED_SLUG);
       }
 
-      function loadPreviewData(slug = ""){
-        setPreviewHero("", slug);
-
-        const now = new Date();
-        const addHours = (n) => new Date(now.getTime() - (n * 3600 * 1000)).toISOString();
-
-        ALL_BOOKINGS = [
-          {
-            id: "preview-1",
-            status: "pending",
-            customer_name: "Awa Ndiaye",
-            customer_phone: "77 000 00 01",
-            booking_date: ACTIVE_DATE,
-            booking_time: "14:00",
-            guests_count: 1,
-            service_name: "Brushing",
-            duration_minutes: 45,
-            price_fcfa: 6000,
-            note: "Brushing si possible sans attente.",
-            created_at: addHours(2)
-          },
-          {
-            id: "preview-2",
-            status: "confirmed",
-            customer_name: "Moussa Fall",
-            customer_phone: "77 000 00 02",
-            booking_date: ACTIVE_DATE,
-            booking_time: "10:00",
-            guests_count: 1,
-            service_name: "Diagnostic",
-            duration_minutes: 15,
-            price_fcfa: 5000,
-            note: "Voyant moteur.",
-            created_at: addHours(4)
-          },
-          {
-            id: "preview-3",
-            status: "done",
-            customer_name: "Sokhna Diop",
-            customer_phone: "77 000 00 03",
-            booking_date: ACTIVE_DATE,
-            booking_time: "12:30",
-            guests_count: 2,
-            service_name: "Table midi",
-            duration_minutes: 60,
-            price_fcfa: "",
-            note: "",
-            created_at: addHours(8)
-          },
-          {
-            id: "preview-4",
-            status: "no_show",
-            customer_name: "Cheikh Ba",
-            customer_phone: "77 000 00 04",
-            booking_date: ACTIVE_DATE,
-            booking_time: "16:00",
-            guests_count: 1,
-            service_name: "Consultation simple",
-            duration_minutes: 30,
-            price_fcfa: 10000,
-            note: "Pas venu.",
-            created_at: addHours(12)
-          },
-          {
-            id: "preview-5",
-            status: "cancelled",
-            customer_name: "Mariama Sarr",
-            customer_phone: "77 000 00 05",
-            booking_date: ACTIVE_DATE,
-            booking_time: "18:00",
-            guests_count: 1,
-            service_name: "Entretien",
-            duration_minutes: 45,
-            price_fcfa: 7000,
-            note: "Report demandé.",
-            created_at: addHours(16)
-          }
-        ];
-
-        renderStatsFromRows();
-        renderBookings();
-      }
-
       async function loadProfile(){
         const data = await rpc("resa_public_profile_by_slug", { p_slug: RESOLVED_SLUG });
 
@@ -1010,6 +889,7 @@
         }
 
         PROFILE = data.profile || {};
+
         const title = PROFILE?.display_name || "Commerce";
         const city = PROFILE?.city || "—";
         const type = PROFILE?.business_type || PROFILE?.category || "Multi business";
@@ -1017,23 +897,6 @@
         $("heroName").textContent = title;
         $("heroDesc").textContent = PROFILE?.bio || "Lecture des réservations, suivi terrain, actions rapides.";
         setHeroPills(RESOLVED_SLUG, city, type);
-      }
-
-      async function loadServices(){
-        const { data, error } = await sb
-          .from("digiy_resa_services")
-          .select("id, service_name, duration_minutes, price_fcfa, is_active")
-          .eq("slug", RESOLVED_SLUG)
-          .eq("is_active", true)
-          .order("service_name", { ascending:true });
-
-        if(error){
-          console.error(error);
-          SERVICES = [];
-          return;
-        }
-
-        SERVICES = Array.isArray(data) ? data : [];
       }
 
       async function loadBookings(){
@@ -1066,38 +929,6 @@
         return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
       }
 
-      function previewActionHtml(){
-        const dashboardHref = RESOLVED_SLUG
-          ? withSlug("./dashboard-pro.html", RESOLVED_SLUG)
-          : "./dashboard-pro.html";
-
-        const planningHref = RESOLVED_SLUG
-          ? withSlug("./planning.html", RESOLVED_SLUG, ACTIVE_DATE ? { date: ACTIVE_DATE } : {})
-          : "./planning.html";
-
-        const qrHref = RESOLVED_SLUG
-          ? withSlug(QR_PATH, RESOLVED_SLUG)
-          : QR_PATH;
-
-        const pinHref = RESOLVED_SLUG
-          ? withSlug("./pin.html", RESOLVED_SLUG)
-          : "./pin.html";
-
-        const settingsHref = RESOLVED_SLUG
-          ? withSlug("./etablissement.html", RESOLVED_SLUG)
-          : "./etablissement.html";
-
-        return `
-          <div class="booking-actions">
-            <a class="action-btn preview" href="${dashboardHref}">Dashboard</a>
-            <a class="action-btn preview" href="${planningHref}">Planning</a>
-            <a class="action-btn preview" href="${qrHref}">QR</a>
-            <a class="action-btn preview" href="${pinHref}">Entrer par PIN</a>
-            <a class="action-btn preview" href="${settingsHref}">Voir le profil</a>
-          </div>
-        `;
-      }
-
       function serviceHtml(row){
         const bits = [];
         if(row.service_name) bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
@@ -1116,7 +947,7 @@
           list.innerHTML = "";
           empty.style.display = "block";
           empty.textContent = IS_PREVIEW
-            ? "Aperçu disponible, mais aucune ligne à afficher."
+            ? "Aucune donnée affichée en aperçu. Entre avec une session valide pour lire les vraies réservations."
             : "Aucune réservation pour cette date.";
           return;
         }
@@ -1134,7 +965,7 @@
           const created = escapeHtml(fmtDateTime(row.created_at));
 
           return `
-            <article class="booking ${IS_PREVIEW ? "preview" : ""}">
+            <article class="booking">
               <div class="booking-top">
                 <div class="booking-main">
                   <div class="booking-name">${customer}</div>
@@ -1153,10 +984,7 @@
               </div>
 
               ${serviceHtml(row)}
-
               ${note ? `<div class="note">“${note}”</div>` : ""}
-
-              ${IS_PREVIEW ? previewActionHtml() : ""}
             </article>
           `;
         }).join("");
@@ -1187,20 +1015,21 @@
           if(st?.preview){
             IS_PREVIEW = true;
             RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
-            loadPreviewData(RESOLVED_SLUG);
+            setPreviewHero("", RESOLVED_SLUG);
+            renderBookings();
 
             if(st.reason === "preview_no_identity"){
-              $("topSub").textContent = "Aucun slug détecté. Aperçu affiché.";
+              $("topSub").textContent = "Aucun slug détecté. Moule vierge affiché.";
             }else if(st.reason === "unknown_identity"){
-              $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
+              $("topSub").textContent = "Slug inconnu. Moule vierge affiché.";
             }else if(st.reason === "guard_error"){
-              $("topSub").textContent = "Guard indisponible. Aperçu affiché.";
+              $("topSub").textContent = "Guard indisponible. Moule vierge affiché.";
             }else if(st.reason === "guard_missing"){
-              $("topSub").textContent = "Guard absent. Aperçu affiché.";
+              $("topSub").textContent = "Guard absent. Moule vierge affiché.";
             }else{
               $("topSub").textContent = RESOLVED_SLUG
-                ? `Slug détecté (${RESOLVED_SLUG}) mais accès non confirmé. Aperçu affiché.`
-                : "Aperçu affiché.";
+                ? `Slug détecté (${RESOLVED_SLUG}) mais accès non confirmé. Moule vierge affiché.`
+                : "Moule vierge affiché.";
             }
             return;
           }
@@ -1211,8 +1040,8 @@
 
             if(!RESOLVED_SLUG){
               IS_PREVIEW = true;
-              loadPreviewData();
-              $("topSub").textContent = "Accès OK mais slug absent. Aperçu affiché.";
+              setPreviewHero("Accès OK mais slug absent. Moule vierge affiché.");
+              renderBookings();
               return;
             }
 
@@ -1223,30 +1052,28 @@
 
             setLiveHero();
             await loadProfile();
-            await Promise.all([
-              loadServices(),
-              loadBookings()
-            ]);
+            await loadBookings();
             return;
           }
 
           IS_PREVIEW = true;
           RESOLVED_SLUG = normalizeSlug(st?.slug || getFallbackSlug() || "");
-          loadPreviewData(RESOLVED_SLUG);
+          setPreviewHero("", RESOLVED_SLUG);
+          renderBookings();
 
           if(st?.reason === "no_subscription"){
-            $("topSub").textContent = "Accès non actif. Aperçu affiché.";
+            $("topSub").textContent = "Accès non actif. Moule vierge affiché.";
           }else if(st?.reason === "unknown_identity"){
-            $("topSub").textContent = "Slug inconnu. Aperçu affiché.";
+            $("topSub").textContent = "Slug inconnu. Moule vierge affiché.";
           }else{
-            $("topSub").textContent = "Accès indisponible. Aperçu affiché.";
+            $("topSub").textContent = "Accès indisponible. Moule vierge affiché.";
           }
         }catch(err){
           console.error(err);
           IS_PREVIEW = true;
           RESOLVED_SLUG = getFallbackSlug();
-          loadPreviewData(RESOLVED_SLUG);
-          $("topSub").textContent = "Erreur de chargement du cockpit. Aperçu affiché.";
+          setPreviewHero("Erreur de chargement du cockpit. Moule vierge affiché.", RESOLVED_SLUG);
+          renderBookings();
         }finally{
           document.body.classList.remove("loading");
         }
