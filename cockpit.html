@@ -434,6 +434,7 @@
         <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
         <a class="btn secondary" id="btnPlanningTop" href="./planning.html">Planning</a>
         <a class="btn secondary" id="btnQr" href="./qr.html">QR</a>
+        <a class="btn secondary" id="btnClaw" href="./claw.html">CLAW</a>
         <a class="btn" id="btnSettings" href="./etablissement.html">Profil / établissement</a>
       </div>
     </div>
@@ -443,6 +444,7 @@
       <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
       <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+      <a class="nav-link" id="navClaw" href="./claw.html">CLAW</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
       <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
     </nav>
@@ -464,6 +466,7 @@
             <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Ouvrir le dashboard</a>
             <a class="btn secondary" id="heroPlanning" href="./planning.html">Voir le planning</a>
             <a class="btn secondary" id="heroQr" href="./qr.html">Ouvrir le QR</a>
+            <a class="btn secondary" id="heroClaw" href="./claw.html">Ouvrir CLAW</a>
             <a class="btn ghost" id="heroSettings" href="./etablissement.html">Voir le profil</a>
           </div>
         </div>
@@ -515,6 +518,7 @@
 
       const MODULE = "RESA";
       const QR_PATH = "./qr.html";
+      const CLAW_PATH = "./claw.html";
 
       try{
         window.DIGIY_GUARD?.boot?.({
@@ -753,6 +757,7 @@
         const dashboardHref = withSlug("./dashboard-pro.html", clean);
         const planningHref = withSlug("./planning.html", clean, ACTIVE_DATE ? { date: ACTIVE_DATE } : {});
         const qrHref = withSlug(QR_PATH, clean);
+        const clawHref = withSlug(CLAW_PATH, clean);
         const settingsHref = withSlug("./etablissement.html", clean);
         const homeHref = withSlug("./index.html", clean);
 
@@ -760,17 +765,20 @@
         $("navDashboard").href = dashboardHref;
         $("navPlanning").href = planningHref;
         $("navQr").href = qrHref;
+        $("navClaw").href = clawHref;
         $("navSettings").href = settingsHref;
         $("navHome").href = homeHref;
 
         $("btnDashboardTop").href = dashboardHref;
         $("btnPlanningTop").href = planningHref;
         $("btnQr").href = qrHref;
+        $("btnClaw").href = clawHref;
         $("btnSettings").href = settingsHref;
 
         $("heroDashboard").href = dashboardHref;
         $("heroPlanning").href = planningHref;
         $("heroQr").href = qrHref;
+        $("heroClaw").href = clawHref;
         $("heroSettings").href = settingsHref;
       }
 
