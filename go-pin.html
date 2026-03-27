@@ -126,6 +126,9 @@
 
       const $ = (id) => document.getElementById(id);
 
+      const PUBLIC_BASE_URL = "https://resa-table-resto.digiylyfe.com/";
+      const PUBLIC_FICHE_PATH = "fiche.html";
+
       function normalizeSlug(v){
         return String(v || "")
           .trim()
@@ -158,39 +161,61 @@
         try { sessionStorage.setItem(key, String(value)); } catch (_) {}
       }
 
+      function buildPublicUrl(slugValue = ""){
+        const url = new URL(PUBLIC_FICHE_PATH, PUBLIC_BASE_URL);
+        if (slugValue) url.searchParams.set("slug", slugValue);
+        return url.toString();
+      }
+
       const qs = new URLSearchParams(location.search);
 
       const slug = normalizeSlug(qs.get("slug") || "");
       const phone = normalizePhone(qs.get("phone") || "");
       const target = normalizeTarget(qs.get("target") || "");
+      const explicitReturn = String(qs.get("return") || "").trim();
 
-      let targetPath = "./cockpit.html";
-      if (target === "planning") targetPath = "./planning.html";
-      if (target === "dashboard") targetPath = "./dashboard-pro.html";
-      if (target === "public") targetPath = "./fiche.html";
+      let targetUrl;
+
+      if (target === "planning") {
+        targetUrl = new URL("./planning.html", location.href);
+      } else if (target === "dashboard") {
+        targetUrl = new URL("./dashboard-pro.html", location.href);
+      } else if (target === "public") {
+        targetUrl = new URL(buildPublicUrl(slug));
+      } else {
+        targetUrl = new URL("./cockpit.html", location.href);
+      }
 
       const pinUrl = new URL("./pin.html", location.href);
-      const targetUrl = new URL(targetPath, location.href);
 
       if (slug) {
         pinUrl.searchParams.set("slug", slug);
-        targetUrl.searchParams.set("slug", slug);
 
         storageSet("digiy_resa_slug", slug);
         storageSet("digiy_resa_last_slug", slug);
         storageSet("digiy_last_slug", slug);
         storageSet("DIGIY_SLUG", slug);
+
+        if (target !== "public") {
+          targetUrl.searchParams.set("slug", slug);
+        }
       }
 
       if (phone) {
         pinUrl.searchParams.set("phone", phone);
-        targetUrl.searchParams.set("phone", phone);
-
         storageSet("digiy_resa_phone", phone);
+
+        if (target !== "public") {
+          targetUrl.searchParams.set("phone", phone);
+        }
       }
 
       if (target) {
         pinUrl.searchParams.set("target", target);
+      }
+
+      if (explicitReturn) {
+        pinUrl.searchParams.set("return", explicitReturn);
       }
 
       const fallbackPin = $("fallbackPin");
@@ -199,6 +224,18 @@
 
       fallbackPin.href = pinUrl.toString();
       fallbackTarget.href = targetUrl.toString();
+
+      if (target === "public") {
+        fallbackTarget.textContent = "Voir la fiche publique";
+        fallbackTarget.setAttribute("target", "_blank");
+        fallbackTarget.setAttribute("rel", "noopener");
+      } else if (target === "planning") {
+        fallbackTarget.textContent = "Voir le planning";
+      } else if (target === "dashboard") {
+        fallbackTarget.textContent = "Voir le dashboard";
+      } else {
+        fallbackTarget.textContent = "Voir le cockpit";
+      }
 
       const targetLabel =
         target === "planning" ? "planning" :
