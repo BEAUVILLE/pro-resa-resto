@@ -243,7 +243,7 @@
           <a id="btnCockpit" class="btn secondary hidden" href="./cockpit.html">🧭 Cockpit</a>
           <a id="btnPlanning" class="btn secondary hidden" href="./planning.html">🗓️ Planning</a>
           <a id="btnDashboard" class="btn secondary hidden" href="./dashboard-pro.html">📊 Dashboard</a>
-          <a id="btnPublic" class="btn secondary hidden" href="./fiche.html">🌍 Fiche publique</a>
+          <a id="btnPublic" class="btn secondary hidden" href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Fiche publique</a>
         </div>
 
         <div id="status" class="status">Prêt.</div>
@@ -284,7 +284,20 @@
         PHONE_KEY: "digiy_resa_phone",
         LAST_SLUG_KEY: "digiy_resa_last_slug",
         RPC_VERIFY_PIN: "digiy_verify_pin",
-        TABLE_SUBS: "digiy_subscriptions_public"
+        TABLE_SUBS: "digiy_subscriptions_public",
+
+        PUBLIC_BASE_URL: "https://resa-table-resto.digiylyfe.com/",
+        PUBLIC_FICHE_PATH: "fiche.html",
+        PUBLIC_INDEX_PATH: "index.html",
+        PUBLIC_ALLOWED_PATHS: ["/", "/index.html", "/fiche.html", "/reserver.html"],
+
+        SAME_ORIGIN_ALLOWED_PATHS: [
+          "/cockpit.html",
+          "/planning.html",
+          "/dashboard-pro.html",
+          "/index.html",
+          "/"
+        ]
       };
 
       const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
@@ -351,6 +364,40 @@
         const n = Number(ts || 0);
         if (!n) return false;
         return (Date.now() - n) <= CFG.SESSION_MAX_AGE_MS;
+      }
+
+      function buildPublicUrl(page = CFG.PUBLIC_FICHE_PATH, slug = "", extra = {}) {
+        const cleanSlug = normSlug(slug);
+        const url = new URL(page, CFG.PUBLIC_BASE_URL);
+
+        if (cleanSlug) url.searchParams.set("slug", cleanSlug);
+
+        Object.entries(extra || {}).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && String(value).trim() !== "") {
+            url.searchParams.set(key, String(value));
+          }
+        });
+
+        return url.toString();
+      }
+
+      function describeReturnUrl(urlString) {
+        try {
+          const url = new URL(urlString, location.href);
+
+          if (url.origin === location.origin) {
+            return url.pathname.split("/").pop() || "cockpit.html";
+          }
+
+          if (url.origin === new URL(CFG.PUBLIC_BASE_URL).origin) {
+            const page = url.pathname.split("/").pop() || "index.html";
+            return "public/" + page;
+          }
+
+          return url.hostname;
+        } catch (_) {
+          return "cockpit.html";
+        }
       }
 
       function buildNormalizedSession({ slug, phone, owner_id = null }) {
@@ -569,16 +616,12 @@
         return null;
       }
 
-      function isAllowedReturnPath(pathname) {
-        const allowed = [
-          "/cockpit.html",
-          "/planning.html",
-          "/dashboard-pro.html",
-          "/fiche.html",
-          "/index.html",
-          "/"
-        ];
-        return allowed.includes(pathname);
+      function isAllowedSameOriginPath(pathname) {
+        return CFG.SAME_ORIGIN_ALLOWED_PATHS.includes(pathname);
+      }
+
+      function isAllowedPublicPath(pathname) {
+        return CFG.PUBLIC_ALLOWED_PATHS.includes(pathname);
       }
 
       function buildReturnUrl(session) {
@@ -587,22 +630,35 @@
         if (ret) {
           try {
             const u = new URL(ret, location.href);
-            if (u.origin === location.origin && isAllowedReturnPath(u.pathname)) {
+            const publicOrigin = new URL(CFG.PUBLIC_BASE_URL).origin;
+
+            if (u.origin === location.origin && isAllowedSameOriginPath(u.pathname)) {
               u.searchParams.set("slug", session.slug);
               if (CFG.KEEP_PHONE_IN_URL && session.phone) u.searchParams.set("phone", session.phone);
               u.searchParams.set("module", CFG.MODULE);
               u.searchParams.set("from", "pin");
               return u.toString();
             }
+
+            if (u.origin === publicOrigin && isAllowedPublicPath(u.pathname)) {
+              u.searchParams.set("slug", session.slug);
+              u.searchParams.delete("phone");
+              u.searchParams.delete("module");
+              u.searchParams.delete("from");
+              return u.toString();
+            }
           } catch (_) {}
         }
 
         const target = (qs("target") || "").trim().toLowerCase();
-        let next = CFG.DEFAULT_NEXT;
 
+        if (target === "public") {
+          return buildPublicUrl(CFG.PUBLIC_FICHE_PATH, session.slug);
+        }
+
+        let next = CFG.DEFAULT_NEXT;
         if (target === "planning") next = "./planning.html";
         if (target === "dashboard") next = "./dashboard-pro.html";
-        if (target === "public") next = "./fiche.html";
         if (target === "cockpit") next = "./cockpit.html";
 
         const u = new URL(next, location.href);
@@ -617,17 +673,19 @@
         const s = normSlug(slug);
         const p = normPhone(phone);
 
-        const add = (base) => {
+        const addPro = (base) => {
           const u = new URL(base, location.href);
           if (s) u.searchParams.set("slug", s);
           if (CFG.KEEP_PHONE_IN_URL && p) u.searchParams.set("phone", p);
           return u.toString();
         };
 
-        el.btnCockpit.href = add("./cockpit.html");
-        el.btnPlanning.href = add("./planning.html");
-        el.btnDashboard.href = add("./dashboard-pro.html");
-        el.btnPublic.href = add("./fiche.html");
+        el.btnCockpit.href = addPro("./cockpit.html");
+        el.btnPlanning.href = addPro("./planning.html");
+        el.btnDashboard.href = addPro("./dashboard-pro.html");
+        el.btnPublic.href = buildPublicUrl(CFG.PUBLIC_FICHE_PATH, s);
+        el.btnPublic.setAttribute("target", "_blank");
+        el.btnPublic.setAttribute("rel", "noopener");
         el.btnPay.href = CFG.PAY_URL;
 
         if (s) {
@@ -638,11 +696,23 @@
         }
 
         const dummy = { slug: s, phone: p };
-        el.btnReturn.href = buildReturnUrl(dummy);
+        const returnUrl = buildReturnUrl(dummy);
+
+        el.btnReturn.href = returnUrl;
         el.btnReturn.classList.remove("hidden");
 
-        const path = new URL(el.btnReturn.href).pathname.split("/").pop() || "cockpit.html";
-        el.returnInfo.textContent = path;
+        const target = (qs("target") || "").trim().toLowerCase();
+        if (target === "public" || returnUrl.startsWith(CFG.PUBLIC_BASE_URL)) {
+          el.btnReturn.textContent = "🌍 Retour public";
+          el.btnReturn.setAttribute("target", "_blank");
+          el.btnReturn.setAttribute("rel", "noopener");
+        } else {
+          el.btnReturn.textContent = "↩️ Retour cible";
+          el.btnReturn.removeAttribute("target");
+          el.btnReturn.removeAttribute("rel");
+        }
+
+        el.returnInfo.textContent = describeReturnUrl(returnUrl);
       }
 
       function hydrate() {
@@ -679,6 +749,7 @@
           refreshLinks(el.slug.value, el.phone.value);
         } else {
           el.btnPay.href = CFG.PAY_URL;
+          el.btnPublic.href = buildPublicUrl(CFG.PUBLIC_FICHE_PATH, "");
         }
 
         if (saved?.verified_at || saved?.validated_at) {
