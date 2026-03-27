@@ -13,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-dashboard-v4-claw"></script>
+  <script src="./guard.js?v=resa-dashboard-v5-claw-nav"></script>
 
   <style>
     :root{
@@ -490,6 +490,7 @@
       <div class="right">
         <div class="pill" id="pillStatus">Statut : <b>…</b></div>
         <a class="btn" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
+        <a class="btn" id="btnClawTop" href="./claw.html">CLAW</a>
         <a class="btn" id="btnPinTop" href="./pin.html">PIN</a>
         <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Paramètres</a>
       </div>
@@ -499,6 +500,7 @@
       <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
       <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navClaw" href="./claw.html">CLAW</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
       <a class="nav-link" id="navPin" href="./pin.html">PIN</a>
       <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
@@ -519,6 +521,7 @@
       <div class="hero-actions">
         <a class="btn primary" id="heroCockpit" href="./cockpit.html">Ouvrir le cockpit</a>
         <a class="btn" id="heroPlanning" href="./planning.html">Voir le planning</a>
+        <a class="btn" id="heroClaw" href="./claw.html">Ouvrir CLAW</a>
         <a class="btn" id="heroSettings" href="./etablissement.html">Voir le profil</a>
       </div>
     </section>
@@ -618,6 +621,7 @@
         <div class="footer">
           <a class="smallLink" href="#" id="linkSupport">Support</a>
           <a class="smallLink" href="#" id="linkPayments">Mes paiements</a>
+          <a class="smallLink" href="#" id="linkClaw">Ouvrir CLAW</a>
         </div>
       </div>
     </div>
@@ -743,6 +747,7 @@
     const cockpitHref = withSlug("./cockpit.html", clean);
     const dashboardHref = withSlug("./dashboard-pro.html", clean);
     const planningHref = withSlug("./planning.html", clean);
+    const clawHref = withSlug("./claw.html", clean);
     const settingsHref = withSlug("./etablissement.html", clean);
     const pinHref = withSlug("./pin.html", clean);
     const homeHref = withSlug("./index.html", clean);
@@ -750,16 +755,19 @@
     $("navCockpit").href = cockpitHref;
     $("navDashboard").href = dashboardHref;
     $("navPlanning").href = planningHref;
+    $("navClaw").href = clawHref;
     $("navSettings").href = settingsHref;
     $("navPin").href = pinHref;
     $("navHome").href = homeHref;
 
     $("btnCockpitTop").href = cockpitHref;
+    $("btnClawTop").href = clawHref;
     $("btnPinTop").href = pinHref;
     $("btnSettingsTop").href = settingsHref;
 
     $("heroCockpit").href = cockpitHref;
     $("heroPlanning").href = planningHref;
+    $("heroClaw").href = clawHref;
     $("heroSettings").href = settingsHref;
   }
 
@@ -835,7 +843,7 @@
     setClaw(
       "Chargement",
       "CLAW attend la lecture réelle du rail RESA pour te pousser une action nette.",
-      ["Rail RESA", "Dashboard", "Lecture simple"],
+      ["Rail RESA", "Dashboard", "Lecture simple", "Lien CLAW prêt"],
       [
         {
           title:"Lecture du moment",
@@ -852,11 +860,12 @@
   function setClawPreview(message){
     setClaw(
       "Aperçu",
-      "CLAW voit un cadre prêt, mais pas encore une identité ouverte. Il évite la fausse lecture et te pousse vers le PIN.",
+      "CLAW voit un cadre prêt, mais pas encore une identité ouverte. Il évite la fausse lecture et te pousse vers le PIN ou vers sa page dédiée.",
       [
         RESOLVED_SLUG ? `Slug : ${RESOLVED_SLUG}` : "Slug non détecté",
         "PIN conseillé",
-        "Zéro démo"
+        "Zéro démo",
+        "claw.html branché"
       ],
       [
         {
@@ -868,8 +877,8 @@
           text:"Passe par PIN pour ouvrir proprement le rail et récupérer l’identité réelle."
         },
         {
-          title:"Navigation",
-          text:"Le dashboard est lisible, mais la vraie circulation métier commence quand l’accès est confirmé."
+          title:"Suite logique",
+          text:"Quand l’accès est bon, tu peux ouvrir directement claw.html avec le même slug."
         }
       ]
     );
@@ -882,7 +891,8 @@
       [
         RESOLVED_SLUG ? `Slug : ${RESOLVED_SLUG}` : "Slug à vérifier",
         "Backbone PAY",
-        level === "warn" ? "Abonnement requis" : "Erreur de contrôle"
+        level === "warn" ? "Abonnement requis" : "Erreur de contrôle",
+        "claw.html disponible"
       ],
       [
         {
@@ -909,7 +919,8 @@
         slug ? `Slug : ${slug}` : "Slug : —",
         phone ? `Téléphone : ${phone}` : "Téléphone : —",
         "Accès actif",
-        "Navigation ouverte"
+        "Navigation ouverte",
+        "claw.html prêt"
       ],
       [
         {
@@ -922,7 +933,7 @@
         },
         {
           title:"Navigation utile",
-          text:"Planning pour lire le terrain, profil pour vérifier la vitrine, dashboard pour garder la vue synthèse."
+          text:"Planning pour lire le terrain, profil pour vérifier la vitrine, CLAW pour l’aide légère, dashboard pour garder la vue synthèse."
         }
       ]
     );
@@ -1014,7 +1025,7 @@
         level:"info",
         tag:"NEXT",
         title:"Étape suivante",
-        text:"La nav du haut te laisse circuler entre dashboard, cockpit, planning et profil."
+        text:"La nav du haut te laisse circuler entre dashboard, cockpit, planning, CLAW et profil."
       }
     ]);
 
@@ -1216,6 +1227,13 @@
       CURRENT_STATE?.pay_url ||
       buildPayUrl(MODULE_CODE, RESOLVED_PHONE, RESOLVED_SLUG);
     location.href = url;
+  };
+
+  $("linkClaw").onclick = (ev) => {
+    ev.preventDefault();
+    location.href = RESOLVED_SLUG
+      ? withSlug("./claw.html", RESOLVED_SLUG)
+      : "./claw.html";
   };
 
   boot();
