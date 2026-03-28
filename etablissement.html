@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>DIGIY RESA PRO — Profil / établissement</title>
+  <title>Mon profil · Mes réservations · DIGIY</title>
   <meta name="theme-color" content="#07140f"/>
-  <meta name="description" content="Profil / établissement DIGIY RESA PRO. Passerelle propre entre le rail professionnel et la fiche publique." />
-
+  <meta name="description" content="Mon profil et mon établissement · DIGIY — fiche publique et réservation." />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -14,701 +13,167 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{
-      --bg:#07140f;
-      --bg2:#0b1d15;
-      --card:#10241b;
-      --card-2:#0d2018;
-      --line:rgba(255,255,255,.10);
-      --text:#ecfff4;
-      --muted:rgba(236,255,244,.72);
-      --primary:#22c55e;
-      --primary-2:#16a34a;
-      --gold:#facc15;
-      --gold-soft:rgba(250,204,21,.12);
-      --blue:#60a5fa;
-      --shadow:0 20px 60px rgba(0,0,0,.38);
-      --r:24px;
-      --max:1120px;
-    }
-
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-
-    body{
-      margin:0;
-      min-height:100vh;
-      background:
-        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
-        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),
-        linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);
-      color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      padding:16px;
-    }
-
+    :root{--bg:#07140f;--bg2:#0b1d15;--card:#10241b;--card-2:#0d2018;--line:rgba(255,255,255,.10);--text:#ecfff4;--muted:rgba(236,255,244,.72);--primary:#22c55e;--primary-2:#16a34a;--gold:#facc15;--gold-soft:rgba(250,204,21,.12);--blue:#60a5fa;--shadow:0 20px 60px rgba(0,0,0,.38);--r:24px;--max:1120px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);color:var(--text);font-family:var(--fontA);padding:16px;}
     a{color:inherit;text-decoration:none}
-
-    .wrap{
-      max-width:var(--max);
-      margin:auto;
-    }
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:12px;
-      padding:6px 2px;
-    }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .eyebrow{
-      font-size:12px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:var(--gold);
-      font-weight:950;
-    }
-
-    .brand-title{
-      font-size:clamp(20px,2.8vw,30px);
-      font-weight:1000;
-      line-height:1.05;
-    }
-
-    .brand-sub{
-      color:var(--muted);
-      font-size:14px;
-      font-weight:800;
-    }
-
-    .top-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .nav-rail{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      box-shadow:var(--shadow);
-    }
-
-    .nav-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      min-height:44px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.14);
-      color:var(--text);
-      font-weight:950;
-    }
-
-    .nav-link.active{
-      background:rgba(34,197,94,.12);
-      border-color:rgba(34,197,94,.28);
-      color:#bbf7d0;
-    }
-
-    .hero,
-    .card{
-      border:1px solid var(--line);
-      border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));
-      box-shadow:var(--shadow);
-    }
-
-    .hero{
-      overflow:hidden;
-    }
-
-    .hero-grid-main{
-      display:grid;
-      grid-template-columns:420px 1fr;
-      min-height:430px;
-    }
-
-    @media(max-width:940px){
-      .hero-grid-main{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .hero-media{
-      position:relative;
-      min-height:320px;
-      background:#0a1712;
-    }
-
-    .hero-media img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      background:#0f1d17;
-    }
-
-    .hero-media::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(to top, rgba(0,0,0,.34), rgba(0,0,0,.08));
-      pointer-events:none;
-    }
-
-    .hero-media-fallback{
-      width:100%;
-      height:100%;
-      min-height:320px;
-      display:grid;
-      place-items:center;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(250,204,21,.18), transparent 30%),
-        radial-gradient(circle at 75% 15%, rgba(34,197,94,.14), transparent 28%),
-        linear-gradient(180deg, #111827, #0b1120);
-      color:#fff;
-      font-size:54px;
-      font-weight:1000;
-    }
-
-    .hero-badge{
-      position:absolute;
-      left:16px;
-      bottom:16px;
-      z-index:2;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(7,20,15,.72);
-      color:#fff6c9;
-      font-size:12px;
-      font-weight:950;
-      backdrop-filter:blur(8px);
-    }
-
-    .hero-badge .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:var(--primary);
-      box-shadow:0 0 0 4px rgba(34,197,94,.14);
-    }
-
-    .hero-content{
-      padding:24px;
-      display:grid;
-      gap:18px;
-      align-content:start;
-    }
-
-    .hero-top{
-      display:flex;
-      gap:14px;
-      justify-content:space-between;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
-
-    .hero-main{
-      display:flex;
-      gap:14px;
-      align-items:flex-start;
-      min-width:0;
-    }
-
-    .avatar{
-      width:72px;
-      height:72px;
-      border-radius:20px;
-      flex:0 0 auto;
-      display:grid;
-      place-items:center;
-      font-size:24px;
-      font-weight:1000;
-      color:#041b12;
-      background:linear-gradient(135deg, var(--gold), var(--primary));
-      box-shadow:0 12px 28px rgba(34,197,94,.22);
-      overflow:hidden;
-    }
-
-    .avatar img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 13px;
-      border-radius:999px;
-      border:1px solid rgba(34,197,94,.28);
-      background:rgba(34,197,94,.12);
-      color:#bbf7d0;
-      font-size:12px;
-      font-weight:950;
-      width:max-content;
-      margin-bottom:10px;
-    }
-
-    .badge .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      background:var(--primary);
-      box-shadow:0 0 0 4px rgba(34,197,94,.14);
-    }
-
-    h1{
-      margin:0;
-      font-size:clamp(30px, 4vw, 42px);
-      line-height:1.04;
-      letter-spacing:-.02em;
-    }
-
-    .subtitle{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:16px;
-      font-weight:800;
-      line-height:1.5;
-    }
-
-    .hero-meta{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-      max-width:100%;
-    }
-
-    .slug-pill{
-      color:var(--gold);
-      border-color:rgba(250,204,21,.22);
-      background:var(--gold-soft);
-    }
-
-    .hero-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
-
-    .btn{
-      min-height:48px;
-      padding:12px 16px;
-      border-radius:14px;
-      font-weight:950;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      cursor:pointer;
-      transition:.18s ease;
-    }
-
+    .wrap{max-width:var(--max);margin:auto;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:6px 2px;}
+    .brand{display:flex;flex-direction:column;gap:4px;}
+    .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:950;}
+    .brand-title{font-size:clamp(20px,2.8vw,30px);font-weight:1000;line-height:1.05;}
+    .brand-sub{color:var(--muted);font-size:14px;font-weight:800;}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow);}
+    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.14);color:var(--text);font-weight:950;}
+    .nav-link.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.28);color:#bbf7d0;}
+    .hero,.card{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));box-shadow:var(--shadow);}
+    .hero{overflow:hidden;}
+    .hero-grid-main{display:grid;grid-template-columns:420px 1fr;min-height:430px;}
+    @media(max-width:940px){.hero-grid-main{grid-template-columns:1fr}}
+    .hero-media{position:relative;min-height:320px;background:#0a1712;}
+    .hero-media img{width:100%;height:100%;object-fit:cover;display:block;background:#0f1d17;}
+    .hero-media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,.34), rgba(0,0,0,.08));pointer-events:none;}
+    .hero-media-fallback{width:100%;height:100%;min-height:320px;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%, rgba(250,204,21,.18), transparent 30%),radial-gradient(circle at 75% 15%, rgba(34,197,94,.14), transparent 28%),linear-gradient(180deg, #111827, #0b1120);color:#fff;font-size:54px;font-weight:1000;}
+    .hero-badge{position:absolute;left:16px;bottom:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(7,20,15,.72);color:#fff6c9;font-size:12px;font-weight:950;backdrop-filter:blur(8px);}
+    .hero-badge .dot{width:8px;height:8px;border-radius:999px;background:var(--primary);box-shadow:0 0 0 4px rgba(34,197,94,.14);}
+    .hero-content{padding:24px;display:grid;gap:18px;align-content:start;}
+    .hero-top{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;}
+    .hero-main{display:flex;gap:14px;align-items:flex-start;min-width:0;}
+    .avatar{width:72px;height:72px;border-radius:20px;flex:0 0 auto;display:grid;place-items:center;font-size:24px;font-weight:1000;color:#041b12;background:linear-gradient(135deg, var(--gold), var(--primary));box-shadow:0 12px 28px rgba(34,197,94,.22);overflow:hidden;}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid rgba(34,197,94,.28);background:rgba(34,197,94,.12);color:#bbf7d0;font-size:12px;font-weight:950;width:max-content;margin-bottom:10px;}
+    .badge .dot{width:8px;height:8px;border-radius:999px;background:var(--primary);box-shadow:0 0 0 4px rgba(34,197,94,.14);}
+    h1{margin:0;font-size:clamp(30px, 4vw, 42px);line-height:1.04;letter-spacing:-.02em;}
+    .subtitle{margin-top:8px;color:var(--muted);font-size:16px;font-weight:800;line-height:1.5;}
+    .hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted);font-size:12px;font-weight:900;max-width:100%;}
+    .slug-pill{color:var(--gold);border-color:rgba(250,204,21,.22);background:var(--gold-soft);}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;}
+    .btn{min-height:48px;padding:12px 16px;border-radius:14px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:.18s ease;font-family:var(--fontA);}
     .btn:hover{transform:translateY(-1px)}
-
-    .btn.primary{
-      background:linear-gradient(135deg, var(--primary), var(--primary-2));
-      color:#041b12;
-      border-color:transparent;
-      box-shadow:0 12px 28px rgba(34,197,94,.22);
-    }
-
-    .btn.gold{
-      background:rgba(250,204,21,.12);
-      color:var(--gold);
-      border-color:rgba(250,204,21,.22);
-    }
-
-    .hero-info-grid{
-      display:grid;
-      gap:12px;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-    }
-
-    @media(max-width:700px){
-      .hero-info-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .fact{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(0,0,0,.16);
-    }
-
-    .fact .k{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-      margin-bottom:6px;
-    }
-
-    .fact .v{
-      font-size:15px;
-      font-weight:900;
-      line-height:1.5;
-    }
-
-    .grid{
-      display:grid;
-      gap:14px;
-      margin-top:14px;
-    }
-
-    @media(min-width:920px){
-      .grid{
-        grid-template-columns:1.05fr .95fr;
-      }
-    }
-
-    .card{
-      padding:18px;
-    }
-
-    h2{
-      margin:0 0 10px;
-      font-size:21px;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:14px;
-      font-weight:800;
-      line-height:1.55;
-    }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:14px;
-    }
-
-    .chip{
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.16);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-    }
-
-    .services{
-      display:grid;
-      gap:10px;
-      margin-top:14px;
-    }
-
-    .service{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.09);
-      background:rgba(0,0,0,.16);
-    }
-
-    .service-top{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:flex-start;
-    }
-
-    .service-name{
-      font-size:16px;
-      font-weight:1000;
-      color:var(--gold);
-      line-height:1.2;
-    }
-
-    .service-meta{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .service-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      color:var(--muted);
-      font-size:11px;
-      font-weight:950;
-    }
-
-    .claw-grid{
-      display:grid;
-      gap:14px;
-      margin-top:14px;
-      grid-template-columns:1.12fr .88fr;
-    }
-
-    @media(max-width:920px){
-      .claw-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .claw-card{
-      padding:18px;
-      border:1px solid var(--line);
-      border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(96,165,250,.08), rgba(34,197,94,.06));
-      box-shadow:var(--shadow);
-    }
-
-    .claw-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-
-    .claw-kicker{
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:#b7ecff;
-      font-weight:1000;
-      margin-bottom:6px;
-    }
-
-    .claw-title{
-      margin:0;
-      font-size:20px;
-      font-weight:1000;
-    }
-
-    .claw-mode{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid rgba(96,165,250,.18);
-      background:rgba(96,165,250,.08);
-      color:#d7efff;
-      font-size:12px;
-      font-weight:950;
-    }
-
-    .claw-text{
-      color:var(--muted);
-      font-size:14px;
-      font-weight:800;
-      line-height:1.65;
-    }
-
-    .claw-pills{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:12px;
-    }
-
-    .claw-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.16);
-      color:var(--text);
-      font-size:12px;
-      font-weight:950;
-    }
-
-    .claw-list{
-      display:grid;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .claw-item{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.16);
-    }
-
-    .claw-item strong{
-      display:block;
-      margin-bottom:6px;
-      font-size:14px;
-      font-weight:1000;
-      color:#ecfff4;
-    }
-
-    .claw-item span{
-      color:var(--muted);
-      font-size:13px;
-      font-weight:800;
-      line-height:1.55;
-      display:block;
-    }
-
-    .footer{
-      margin-top:16px;
-      text-align:center;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-    }
-
+    .btn.primary{background:linear-gradient(135deg, var(--primary), var(--primary-2));color:#041b12;border-color:transparent;box-shadow:0 12px 28px rgba(34,197,94,.22);}
+    .btn.gold{background:rgba(250,204,21,.12);color:var(--gold);border-color:rgba(250,204,21,.22);}
+    .hero-info-grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));}
+    @media(max-width:700px){.hero-info-grid{grid-template-columns:1fr}}
+    .fact{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16);}
+    .fact .k{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px;}
+    .fact .v{font-size:15px;font-weight:900;line-height:1.5;}
+    .grid{display:grid;gap:14px;margin-top:14px;}
+    @media(min-width:920px){.grid{grid-template-columns:1.05fr .95fr}}
+    .card{padding:18px;}
+    h2{margin:0 0 10px;font-size:21px;}
+    .muted{color:var(--muted);font-size:14px;font-weight:800;line-height:1.55;}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+    .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--muted);font-size:12px;font-weight:900;}
+    .services{display:grid;gap:10px;margin-top:14px;}
+    .service{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16);}
+    .service-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;}
+    .service-name{font-size:16px;font-weight:1000;color:var(--gold);line-height:1.2;}
+    .service-meta{display:flex;gap:8px;flex-wrap:wrap;}
+    .service-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted);font-size:11px;font-weight:950;}
+    .claw-grid{display:grid;gap:14px;margin-top:14px;grid-template-columns:1.12fr .88fr;}
+    @media(max-width:920px){.claw-grid{grid-template-columns:1fr}}
+    .claw-card{padding:18px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg, rgba(96,165,250,.08), rgba(34,197,94,.06));box-shadow:var(--shadow);}
+    .claw-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+    .claw-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b7ecff;font-weight:1000;margin-bottom:6px;}
+    .claw-title{margin:0;font-size:20px;font-weight:1000;}
+    .claw-mode{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid rgba(96,165,250,.18);background:rgba(96,165,250,.08);color:#d7efff;font-size:12px;font-weight:950;}
+    .claw-text{color:var(--muted);font-size:14px;font-weight:800;line-height:1.65;}
+    .claw-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+    .claw-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--text);font-size:12px;font-weight:950;}
+    .claw-list{display:grid;gap:10px;margin-top:12px;}
+    .claw-item{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.16);}
+    .claw-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:1000;color:#ecfff4;}
+    .claw-item span{color:var(--muted);font-size:13px;font-weight:800;line-height:1.55;display:block;}
+    .footer{margin-top:16px;text-align:center;color:var(--muted);font-size:12px;font-weight:800;}
     .hidden{display:none !important}
-
-    @media(max-width:720px){
-      .top-actions,.nav-rail,.hero-actions{width:100%}
-      .top-actions > *, .nav-rail > *, .hero-actions > *{flex:1 1 auto}
-    }
+    @media(max-width:720px){.top-actions,.nav-rail,.hero-actions{width:100%}.top-actions > *,.nav-rail > *,.hero-actions > *{flex:1 1 auto}}
   </style>
 </head>
 <body>
   <div class="wrap">
-
     <div class="topbar">
       <div class="brand">
-        <div class="eyebrow">DIGIY RESA PRO</div>
-        <div class="brand-title">Profil / établissement</div>
-        <div class="brand-sub" id="topSub">Passerelle PRO vers la vraie fiche publique et la réservation publique.</div>
+        <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
+        <div class="eyebrow">MES RÉSERVATIONS</div>
+        <!-- ━━━ AVANT : "Profil / établissement" → banni ━━━ -->
+        <div class="brand-title">Mon profil · mon établissement</div>
+        <!-- ━━━ AVANT : "Passerelle PRO vers la vraie fiche publique" → banni ━━━ -->
+        <div class="brand-sub" id="topSub">Ta fiche publique et tes informations de réservation.</div>
       </div>
-
       <div class="top-actions">
-        <a class="btn" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
-        <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Dashboard</a>
-        <a class="btn" id="btnQrTop" href="./qr.html">QR</a>
-        <a class="btn" id="btnClawTop" href="./claw.html">CLAW</a>
+        <!-- ━━━ AVANT : "Cockpit" · "Dashboard" · "CLAW" → bannis ━━━ -->
+        <a class="btn" id="btnCockpitTop"   href="./cockpit.html">Ma gestion</a>
+        <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Mon activité</a>
+        <a class="btn" id="btnQrTop"        href="./qr.html">QR</a>
+        <a class="btn" id="btnClawTop"      href="./claw.html">Analyse</a>
       </div>
     </div>
 
-    <nav class="nav-rail" aria-label="Navigation PRO RESA">
-      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
-      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
-      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
-      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
-      <a class="nav-link" id="navClaw" href="./claw.html">CLAW</a>
-      <a class="nav-link active" id="navSettings" href="./etablissement.html">Profil / établissement</a>
-      <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
-      <a class="nav-link" id="navPublic" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Vitrine</a>
+    <!-- ━━━ NAV — doctrine façade ━━━ -->
+    <nav class="nav-rail" aria-label="Navigation Mes réservations">
+      <!-- ━━━ "Cockpit" → "Ma gestion" ━━━ -->
+      <a class="nav-link"        id="navCockpit"  href="./cockpit.html">Ma gestion</a>
+      <!-- ━━━ "Dashboard" → "Mon activité" ━━━ -->
+      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Mon activité</a>
+      <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
+      <a class="nav-link"        id="navQr"        href="./qr.html">QR</a>
+      <!-- ━━━ "CLAW" → "Analyse" ━━━ -->
+      <a class="nav-link"        id="navClaw"      href="./claw.html">Analyse</a>
+      <!-- ━━━ "Profil / établissement" → "Mon profil" active ━━━ -->
+      <a class="nav-link active" id="navSettings"  href="./etablissement.html">Mon profil</a>
+      <!-- ━━━ "Accueil PRO" → "Mon espace" ━━━ -->
+      <a class="nav-link"        id="navHome"      href="./index.html">Mon espace</a>
+      <a class="nav-link"        id="navPublic"    href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Ma vitrine</a>
     </nav>
 
     <section class="hero">
       <div class="hero-grid-main">
         <div class="hero-media" id="heroMedia">
           <div class="hero-media-fallback">📅</div>
-          <div class="hero-badge" id="heroBadge">
-            <span class="dot"></span>
-            Commerce public
-          </div>
+          <div class="hero-badge" id="heroBadge"><span class="dot"></span> Commerce public</div>
         </div>
 
         <div class="hero-content">
           <div class="hero-top">
             <div class="hero-main">
               <div class="avatar" id="avatar">RE</div>
-
               <div>
                 <div class="badge" id="pubBadge"><span class="dot"></span> Fiche publiée</div>
                 <h1 id="name">Chargement…</h1>
-                <div class="subtitle" id="subtitle">Fiche publique DIGIY RESA</div>
-
+                <div class="subtitle" id="subtitle">Ma fiche publique DIGIY</div>
                 <div class="hero-meta">
                   <div class="pill" id="cityPill">Ville : —</div>
                   <div class="pill" id="typePill">Activité : —</div>
-                  <div class="pill slug-pill" id="slugPill">slug : —</div>
+                  <!-- ━━━ AVANT : "slug :" → "Identifiant :" ━━━ -->
+                  <div class="pill slug-pill" id="slugPill">Identifiant : —</div>
                 </div>
               </div>
             </div>
 
             <div class="hero-actions">
               <a class="btn primary" id="btnReserve" href="https://resa-table-resto.digiylyfe.com/reserver.html" target="_blank" rel="noopener">📅 Réserver</a>
-              <a class="btn gold" id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
-              <a class="btn" id="btnCockpitHero" href="./cockpit.html">🧭 Cockpit</a>
-              <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Dashboard</a>
-              <a class="btn" id="btnPlanningHero" href="./planning.html">🗓️ Planning</a>
-              <a class="btn" id="btnQrHero" href="./qr.html">📎 QR</a>
-              <a class="btn" id="btnClawHero" href="./claw.html">🦅 CLAW</a>
-              <a class="btn" id="btnPublicHero" href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Voir la fiche publique</a>
+              <a class="btn gold"    id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
+              <!-- ━━━ AVANT : "Cockpit" · "Dashboard" · "CLAW" → bannis ━━━ -->
+              <a class="btn" id="btnCockpitHero"  href="./cockpit.html">🧭 Ma gestion</a>
+              <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Mon activité</a>
+              <a class="btn" id="btnPlanningHero"  href="./planning.html">🗓️ Planning</a>
+              <a class="btn" id="btnQrHero"        href="./qr.html">📎 QR</a>
+              <a class="btn" id="btnClawHero"      href="./claw.html">🔍 Analyse</a>
+              <a class="btn" id="btnPublicHero"    href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Ma fiche publique</a>
             </div>
           </div>
 
           <div class="hero-info-grid">
-            <div class="fact">
-              <div class="k">Présentation</div>
-              <div class="v" id="bio">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Adresse</div>
-              <div class="v" id="address">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Horaires</div>
-              <div class="v" id="hours">—</div>
-            </div>
-
-            <div class="fact">
-              <div class="k">Capacité / accueil</div>
-              <div class="v" id="capacity">—</div>
-            </div>
+            <div class="fact"><div class="k">Présentation</div><div class="v" id="bio">—</div></div>
+            <div class="fact"><div class="k">Adresse</div><div class="v" id="address">—</div></div>
+            <div class="fact"><div class="k">Horaires</div><div class="v" id="hours">—</div></div>
+            <div class="fact"><div class="k">Capacité / accueil</div><div class="v" id="capacity">—</div></div>
           </div>
         </div>
       </div>
@@ -716,50 +181,41 @@
 
     <section class="grid">
       <div class="card">
-        <h2>Zones & repères</h2>
+        <h2>Zones &amp; repères</h2>
         <div class="muted">Zones, quartier ou mots-clés utiles pour situer le commerce.</div>
-        <div class="chips" id="zonesChips">
-          <div class="chip">Zone non précisée</div>
-        </div>
+        <div class="chips" id="zonesChips"><div class="chip">Zone non précisée</div></div>
       </div>
-
       <div class="card">
         <h2>Contact direct</h2>
         <div class="hero-info-grid" style="margin-top:14px">
-          <div class="fact">
-            <div class="k">WhatsApp</div>
-            <div class="v" id="contactWhatsapp">—</div>
-          </div>
-          <div class="fact">
-            <div class="k">Réservation</div>
-            <div class="v" id="bookingHelp">Demande simple et confirmation côté commerce</div>
-          </div>
+          <div class="fact"><div class="k">WhatsApp</div><div class="v" id="contactWhatsapp">—</div></div>
+          <div class="fact"><div class="k">Réservation</div><div class="v" id="bookingHelp">Demande simple et confirmation côté commerce</div></div>
         </div>
       </div>
     </section>
 
-    <section class="claw-grid" id="clawSection">
+    <section class="claw-grid">
       <article class="claw-card">
         <div class="claw-head">
           <div>
-            <div class="claw-kicker">CLAW DIGIY</div>
-            <h2 class="claw-title">Lecture légère de l’établissement</h2>
+            <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
+            <div class="claw-kicker">DIGIY ANALYSE</div>
+            <!-- ━━━ AVANT : "Lecture légère de l'établissement" → "Lecture de ton profil" ━━━ -->
+            <h2 class="claw-title">Lecture de ton profil</h2>
           </div>
-          <div class="claw-mode" id="clawMode">Analyse légère</div>
+          <!-- ━━━ AVANT : "Analyse légère" → "Analyse en cours" ━━━ -->
+          <div class="claw-mode" id="clawMode">Analyse en cours</div>
         </div>
-
-        <div class="claw-text" id="clawSummary">
-          CLAW prépare une lecture simple du commerce : lisibilité de la fiche, accueil, réservation et repères utiles.
-        </div>
-
+        <!-- ━━━ AVANT : "CLAW prépare une lecture simple" → humain ━━━ -->
+        <div class="claw-text" id="clawSummary">On prépare une lecture simple de ton commerce : lisibilité de la fiche, accueil, réservation et repères utiles.</div>
         <div class="claw-pills" id="clawPills"></div>
       </article>
-
       <article class="claw-card">
         <div class="claw-list" id="clawList">
           <div class="claw-item">
             <strong>Chargement</strong>
-            <span>CLAW attend les vraies données du rail RESA.</span>
+            <!-- ━━━ AVANT : "CLAW attend les vraies données du rail RESA." → banni ━━━ -->
+            <span>En attente des vraies données pour une lecture utile.</span>
           </div>
         </div>
       </article>
@@ -767,17 +223,14 @@
 
     <section class="card" style="margin-top:14px">
       <h2>Services / prestations</h2>
-      <div class="muted">Lecture simple des services proposés sur ce rail RESA.</div>
+      <!-- ━━━ AVANT : "rail RESA" visible → banni ━━━ -->
+      <div class="muted">Les services proposés par ta boutique.</div>
       <div class="services" id="servicesBox">
-        <div class="service">
-          <div class="muted">Chargement des services…</div>
-        </div>
+        <div class="service"><div class="muted">Chargement des services…</div></div>
       </div>
     </section>
 
-    <div class="footer">
-      DIGIY RESA • Réserver simplement • Multi business • Terrain
-    </div>
+    <div class="footer">DIGIYLYFE · Mes réservations · profil terrain · multi business</div>
   </div>
 
   <script>
@@ -785,492 +238,257 @@
       "use strict";
 
       const MODULE = "RESA";
-      const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+      const SUPABASE_URL      = window.DIGIY_SUPABASE_URL;
       const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
-
-      const PUBLIC_BASE_URL = "https://resa-table-resto.digiylyfe.com";
-      const PUBLIC_INDEX_URL = `${PUBLIC_BASE_URL}/`;
-      const PUBLIC_FICHE_PATH = "fiche.html";
-      const PUBLIC_RESERVER_PATH = "reserver.html";
-
+      const PUBLIC_BASE_URL   = "https://resa-table-resto.digiylyfe.com";
+      const PUBLIC_INDEX_URL  = `${PUBLIC_BASE_URL}/`;
       const supabaseLib = window.supabase;
-      const qs = new URLSearchParams(location.search);
+      const qsp = new URLSearchParams(location.search);
 
-      function storageGet(key){
-        try{
-          const s = sessionStorage.getItem(key);
-          if (s) return s;
-        }catch{}
-        try{
-          const l = localStorage.getItem(key);
-          if (l) return l;
-        }catch{}
-        return "";
-      }
+      function storageGet(key){ try{ const s=sessionStorage.getItem(key); if(s)return s; }catch{} try{ const l=localStorage.getItem(key); if(l)return l; }catch{} return ""; }
+      function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }
 
-      function storageSet(key, value){
-        try { sessionStorage.setItem(key, String(value ?? "")); } catch {}
-        try { localStorage.setItem(key, String(value ?? "")); } catch {}
-      }
-
-      function normalizeSlug(v){
-        return String(v || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
-      }
+      function normalizeSlug(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
 
       const slug = normalizeSlug(
-        qs.get("slug") ||
-        storageGet("digiy_resa_slug") ||
-        storageGet("digiy_resa_last_slug") ||
-        storageGet("digiy_last_slug") ||
-        storageGet("DIGIY_SLUG") ||
-        ""
+        qsp.get("slug")||storageGet("digiy_resa_slug")||storageGet("digiy_resa_last_slug")||storageGet("digiy_last_slug")||storageGet("DIGIY_SLUG")||""
       );
 
-      function withSlug(path, slugValue = "", extra = {}){
-        const clean = normalizeSlug(slugValue);
-        const url = new URL(path, location.href);
-
-        if (clean) url.searchParams.set("slug", clean);
-
-        Object.entries(extra || {}).forEach(([k, v]) => {
-          if (v !== null && v !== undefined && String(v).trim() !== "") {
-            url.searchParams.set(k, String(v));
-          }
-        });
-
-        const sameOrigin = url.origin === location.origin;
-        return sameOrigin ? `${url.pathname.split("/").pop()}${url.search}` : url.toString();
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         buildSafeUrl — VERSION BLINDÉE
+         new URL(path, location.href) fragile selon l'env.
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function buildSafeUrl(base, params){
+        const baseStr=(base==null?"":String(base)).trim();
+        if(!baseStr)return location.href;
+        let u;
+        try{
+          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
+          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
+        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
+        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+        return u.toString();
       }
 
-      function buildPublicUrl(page, slugValue = "", extra = {}){
-        const clean = normalizeSlug(slugValue);
-        const url = new URL(page, PUBLIC_INDEX_URL);
+      function withSlug(path, slugValue="", extra={}){
+        const c=normalizeSlug(slugValue);
+        return buildSafeUrl(path,{...(c?{slug:c}:{}),...extra});
+      }
 
-        if (clean) url.searchParams.set("slug", clean);
-
-        Object.entries(extra || {}).forEach(([k, v]) => {
-          if (v !== null && v !== undefined && String(v).trim() !== "") {
-            url.searchParams.set(k, String(v));
-          }
-        });
-
-        return url.toString();
+      function buildPublicUrl(page, slugValue="", extra={}){
+        const c=normalizeSlug(slugValue);
+        return buildSafeUrl(PUBLIC_INDEX_URL+page,{...(c?{slug:c}:{}),...extra});
       }
 
       function setNavLinks(slugValue){
-        const clean = normalizeSlug(slugValue);
+        const c=normalizeSlug(slugValue);
+        const cockpitHref   = withSlug("./cockpit.html",      c);
+        const dashboardHref = withSlug("./dashboard-pro.html",c);
+        const planningHref  = withSlug("./planning.html",     c);
+        const qrHref        = withSlug("./qr.html",           c);
+        const clawHref      = withSlug("./claw.html",         c);
+        const settingsHref  = withSlug("./etablissement.html",c);
+        const homeHref      = withSlug("./index.html",        c);
+        const publicFicheHref  = buildPublicUrl("fiche.html",c);
+        const reserveHref      = buildPublicUrl("reserver.html",c);
 
-        const cockpitHref = withSlug("./cockpit.html", clean);
-        const dashboardHref = withSlug("./dashboard-pro.html", clean);
-        const planningHref = withSlug("./planning.html", clean);
-        const qrHref = withSlug("./qr.html", clean);
-        const clawHref = withSlug("./claw.html", clean);
-        const settingsHref = withSlug("./etablissement.html", clean);
-        const homeHref = withSlug("./index.html", clean);
-
-        const publicIndexHref = PUBLIC_INDEX_URL;
-        const publicFicheHref = buildPublicUrl(PUBLIC_FICHE_PATH, clean);
-        const reserveHref = buildPublicUrl(PUBLIC_RESERVER_PATH, clean);
-
-        document.getElementById("navCockpit").href = cockpitHref;
-        document.getElementById("navDashboard").href = dashboardHref;
+        document.getElementById("navCockpit").href  = cockpitHref;
+        document.getElementById("navDashboard").href= dashboardHref;
         document.getElementById("navPlanning").href = planningHref;
-        document.getElementById("navQr").href = qrHref;
-        document.getElementById("navClaw").href = clawHref;
+        document.getElementById("navQr").href       = qrHref;
+        document.getElementById("navClaw").href     = clawHref;
         document.getElementById("navSettings").href = settingsHref;
-        document.getElementById("navHome").href = homeHref;
-        document.getElementById("navPublic").href = publicIndexHref;
+        document.getElementById("navHome").href     = homeHref;
+        document.getElementById("navPublic").href   = PUBLIC_INDEX_URL;
 
-        document.getElementById("btnCockpitTop").href = cockpitHref;
+        document.getElementById("btnCockpitTop").href   = cockpitHref;
         document.getElementById("btnDashboardTop").href = dashboardHref;
-        document.getElementById("btnQrTop").href = qrHref;
-        document.getElementById("btnClawTop").href = clawHref;
+        document.getElementById("btnQrTop").href        = qrHref;
+        document.getElementById("btnClawTop").href      = clawHref;
 
-        document.getElementById("btnCockpitHero").href = cockpitHref;
+        document.getElementById("btnCockpitHero").href   = cockpitHref;
         document.getElementById("btnDashboardHero").href = dashboardHref;
-        document.getElementById("btnPlanningHero").href = planningHref;
-        document.getElementById("btnQrHero").href = qrHref;
-        document.getElementById("btnClawHero").href = clawHref;
-        document.getElementById("btnPublicHero").href = publicFicheHref;
-        document.getElementById("btnReserve").href = reserveHref;
+        document.getElementById("btnPlanningHero").href  = planningHref;
+        document.getElementById("btnQrHero").href        = qrHref;
+        document.getElementById("btnClawHero").href      = clawHref;
+        document.getElementById("btnPublicHero").href    = publicFicheHref;
+        document.getElementById("btnReserve").href       = reserveHref;
       }
 
-      function safe(v, fallback = "—"){
-        const s = String(v || "").trim();
-        return s || fallback;
-      }
+      function safe(v,fallback="—"){ const s=String(v||"").trim(); return s||fallback; }
+      function initials(name){ const s=safe(name,"RE"); return s.split(/\s+/).slice(0,2).map(x=>(x[0]||"").toUpperCase()).join("")||"RE"; }
+      function waLink(phone,name){ const c=String(phone||"").replace(/[^\d]/g,""); if(!c)return ""; const msg=`Bonjour ${name||""}, je vous contacte via votre fiche DIGIY.`; return "https://wa.me/"+c+"?text="+encodeURIComponent(msg); }
+      function escapeHtml(str){ return String(str??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;"); }
+      function pickMainImage(p){ return [p?.cover_url,p?.photo_url,p?.image_url,p?.cover_image_url].filter(Boolean)[0]||""; }
 
-      function initials(name){
-        const s = safe(name, "RE");
-        return s.split(/\s+/).slice(0,2).map(x => (x[0] || "").toUpperCase()).join("") || "RE";
-      }
-
-      function waLink(phone, name){
-        const clean = String(phone || "").replace(/[^\d]/g, "");
-        if(!clean) return "";
-        const msg = `Bonjour ${name || ""}, je vous contacte via votre fiche DIGIY RESA.`;
-        return "https://wa.me/" + clean + "?text=" + encodeURIComponent(msg);
-      }
-
-      function escapeHtml(str){
-        return String(str ?? "")
-          .replaceAll("&","&amp;")
-          .replaceAll("<","&lt;")
-          .replaceAll(">","&gt;")
-          .replaceAll('"',"&quot;")
-          .replaceAll("'","&#39;");
-      }
-
-      function pickMainImage(p){
-        const candidates = [
-          p?.cover_url,
-          p?.photo_url,
-          p?.image_url,
-          p?.cover_image_url
-        ].filter(Boolean);
-
-        if (candidates.length) return candidates[0];
-        return "";
-      }
-
-      function setHeroImage(profile, displayName, city, activity){
-        const heroMedia = document.getElementById("heroMedia");
-        const imageUrl = pickMainImage(profile);
-
-        const badgeText = city && activity
-          ? `${activity} public • ${city}`
-          : city
-            ? `Commerce public • ${city}`
-            : "Commerce public";
-
+      function setHeroImage(profile,displayName,city,activity){
+        const heroMedia=document.getElementById("heroMedia");
+        const imageUrl=pickMainImage(profile);
+        const badgeText=city&&activity?`${activity} public · ${city}`:city?"Commerce public · "+city:"Commerce public";
         if(imageUrl){
-          heroMedia.innerHTML = `
-            <img
-              src="${escapeHtml(imageUrl)}"
-              alt="${escapeHtml(displayName)}"
-              loading="eager"
-              onerror="this.outerHTML='<div class=&quot;hero-media-fallback&quot;>📅</div>';"
-            />
-            <div class="hero-badge" id="heroBadge">
-              <span class="dot"></span>
-              ${escapeHtml(badgeText)}
-            </div>
-          `;
+          heroMedia.innerHTML=`<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(displayName)}" loading="eager" onerror="this.outerHTML='<div class=&quot;hero-media-fallback&quot;>📅</div>';"/><div class="hero-badge" id="heroBadge"><span class="dot"></span> ${escapeHtml(badgeText)}</div>`;
         }else{
-          heroMedia.innerHTML = `
-            <div class="hero-media-fallback">📅</div>
-            <div class="hero-badge" id="heroBadge">
-              <span class="dot"></span>
-              ${escapeHtml(badgeText)}
-            </div>
-          `;
+          heroMedia.innerHTML=`<div class="hero-media-fallback">📅</div><div class="hero-badge" id="heroBadge"><span class="dot"></span> ${escapeHtml(badgeText)}</div>`;
         }
       }
 
-      function setAvatar(profile, displayName){
-        const avatar = document.getElementById("avatar");
-        const photo = profile?.photo_url || profile?.logo_url || "";
-
-        if(photo){
-          avatar.innerHTML = `<img src="${escapeHtml(photo)}" alt="${escapeHtml(displayName)}" onerror="this.parentNode.textContent='${escapeHtml(initials(displayName))}'">`;
-        }else{
-          avatar.textContent = initials(displayName);
-        }
+      function setAvatar(profile,displayName){
+        const avatar=document.getElementById("avatar");
+        const photo=profile?.photo_url||profile?.logo_url||"";
+        if(photo){ avatar.innerHTML=`<img src="${escapeHtml(photo)}" alt="${escapeHtml(displayName)}" onerror="this.parentNode.textContent='${escapeHtml(initials(displayName))}'">`;
+        }else{ avatar.textContent=initials(displayName); }
       }
 
       function renderZones(zones){
-        const box = document.getElementById("zonesChips");
-        if(!zones || !zones.length){
-          box.innerHTML = `<div class="chip">Zone non précisée</div>`;
-          return;
-        }
-        box.innerHTML = zones.map(z => `<div class="chip">${escapeHtml(z)}</div>`).join("");
+        const box=document.getElementById("zonesChips");
+        if(!zones||!zones.length){box.innerHTML=`<div class="chip">Zone non précisée</div>`;return;}
+        box.innerHTML=zones.map(z=>`<div class="chip">${escapeHtml(z)}</div>`).join("");
       }
 
-      function setClaw(mode, summary, pills = [], items = []){
-        const modeEl = document.getElementById("clawMode");
-        const summaryEl = document.getElementById("clawSummary");
-        const pillsEl = document.getElementById("clawPills");
-        const listEl = document.getElementById("clawList");
-
-        modeEl.textContent = mode || "Analyse légère";
-        summaryEl.textContent = summary || "CLAW lit le terrain sans bavarder.";
-
-        pillsEl.innerHTML = (Array.isArray(pills) ? pills : [])
-          .filter(Boolean)
-          .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
-          .join("");
-
-        listEl.innerHTML = (Array.isArray(items) ? items : [])
-          .filter(Boolean)
-          .map(item => `
-            <div class="claw-item">
-              <strong>${escapeHtml(item.title || "Point utile")}</strong>
-              <span>${escapeHtml(item.text || "—")}</span>
-            </div>
-          `).join("");
+      function setClaw(mode,summary,pills=[],items=[]){
+        document.getElementById("clawMode").textContent    = mode||"Analyse en cours";
+        document.getElementById("clawSummary").textContent = summary||"Lecture de ton profil.";
+        document.getElementById("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
+        document.getElementById("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
       }
 
       function setClawLoading(){
-        setClaw(
-          "Chargement",
-          "CLAW prépare la lecture de la fiche établissement à partir du rail RESA.",
-          ["Fiche", "Réservation", "Repères terrain"],
-          [
-            {
-              title:"Lecture du commerce",
-              text:"CLAW attend le profil réel pour résumer le terrain proprement."
-            },
-            {
-              title:"Préparation réservation",
-              text:"CLAW reliera ensuite le type d’activité, les services et le canal de prise de contact."
-            }
-          ]
-        );
+        setClaw("Chargement","Lecture du profil en cours. En attente des vraies données.",
+          ["Mon profil","Réservation","Repères terrain"],
+          [{title:"Lecture du commerce",text:"En attente du profil réel pour résumer le terrain proprement."},{title:"Préparation réservation",text:"Le type d'activité, les services et le canal de contact seront reliés."}]);
       }
 
-      function setClawUnavailable(message = "Commerce indisponible."){
-        setClaw(
-          "Lecture limitée",
-          message,
-          ["Rail protégé", "Données indisponibles"],
-          [
-            {
-              title:"État actuel",
-              text:"La fiche n’est pas exploitable pour une lecture utile tant que le slug ou le profil public ne répond pas."
-            },
-            {
-              title:"Action simple",
-              text:"Vérifier le slug, la publication publique et la cohérence du profil RESA."
-            }
-          ]
-        );
+      function setClawUnavailable(message="Commerce indisponible."){
+        setClaw("Lecture limitée",message,
+          ["Profil protégé","Données indisponibles"],
+          [{title:"État actuel",text:"La fiche n'est pas exploitable pour une lecture utile pour l'instant."},{title:"Action simple",text:"Vérifier l'identifiant, la publication publique et la cohérence du profil."}]);
       }
 
-      function buildClawFromProfile(profile, services){
-        const p = profile || {};
-        const list = Array.isArray(services) ? services : [];
-
-        const businessType = safe(p.business_type || p.category, "Service local");
-        const city = safe(p.city, "Ville à préciser");
-        const hasWhatsapp = !!String(p.whatsapp || "").trim();
-        const hasAddress = !!String(p.address_text || p.address || "").trim();
-        const hasHours = !!String(p.opening_hours_text || p.hours_text || "").trim();
-        const hasBio = !!String(p.bio || "").trim();
-
-        const zones = Array.isArray(p.zones)
-          ? p.zones
-          : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
-
-        const pills = [
-          `Ville : ${city}`,
-          `Activité : ${businessType}`,
-          list.length ? `Services : ${list.length}` : "Services non détaillés",
-          hasWhatsapp ? "WhatsApp prêt" : "WhatsApp à préciser"
+      function buildClawFromProfile(profile,services){
+        const p=profile||{};
+        const list=Array.isArray(services)?services:[];
+        const businessType=safe(p.business_type||p.category,"Service local");
+        const city=safe(p.city,"Ville à préciser");
+        const hasWhatsapp=!!String(p.whatsapp||"").trim();
+        const hasAddress=!!String(p.address_text||p.address||"").trim();
+        const hasHours=!!String(p.opening_hours_text||p.hours_text||"").trim();
+        const hasBio=!!String(p.bio||"").trim();
+        const zones=Array.isArray(p.zones)?p.zones:String(p.zones_text||p.zones||"").split(",").map(s=>s.trim()).filter(Boolean);
+        const pills=[`Ville : ${city}`,`Activité : ${businessType}`,list.length?`Services : ${list.length}`:"Services non détaillés",hasWhatsapp?"WhatsApp prêt":"WhatsApp à préciser"];
+        const items=[
+          {title:"Lecture commerce",text:`La fiche présente un commerce ${businessType.toLowerCase()} à ${city}. ${hasBio?"La présentation est posée.":"La présentation mérite encore une phrase claire."}`},
+          {title:"Accueil client",text:`${hasAddress?"Adresse visible.":"Adresse à préciser."} ${hasHours?"Horaires visibles.":"Horaires à préciser."} ${p.capacity?"Capacité annoncée.":"Capacité encore floue."}`},
+          {title:"Réservation",text:list.length?"Le client voit des services concrets, la réservation est plus facile à comprendre.":"La fiche renvoie surtout vers WhatsApp ; ajouter quelques services clairs aide le choix du client."}
         ];
-
-        const items = [
-          {
-            title:"Lecture commerce",
-            text:`La fiche présente un rail ${businessType.toLowerCase()} à ${city}. ${hasBio ? "La présentation est posée." : "La présentation mérite encore une phrase métier claire."}`
-          },
-          {
-            title:"Accueil client",
-            text:`${hasAddress ? "Adresse visible." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : "Capacité encore floue."}`
-          },
-          {
-            title:"Réservation",
-            text: list.length
-              ? "Le client voit des services concrets, donc la réservation est plus facile à comprendre."
-              : "La fiche renvoie surtout vers WhatsApp ; ajouter ou garder quelques services clairs aide le choix du client."
-          }
-        ];
-
-        if(zones.length){
-          items.push({
-            title:"Repères terrain",
-            text:`Zones visibles : ${zones.slice(0,4).join(", ")}${zones.length > 4 ? "…" : ""}.`
-          });
-        }else{
-          items.push({
-            title:"Repères terrain",
-            text:"Les zones ne sont pas encore précisées. Un ou deux repères locaux peuvent aider le client à se situer vite."
-          });
-        }
-
-        setClaw(
-          "Lecture vivante",
-          "CLAW lit la fiche établissement sans créer un nouveau système : il résume le terrain, la qualité d’accueil et la clarté de la réservation.",
-          pills,
-          items
-        );
+        if(zones.length){items.push({title:"Repères terrain",text:`Zones visibles : ${zones.slice(0,4).join(", ")}${zones.length>4?"…":""}.`});}
+        else{items.push({title:"Repères terrain",text:"Les zones ne sont pas encore précisées. Un ou deux repères locaux peuvent aider le client à se situer vite."});}
+        setClaw("Lecture active","On lit ton profil sans créer un nouveau système : terrain, qualité d'accueil et clarté de la réservation.",pills,items);
       }
 
-      function money(v){
-        const n = Number(v);
-        if(!Number.isFinite(n)) return "";
-        return n.toLocaleString("fr-FR") + " FCFA";
-      }
+      function money(v){ const n=Number(v); if(!Number.isFinite(n))return ""; return n.toLocaleString("fr-FR")+" FCFA"; }
 
-      function setUnavailableState(title, subtitle){
-        document.getElementById("name").textContent = title;
-        document.getElementById("subtitle").textContent = subtitle;
-        document.getElementById("topSub").textContent = subtitle;
+      function setUnavailableState(title,subtitle){
+        document.getElementById("name").textContent=title;
+        document.getElementById("subtitle").textContent=subtitle;
+        document.getElementById("topSub").textContent=subtitle;
         document.getElementById("btnReserve").classList.add("hidden");
         document.getElementById("btnWhatsApp").classList.add("hidden");
-        document.getElementById("heroMedia").innerHTML = `
-          <div class="hero-media-fallback">📅</div>
-          <div class="hero-badge"><span class="dot"></span> Commerce public</div>
-        `;
-        document.getElementById("servicesBox").innerHTML = `
-          <div class="service"><div class="muted">Services indisponibles.</div></div>
-        `;
-        setClawUnavailable(subtitle || "Commerce indisponible.");
+        document.getElementById("heroMedia").innerHTML=`<div class="hero-media-fallback">📅</div><div class="hero-badge"><span class="dot"></span> Commerce public</div>`;
+        document.getElementById("servicesBox").innerHTML=`<div class="service"><div class="muted">Services indisponibles.</div></div>`;
+        setClawUnavailable(subtitle||"Commerce indisponible.");
       }
 
-      async function loadServices(sb, slugValue){
-        if(!slugValue) return [];
-
+      async function loadServices(sb,slugValue){
+        if(!slugValue)return [];
         try{
-          const { data, error } = await sb
-            .from("digiy_resa_services")
-            .select("id, service_name, duration_minutes, price_fcfa, is_active")
-            .eq("slug", slugValue)
-            .eq("is_active", true)
-            .order("service_name", { ascending:true });
-
-          if(error) throw error;
-          return Array.isArray(data) ? data : [];
-        }catch(e){
-          console.error(e);
-          return [];
-        }
+          const{data,error}=await sb.from("digiy_resa_services").select("id,service_name,duration_minutes,price_fcfa,is_active").eq("slug",slugValue).eq("is_active",true).order("service_name",{ascending:true});
+          if(error)throw error;
+          return Array.isArray(data)?data:[];
+        }catch(e){console.error(e);return [];}
       }
 
-      function renderServices(services, businessType){
-        const box = document.getElementById("servicesBox");
-
-        if(!services.length){
-          box.innerHTML = `
-            <div class="service">
-              <div class="muted">
-                Aucun service détaillé n’est affiché pour l’instant. Le client peut passer par WhatsApp pour préciser son besoin.
-              </div>
-            </div>
-          `;
-          return;
-        }
-
-        box.innerHTML = services.map(s => `
+      function renderServices(services,businessType){
+        const box=document.getElementById("servicesBox");
+        if(!services.length){box.innerHTML=`<div class="service"><div class="muted">Aucun service détaillé pour l'instant. Le client peut passer par WhatsApp pour préciser son besoin.</div></div>`;return;}
+        box.innerHTML=services.map(s=>`
           <article class="service">
             <div class="service-top">
-              <div class="service-name">${escapeHtml(s.service_name || "Service")}</div>
+              <div class="service-name">${escapeHtml(s.service_name||"Service")}</div>
               <div class="service-meta">
-                ${s.duration_minutes ? `<span class="service-pill">⏱️ ${escapeHtml(String(s.duration_minutes))} min</span>` : ``}
-                ${money(s.price_fcfa) ? `<span class="service-pill">💰 ${escapeHtml(money(s.price_fcfa))}</span>` : ``}
+                ${s.duration_minutes?`<span class="service-pill">⏱️ ${escapeHtml(String(s.duration_minutes))} min</span>`:""}
+                ${money(s.price_fcfa)?`<span class="service-pill">💰 ${escapeHtml(money(s.price_fcfa))}</span>`:""}
               </div>
             </div>
-            <div class="muted" style="margin-top:8px">
-              ${businessType ? `Prestation ${escapeHtml(String(businessType).toLowerCase())} disponible sur réservation.` : `Prestation disponible sur réservation.`}
-            </div>
-          </article>
-        `).join("");
+            <div class="muted" style="margin-top:8px">${businessType?`Prestation ${escapeHtml(String(businessType).toLowerCase())} disponible sur réservation.`:"Prestation disponible sur réservation."}</div>
+          </article>`).join("");
       }
 
       async function boot(){
         setNavLinks(slug);
-        document.getElementById("slugPill").textContent = "slug : " + (slug || "—");
+        /* ━━━ AVANT : "slug :" → "Identifiant :" ━━━ */
+        document.getElementById("slugPill").textContent = "Identifiant : "+(slug||"—");
         setClawLoading();
 
-        if(!supabaseLib || typeof supabaseLib.createClient !== "function"){
+        if(!supabaseLib||typeof supabaseLib.createClient!=="function"){
           console.error("Supabase JS non chargé.");
-          setUnavailableState("Service indisponible", "La bibliothèque de connexion n’est pas chargée.");
+          setUnavailableState("Service indisponible","La bibliothèque de connexion n'est pas chargée.");
           return;
         }
 
-        const sb = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          auth:{
-            persistSession:false,
-            autoRefreshToken:false,
-            detectSessionInUrl:false,
-            storage:{
-              getItem:() => null,
-              setItem:() => {},
-              removeItem:() => {}
-            }
-          }
-        });
+        const sb=supabaseLib.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}}});
 
         if(!slug){
-          setUnavailableState("Slug manquant", "Impossible d’ouvrir cette fiche sans identifiant commerce.");
-          document.getElementById("servicesBox").innerHTML = `
-            <div class="service"><div class="muted">Aucun service à afficher.</div></div>
-          `;
-          setClawUnavailable("Impossible de lire l’établissement sans slug valide.");
+          /* ━━━ AVANT : "Slug manquant" / "sans identifiant commerce" → humain ━━━ */
+          setUnavailableState("Identifiant manquant","Impossible d'ouvrir ce profil sans identifiant boutique.");
+          document.getElementById("servicesBox").innerHTML=`<div class="service"><div class="muted">Aucun service à afficher.</div></div>`;
+          /* ━━━ AVANT : "sans slug valide" → humain ━━━ */
+          setClawUnavailable("Impossible de lire l'établissement sans identifiant valide.");
           return;
         }
 
         try{
-          storageSet("digiy_resa_last_slug", slug);
-          storageSet("digiy_resa_slug", slug);
-          storageSet("digiy_last_slug", slug);
-          storageSet("DIGIY_SLUG", slug);
+          storageSet("digiy_resa_last_slug",slug);storageSet("digiy_resa_slug",slug);storageSet("digiy_last_slug",slug);storageSet("DIGIY_SLUG",slug);
 
-          const { data, error } = await sb.rpc("resa_public_profile_by_slug", { p_slug: slug });
-          if(error) throw error;
-          if(!data?.ok) throw new Error(data?.error || "not_found");
+          const{data,error}=await sb.rpc("resa_public_profile_by_slug",{p_slug:slug});
+          if(error)throw error;
+          if(!data?.ok)throw new Error(data?.error||"not_found");
 
-          const p = data.profile || {};
-          const name = safe(p.display_name, "Commerce DIGIY");
-          const city = safe(p.city);
-          const businessType = safe(p.business_type || p.category, "Service local");
+          const p=data.profile||{};
+          const name=safe(p.display_name,"Commerce DIGIY");
+          const city=safe(p.city);
+          const businessType=safe(p.business_type||p.category,"Service local");
+          const zones=Array.isArray(p.zones)?p.zones:String(p.zones_text||p.zones||"").split(",").map(s=>s.trim()).filter(Boolean);
 
-          const zones = Array.isArray(p.zones)
-            ? p.zones
-            : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
+          document.title=`${name} · Mon profil · DIGIY`;
+          /* ━━━ AVANT : "Profil établissement chargé pour ${slug}" → humain ━━━ */
+          document.getElementById("topSub").textContent=`Profil chargé — ${name}`;
 
-          document.title = `${name} — DIGIY RESA`;
-          document.getElementById("topSub").textContent = `Profil établissement chargé pour ${slug}`;
+          setHeroImage(p,name,city,businessType);
+          setAvatar(p,name);
 
-          setHeroImage(p, name, city, businessType);
-          setAvatar(p, name);
-
-          document.getElementById("name").textContent = name;
-          document.getElementById("subtitle").textContent = `${city} • ${businessType}`;
-          document.getElementById("cityPill").textContent = "Ville : " + city;
-          document.getElementById("typePill").textContent = "Activité : " + businessType;
-          document.getElementById("bio").textContent = safe(p.bio, "Présentation à découvrir.");
-          document.getElementById("address").textContent = safe(p.address_text || p.address, "Adresse à préciser");
-          document.getElementById("hours").textContent = safe(p.opening_hours_text || p.hours_text, "Horaires à préciser");
-          document.getElementById("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : "Capacité à préciser";
-          document.getElementById("contactWhatsapp").textContent = safe(p.whatsapp, "WhatsApp à préciser");
-          document.getElementById("bookingHelp").textContent = `Réservation simple pour ${businessType.toLowerCase()}`;
+          document.getElementById("name").textContent=name;
+          document.getElementById("subtitle").textContent=`${city} · ${businessType}`;
+          document.getElementById("cityPill").textContent="Ville : "+city;
+          document.getElementById("typePill").textContent="Activité : "+businessType;
+          document.getElementById("bio").textContent=safe(p.bio,"Présentation à découvrir.");
+          document.getElementById("address").textContent=safe(p.address_text||p.address,"Adresse à préciser");
+          document.getElementById("hours").textContent=safe(p.opening_hours_text||p.hours_text,"Horaires à préciser");
+          document.getElementById("capacity").textContent=p.capacity?`${p.capacity} places / accueil`:"Capacité à préciser";
+          document.getElementById("contactWhatsapp").textContent=safe(p.whatsapp,"WhatsApp à préciser");
+          document.getElementById("bookingHelp").textContent=`Réservation simple pour ${businessType.toLowerCase()}`;
 
           renderZones(zones);
 
-          const wa = document.getElementById("btnWhatsApp");
-          const waHref = waLink(p.whatsapp, name);
-          if(waHref){
-            wa.href = waHref;
-          }else{
-            wa.removeAttribute("href");
-            wa.classList.remove("gold");
-            wa.textContent = "WhatsApp indisponible";
-          }
+          const wa=document.getElementById("btnWhatsApp");
+          const waHref=waLink(p.whatsapp,name);
+          if(waHref){wa.href=waHref;}else{wa.removeAttribute("href");wa.classList.remove("gold");wa.textContent="WhatsApp indisponible";}
 
-          const services = await loadServices(sb, slug);
-          renderServices(services, businessType);
-          buildClawFromProfile(p, services);
-
+          const services=await loadServices(sb,slug);
+          renderServices(services,businessType);
+          buildClawFromProfile(p,services);
         }catch(e){
           console.error(e);
-          setUnavailableState("Commerce indisponible", "Cette fiche n’est pas disponible publiquement.");
+          setUnavailableState("Commerce indisponible","Cette fiche n'est pas disponible publiquement.");
         }
       }
 
