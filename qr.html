@@ -4,392 +4,116 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1020" />
-  <title>DIGIY RESA PRO — QR</title>
-
+  <title>Mon QR · Mes réservations · DIGIY</title>
   <script>
     window.DIGIY_MODULE = "RESA";
     window.DIGIY_LOGIN_URL = "./pin.html";
-    window.DIGIY_SUPABASE_URL =
-      window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON_KEY =
-      window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
-    window.DIGIY_SUPABASE_ANON =
-      window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_SUPABASE_URL = window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script src="./guard.js?v=resa-qr-claw-v1"></script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{
-      --bg:#020617;
-      --card:#0f172a;
-      --card2:#111c33;
-      --accent:#facc15;
-      --muted:#9ca3af;
-      --text:#e5e7eb;
-      --line:rgba(148,163,184,0.18);
-      --danger:#ef4444;
-      --ok:#22c55e;
-      --info:#38bdf8;
-      --shadow:0 18px 60px rgba(0,0,0,.45);
-    }
-
+    :root{--bg:#020617;--card:#0f172a;--card2:#111c33;--accent:#facc15;--muted:#9ca3af;--text:#e5e7eb;--line:rgba(148,163,184,0.18);--danger:#ef4444;--ok:#22c55e;--info:#38bdf8;--shadow:0 18px 60px rgba(0,0,0,.45);--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
     *{box-sizing:border-box;margin:0;padding:0}
-
-    body{
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:
-        radial-gradient(circle at 10% 10%, rgba(250,204,21,.09), transparent 40%),
-        radial-gradient(circle at 90% 100%, rgba(34,197,94,.10), transparent 45%),
-        linear-gradient(135deg,#020617,#0f172a);
-      color:var(--text);
-      min-height:100vh;
-    }
-
-    .wrap{
-      max-width:860px;
-      margin:auto;
-      padding:18px;
-    }
-
-    h1{
-      font-size:1.5rem;
-      margin-bottom:6px;
-    }
-
-    p{
-      color:var(--muted);
-      margin-bottom:14px;
-      line-height:1.5;
-    }
-
-    .card{
-      background:rgba(255,255,255,0.03);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:16px;
-      margin-top:14px;
-      box-shadow:var(--shadow);
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    .btn{
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      font-weight:900;
-      border:none;
-      cursor:pointer;
-      margin-top:10px;
-      min-height:48px;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      transition:transform .12s ease, filter .12s ease, opacity .12s ease;
-    }
-
-    .btn:hover:not(:disabled){
-      transform:translateY(-1px);
-      filter:brightness(1.05);
-    }
-
-    .btn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
-
-    .btn.primary{
-      background:var(--accent);
-      color:#111827;
-    }
-
-    .btn.ghost{
-      background:transparent;
-      border:1px solid rgba(250,204,21,0.35);
-      color:#fff;
-    }
-
-    .btn.good{
-      background:rgba(34,197,94,.14);
-      border:1px solid rgba(34,197,94,.35);
-      color:#bbf7d0;
-    }
-
-    .mini{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:.9rem;
-    }
-
-    .mono{
-      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    .note{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      display:none;
-      white-space:pre-wrap;
-      line-height:1.4;
-      font-weight:850;
-    }
-
-    .note.ok{
-      display:block;
-      border-color:rgba(34,197,94,.35);
-      color:#bbf7d0;
-      background:rgba(34,197,94,.08);
-    }
-
-    .note.bad{
-      display:block;
-      border-color:rgba(239,68,68,.35);
-      color:#fecaca;
-      background:rgba(239,68,68,.08);
-    }
-
-    .note.warn{
-      display:block;
-      border-color:rgba(250,204,21,.35);
-      color:#fde68a;
-      background:rgba(250,204,21,.08);
-    }
-
-    .qrbox{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:16px;
-      border-radius:16px;
-      border:1px dashed rgba(250,204,21,0.35);
-      background:rgba(0,0,0,0.12);
-      margin-top:12px;
-      min-height:220px;
-    }
-
-    .qrImg{
-      max-width:100%;
-      width:320px;
-      height:auto;
-      border-radius:12px;
-      background:#fff;
-      padding:10px;
-      display:block;
-      border:1px solid rgba(148,163,184,.22);
-    }
-
-    .label{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,0.12);
-      line-height:1.4;
-      word-break:break-all;
-    }
-
+    body{font-family:var(--fontA);background:radial-gradient(circle at 10% 10%, rgba(250,204,21,.09), transparent 40%),radial-gradient(circle at 90% 100%, rgba(34,197,94,.10), transparent 45%),linear-gradient(135deg,#020617,#0f172a);color:var(--text);min-height:100vh;}
+    .wrap{max-width:860px;margin:auto;padding:18px;}
+    h1{font-size:1.5rem;margin-bottom:6px;}
+    p{color:var(--muted);margin-bottom:14px;line-height:1.5;}
+    .card{background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:var(--shadow);}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .btn{width:100%;padding:12px;border-radius:12px;font-weight:900;border:none;cursor:pointer;margin-top:10px;min-height:48px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s ease, filter .12s ease, opacity .12s ease;font-family:var(--fontA);}
+    .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.05);}
+    .btn:disabled{opacity:.55;cursor:not-allowed;}
+    .btn.primary{background:var(--accent);color:#111827;}
+    .btn.ghost{background:transparent;border:1px solid rgba(250,204,21,0.35);color:#fff;}
+    .btn.good{background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.35);color:#bbf7d0;}
+    .mini{margin-top:10px;color:var(--muted);font-size:.9rem;}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;}
+    .note{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);display:none;white-space:pre-wrap;line-height:1.4;font-weight:850;}
+    .note.ok{display:block;border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.08);}
+    .note.bad{display:block;border-color:rgba(239,68,68,.35);color:#fecaca;background:rgba(239,68,68,.08);}
+    .note.warn{display:block;border-color:rgba(250,204,21,.35);color:#fde68a;background:rgba(250,204,21,.08);}
+    .qrbox{display:flex;justify-content:center;align-items:center;padding:16px;border-radius:16px;border:1px dashed rgba(250,204,21,0.35);background:rgba(0,0,0,0.12);margin-top:12px;min-height:220px;}
+    .qrImg{max-width:100%;width:320px;height:auto;border-radius:12px;background:#fff;padding:10px;display:block;border:1px solid rgba(148,163,184,.22);}
+    .label{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,0.12);line-height:1.4;word-break:break-all;}
     .label b{color:#fff}
-
-    .hr{
-      height:1px;
-      background:rgba(148,163,184,0.18);
-      margin-top:12px;
-    }
-
-    .pillRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-
-    .pill{
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      color:#cbd5e1;
-      font-weight:900;
-      font-size:.9rem;
-    }
-
-    .claw-grid{
-      display:grid;
-      grid-template-columns:1.08fr .92fr;
-      gap:14px;
-      margin-top:14px;
-    }
-
-    @media (max-width:860px){
-      .claw-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    .claw-card{
-      background:linear-gradient(180deg, rgba(56,189,248,.09), rgba(34,197,94,.06));
-      border:1px solid var(--line);
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      padding:16px;
-    }
-
-    .claw-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-
-    .claw-kicker{
-      font-size:11px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:#cfe8ff;
-      font-weight:950;
-      margin-bottom:6px;
-    }
-
-    .claw-title{
-      margin:0;
-      font-size:18px;
-      font-weight:950;
-      line-height:1.2;
-    }
-
-    .claw-mode{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(56,189,248,.24);
-      background:rgba(56,189,248,.10);
-      color:#d8f2ff;
-      font-size:12px;
-      font-weight:950;
-    }
-
-    .claw-text{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.65;
-      font-weight:750;
-    }
-
-    .claw-pills{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:12px;
-    }
-
-    .claw-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
-      font-size:12px;
-      font-weight:900;
-    }
-
-    .claw-list{
-      display:grid;
-      gap:10px;
-      margin-top:12px;
-    }
-
-    .claw-item{
-      padding:12px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-    }
-
-    .claw-item strong{
-      display:block;
-      margin-bottom:6px;
-      font-size:14px;
-      font-weight:950;
-      color:var(--text);
-    }
-
-    .claw-item span{
-      display:block;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-      font-weight:750;
-    }
-
-    @media (max-width:680px){
-      .wrap{padding:14px}
-      .qrImg{width:260px}
-    }
+    .hr{height:1px;background:rgba(148,163,184,0.18);margin-top:12px;}
+    .pillRow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#cbd5e1;font-weight:900;font-size:.9rem;}
+    .claw-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:14px;margin-top:14px;}
+    @media(max-width:860px){.claw-grid{grid-template-columns:1fr}}
+    .claw-card{background:linear-gradient(180deg, rgba(56,189,248,.09), rgba(34,197,94,.06));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px;}
+    .claw-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+    .claw-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#cfe8ff;font-weight:950;margin-bottom:6px;}
+    .claw-title{margin:0;font-size:18px;font-weight:950;line-height:1.2;}
+    .claw-mode{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(56,189,248,.24);background:rgba(56,189,248,.10);color:#d8f2ff;font-size:12px;font-weight:950;}
+    .claw-text{color:var(--muted);font-size:14px;line-height:1.65;font-weight:750;}
+    .claw-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+    .claw-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:900;}
+    .claw-list{display:grid;gap:10px;margin-top:12px;}
+    .claw-item{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);}
+    .claw-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:950;color:var(--text);}
+    .claw-item span{display:block;color:var(--muted);font-size:13px;line-height:1.55;font-weight:750;}
+    @media(max-width:680px){.wrap{padding:14px}.qrImg{width:260px}}
   </style>
 </head>
-
 <body>
 <div class="wrap">
-  <h1>📎 QR RESA</h1>
-  <p>Un seul QR = <b>QR-PRO</b>. Derrière, QR-PRO propose <b>Dashboard / Public / Accès</b>, et CLAW te résume le rail en silence.</p>
+  <!-- ━━━ AVANT : "📎 QR RESA" → banni ━━━ -->
+  <h1>📎 Mon QR d'accès boutique</h1>
+  <!-- ━━━ AVANT : "QR-PRO" × 2 visible → humain ━━━ -->
+  <p>Un seul QR pour ta boutique. Derrière, il propose <b>ton espace</b>, <b>ta vitrine publique</b> et <b>ton accès sécurisé</b>.</p>
 
   <div class="card">
     <div class="pillRow">
-      <div class="pill" id="pillSlug">slug: —</div>
-      <div class="pill" id="pillState">session: —</div>
+      <!-- ━━━ AVANT : "slug:" → "Identifiant :" ━━━ -->
+      <div class="pill" id="pillSlug">Identifiant : —</div>
+      <!-- ━━━ AVANT : "session:" → "Accès :" ━━━ -->
+      <div class="pill" id="pillState">Accès : —</div>
     </div>
 
     <div class="row">
-      <button class="btn ghost" id="btnBack" type="button">⬅️ Retour dashboard</button>
-      <button class="btn primary" id="btnCopy" type="button">📋 Copier lien QR-PRO</button>
+      <!-- ━━━ AVANT : "Retour dashboard" → "Mon activité" ━━━ -->
+      <button class="btn ghost"   id="btnBack"     type="button">⬅️ Mon activité</button>
+      <!-- ━━━ AVANT : "Copier lien QR-PRO" → "Copier le lien" ━━━ -->
+      <button class="btn primary" id="btnCopy"     type="button">📋 Copier le lien</button>
     </div>
-
     <div class="row">
-      <button class="btn good" id="btnOpen" type="button">↗️ Ouvrir QR-PRO</button>
+      <!-- ━━━ AVANT : "Ouvrir QR-PRO" → "Ouvrir" ━━━ -->
+      <button class="btn good"    id="btnOpen"     type="button">↗️ Ouvrir</button>
       <button class="btn primary" id="btnDownload" type="button">⬇️ Télécharger QR (PNG)</button>
-      <button class="btn ghost" id="btnSticker" type="button">🟩 Télécharger Sticker XL (PNG)</button>
+      <button class="btn ghost"   id="btnSticker"  type="button">🟩 Télécharger Sticker XL (PNG)</button>
     </div>
 
     <div class="qrbox">
       <a id="qrAnchor" href="#" target="_blank" rel="noopener">
-        <img id="qrImg" class="qrImg" alt="QR DIGIY QR PRO RESA" />
+        <!-- ━━━ AVANT : alt "QR DIGIY QR PRO RESA" → humain ━━━ -->
+        <img id="qrImg" class="qrImg" alt="Mon QR d'accès boutique DIGIY" />
       </a>
     </div>
 
-    <div class="label mono" id="urlBox">URL: —</div>
+    <div class="label mono" id="urlBox">Lien : —</div>
     <div class="note warn" id="note"></div>
 
-    <section class="claw-grid" id="clawSection">
+    <section class="claw-grid">
       <article class="claw-card">
         <div class="claw-head">
           <div>
-            <div class="claw-kicker">CLAW DIGIY</div>
-            <h2 class="claw-title">Lecture légère du QR</h2>
+            <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
+            <div class="claw-kicker">DIGIY ANALYSE</div>
+            <!-- ━━━ AVANT : "Lecture légère du QR" → "Lecture de ton QR" ━━━ -->
+            <h2 class="claw-title">Lecture de ton QR</h2>
           </div>
-          <div class="claw-mode" id="clawMode">Analyse légère</div>
+          <!-- ━━━ AVANT : "Analyse légère" → "Analyse en cours" ━━━ -->
+          <div class="claw-mode" id="clawMode">Analyse en cours</div>
         </div>
-
-        <div class="claw-text" id="clawSummary">
-          CLAW lit le rail QR sans bavarder : slug, session, destination dashboard, porte PIN et lien public.
-        </div>
-
+        <!-- ━━━ AVANT : "CLAW lit le rail QR sans bavarder : slug, session..." → banni ━━━ -->
+        <div class="claw-text" id="clawSummary">On lit ton QR : identifiant, accès, destination et lien public.</div>
         <div class="claw-pills" id="clawPills"></div>
       </article>
 
@@ -397,7 +121,8 @@
         <div class="claw-list" id="clawList">
           <div class="claw-item">
             <strong>Chargement</strong>
-            <span>CLAW attend le slug réel pour résumer le QR correctement.</span>
+            <!-- ━━━ AVANT : "CLAW attend le slug réel" → banni ━━━ -->
+            <span>En attente de l'identifiant pour construire le QR correctement.</span>
           </div>
         </div>
       </article>
@@ -412,461 +137,305 @@
 (async function(){
   "use strict";
 
-  const QR_PRO_BASE = "https://beauville.github.io/digiy-qr-pro/";
+  const QR_PRO_BASE    = "https://beauville.github.io/digiy-qr-pro/";
   const DASHBOARD_PATH = "./dashboard-pro.html";
-  const PUBLIC_PATH = "./index.html";
-  const PIN_PATH = "./pin.html";
+  const PUBLIC_PATH    = "./index.html";
+  const PIN_PATH       = "./pin.html";
 
-  const qrImg = document.getElementById("qrImg");
-  const qrAnchor = document.getElementById("qrAnchor");
-  const urlBox = document.getElementById("urlBox");
-  const noteEl = document.getElementById("note");
-  const dbgEl = document.getElementById("dbg");
-  const pillSlug = document.getElementById("pillSlug");
-  const pillState = document.getElementById("pillState");
+  const qrImg      = document.getElementById("qrImg");
+  const qrAnchor   = document.getElementById("qrAnchor");
+  const urlBox     = document.getElementById("urlBox");
+  const noteEl     = document.getElementById("note");
+  const dbgEl      = document.getElementById("dbg");
+  const pillSlug   = document.getElementById("pillSlug");
+  const pillState  = document.getElementById("pillState");
+  const btnDownload= document.getElementById("btnDownload");
+  const btnSticker = document.getElementById("btnSticker");
+  const btnBack    = document.getElementById("btnBack");
+  const btnCopy    = document.getElementById("btnCopy");
+  const btnOpen    = document.getElementById("btnOpen");
 
-  const btnDownload = document.getElementById("btnDownload");
-  const btnSticker  = document.getElementById("btnSticker");
-  const btnBack     = document.getElementById("btnBack");
-  const btnCopy     = document.getElementById("btnCopy");
-  const btnOpen     = document.getElementById("btnOpen");
-
-  let slug = "";
-  let phone = "";
-  let url = "";
-  let dashboardUrl = "";
-  let publicUrl = "";
-  let pinUrl = "";
-  let busy = false;
-  let qrNormalDataUrl = "";
-  let qrXLDataUrl = "";
+  let slug="", phone="", url="", dashboardUrl="", publicUrl="", pinUrl="";
+  let busy=false, qrNormalDataUrl="", qrXLDataUrl="";
 
   function note(msg, type){
-    noteEl.className = "note " + (type || "warn");
-    noteEl.textContent = msg || "";
-    noteEl.style.display = msg ? "block" : "none";
+    noteEl.className="note "+(type||"warn");
+    noteEl.textContent=msg||"";
+    noteEl.style.display=msg?"block":"none";
   }
 
   function setBusy(on){
-    busy = !!on;
-    btnDownload.disabled = on;
-    btnSticker.disabled = on;
-    btnCopy.disabled = on;
-    btnOpen.disabled = on;
-    btnBack.disabled = on;
+    busy=!!on;
+    [btnDownload,btnSticker,btnCopy,btnOpen,btnBack].forEach(b=>b.disabled=on);
   }
 
-  function setClaw(mode, summary, pills = [], items = []){
-    document.getElementById("clawMode").textContent = mode || "Analyse légère";
-    document.getElementById("clawSummary").textContent = summary || "CLAW lit le rail sans bavarder.";
+  function escapeHtml(v){ return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;"); }
 
-    document.getElementById("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
-      .filter(Boolean)
-      .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
-      .join("");
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     buildSafeUrl — VERSION BLINDÉE
+     new URL(path, location.href) fragile selon l'env.
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  function buildSafeUrl(base, params){
+    const baseStr=(base==null?"":String(base)).trim();
+    if(!baseStr)return location.href;
+    let u;
+    try{
+      if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
+      else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
+    }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
+    try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+    return u.toString();
+  }
 
-    document.getElementById("clawList").innerHTML = (Array.isArray(items) ? items : [])
-      .filter(Boolean)
-      .map(item => `
-        <div class="claw-item">
-          <strong>${escapeHtml(item.title || "Point utile")}</strong>
-          <span>${escapeHtml(item.text || "—")}</span>
-        </div>
-      `).join("");
+  function setClaw(mode, summary, pills=[], items=[]){
+    document.getElementById("clawMode").textContent    = mode||"Analyse en cours";
+    document.getElementById("clawSummary").textContent = summary||"Lecture de ton QR.";
+    document.getElementById("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
+    document.getElementById("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
   }
 
   function setClawLoading(){
-    setClaw(
-      "Chargement",
-      "CLAW attend le slug réel pour construire le QR RESA, le retour dashboard et les portes utiles.",
-      ["Module : RESA", "QR-PRO", "Rail en préparation"],
-      [
-        {
-          title:"Lecture du rail",
-          text:"Le QR doit rester unique et s’appuyer sur le slug réel."
-        },
-        {
-          title:"Navigation utile",
-          text:"CLAW prépare le retour dashboard, la porte PIN et le lien public sans casser le rail."
-        }
-      ]
-    );
+    setClaw("Chargement","En attente de l'identifiant pour construire le QR et les portes utiles.",
+      ["Mes réservations","QR en préparation"],
+      [{title:"Lecture du QR",text:"Le QR doit s'appuyer sur l'identifiant réel."},
+       {title:"Navigation utile",text:"On prépare le retour vers l'activité, la porte PIN et le lien public."}]);
   }
 
   function setClawMissingSlug(){
-    setClaw(
-      "Slug manquant",
-      "Sans slug, le QR RESA n’a pas de contexte propre. CLAW bloque la fabrication pour éviter un faux rail.",
-      ["Slug absent", "QR bloqué", "Vérifier le lien"],
-      [
-        {
-          title:"Blocage principal",
-          text:"Le fichier a besoin d’un slug réel pour fabriquer un QR propre."
-        },
-        {
-          title:"Action utile",
-          text:"Ouvre ce fichier depuis dashboard-pro.html ou avec ?slug=... dans l’URL."
-        }
-      ]
-    );
+    /* ━━━ AVANT : titre "Slug manquant" · "dashboard-pro.html" visible → bannis ━━━ */
+    setClaw("Identifiant manquant","Sans identifiant, le QR n'a pas de contexte propre. La fabrication est bloquée pour éviter un faux lien.",
+      ["Identifiant absent","QR bloqué","Vérifier le lien"],
+      [{title:"Blocage principal",text:"Il faut un identifiant réel pour fabriquer un QR propre."},
+       {title:"Action utile",text:"Ouvre ce fichier depuis ton espace de travail ou avec ?slug=... dans l'URL."}]);
   }
 
   function setClawReady(sessionOk){
     setClaw(
-      sessionOk ? "QR prêt + session OK" : "QR prêt",
-      "CLAW voit un QR RESA propre : un seul QR, puis derrière dashboard, public et accès selon le rail vivant.",
+      sessionOk?"QR prêt · accès actif":"QR prêt",
+      "Ton QR est propre : un seul lien, puis derrière ton espace, ta vitrine et ton accès selon le contexte.",
       [
-        slug ? `Slug : ${slug}` : "Slug : —",
-        phone ? `Téléphone : ${phone}` : "Téléphone : —",
-        sessionOk ? "Session vivante" : "Slug seul",
-        "Retour dashboard"
+        /* ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ */
+        slug?`Identifiant : ${slug}`:"Identifiant : —",
+        phone?`Téléphone : ${phone}`:"Téléphone : —",
+        sessionOk?"Accès actif":"Identifiant seul",
+        /* ━━━ AVANT : "Retour dashboard" → "Mon activité" ━━━ */
+        "Mon activité"
       ],
       [
-        {
-          title:"Rail QR",
-          text:"Le QR ouvre QR-PRO avec module RESA et le bon slug."
-        },
-        {
-          title:"Retour métier",
-          text:"Le retour principal pointe vers dashboard-pro.html, pas vers LOC."
-        },
-        {
-          title:"Circulation utile",
-          text:"QR-PRO reçoit aussi le lien public index.html et la porte d’accès reste pin.html."
-        }
+        {title:"Lien QR",text:"Le QR ouvre avec le module et le bon identifiant."},
+        /* ━━━ AVANT : "dashboard-pro.html, pas vers LOC" → banni ━━━ */
+        {title:"Retour métier",text:"Le retour principal pointe vers ton espace de travail."},
+        {title:"Circulation utile",text:"Derrière le QR : ta vitrine publique et ta porte d'accès sécurisée."}
       ]
     );
   }
 
   function setClawError(message){
-    setClaw(
-      "Erreur",
-      "CLAW a détecté un blocage dans la génération locale du QR.",
-      [
-        slug ? `Slug : ${slug}` : "Slug : —",
-        "Génération locale",
-        "Contrôle à faire"
-      ],
-      [
-        {
-          title:"Blocage",
-          text: message || "Le QR n’a pas pu être généré."
-        },
-        {
-          title:"Action utile",
-          text:"Vérifie la librairie QR, puis recharge avec un slug réel."
-        }
-      ]
-    );
-  }
-
-  function escapeHtml(v){
-    return String(v ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+    setClaw("Erreur","Un blocage est détecté dans la génération locale du QR.",
+      [slug?`Identifiant : ${slug}`:"Identifiant : —","Génération locale","Contrôle à faire"],
+      [{title:"Blocage",text:message||"Le QR n'a pas pu être généré."},
+       {title:"Action utile",text:"Vérifie la librairie QR, puis recharge avec un identifiant réel."}]);
   }
 
   function getGuardSession(){
-    const st = window.DIGIY_GUARD?.state || {};
-    const raw = window.DIGIY_GUARD?.getSession?.() || {};
-    return {
-      ok: !!st.access_ok,
-      phone: String(st.phone || raw.phone || "").trim(),
-      slug: String(st.slug || raw.slug || "").trim()
-    };
+    const st=window.DIGIY_GUARD?.state||{};
+    const raw=window.DIGIY_GUARD?.getSession?.()||{};
+    return{ok:!!st.access_ok,phone:String(st.phone||raw.phone||"").trim(),slug:String(st.slug||raw.slug||"").trim()};
   }
 
   async function bootGuardSafe(){
     try{
-      const ready = window.DIGIY_GUARD?.ready;
-      if(typeof ready === "function"){
-        await ready();
-      }else if(ready && typeof ready.then === "function"){
-        await ready;
-      }
-    }catch(e){
-      console.warn("guard ready failed", e);
-    }
+      const ready=window.DIGIY_GUARD?.ready;
+      if(typeof ready==="function") await ready();
+      else if(ready&&typeof ready.then==="function") await ready;
+    }catch(e){console.warn("guard ready failed",e);}
   }
 
   function getSlugSafe(){
-    const sess = getGuardSession();
-    const qsSlug = new URLSearchParams(location.search).get("slug") || "";
-    return String(sess.slug || window.DIGIY_GUARD?.state?.slug || qsSlug || "").trim();
+    const sess=getGuardSession();
+    const qsSlug=new URLSearchParams(location.search).get("slug")||"";
+    return String(sess.slug||window.DIGIY_GUARD?.state?.slug||qsSlug||"").trim();
   }
 
   function getPhoneSafe(){
-    const sess = getGuardSession();
-    const qsTel =
-      new URLSearchParams(location.search).get("tel") ||
-      new URLSearchParams(location.search).get("phone") || "";
-    return String(sess.phone || qsTel || "").trim();
+    const sess=getGuardSession();
+    const qsTel=new URLSearchParams(location.search).get("tel")||new URLSearchParams(location.search).get("phone")||"";
+    return String(sess.phone||qsTel||"").trim();
   }
 
   function withSlug(path){
-    const u = new URL(path, location.href);
-    if(slug) u.searchParams.set("slug", slug);
-    return u.toString();
+    return buildSafeUrl(path, slug?{slug}:{});
   }
 
   function syncOwnSlug(){
-    const u = new URL(location.href);
-    if(slug) u.searchParams.set("slug", slug);
-    else u.searchParams.delete("slug");
-
-    if(phone) u.searchParams.set("tel", phone);
-    else u.searchParams.delete("tel");
-
-    history.replaceState({}, "", u.toString());
+    try{
+      const u=new URL(location.href);
+      if(slug)u.searchParams.set("slug",slug); else u.searchParams.delete("slug");
+      if(phone)u.searchParams.set("tel",phone); else u.searchParams.delete("tel");
+      history.replaceState({},"",u.toString());
+    }catch(e){}
   }
 
   async function copyText(text){
-    if(navigator.clipboard?.writeText){
-      return navigator.clipboard.writeText(text);
-    }
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "fixed";
-    ta.style.left = "-9999px";
-    document.body.appendChild(ta);
-    ta.select();
-    let ok = false;
-    try{
-      ok = document.execCommand("copy");
-    }catch(_){}
-    ta.remove();
-    if(!ok) throw new Error("copy_failed");
+    if(navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+    const ta=document.createElement("textarea"); ta.value=text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.left="-9999px"; document.body.appendChild(ta); ta.select();
+    let ok=false; try{ok=document.execCommand("copy");}catch(_){}
+    ta.remove(); if(!ok)throw new Error("copy_failed");
   }
 
   function directDownload(dataUrl, filename){
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    const a=document.createElement("a"); a.href=dataUrl; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
   }
 
   function loadScript(src){
-    return new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.async = true;
-      s.onload = () => resolve(true);
-      s.onerror = () => reject(new Error("script_load_failed: " + src));
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement("script"); s.src=src; s.async=true;
+      s.onload=()=>resolve(true); s.onerror=()=>reject(new Error("script_load_failed: "+src));
       document.head.appendChild(s);
     });
   }
 
   async function ensureQrLib(){
-    if(window.QRCode?.toDataURL) return true;
-
-    const fallbacks = [
-      "https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"
-    ];
-
+    if(window.QRCode?.toDataURL)return true;
+    const fallbacks=["https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js","https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"];
     for(const src of fallbacks){
-      try{
-        await loadScript(src);
-        if(window.QRCode?.toDataURL) return true;
-      }catch(e){
-        console.warn("QR fallback failed", src, e);
-      }
+      try{await loadScript(src); if(window.QRCode?.toDataURL)return true;}catch(e){console.warn("QR fallback failed",src,e);}
     }
     return !!window.QRCode?.toDataURL;
   }
 
   function qrOptions(size){
-    return {
-      width: size,
-      margin: 1,
-      errorCorrectionLevel: "M",
-      color: {
-        dark: "#111827",
-        light: "#FFFFFF"
-      }
-    };
+    return{width:size,margin:1,errorCorrectionLevel:"M",color:{dark:"#111827",light:"#FFFFFF"}};
   }
 
-  function makeQrDataUrl(text, size){
-    return new Promise((resolve, reject) => {
-      if(!window.QRCode || typeof window.QRCode.toDataURL !== "function"){
-        reject(new Error("QRCode lib missing"));
-        return;
-      }
-      window.QRCode.toDataURL(text, qrOptions(size), (err, dataUrl) => {
-        if(err) reject(err);
-        else resolve(dataUrl);
-      });
+  function makeQrDataUrl(text,size){
+    return new Promise((resolve,reject)=>{
+      if(!window.QRCode||typeof window.QRCode.toDataURL!=="function"){reject(new Error("QRCode lib missing"));return;}
+      window.QRCode.toDataURL(text,qrOptions(size),(err,dataUrl)=>{if(err)reject(err);else resolve(dataUrl);});
     });
   }
 
   setClawLoading();
   await bootGuardSafe();
 
-  slug = getSlugSafe();
-  phone = getPhoneSafe();
+  slug=getSlugSafe();
+  phone=getPhoneSafe();
 
   if(!slug){
-    pillSlug.textContent = "slug: —";
-    pillState.textContent = "session: impossible";
-    urlBox.textContent = "URL: slug manquant";
-    dbgEl.textContent = "module: RESA | slug manquant | ouvre depuis dashboard-pro.html ou ajoute ?slug=...";
-    note("❌ slug manquant. Ouvre ce fichier via le dashboard RESA ou avec ?slug=...", "bad");
+    /* ━━━ AVANT : "slug: —" · "session: impossible" · "URL: slug manquant" → bannis ━━━ */
+    pillSlug.textContent = "Identifiant : —";
+    pillState.textContent = "Accès : impossible";
+    urlBox.textContent   = "Lien : identifiant manquant";
+    dbgEl.textContent    = "module: RESA | identifiant manquant | ouvre depuis ton espace de travail ou ajoute ?slug=...";
+    /* ━━━ AVANT : "❌ slug manquant. Ouvre ce fichier via le dashboard RESA" → banni ━━━ */
+    note("❌ Identifiant manquant. Ouvre ce fichier depuis ton espace de travail ou avec ?slug=... dans l'URL.","bad");
     setClawMissingSlug();
     setBusy(true);
     return;
   }
 
-  const sess = getGuardSession();
-  pillSlug.textContent = "slug: " + slug;
+  const sess=getGuardSession();
+  /* ━━━ AVANT : "slug: ..." → "Identifiant : ..." ━━━ */
+  pillSlug.textContent = "Identifiant : "+slug;
+  /* ━━━ AVANT : "session: OK · ..." / "session: slug seul" → humain ━━━ */
   pillState.textContent = sess.ok
-    ? ("session: OK" + (phone ? " · " + phone : ""))
-    : "session: slug seul";
+    ? ("Accès : OK"+(phone?" · "+phone:""))
+    : "Accès : identifiant seul";
 
   syncOwnSlug();
 
   dashboardUrl = withSlug(DASHBOARD_PATH);
-  publicUrl = withSlug(PUBLIC_PATH);
-  pinUrl = withSlug(PIN_PATH);
+  publicUrl    = withSlug(PUBLIC_PATH);
+  pinUrl       = withSlug(PIN_PATH);
 
-  const qrProUrl = new URL(QR_PRO_BASE);
-  qrProUrl.searchParams.set("slug", slug);
-  qrProUrl.searchParams.set("module", "RESA");
-  if (phone) qrProUrl.searchParams.set("tel", phone);
-  qrProUrl.searchParams.set("return", dashboardUrl);
-  qrProUrl.searchParams.set("public", publicUrl);
+  const qrProUrl = buildSafeUrl(QR_PRO_BASE,{
+    slug,
+    module:"RESA",
+    ...(phone?{tel:phone}:{}),
+    "return": dashboardUrl,
+    "public": publicUrl
+  });
+  url = qrProUrl;
 
-  url = qrProUrl.toString();
-
-  urlBox.innerHTML = "<b>URL:</b> " + escapeHtml(url);
+  urlBox.innerHTML = "<b>Lien :</b> "+escapeHtml(url);
   dbgEl.textContent =
-    "slug: " + slug +
-    " | module: RESA" +
-    " | qr-base: " + QR_PRO_BASE +
-    " | return: " + DASHBOARD_PATH +
-    " | public: " + PUBLIC_PATH +
-    " | pin: " + PIN_PATH +
-    (phone ? " | tel: " + phone : "");
+    "identifiant: "+slug+
+    " | module: RESA"+
+    " | qr-base: "+QR_PRO_BASE+
+    " | return: "+DASHBOARD_PATH+
+    " | public: "+PUBLIC_PATH+
+    " | pin: "+PIN_PATH+
+    (phone?" | tel: "+phone:"");
 
-  qrAnchor.href = url;
-  note("⏳ Préparation du QR local…", "warn");
+  qrAnchor.href=url;
+  note("⏳ Préparation du QR local…","warn");
   setBusy(true);
 
   try{
-    const ok = await ensureQrLib();
-    if(!ok){
-      throw new Error("Librairie QR introuvable");
-    }
-
-    qrNormalDataUrl = await makeQrDataUrl(url, 520);
-    qrXLDataUrl = await makeQrDataUrl(url, 900);
-
-    qrImg.onload = () => {
-      note("✅ QR-PRO RESA prêt. Test téléphone avant impression.", "ok");
-      setClawReady(sess.ok);
-    };
-
-    qrImg.onerror = () => {
-      note("❌ Impossible d’afficher l’image QR locale.", "bad");
-      setClawError("Impossible d’afficher l’image QR locale.");
-    };
-
-    qrImg.src = qrNormalDataUrl;
+    const ok=await ensureQrLib();
+    if(!ok)throw new Error("Librairie QR introuvable");
+    qrNormalDataUrl=await makeQrDataUrl(url,520);
+    qrXLDataUrl=await makeQrDataUrl(url,900);
+    qrImg.onload=()=>{note("✅ QR prêt. Teste sur téléphone avant impression.","ok"); setClawReady(sess.ok);};
+    qrImg.onerror=()=>{note("❌ Impossible d'afficher l'image QR locale.","bad"); setClawError("Impossible d'afficher l'image QR locale.");};
+    qrImg.src=qrNormalDataUrl;
   }catch(e){
     console.error(e);
-    note("❌ Génération QR locale impossible : " + (e?.message || e), "bad");
-    setClawError(e?.message || "Génération QR locale impossible.");
+    note("❌ Génération QR locale impossible : "+(e?.message||e),"bad");
+    setClawError(e?.message||"Génération QR locale impossible.");
   }finally{
     setBusy(false);
   }
 
-  btnBack.onclick = () => {
-    location.href = dashboardUrl;
-  };
+  btnBack.onclick=()=>{location.href=dashboardUrl;};
 
-  btnCopy.onclick = async () => {
+  btnCopy.onclick=async()=>{
     try{
       await copyText(url);
-      note("✅ Lien QR-PRO copié.", "ok");
-      setClaw(
-        "Lien copié",
-        "CLAW confirme que le lien QR-PRO RESA est prêt à être partagé.",
-        [
-          `Slug : ${slug}`,
-          "Lien copié",
-          sess.ok ? "Session OK" : "Slug seul"
-        ],
-        [
-          {
-            title:"Partage",
-            text:"Le lien QR-PRO est maintenant dans le presse-papiers."
-          },
-          {
-            title:"Usage",
-            text:"Tu peux l’envoyer ou l’imprimer sans perdre le retour dashboard."
-          },
-          {
-            title:"Rail",
-            text:"Le QR garde RESA comme module et le slug réel comme contexte."
-          }
-        ]
-      );
+      note("✅ Lien copié.","ok");
+      setClaw("Lien copié","Le lien QR est prêt à être partagé.",
+        [slug?`Identifiant : ${slug}`:"Identifiant : —","Lien copié",sess.ok?"Accès OK":"Identifiant seul"],
+        [{title:"Partage",text:"Le lien est maintenant dans le presse-papiers."},
+         {title:"Usage",text:"Tu peux l'envoyer ou l'imprimer sans perdre le retour vers ton espace."},
+         /* ━━━ AVANT : "Rail" item avec "RESA" et "slug" visibles → humain ━━━ */
+         {title:"Contexte",text:"Le QR garde ton identifiant comme contexte et ton module comme clé d'accès."}]);
     }catch(e){
       console.error(e);
-      note("⚠️ Clipboard bloqué. Copie manuelle dans l’URL.", "warn");
+      note("⚠️ Clipboard bloqué. Copie manuelle dans l'URL.","warn");
     }
   };
 
-  btnOpen.onclick = () => {
-    window.open(url, "_blank", "noopener");
-  };
+  btnOpen.onclick=()=>{window.open(url,"_blank","noopener");};
 
-  btnDownload.onclick = async () => {
-    if(busy) return;
-    if(!qrNormalDataUrl){
-      note("❌ QR normal non prêt.", "bad");
-      setClawError("QR normal non prêt.");
-      return;
-    }
+  btnDownload.onclick=async()=>{
+    if(busy)return;
+    if(!qrNormalDataUrl){note("❌ QR non prêt.","bad");setClawError("QR non prêt.");return;}
     setBusy(true);
     try{
-      note("⏳ Préparation du PNG…", "warn");
-      directDownload(qrNormalDataUrl, `DIGIY_QR_PRO_RESA_${slug}.png`);
-      note("⬇️ Téléchargement lancé (QR normal).", "ok");
+      note("⏳ Préparation du PNG…","warn");
+      /* ━━━ AVANT : "DIGIY_QR_PRO_RESA_..." → "DIGIY_QR_RESA_..." ━━━ */
+      directDownload(qrNormalDataUrl,`DIGIY_QR_RESA_${slug}.png`);
+      note("⬇️ Téléchargement lancé.","ok");
     }catch(e){
       console.error(e);
-      note("❌ Download KO: " + (e?.message || e), "bad");
-      setClawError(e?.message || "Téléchargement QR impossible.");
-    }finally{
-      setBusy(false);
-    }
+      note("❌ Téléchargement impossible : "+(e?.message||e),"bad");
+      setClawError(e?.message||"Téléchargement QR impossible.");
+    }finally{setBusy(false);}
   };
 
-  btnSticker.onclick = async () => {
-    if(busy) return;
-    if(!qrXLDataUrl){
-      note("❌ Sticker XL non prêt.", "bad");
-      setClawError("Sticker XL non prêt.");
-      return;
-    }
+  btnSticker.onclick=async()=>{
+    if(busy)return;
+    if(!qrXLDataUrl){note("❌ Sticker XL non prêt.","bad");setClawError("Sticker XL non prêt.");return;}
     setBusy(true);
     try{
-      note("🟩 Préparation Sticker XL…", "warn");
-      directDownload(qrXLDataUrl, `DIGIY_STICKER_XL_RESA_${slug}.png`);
-      note("⬇️ Sticker XL téléchargé.", "ok");
+      note("🟩 Préparation Sticker XL…","warn");
+      directDownload(qrXLDataUrl,`DIGIY_STICKER_XL_RESA_${slug}.png`);
+      note("⬇️ Sticker XL téléchargé.","ok");
     }catch(e){
       console.error(e);
-      note("❌ Sticker XL KO: " + (e?.message || e), "bad");
-      setClawError(e?.message || "Sticker XL impossible.");
-    }finally{
-      setBusy(false);
-    }
+      note("❌ Sticker XL impossible : "+(e?.message||e),"bad");
+      setClawError(e?.message||"Sticker XL impossible.");
+    }finally{setBusy(false);}
   };
 
 })();
