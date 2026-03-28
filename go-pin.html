@@ -4,119 +4,40 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#061b14"/>
-  <meta name="description" content="DIGIY RESA PRO — redirection vers la porte PIN sécurisée."/>
-  <title>DIGIY RESA PRO — GO PIN</title>
-
+  <!-- ━━━ AVANT : "DIGIY RESA PRO — redirection vers la porte PIN sécurisée." → banni ━━━ -->
+  <meta name="description" content="Ouverture de l'accès sécurisé · Mes réservations · DIGIY"/>
+  <!-- ━━━ AVANT : "DIGIY RESA PRO — GO PIN" → banni ━━━ -->
+  <title>Accès · Mes réservations · DIGIY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{
-      --bg:#061b14;
-      --card:#0b2a1f;
-      --line:rgba(255,255,255,.12);
-      --text:#eafff1;
-      --muted:rgba(234,255,241,.72);
-      --gold:#facc15;
-      --shadow:0 18px 55px rgba(0,0,0,.35);
-    }
-
+    :root{--bg:#061b14;--card:#0b2a1f;--line:rgba(255,255,255,.12);--text:#eafff1;--muted:rgba(234,255,241,.72);--gold:#facc15;--shadow:0 18px 55px rgba(0,0,0,.35);--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
     *{box-sizing:border-box}
-
-    html,body{
-      margin:0;
-      min-height:100%;
-      background:var(--bg);
-      color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
-
-    body{
-      display:grid;
-      place-items:center;
-      padding:24px;
-    }
-
-    .card{
-      width:min(560px,100%);
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      padding:24px;
-      text-align:center;
-    }
-
-    .eyebrow{
-      color:var(--gold);
-      font-size:12px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      font-weight:900;
-      margin-bottom:8px;
-    }
-
-    h1{
-      margin:0 0 8px;
-      font-size:clamp(1.35rem,3.8vw,2rem);
-      line-height:1.08;
-    }
-
-    p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.55;
-    }
-
-    .spinner{
-      width:42px;
-      height:42px;
-      margin:0 auto 16px;
-      border-radius:50%;
-      border:3px solid rgba(255,255,255,.12);
-      border-top-color:var(--gold);
-      animation:spin .9s linear infinite;
-    }
-
-    @keyframes spin{
-      to{transform:rotate(360deg)}
-    }
-
-    .links{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:170px;
-      padding:12px 16px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,#103428,#0c271e);
-      color:var(--text);
-      text-decoration:none;
-      font-weight:800;
-    }
-
-    .btn.alt{
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-    }
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--fontA);}
+    body{display:grid;place-items:center;padding:24px;}
+    .card{width:min(560px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:24px;text-align:center;}
+    .eyebrow{color:var(--gold);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:900;margin-bottom:8px;}
+    h1{margin:0 0 8px;font-size:clamp(1.35rem,3.8vw,2rem);line-height:1.08;}
+    p{margin:0;color:var(--muted);line-height:1.55;}
+    .spinner{width:42px;height:42px;margin:0 auto 16px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:var(--gold);animation:spin .9s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-width:170px;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(180deg,#103428,#0c271e);color:var(--text);text-decoration:none;font-weight:800;font-family:var(--fontA);}
+    .btn.alt{background:rgba(255,255,255,.04);color:var(--muted);}
   </style>
 </head>
 <body>
   <div class="card">
     <div class="spinner"></div>
-    <div class="eyebrow">DIGIY GO PIN</div>
-    <h1>Ouverture de la porte PIN…</h1>
-    <p id="msg">Redirection en cours vers votre accès professionnel.</p>
-
+    <!-- ━━━ AVANT : "DIGIY GO PIN" → "MES RÉSERVATIONS" ━━━ -->
+    <div class="eyebrow">MES RÉSERVATIONS</div>
+    <h1>Ouverture de la porte d'accès…</h1>
+    <p id="msg">Redirection en cours vers votre accès sécurisé.</p>
     <div class="links">
-      <a class="btn" id="fallbackPin" href="./pin.html">Aller à la porte PIN</a>
-      <a class="btn alt" id="fallbackTarget" href="./cockpit.html">Voir la cible</a>
+      <a class="btn"     id="fallbackPin"    href="./pin.html">Aller à la porte d'accès</a>
+      <!-- ━━━ fallbackTarget texte écrit par JS ━━━ -->
+      <a class="btn alt" id="fallbackTarget" href="./cockpit.html">Voir ma gestion</a>
     </div>
   </div>
 
@@ -126,134 +47,141 @@
 
       const $ = (id) => document.getElementById(id);
 
-      const PUBLIC_BASE_URL = "https://resa-table-resto.digiylyfe.com/";
+      const PUBLIC_BASE_URL   = "https://resa-table-resto.digiylyfe.com/";
       const PUBLIC_FICHE_PATH = "fiche.html";
 
       function normalizeSlug(v){
-        return String(v || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
+        return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,"");
       }
 
       function normalizePhone(v){
-        const raw = String(v || "").trim();
-        const cleaned = raw.replace(/[^\d+]/g, "");
-        const digits = cleaned.replace(/[^\d]/g, "");
-        if (!digits) return "";
-        return cleaned.startsWith("+") ? `+${digits}` : digits;
+        const raw=String(v||"").trim();
+        const cleaned=raw.replace(/[^\d+]/g,"");
+        const digits=cleaned.replace(/[^\d]/g,"");
+        if(!digits)return "";
+        return cleaned.startsWith("+")?`+${digits}`:digits;
       }
 
       function normalizeTarget(v){
-        const t = String(v || "").trim().toLowerCase();
-        if (t === "planning") return "planning";
-        if (t === "dashboard") return "dashboard";
-        if (t === "public") return "public";
+        const t=String(v||"").trim().toLowerCase();
+        if(t==="planning")  return "planning";
+        if(t==="dashboard") return "dashboard";
+        if(t==="public")    return "public";
         return "cockpit";
       }
 
-      function storageSet(key, value){
-        if (value == null || value === "") return;
-        try { localStorage.setItem(key, String(value)); } catch (_) {}
-        try { sessionStorage.setItem(key, String(value)); } catch (_) {}
+      function storageSet(key,value){
+        if(value==null||value==="")return;
+        try{localStorage.setItem(key,String(value));}catch(_){}
+        try{sessionStorage.setItem(key,String(value));}catch(_){}
       }
 
-      function buildPublicUrl(slugValue = ""){
-        const url = new URL(PUBLIC_FICHE_PATH, PUBLIC_BASE_URL);
-        if (slugValue) url.searchParams.set("slug", slugValue);
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         buildSafeUrl — VERSION BLINDÉE
+         new URL(path, location.href) fragile selon l'env.
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function buildSafeUrl(base, params){
+        const baseStr=(base==null?"":String(base)).trim();
+        if(!baseStr)return location.href;
+        let u;
+        try{
+          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
+          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
+        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
+        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+        return u.toString();
+      }
+
+      function buildPublicUrl(slugValue=""){
+        /* PUBLIC_BASE_URL est absolue — new URL ici est sûr ━━━ */
+        const url=new URL(PUBLIC_FICHE_PATH, PUBLIC_BASE_URL);
+        if(slugValue)url.searchParams.set("slug",slugValue);
         return url.toString();
       }
 
-      const qs = new URLSearchParams(location.search);
+      const qs=new URLSearchParams(location.search);
 
-      const slug = normalizeSlug(qs.get("slug") || "");
-      const phone = normalizePhone(qs.get("phone") || "");
-      const target = normalizeTarget(qs.get("target") || "");
-      const explicitReturn = String(qs.get("return") || "").trim();
+      const slug           = normalizeSlug(qs.get("slug")||"");
+      const phone          = normalizePhone(qs.get("phone")||"");
+      const target         = normalizeTarget(qs.get("target")||"");
+      const explicitReturn = String(qs.get("return")||"").trim();
 
-      let targetUrl;
+      /* ━━━ AVANT : new URL("./xxx.html", location.href) → buildSafeUrl ━━━ */
+      let targetUrlStr;
+      if(target==="planning")       targetUrlStr = buildSafeUrl("./planning.html",{});
+      else if(target==="dashboard") targetUrlStr = buildSafeUrl("./dashboard-pro.html",{});
+      else if(target==="public")    targetUrlStr = buildPublicUrl(slug);
+      else                          targetUrlStr = buildSafeUrl("./cockpit.html",{});
 
-      if (target === "planning") {
-        targetUrl = new URL("./planning.html", location.href);
-      } else if (target === "dashboard") {
-        targetUrl = new URL("./dashboard-pro.html", location.href);
-      } else if (target === "public") {
-        targetUrl = new URL(buildPublicUrl(slug));
-      } else {
-        targetUrl = new URL("./cockpit.html", location.href);
+      let pinUrlStr = buildSafeUrl("./pin.html",{});
+
+      /* Enrichissement avec slug / phone / target / return */
+      const pinParams = {};
+      const targetParams = {};
+
+      if(slug){
+        pinParams.slug    = slug;
+        storageSet("digiy_resa_slug",slug);
+        storageSet("digiy_resa_last_slug",slug);
+        storageSet("digiy_last_slug",slug);
+        storageSet("DIGIY_SLUG",slug);
+        if(target!=="public") targetParams.slug=slug;
       }
 
-      const pinUrl = new URL("./pin.html", location.href);
-
-      if (slug) {
-        pinUrl.searchParams.set("slug", slug);
-
-        storageSet("digiy_resa_slug", slug);
-        storageSet("digiy_resa_last_slug", slug);
-        storageSet("digiy_last_slug", slug);
-        storageSet("DIGIY_SLUG", slug);
-
-        if (target !== "public") {
-          targetUrl.searchParams.set("slug", slug);
-        }
+      if(phone){
+        pinParams.phone=phone;
+        storageSet("digiy_resa_phone",phone);
+        if(target!=="public") targetParams.phone=phone;
       }
 
-      if (phone) {
-        pinUrl.searchParams.set("phone", phone);
-        storageSet("digiy_resa_phone", phone);
+      if(target)         pinParams.target=target;
+      if(explicitReturn) pinParams["return"]=explicitReturn;
 
-        if (target !== "public") {
-          targetUrl.searchParams.set("phone", phone);
-        }
-      }
+      /* Re-construire les URLs enrichies ━━━ */
+      if(target==="planning")       targetUrlStr=buildSafeUrl("./planning.html",     targetParams);
+      else if(target==="dashboard") targetUrlStr=buildSafeUrl("./dashboard-pro.html",targetParams);
+      else if(target!=="public")    targetUrlStr=buildSafeUrl("./cockpit.html",      targetParams);
 
-      if (target) {
-        pinUrl.searchParams.set("target", target);
-      }
+      pinUrlStr = buildSafeUrl("./pin.html", pinParams);
 
-      if (explicitReturn) {
-        pinUrl.searchParams.set("return", explicitReturn);
-      }
-
-      const fallbackPin = $("fallbackPin");
+      const fallbackPin    = $("fallbackPin");
       const fallbackTarget = $("fallbackTarget");
-      const msg = $("msg");
+      const msg            = $("msg");
 
-      fallbackPin.href = pinUrl.toString();
-      fallbackTarget.href = targetUrl.toString();
+      fallbackPin.href    = pinUrlStr;
+      fallbackTarget.href = targetUrlStr;
 
-      if (target === "public") {
-        fallbackTarget.textContent = "Voir la fiche publique";
-        fallbackTarget.setAttribute("target", "_blank");
-        fallbackTarget.setAttribute("rel", "noopener");
-      } else if (target === "planning") {
-        fallbackTarget.textContent = "Voir le planning";
-      } else if (target === "dashboard") {
-        fallbackTarget.textContent = "Voir le dashboard";
-      } else {
-        fallbackTarget.textContent = "Voir le cockpit";
+      /* ━━━ AVANT : "Voir le cockpit" · "Voir le dashboard" → bannis ━━━ */
+      if(target==="public"){
+        fallbackTarget.textContent="Voir ma vitrine publique";
+        fallbackTarget.setAttribute("target","_blank");
+        fallbackTarget.setAttribute("rel","noopener");
+      }else if(target==="planning"){
+        fallbackTarget.textContent="Voir mon planning";
+      }else if(target==="dashboard"){
+        /* ━━━ AVANT : "Voir le dashboard" → "Voir mon activité" ━━━ */
+        fallbackTarget.textContent="Voir mon activité";
+      }else{
+        /* ━━━ AVANT : "Voir le cockpit" → "Voir ma gestion" ━━━ */
+        fallbackTarget.textContent="Voir ma gestion";
       }
 
+      /* ━━━ AVANT : "Slug et téléphone détectés" / "Slug détecté" / "Aucun slug fourni" → bannis ━━━ */
       const targetLabel =
-        target === "planning" ? "planning" :
-        target === "dashboard" ? "dashboard" :
-        target === "public" ? "fiche publique" :
-        "cockpit";
+        target==="planning"  ? "mon planning"  :
+        target==="dashboard" ? "mon activité"  :
+        target==="public"    ? "la vitrine publique" :
+        "ma gestion";
 
-      if (slug && phone) {
-        msg.textContent = `Slug et téléphone détectés. Redirection vers la porte PIN sécurisée, puis vers ${targetLabel}.`;
-      } else if (slug) {
-        msg.textContent = `Slug détecté. Redirection vers la porte PIN sécurisée, puis vers ${targetLabel}.`;
-      } else {
-        msg.textContent = "Aucun slug fourni. Redirection vers la porte PIN générale.";
+      if(slug && phone){
+        msg.textContent=`Identifiant et téléphone détectés. Redirection vers l'accès sécurisé, puis vers ${targetLabel}.`;
+      }else if(slug){
+        msg.textContent=`Identifiant détecté. Redirection vers l'accès sécurisé, puis vers ${targetLabel}.`;
+      }else{
+        msg.textContent="Aucun identifiant fourni. Redirection vers l'accès général.";
       }
 
-      setTimeout(() => {
-        location.replace(pinUrl.toString());
-      }, 250);
+      setTimeout(()=>{ location.replace(pinUrlStr); }, 250);
     })();
   </script>
 </body>
