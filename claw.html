@@ -3,503 +3,135 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>CLAW by DIGIY — RESA PRO</title>
+  <title>Analyse · Mes réservations · DIGIY</title>
   <meta name="theme-color" content="#061b14"/>
-
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./guard.js?v=resa-claw-final-v1"></script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{
-      --bg:#061b14;
-      --card:#0b2a1f;
-      --card2:#0f3327;
-      --line:rgba(255,255,255,.12);
-      --text:#eafff1;
-      --muted:rgba(234,255,241,.72);
-      --gold:#facc15;
-      --ok:#22c55e;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-      --accent:#38bdf8;
-      --shadow:0 18px 55px rgba(0,0,0,.35);
-      --radius:18px;
-    }
-
+    :root{--bg:#061b14;--card:#0b2a1f;--card2:#0f3327;--line:rgba(255,255,255,.12);--text:#eafff1;--muted:rgba(234,255,241,.72);--gold:#facc15;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--accent:#38bdf8;--shadow:0 18px 55px rgba(0,0,0,.35);--radius:18px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
     *{box-sizing:border-box}
-
-    html,body{
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
-
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--fontA);}
     a{color:inherit;text-decoration:none}
-
-    .wrap{
-      width:min(1180px,92vw);
-      margin:0 auto;
-      padding:18px 0 48px;
-    }
-
-    .topbar{
-      display:flex;
-      gap:12px;
-      justify-content:space-between;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-
-    .eyebrow{
-      font-size:12px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:var(--gold);
-      font-weight:900;
-    }
-
-    h1{
-      margin:0;
-      font-size:clamp(1.5rem,3.4vw,2.3rem);
-      line-height:1.05;
-    }
-
-    .sub{
-      color:var(--muted);
-      font-size:.95rem;
-    }
-
-    .actions-top{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      appearance:none;
-      border:1px solid var(--line);
-      background:linear-gradient(180deg,#103428,#0c271e);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px 16px;
-      font-weight:800;
-      cursor:pointer;
-      box-shadow:var(--shadow);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-    }
-
-    .btn:hover{transform:translateY(-1px)}
-    .btn.secondary{background:#0c241b}
-    .btn.ghost{
-      background:rgba(255,255,255,.04);
-      border-style:dashed;
-      color:var(--muted);
-    }
-    .btn.gold{
-      background:linear-gradient(180deg,#facc15,#eab308);
-      color:#1a1402;
-      border-color:rgba(250,204,21,.35);
-    }
-    .btn.warn{
-      background:linear-gradient(180deg,#4b3507,#332405);
-      color:#ffe6a0;
-      border-color:rgba(250,204,21,.22);
-    }
-
-    .nav-rail{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-      padding:12px;
-      border:1px solid var(--line);
-      border-radius:18px;
-      background:rgba(255,255,255,.03);
-      box-shadow:var(--shadow);
-    }
-
-    .nav-link{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      min-height:44px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:#0b241b;
-      color:var(--text);
-      font-weight:900;
-    }
-
-    .nav-link.active{
-      background:rgba(250,204,21,.12);
-      border-color:rgba(250,204,21,.34);
-      color:#fff1a8;
-    }
-
-    .hero{
-      background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:18px;
-      box-shadow:var(--shadow);
-      margin-bottom:18px;
-    }
-
-    .hero-grid{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:16px;
-    }
-
-    .hero h2{
-      margin:0 0 8px;
-      font-size:1.2rem;
-    }
-
-    .hero p{
-      margin:0 0 8px;
-      color:var(--muted);
-      line-height:1.55;
-    }
-
-    .mini-card{
-      background:rgba(0,0,0,.14);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:14px;
-    }
-
-    .mini-card strong{
-      display:block;
-      margin-bottom:8px;
-    }
-
-    .mode{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:10px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(250,204,21,.24);
-      background:rgba(250,204,21,.10);
-      color:#fff1a8;
-      font-size:.9rem;
-      font-weight:900;
-    }
-
-    .mode.live{
-      border-color:rgba(34,197,94,.24);
-      background:rgba(34,197,94,.10);
-      color:#b8ffd0;
-    }
-
-    .hero-cta{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-
-    .hero-meta{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-
-    .hero-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.14);
-      color:var(--muted);
-      font-size:.84rem;
-      font-weight:900;
-    }
-
-    .workspace-grid{
-      display:grid;
-      grid-template-columns:1.06fr .94fr;
-      gap:18px;
-      align-items:start;
-    }
-
-    .panel{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:16px;
-      box-shadow:var(--shadow);
-      margin-bottom:18px;
-    }
-
-    .panel h3{
-      margin:0 0 10px;
-      font-size:1.08rem;
-    }
-
-    .panel p.lead{
-      margin:0 0 12px;
-      color:var(--muted);
-      line-height:1.55;
-    }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin-bottom:12px;
-    }
-
-    .field label{
-      font-size:.92rem;
-      color:var(--muted);
-      font-weight:800;
-    }
-
-    .input,
-    .textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px 14px;
-      outline:none;
-    }
-
-    .input:focus,
-    .textarea:focus{
-      border-color:rgba(56,189,248,.42);
-      box-shadow:0 0 0 3px rgba(56,189,248,.10);
-    }
-
-    .textarea{
-      min-height:180px;
-      resize:vertical;
-      line-height:1.55;
-    }
-
-    .intent-grid{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0,1fr));
-      gap:10px;
-      margin-bottom:12px;
-    }
-
-    .intent{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      border-radius:16px;
-      padding:12px;
-      text-align:left;
-      cursor:pointer;
-      min-height:88px;
-      box-shadow:var(--shadow);
-    }
-
-    .intent:hover{transform:translateY(-1px)}
-    .intent.active{
-      border-color:rgba(250,204,21,.34);
-      background:rgba(250,204,21,.10);
-      color:#fff1a8;
-    }
-
-    .intent strong{
-      display:block;
-      margin-bottom:6px;
-      font-size:.95rem;
-    }
-
-    .intent span{
-      display:block;
-      color:var(--muted);
-      line-height:1.45;
-      font-size:.88rem;
-    }
-
-    .actions-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:8px;
-    }
-
-    .output{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      border-radius:16px;
-      padding:14px;
-      min-height:132px;
-      white-space:pre-wrap;
-      line-height:1.6;
-    }
-
-    .output.empty{
-      color:var(--muted);
-      font-style:italic;
-    }
-
-    .kpi-row{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin-bottom:12px;
-    }
-
-    .kpi{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      border-radius:16px;
-      padding:12px;
-    }
-
-    .kpi .label{
-      color:var(--muted);
-      font-size:.84rem;
-      margin-bottom:8px;
-    }
-
-    .kpi .value{
-      font-size:1.08rem;
-      font-weight:900;
-      line-height:1.2;
-    }
-
-    .helper-list{
-      display:grid;
-      gap:10px;
-    }
-
-    .helper{
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      border-radius:16px;
-      padding:12px;
-      line-height:1.55;
-      color:var(--muted);
-    }
-
-    .helper strong{
-      color:var(--text);
-      display:block;
-      margin-bottom:4px;
-    }
-
-    .footer-note{
-      color:var(--muted);
-      text-align:center;
-      font-size:.92rem;
-      padding-top:4px;
-    }
-
-    @media (max-width:960px){
-      .hero-grid,
-      .workspace-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    @media (max-width:720px){
-      .wrap{width:min(94vw,1180px)}
-      .intent-grid,
-      .kpi-row{
-        grid-template-columns:1fr;
-      }
-      .btn,.nav-link{
-        width:100%;
-      }
-      .actions-top,
-      .hero-cta,
-      .actions-row{
-        width:100%;
-      }
-    }
+    .wrap{width:min(1180px,92vw);margin:0 auto;padding:18px 0 48px;}
+    .topbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+    .brand{display:flex;flex-direction:column;gap:4px;}
+    .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:900;}
+    h1{margin:0;font-size:clamp(1.5rem,3.4vw,2.3rem);line-height:1.05;}
+    .sub{color:var(--muted);font-size:.95rem;}
+    .actions-top{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{appearance:none;border:1px solid var(--line);background:linear-gradient(180deg,#103428,#0c271e);color:var(--text);border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fontA);}
+    .btn:hover{transform:translateY(-1px)}.btn.secondary{background:#0c241b}.btn.ghost{background:rgba(255,255,255,.04);border-style:dashed;color:var(--muted);}.btn.gold{background:linear-gradient(180deg,#facc15,#eab308);color:#1a1402;border-color:rgba(250,204,21,.35);}.btn.warn{background:linear-gradient(180deg,#4b3507,#332405);color:#ffe6a0;border-color:rgba(250,204,21,.22);}
+    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow);}
+    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:#0b241b;color:var(--text);font-weight:900;}
+    .nav-link.active{background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.34);color:#fff1a8;}
+    .hero{background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:18px;}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;}
+    .hero h2{margin:0 0 8px;font-size:1.2rem;}
+    .hero p{margin:0 0 8px;color:var(--muted);line-height:1.55;}
+    .mini-card{background:rgba(0,0,0,.14);border:1px solid var(--line);border-radius:18px;padding:14px;}
+    .mini-card strong{display:block;margin-bottom:8px;}
+    .mode{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 12px;border-radius:999px;border:1px solid rgba(250,204,21,.24);background:rgba(250,204,21,.10);color:#fff1a8;font-size:.9rem;font-weight:900;}
+    .mode.live{border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.10);color:#b8ffd0;}
+    .hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .hero-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+    .hero-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);color:var(--muted);font-size:.84rem;font-weight:900;}
+    .workspace-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:18px;align-items:start;}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:18px;}
+    .panel h3{margin:0 0 10px;font-size:1.08rem;}
+    .panel p.lead{margin:0 0 12px;color:var(--muted);line-height:1.55;}
+    .field{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+    .field label{font-size:.92rem;color:var(--muted);font-weight:800;}
+    .input,.textarea{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:14px;padding:12px 14px;outline:none;font-family:var(--fontA);}
+    .input:focus,.textarea:focus{border-color:rgba(56,189,248,.42);box-shadow:0 0 0 3px rgba(56,189,248,.10);}
+    .textarea{min-height:180px;resize:vertical;line-height:1.55;}
+    .intent-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+    .intent{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:16px;padding:12px;text-align:left;cursor:pointer;min-height:88px;box-shadow:var(--shadow);font-family:var(--fontA);}
+    .intent:hover{transform:translateY(-1px)}.intent.active{border-color:rgba(250,204,21,.34);background:rgba(250,204,21,.10);color:#fff1a8;}
+    .intent strong{display:block;margin-bottom:6px;font-size:.95rem;}
+    .intent span{display:block;color:var(--muted);line-height:1.45;font-size:.88rem;}
+    .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+    .output{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:16px;padding:14px;min-height:132px;white-space:pre-wrap;line-height:1.6;}
+    .output.empty{color:var(--muted);font-style:italic;}
+    .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+    .kpi{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:16px;padding:12px;}
+    .kpi .label{color:var(--muted);font-size:.84rem;margin-bottom:8px;}
+    .kpi .value{font-size:1.08rem;font-weight:900;line-height:1.2;}
+    .helper-list{display:grid;gap:10px;}
+    .helper{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:16px;padding:12px;line-height:1.55;color:var(--muted);}
+    .helper strong{color:var(--text);display:block;margin-bottom:4px;}
+    .footer-note{color:var(--muted);text-align:center;font-size:.92rem;padding-top:4px;}
+    @media(max-width:960px){.hero-grid,.workspace-grid{grid-template-columns:1fr}}
+    @media(max-width:720px){.wrap{width:min(94vw,1180px)}.intent-grid,.kpi-row{grid-template-columns:1fr}.btn,.nav-link{width:100%}.actions-top,.hero-cta,.actions-row{width:100%}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="eyebrow">CLAW by DIGIY · RESA PRO</div>
-        <h1>Atelier d’aide métier</h1>
-        <div class="sub" id="topSub">Chargement de l’atelier CLAW…</div>
+        <!-- ━━━ AVANT : "CLAW by DIGIY · RESA PRO" → banni ━━━ -->
+        <div class="eyebrow">MES RÉSERVATIONS</div>
+        <h1>Atelier d'aide métier</h1>
+        <div class="sub" id="topSub">Chargement de l'atelier…</div>
       </div>
-
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
-        <a class="btn secondary" id="btnCockpitTop" href="./cockpit.html">Cockpit</a>
+        <!-- ━━━ AVANT : "Cockpit" · "Profil / établissement" → bannis ━━━ -->
+        <a class="btn secondary" id="btnCockpitTop"  href="./cockpit.html">Ma gestion</a>
         <a class="btn secondary" id="btnPlanningTop" href="./planning.html">Planning</a>
-        <a class="btn secondary" id="btnQrTop" href="./qr.html">QR</a>
-        <a class="btn" id="btnSettingsTop" href="./etablissement.html">Profil / établissement</a>
+        <a class="btn secondary" id="btnQrTop"       href="./qr.html">QR</a>
+        <a class="btn"           id="btnSettingsTop" href="./etablissement.html">Mon profil</a>
       </div>
     </div>
 
-    <nav class="nav-rail" aria-label="Navigation PRO RESA">
-      <a class="nav-link" id="navCockpit" href="./cockpit.html">Cockpit</a>
-      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Dashboard</a>
-      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
-      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
-      <a class="nav-link active" id="navClaw" href="./claw.html">CLAW</a>
-      <a class="nav-link" id="navSettings" href="./etablissement.html">Profil / établissement</a>
-      <a class="nav-link" id="navHome" href="./index.html">Accueil PRO</a>
+    <!-- ━━━ NAV — doctrine façade ━━━ -->
+    <nav class="nav-rail" aria-label="Navigation Mes réservations">
+      <!-- ━━━ "Cockpit" → "Ma gestion" ━━━ -->
+      <a class="nav-link"        id="navCockpit"  href="./cockpit.html">Ma gestion</a>
+      <!-- ━━━ "Dashboard" → "Mon activité" ━━━ -->
+      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Mon activité</a>
+      <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
+      <a class="nav-link"        id="navQr"        href="./qr.html">QR</a>
+      <!-- ━━━ "CLAW" → "Analyse" active ━━━ -->
+      <a class="nav-link active" id="navClaw"      href="./claw.html">Analyse</a>
+      <!-- ━━━ "Profil / établissement" → "Mon profil" ━━━ -->
+      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Mon profil</a>
+      <!-- ━━━ "Accueil PRO" → "Mon espace" ━━━ -->
+      <a class="nav-link"        id="navHome"      href="./index.html">Mon espace</a>
     </nav>
 
     <section class="hero">
       <div class="hero-grid">
         <div>
-          <div class="mode" id="modeBadge">Mode aperçu</div>
-          <h2 id="heroName">CLAW by DIGIY</h2>
-          <p id="heroDesc">
-            L’aide intelligente pour poser ton activité. Ici, tu transformes un besoin flou en réponse claire,
-            actionnable et propre, sans démo ni bavardage inutile.
-          </p>
-
+          <div class="mode" id="modeBadge">Aperçu</div>
+          <!-- heroName écrit par JS — default "MES RÉSERVATIONS" ━━━ -->
+          <h2 id="heroName">MES RÉSERVATIONS</h2>
+          <p id="heroDesc">L'aide intelligente pour poser ton activité. Tu transformes un besoin flou en réponse claire, actionnable et propre, sans démo ni bavardage inutile.</p>
           <div class="hero-meta">
-            <div class="hero-pill" id="heroSlug">Slug : —</div>
+            <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
+            <div class="hero-pill" id="heroSlug">Identifiant : —</div>
             <div class="hero-pill" id="heroCity">Ville : —</div>
             <div class="hero-pill" id="heroType">Activité : —</div>
           </div>
-
           <div class="hero-cta">
-            <button class="btn gold" id="btnGenerateHero" type="button">Générer la réponse</button>
-            <button class="btn warn" id="btnSaveHero" type="button">Enregistrer le brouillon</button>
-            <a class="btn ghost" id="heroCockpit" href="./cockpit.html">Retour cockpit</a>
+            <button class="btn gold"  id="btnGenerateHero" type="button">Générer la réponse</button>
+            <button class="btn warn"  id="btnSaveHero"     type="button">Enregistrer le brouillon</button>
+            <!-- ━━━ AVANT : "Retour cockpit" → "Ma gestion" ━━━ -->
+            <a class="btn ghost" id="heroCockpit" href="./cockpit.html">Ma gestion</a>
           </div>
         </div>
 
         <div class="mini-card">
           <strong id="miniTitle">Lecture terrain</strong>
-          <div id="miniText" style="color:var(--muted);line-height:1.55;">
-            CLAW ne remplace pas le métier. Il aide à répondre plus proprement, à mieux cadrer une réservation,
-            à relancer sans confusion, et à garder une parole claire côté client.
-          </div>
+          <div id="miniText" style="color:var(--muted);line-height:1.55;">L'atelier ne remplace pas le métier. Il aide à répondre plus proprement, à mieux cadrer une réservation, à relancer sans confusion, et à garder une parole claire côté client.</div>
         </div>
       </div>
     </section>
@@ -508,36 +140,28 @@
       <div>
         <section class="panel">
           <h3>Choisis ton besoin</h3>
-          <p class="lead">
-            Tu pars d’un cas réel. CLAW te propose une base simple pour répondre ou t’organiser.
-          </p>
-
+          <p class="lead">Tu pars d'un cas réel. L'atelier te propose une base simple pour répondre ou t'organiser.</p>
           <div class="intent-grid" id="intentGrid">
             <button class="intent active" type="button" data-intent="dispo">
               <strong>Répondre sur les disponibilités</strong>
               <span>Un client demande un créneau, une date ou une heure.</span>
             </button>
-
             <button class="intent" type="button" data-intent="confirm">
               <strong>Confirmer une réservation</strong>
               <span>Tu veux valider proprement un rendez-vous déjà posé.</span>
             </button>
-
             <button class="intent" type="button" data-intent="relance">
               <strong>Relancer un client</strong>
               <span>Tu veux relancer sans paraître lourd ni flou.</span>
             </button>
-
             <button class="intent" type="button" data-intent="retard">
               <strong>Gérer un retard / no-show</strong>
               <span>Le client tarde, ne vient pas, ou tu dois recadrer.</span>
             </button>
-
             <button class="intent" type="button" data-intent="service">
               <strong>Présenter un service</strong>
               <span>Tu veux expliquer une prestation avec clarté.</span>
             </button>
-
             <button class="intent" type="button" data-intent="journee">
               <strong>Organiser la journée</strong>
               <span>Tu veux un mini plan terrain pour ne pas te disperser.</span>
@@ -548,39 +172,25 @@
             <label for="inputTitle">Titre du cas</label>
             <input class="input" id="inputTitle" type="text" placeholder="Exemple : Cliente demande un brushing samedi 16h"/>
           </div>
-
           <div class="field">
             <label for="inputContext">Contexte réel</label>
             <textarea class="textarea" id="inputContext" placeholder="Écris le vrai contexte : client, date, heure, service, contrainte, question, prix, acompte, indisponibilité, équipe, note utile..."></textarea>
           </div>
-
           <div class="actions-row">
-            <button class="btn gold" id="btnGenerate" type="button">Générer</button>
-            <button class="btn warn" id="btnSave" type="button">Enregistrer</button>
+            <button class="btn gold"      id="btnGenerate"  type="button">Générer</button>
+            <button class="btn warn"      id="btnSave"      type="button">Enregistrer</button>
             <button class="btn secondary" id="btnCopyBrief" type="button">Copier le brief</button>
-            <button class="btn ghost" id="btnClear" type="button">Vider</button>
+            <button class="btn ghost"     id="btnClear"     type="button">Vider</button>
           </div>
         </section>
 
         <section class="panel">
-          <h3>Repères CLAW</h3>
+          <h3>Repères</h3>
           <div class="helper-list">
-            <div class="helper">
-              <strong>1. Pars du terrain</strong>
-              Mets toujours le vrai service, la vraie date, le vrai besoin.
-            </div>
-            <div class="helper">
-              <strong>2. Une action claire</strong>
-              Le client doit comprendre quoi faire ensuite : confirmer, choisir, répondre, payer, déplacer.
-            </div>
-            <div class="helper">
-              <strong>3. Pas de roman</strong>
-              CLAW doit aider à raccourcir, pas à gonfler.
-            </div>
-            <div class="helper">
-              <strong>4. Le planning commande</strong>
-              Le texte est utile, mais c’est le planning réel qui tranche.
-            </div>
+            <div class="helper"><strong>1. Pars du terrain</strong>Mets toujours le vrai service, la vraie date, le vrai besoin.</div>
+            <div class="helper"><strong>2. Une action claire</strong>Le client doit comprendre quoi faire ensuite : confirmer, choisir, répondre, payer, déplacer.</div>
+            <div class="helper"><strong>3. Pas de roman</strong>L'atelier doit aider à raccourcir, pas à gonfler.</div>
+            <div class="helper"><strong>4. Le planning commande</strong>Le texte est utile, mais c'est le planning réel qui tranche.</div>
           </div>
         </section>
       </div>
@@ -588,32 +198,19 @@
       <div>
         <section class="panel">
           <h3>Contexte chargé</h3>
-
           <div class="kpi-row">
-            <div class="kpi">
-              <div class="label">Accès</div>
-              <div class="value" id="kAccess">—</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Mode</div>
-              <div class="value" id="kMode">—</div>
-            </div>
-            <div class="kpi">
-              <div class="label">Brouillon</div>
-              <div class="value" id="kDraft">Aucun</div>
-            </div>
+            <div class="kpi"><div class="label">Accès</div><div class="value" id="kAccess">—</div></div>
+            <div class="kpi"><div class="label">Mode</div><div class="value" id="kMode">—</div></div>
+            <div class="kpi"><div class="label">Brouillon</div><div class="value" id="kDraft">Aucun</div></div>
           </div>
-
-          <div class="helper" id="contextBox">
-            En attente de session…
-          </div>
+          <div class="helper" id="contextBox">En attente de session…</div>
         </section>
 
         <section class="panel">
           <h3>Message client prêt</h3>
           <div class="output empty" id="outClient">Aucune génération pour le moment.</div>
           <div class="actions-row">
-            <button class="btn secondary" id="btnCopyClient" type="button">Copier</button>
+            <button class="btn secondary" id="btnCopyClient"     type="button">Copier</button>
             <button class="btn secondary" id="btnWhatsappClient" type="button">WhatsApp</button>
           </div>
         </section>
@@ -636,9 +233,8 @@
       </div>
     </section>
 
-    <div class="footer-note" id="footerNote">
-      CLAW by DIGIY — RESA PRO — rail simple, utile, sans démo.
-    </div>
+    <!-- ━━━ AVANT : "CLAW by DIGIY — RESA PRO — rail simple, utile, sans démo." → banni ━━━ -->
+    <div class="footer-note" id="footerNote">DIGIYLYFE · Mes réservations · atelier d'aide terrain.</div>
   </div>
 
   <script>
@@ -649,741 +245,317 @@
       const $ = (id) => document.getElementById(id);
 
       try{
-        window.DIGIY_GUARD?.boot?.({
-          module: "RESA",
-          login: "./pin.html",
-          dashboard: "./cockpit.html",
-          requireSlug: true,
-          checkSubscription: true,
-          storageSlugKey: "digiy_resa_slug",
-          storageLastSlugKey: "digiy_last_slug"
-        });
+        window.DIGIY_GUARD?.boot?.({module:"RESA",login:"./pin.html",dashboard:"./cockpit.html",requireSlug:true,checkSubscription:true,storageSlugKey:"digiy_resa_slug",storageLastSlugKey:"digiy_last_slug"});
       }catch{}
 
-      const query = new URL(location.href).searchParams;
-      const querySlug = query.get("slug") || "";
+      const query      = new URL(location.href).searchParams;
+      const querySlug  = query.get("slug") || "";
       const queryPhone = query.get("phone") || "";
 
       const els = {
-        btnReload: $("btnReload"),
-        btnGenerate: $("btnGenerate"),
-        btnGenerateHero: $("btnGenerateHero"),
-        btnSave: $("btnSave"),
-        btnSaveHero: $("btnSaveHero"),
-        btnCopyBrief: $("btnCopyBrief"),
-        btnClear: $("btnClear"),
-
-        inputTitle: $("inputTitle"),
-        inputContext: $("inputContext"),
-
-        outClient: $("outClient"),
-        outPlan: $("outPlan"),
-        outChecks: $("outChecks"),
-
-        btnCopyClient: $("btnCopyClient"),
-        btnWhatsappClient: $("btnWhatsappClient"),
-        btnCopyPlan: $("btnCopyPlan"),
-        btnCopyChecks: $("btnCopyChecks"),
-
-        topSub: $("topSub"),
-        modeBadge: $("modeBadge"),
-        heroName: $("heroName"),
-        heroDesc: $("heroDesc"),
-        heroSlug: $("heroSlug"),
-        heroCity: $("heroCity"),
-        heroType: $("heroType"),
-        miniTitle: $("miniTitle"),
-        miniText: $("miniText"),
-        footerNote: $("footerNote"),
-
-        kAccess: $("kAccess"),
-        kMode: $("kMode"),
-        kDraft: $("kDraft"),
-        contextBox: $("contextBox"),
-
-        navCockpit: $("navCockpit"),
-        navDashboard: $("navDashboard"),
-        navPlanning: $("navPlanning"),
-        navQr: $("navQr"),
-        navClaw: $("navClaw"),
-        navSettings: $("navSettings"),
-        navHome: $("navHome"),
-
-        btnCockpitTop: $("btnCockpitTop"),
-        btnPlanningTop: $("btnPlanningTop"),
-        btnQrTop: $("btnQrTop"),
-        btnSettingsTop: $("btnSettingsTop"),
-        heroCockpit: $("heroCockpit")
+        btnReload:$("btnReload"),btnGenerate:$("btnGenerate"),btnGenerateHero:$("btnGenerateHero"),
+        btnSave:$("btnSave"),btnSaveHero:$("btnSaveHero"),btnCopyBrief:$("btnCopyBrief"),
+        btnClear:$("btnClear"),inputTitle:$("inputTitle"),inputContext:$("inputContext"),
+        outClient:$("outClient"),outPlan:$("outPlan"),outChecks:$("outChecks"),
+        btnCopyClient:$("btnCopyClient"),btnWhatsappClient:$("btnWhatsappClient"),
+        btnCopyPlan:$("btnCopyPlan"),btnCopyChecks:$("btnCopyChecks"),
+        topSub:$("topSub"),modeBadge:$("modeBadge"),heroName:$("heroName"),heroDesc:$("heroDesc"),
+        heroSlug:$("heroSlug"),heroCity:$("heroCity"),heroType:$("heroType"),
+        miniTitle:$("miniTitle"),miniText:$("miniText"),footerNote:$("footerNote"),
+        kAccess:$("kAccess"),kMode:$("kMode"),kDraft:$("kDraft"),contextBox:$("contextBox"),
+        navCockpit:$("navCockpit"),navDashboard:$("navDashboard"),navPlanning:$("navPlanning"),
+        navQr:$("navQr"),navClaw:$("navClaw"),navSettings:$("navSettings"),navHome:$("navHome"),
+        btnCockpitTop:$("btnCockpitTop"),btnPlanningTop:$("btnPlanningTop"),
+        btnQrTop:$("btnQrTop"),btnSettingsTop:$("btnSettingsTop"),heroCockpit:$("heroCockpit")
       };
 
       const intentButtons = Array.from(document.querySelectorAll(".intent"));
 
-      const state = {
-        sb: null,
-        profile: null,
-        slug: "",
-        phone: "",
-        preview: true,
-        access_ok: false,
-        intent: "dispo"
-      };
+      const state = { sb:null, profile:null, slug:"", phone:"", preview:true, access_ok:false, intent:"dispo" };
 
-      function normalizeSlug(v){
-        return String(v || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
-      }
+      function normalizeSlug(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
+      function normalizePhone(v){ return String(v||"").replace(/[^\d]/g,""); }
+      function safeJsonParse(v){ try{ return typeof v==="string"?JSON.parse(v):v; }catch{ return null; } }
+      function storageGet(key){ try{ const s=sessionStorage.getItem(key); if(s)return s; }catch{} try{ const l=localStorage.getItem(key); if(l)return l; }catch{} return ""; }
+      function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }
 
-      function normalizePhone(v){
-        return String(v || "").replace(/[^\d]/g, "");
-      }
-
-      function safeJsonParse(value){
-        try{
-          return typeof value === "string" ? JSON.parse(value) : value;
-        }catch{
-          return null;
-        }
-      }
-
-      function storageGet(key){
-        try{
-          const s = sessionStorage.getItem(key);
-          if(s) return s;
-        }catch{}
-        try{
-          const l = localStorage.getItem(key);
-          if(l) return l;
-        }catch{}
-        return "";
-      }
-
-      function storageSet(key, value){
-        try{ sessionStorage.setItem(key, String(value ?? "")); }catch{}
-        try{ localStorage.setItem(key, String(value ?? "")); }catch{}
-      }
-
-      function getSessionSlug(){
-        const resaSession = safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
-        if(resaSession?.slug) return normalizeSlug(resaSession.slug);
-
-        const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
-        if(generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
-
-        return "";
-      }
-
-      function getSessionPhone(){
-        const resaSession = safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
-        if(resaSession?.phone) return normalizePhone(resaSession.phone);
-
-        const generic = safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
-        if(generic?.module === MODULE && generic?.phone) return normalizePhone(generic.phone);
-
-        return "";
-      }
-
-      function getFallbackSlug(){
-        return normalizeSlug(
-          querySlug ||
-          storageGet("digiy_resa_slug") ||
-          storageGet("digiy_resa_last_slug") ||
-          storageGet("digiy_last_slug") ||
-          storageGet("DIGIY_SLUG") ||
-          storageGet("digiy_slug") ||
-          getSessionSlug() ||
-          ""
-        );
-      }
-
-      function getFallbackPhone(){
-        return normalizePhone(
-          queryPhone ||
-          storageGet("digiy_resa_phone") ||
-          storageGet("DIGIY_PHONE") ||
-          getSessionPhone() ||
-          ""
-        );
-      }
+      function getSessionSlug(){ const r=safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION")); if(r?.slug)return normalizeSlug(r.slug); const g=safeJsonParse(storageGet("DIGIY_PRO_SESSION")); if(g?.module===MODULE&&g?.slug)return normalizeSlug(g.slug); return ""; }
+      function getSessionPhone(){ const r=safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION")); if(r?.phone)return normalizePhone(r.phone); const g=safeJsonParse(storageGet("DIGIY_PRO_SESSION")); if(g?.module===MODULE&&g?.phone)return normalizePhone(g.phone); return ""; }
+      function getFallbackSlug(){ return normalizeSlug(querySlug||storageGet("digiy_resa_slug")||storageGet("digiy_resa_last_slug")||storageGet("digiy_last_slug")||storageGet("DIGIY_SLUG")||storageGet("digiy_slug")||getSessionSlug()||""); }
+      function getFallbackPhone(){ return normalizePhone(queryPhone||storageGet("digiy_resa_phone")||storageGet("DIGIY_PHONE")||getSessionPhone()||""); }
 
       function initClient(){
-        if(state.sb) return;
-        const url = window.DIGIY_SUPABASE_URL;
-        const key = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
-        if(!url || !key || !window.supabase) return;
-        state.sb = window.supabase.createClient(url, key);
+        if(state.sb)return;
+        const url=window.DIGIY_SUPABASE_URL; const key=window.DIGIY_SUPABASE_ANON||window.DIGIY_SUPABASE_ANON_KEY;
+        if(!url||!key||!window.supabase)return;
+        state.sb=window.supabase.createClient(url,key);
       }
 
-      async function rpc(name, params){
-        initClient();
-        if(!state.sb) throw new Error("supabase_missing");
-        const { data, error } = await state.sb.rpc(name, params || {});
-        if(error) throw error;
-        return data;
+      async function rpc(name,params){
+        initClient(); if(!state.sb)throw new Error("supabase_missing");
+        const{data,error}=await state.sb.rpc(name,params||{}); if(error)throw error; return data;
       }
 
       async function resolveGuardState(){
-        const fallbackSlug = getFallbackSlug();
-        const fallbackPhone = getFallbackPhone();
+        const fallbackSlug=getFallbackSlug(), fallbackPhone=getFallbackPhone();
+        if(!window.DIGIY_GUARD||typeof window.DIGIY_GUARD.ready!=="function")
+          return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,phone:fallbackPhone,reason:"guard_missing"};
+        try{ await window.DIGIY_GUARD.ready(); }
+        catch{ return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,phone:fallbackPhone,reason:"guard_error"}; }
+        const st=window.DIGIY_GUARD?.state||null;
+        if(!st)return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,phone:fallbackPhone,reason:"guard_empty"};
+        return{...st,slug:normalizeSlug(st.slug||fallbackSlug||""),phone:normalizePhone(st.phone||fallbackPhone||"")};
+      }
 
-        if(!window.DIGIY_GUARD || typeof window.DIGIY_GUARD.ready !== "function"){
-          return {
-            ok:false,
-            preview:true,
-            access_ok:false,
-            slug:fallbackSlug,
-            phone:fallbackPhone,
-            reason:"guard_missing"
-          };
-        }
-
+      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         buildSafeUrl — VERSION BLINDÉE
+         Remplace la concaténation directe `${path}?${q}` fragile.
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function buildSafeUrl(base, params){
+        const baseStr=(base==null?"":String(base)).trim();
+        if(!baseStr)return location.href;
+        let u;
         try{
-          await window.DIGIY_GUARD.ready();
-        }catch{
-          return {
-            ok:false,
-            preview:true,
-            access_ok:false,
-            slug:fallbackSlug,
-            phone:fallbackPhone,
-            reason:"guard_error"
-          };
-        }
-
-        const st = window.DIGIY_GUARD?.state || null;
-        if(!st){
-          return {
-            ok:false,
-            preview:true,
-            access_ok:false,
-            slug:fallbackSlug,
-            phone:fallbackPhone,
-            reason:"guard_empty"
-          };
-        }
-
-        return {
-          ...st,
-          slug: normalizeSlug(st.slug || fallbackSlug || ""),
-          phone: normalizePhone(st.phone || fallbackPhone || "")
-        };
+          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
+          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
+        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
+        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+        return u.toString();
       }
 
       function buildUrl(path, slug, phone){
-        const cleanSlug = normalizeSlug(slug || state.slug);
-        const cleanPhone = normalizePhone(phone || state.phone);
-        const params = new URLSearchParams();
-        if(cleanSlug) params.set("slug", cleanSlug);
-        if(cleanPhone) params.set("phone", cleanPhone);
-        const q = params.toString();
-        return q ? `${path}?${q}` : path;
+        const c=normalizeSlug(slug||state.slug);
+        const p=normalizePhone(phone||state.phone);
+        return buildSafeUrl(path,{...(c?{slug:c}:{}),...(p?{phone:p}:{})});
       }
 
-      function setLinks(slug, phone){
-        els.navCockpit.href = buildUrl("./cockpit.html", slug, phone);
-        els.navDashboard.href = buildUrl("./dashboard-pro.html", slug, phone);
-        els.navPlanning.href = buildUrl("./planning.html", slug, phone);
-        els.navQr.href = buildUrl("./qr.html", slug, phone);
-        els.navClaw.href = buildUrl("./claw.html", slug, phone);
-        els.navSettings.href = buildUrl("./etablissement.html", slug, phone);
-        els.navHome.href = buildUrl("./index.html", slug, phone);
-
-        els.btnCockpitTop.href = buildUrl("./cockpit.html", slug, phone);
-        els.btnPlanningTop.href = buildUrl("./planning.html", slug, phone);
-        els.btnQrTop.href = buildUrl("./qr.html", slug, phone);
-        els.btnSettingsTop.href = buildUrl("./etablissement.html", slug, phone);
-        els.heroCockpit.href = buildUrl("./cockpit.html", slug, phone);
+      function setLinks(slug,phone){
+        els.navCockpit.href   = buildUrl("./cockpit.html",      slug,phone);
+        els.navDashboard.href = buildUrl("./dashboard-pro.html",slug,phone);
+        els.navPlanning.href  = buildUrl("./planning.html",     slug,phone);
+        els.navQr.href        = buildUrl("./qr.html",           slug,phone);
+        els.navClaw.href      = buildUrl("./claw.html",         slug,phone);
+        els.navSettings.href  = buildUrl("./etablissement.html",slug,phone);
+        els.navHome.href      = buildUrl("./index.html",        slug,phone);
+        els.btnCockpitTop.href  = buildUrl("./cockpit.html",      slug,phone);
+        els.btnPlanningTop.href = buildUrl("./planning.html",     slug,phone);
+        els.btnQrTop.href       = buildUrl("./qr.html",           slug,phone);
+        els.btnSettingsTop.href = buildUrl("./etablissement.html",slug,phone);
+        els.heroCockpit.href    = buildUrl("./cockpit.html",      slug,phone);
       }
 
-      function setHeroPills(slug, city, type){
-        els.heroSlug.textContent = "Slug : " + (slug || "—");
-        els.heroCity.textContent = "Ville : " + (city || "—");
-        els.heroType.textContent = "Activité : " + (type || "—");
+      function setHeroPills(slug,city,type){
+        /* ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ */
+        els.heroSlug.textContent = "Identifiant : "+(slug||"—");
+        els.heroCity.textContent = "Ville : "+(city||"—");
+        els.heroType.textContent = "Activité : "+(type||"—");
       }
 
-      function setPreviewHero(message = "", slug = ""){
-        const clean = normalizeSlug(slug);
-        els.modeBadge.className = "mode";
-        els.modeBadge.textContent = "Mode aperçu";
-        els.heroName.textContent = "CLAW by DIGIY";
-        els.heroDesc.textContent = "Moule vierge de l’atelier d’aide. Aucun faux contenu n’est injecté. Tu pars du réel et seulement du réel.";
-        setHeroPills(clean, "—", "Multi business");
-        els.topSub.textContent = message || "Aperçu de CLAW sans session vivante.";
-        els.footerNote.textContent = "Mode aperçu actif — atelier vierge sans démo.";
-        els.miniTitle.textContent = "Doctrine DIGIY";
-        els.miniText.textContent = "CLAW reste utile même en aperçu, mais aucune donnée réelle n’est lue tant que l’accès n’est pas confirmé.";
-        setLinks(clean, state.phone);
+      function setPreviewHero(message="",slug=""){
+        const clean=normalizeSlug(slug);
+        els.modeBadge.className="mode";
+        els.modeBadge.textContent="Aperçu";
+        /* ━━━ AVANT : heroName "CLAW by DIGIY" → banni ━━━ */
+        els.heroName.textContent="MES RÉSERVATIONS";
+        els.heroDesc.textContent="Atelier vierge. Aucun faux contenu n'est injecté. Tu pars du réel et seulement du réel.";
+        setHeroPills(clean,"—","Multi business");
+        els.topSub.textContent=message||"Aperçu de l'atelier sans session vivante.";
+        els.footerNote.textContent="Aperçu actif — atelier vierge sans démo.";
+        els.miniTitle.textContent="Doctrine DIGIY";
+        els.miniText.textContent="L'atelier reste utile même en aperçu, mais aucune donnée réelle n'est lue tant que l'accès n'est pas confirmé.";
+        setLinks(clean,state.phone);
       }
 
       function setLiveHero(){
-        els.modeBadge.className = "mode live";
-        els.modeBadge.textContent = "Mode vivant";
-        els.topSub.textContent = state.slug ? `Atelier chargé pour ${state.slug}` : "Atelier CLAW vivant.";
-        els.footerNote.textContent = "CLAW vivant branché sur le contexte réel du module RESA.";
-        els.miniTitle.textContent = "CLAW terrain";
-        els.miniText.textContent = "Tu poses le contexte brut, CLAW te propose une réponse plus nette, un plan interne et les points à vérifier avant d’agir.";
-        setLinks(state.slug, state.phone);
+        els.modeBadge.className="mode live";
+        els.modeBadge.textContent="En direct";
+        /* ━━━ AVANT : "Atelier chargé pour ${slug}" · "module RESA" → bannis ━━━ */
+        els.topSub.textContent=state.slug?`Atelier chargé pour ${state.slug}`:"Atelier vivant.";
+        els.footerNote.textContent="Atelier vivant branché sur le contexte réel.";
+        els.miniTitle.textContent="Atelier terrain";
+        els.miniText.textContent="Tu poses le contexte brut, l'atelier te propose une réponse plus nette, un plan interne et les points à vérifier avant d'agir.";
+        setLinks(state.slug,state.phone);
       }
 
-      function storageKey(){
-        return `digiy_resa_claw_draft:${normalizeSlug(state.slug || "preview")}`;
-      }
+      function storageKey(){ return `digiy_resa_claw_draft:${normalizeSlug(state.slug||"preview")}`; }
+      function humanDate(ts){ if(!ts)return "Aucun"; try{return new Date(ts).toLocaleString("fr-FR");}catch{return "Aucun";} }
 
-      function humanDate(ts){
-        if(!ts) return "Aucun";
-        try{
-          return new Date(ts).toLocaleString("fr-FR");
-        }catch{
-          return "Aucun";
-        }
-      }
-
-      function setOutput(el, value){
-        const clean = String(value || "").trim();
-        if(!clean){
-          el.textContent = "Aucune génération pour le moment.";
-          el.classList.add("empty");
-          return;
-        }
-        el.textContent = clean;
-        el.classList.remove("empty");
+      function setOutput(el,value){
+        const clean=String(value||"").trim();
+        if(!clean){el.textContent="Aucune génération pour le moment.";el.classList.add("empty");return;}
+        el.textContent=clean; el.classList.remove("empty");
       }
 
       function briefPayload(){
-        return {
-          slug: state.slug,
-          phone: state.phone,
-          intent: state.intent,
-          title: els.inputTitle.value.trim(),
-          context: els.inputContext.value.trim(),
-          outClient: els.outClient.textContent.trim(),
-          outPlan: els.outPlan.textContent.trim(),
-          outChecks: els.outChecks.textContent.trim(),
-          ts: Date.now()
-        };
+        return{slug:state.slug,phone:state.phone,intent:state.intent,title:els.inputTitle.value.trim(),context:els.inputContext.value.trim(),outClient:els.outClient.textContent.trim(),outPlan:els.outPlan.textContent.trim(),outChecks:els.outChecks.textContent.trim(),ts:Date.now()};
       }
 
-      function saveDraft(){
-        const payload = briefPayload();
-        localStorage.setItem(storageKey(), JSON.stringify(payload));
-        els.kDraft.textContent = humanDate(payload.ts);
-      }
+      function saveDraft(){ const p=briefPayload(); localStorage.setItem(storageKey(),JSON.stringify(p)); els.kDraft.textContent=humanDate(p.ts); }
 
       function restoreDraft(){
-        const raw = localStorage.getItem(storageKey());
-        const data = safeJsonParse(raw);
-        if(!data) return;
-
-        if(data.intent) setIntent(data.intent);
-        if(data.title) els.inputTitle.value = data.title;
-        if(data.context) els.inputContext.value = data.context;
-        setOutput(els.outClient, data.outClient || "");
-        setOutput(els.outPlan, data.outPlan || "");
-        setOutput(els.outChecks, data.outChecks || "");
-        els.kDraft.textContent = humanDate(data.ts);
+        const data=safeJsonParse(localStorage.getItem(storageKey()));
+        if(!data)return;
+        if(data.intent)setIntent(data.intent);
+        if(data.title)els.inputTitle.value=data.title;
+        if(data.context)els.inputContext.value=data.context;
+        setOutput(els.outClient,data.outClient||""); setOutput(els.outPlan,data.outPlan||""); setOutput(els.outChecks,data.outChecks||"");
+        els.kDraft.textContent=humanDate(data.ts);
       }
 
       function clearDraftAndForm(){
         localStorage.removeItem(storageKey());
-        els.inputTitle.value = "";
-        els.inputContext.value = "";
-        setOutput(els.outClient, "");
-        setOutput(els.outPlan, "");
-        setOutput(els.outChecks, "");
-        els.kDraft.textContent = "Aucun";
+        els.inputTitle.value=""; els.inputContext.value="";
+        setOutput(els.outClient,""); setOutput(els.outPlan,""); setOutput(els.outChecks,"");
+        els.kDraft.textContent="Aucun";
       }
 
-      function setIntent(intent){
-        state.intent = intent || "dispo";
-        intentButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.intent === state.intent));
-      }
+      function setIntent(intent){ state.intent=intent||"dispo"; intentButtons.forEach(btn=>btn.classList.toggle("active",btn.dataset.intent===state.intent)); }
 
       function getProfileLabel(){
-        return (
-          state.profile?.display_name ||
-          state.profile?.business_name ||
-          state.profile?.name ||
-          state.profile?.public_label ||
-          "DIGIY RESA PRO"
-        );
+        return state.profile?.display_name||state.profile?.business_name||state.profile?.name||state.profile?.public_label||
+          /* ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ */
+          "Ma boutique";
       }
 
       async function loadProfile(){
-        if(!state.slug) return;
-
+        if(!state.slug)return;
         try{
-          const data = await rpc("resa_public_profile_by_slug", { p_slug: state.slug });
-          if(!data?.ok) return;
-
-          state.profile = data.profile || {};
-
-          const label = getProfileLabel();
-          const city = state.profile?.city || "—";
-          const type = state.profile?.business_type || state.profile?.category || "Multi business";
-          const bio = state.profile?.bio || "Atelier CLAW branché sur le contexte réel du module RESA.";
-
-          els.heroName.textContent = label;
-          els.heroDesc.textContent = bio;
-          setHeroPills(state.slug, city, type);
+          const data=await rpc("resa_public_profile_by_slug",{p_slug:state.slug});
+          if(!data?.ok)return;
+          state.profile=data.profile||{};
+          const label=getProfileLabel();
+          const city=state.profile?.city||"—";
+          const type=state.profile?.business_type||state.profile?.category||"Multi business";
+          /* ━━━ AVANT : "Atelier CLAW branché sur le contexte réel du module RESA." → banni ━━━ */
+          const bio=state.profile?.bio||"Atelier branché sur le contexte réel de ta boutique.";
+          els.heroName.textContent=label; els.heroDesc.textContent=bio;
+          setHeroPills(state.slug,city,type);
         }catch{}
       }
 
-      function buildClientMessage(intent, title, context){
-        const business = getProfileLabel();
-        const cleanTitle = title || "votre demande";
-        const cleanContext = context || "";
-
-        if(intent === "dispo"){
-          return [
-            `Bonjour, ici ${business}.`,
-            "",
-            `Merci pour votre message concernant ${cleanTitle.toLowerCase()}.`,
-            "Nous pouvons vous proposer un créneau selon le planning disponible.",
-            "Envoyez-nous simplement le jour souhaité, l’heure idéale et le service exact afin que nous vous confirmions proprement.",
-            "",
-            "À très vite."
-          ].join("\n");
-        }
-
-        if(intent === "confirm"){
-          return [
-            `Bonjour, ici ${business}.`,
-            "",
-            `Votre réservation pour ${cleanTitle.toLowerCase()} est bien notée.`,
-            "Merci de nous répondre par OK pour validation finale si tout est bon de votre côté.",
-            "En cas de changement, prévenez-nous rapidement afin que le planning reste propre.",
-            "",
-            "Merci."
-          ].join("\n");
-        }
-
-        if(intent === "relance"){
-          return [
-            `Bonjour, ici ${business}.`,
-            "",
-            `Petit retour concernant ${cleanTitle.toLowerCase()}.`,
-            "Nous restons disponibles pour finaliser ou ajuster votre réservation.",
-            "Dites-nous simplement si vous souhaitez confirmer, déplacer ou reprendre plus tard.",
-            "",
-            "Nous restons à votre écoute."
-          ].join("\n");
-        }
-
-        if(intent === "retard"){
-          return [
-            `Bonjour, ici ${business}.`,
-            "",
-            `Nous vous écrivons au sujet de ${cleanTitle.toLowerCase()}.`,
-            "Comme le créneau était prévu, merci de nous confirmer rapidement si vous maintenez, reportez ou annulez.",
-            "Cela nous permet de garder un planning clair pour tout le monde.",
-            "",
-            "Merci pour votre retour."
-          ].join("\n");
-        }
-
-        if(intent === "service"){
-          return [
-            `Bonjour, ici ${business}.`,
-            "",
-            `Concernant ${cleanTitle.toLowerCase()}, nous pouvons vous accompagner avec une prise en charge claire et simple.`,
-            "Dites-nous votre besoin exact, la date souhaitée et votre disponibilité, puis nous vous orientons vers la meilleure option.",
-            "",
-            "Au plaisir."
-          ].join("\n");
-        }
-
-        return [
-          `Bonjour, ici ${business}.`,
-          "",
-          "Voici le point du jour.",
-          "Nous priorisons les rendez-vous confirmés, les créneaux à relancer et les disponibilités réelles.",
-          "Si vous souhaitez ajuster votre passage, répondez-nous simplement avec votre préférence.",
-          "",
-          cleanContext
-        ].join("\n");
+      function buildClientMessage(intent,title,context){
+        const business=getProfileLabel();
+        const cleanTitle=title||"votre demande";
+        if(intent==="dispo") return [`Bonjour, ici ${business}.`,"",`Merci pour votre message concernant ${cleanTitle.toLowerCase()}.`,"Nous pouvons vous proposer un créneau selon le planning disponible.","Envoyez-nous simplement le jour souhaité, l'heure idéale et le service exact afin que nous vous confirmions proprement.","","À très vite."].join("\n");
+        if(intent==="confirm") return [`Bonjour, ici ${business}.`,"",`Votre réservation pour ${cleanTitle.toLowerCase()} est bien notée.`,"Merci de nous répondre par OK pour validation finale si tout est bon de votre côté.","En cas de changement, prévenez-nous rapidement afin que le planning reste propre.","","Merci."].join("\n");
+        if(intent==="relance") return [`Bonjour, ici ${business}.`,"",`Petit retour concernant ${cleanTitle.toLowerCase()}.`,"Nous restons disponibles pour finaliser ou ajuster votre réservation.","Dites-nous simplement si vous souhaitez confirmer, déplacer ou reprendre plus tard.","","Nous restons à votre écoute."].join("\n");
+        if(intent==="retard") return [`Bonjour, ici ${business}.`,"",`Nous vous écrivons au sujet de ${cleanTitle.toLowerCase()}.`,"Comme le créneau était prévu, merci de nous confirmer rapidement si vous maintenez, reportez ou annulez.","Cela nous permet de garder un planning clair pour tout le monde.","","Merci pour votre retour."].join("\n");
+        if(intent==="service") return [`Bonjour, ici ${business}.`,"",`Concernant ${cleanTitle.toLowerCase()}, nous pouvons vous accompagner avec une prise en charge claire et simple.`,"Dites-nous votre besoin exact, la date souhaitée et votre disponibilité, puis nous vous orientons vers la meilleure option.","","Au plaisir."].join("\n");
+        return [`Bonjour, ici ${business}.`,"","Voici le point du jour.","Nous priorisons les rendez-vous confirmés, les créneaux à relancer et les disponibilités réelles.","Si vous souhaitez ajuster votre passage, répondez-nous simplement avec votre préférence.","",context||""].join("\n");
       }
 
-      function buildPlan(intent, title, context){
-        const t = title || "Besoin RESA";
-        const c = context || "Aucun contexte ajouté.";
-
-        if(intent === "dispo"){
-          return [
-            `PLAN D’ACTION — ${t}`,
-            "",
-            "1. Vérifier le planning réel avant toute promesse.",
-            "2. Identifier le service exact demandé.",
-            "3. Proposer un choix limité de créneaux.",
-            "4. Demander une confirmation simple au client.",
-            "5. Noter la réponse dans le suivi.",
-            "",
-            "Contexte reçu :",
-            c
-          ].join("\n");
-        }
-
-        if(intent === "confirm"){
-          return [
-            `PLAN D’ACTION — ${t}`,
-            "",
-            "1. Recontrôler date, heure, service et durée.",
-            "2. Vérifier que le créneau n’est pas pris ailleurs.",
-            "3. Envoyer la confirmation courte.",
-            "4. Demander une réponse claire : OK / report / annulation.",
-            "5. Mettre le planning à jour immédiatement.",
-            "",
-            "Contexte reçu :",
-            c
-          ].join("\n");
-        }
-
-        if(intent === "relance"){
-          return [
-            `PLAN D’ACTION — ${t}`,
-            "",
-            "1. Relancer sans pression inutile.",
-            "2. Rappeler le besoin traité.",
-            "3. Ouvrir une porte simple : confirmer / déplacer / reprendre plus tard.",
-            "4. Éviter les messages trop longs.",
-            "5. Noter le résultat de la relance.",
-            "",
-            "Contexte reçu :",
-            c
-          ].join("\n");
-        }
-
-        if(intent === "retard"){
-          return [
-            `PLAN D’ACTION — ${t}`,
-            "",
-            "1. Vérifier si le client a prévenu.",
-            "2. Contacter une seule fois proprement.",
-            "3. Proposer report ou annulation selon la règle terrain.",
-            "4. Libérer le créneau si nécessaire.",
-            "5. Noter l’incident pour le suivi futur.",
-            "",
-            "Contexte reçu :",
-            c
-          ].join("\n");
-        }
-
-        if(intent === "service"){
-          return [
-            `PLAN D’ACTION — ${t}`,
-            "",
-            "1. Présenter le service en langage simple.",
-            "2. Mettre le bénéfice client avant la technique.",
-            "3. Donner la durée, le cadre et la prochaine étape.",
-            "4. Finir par une action claire : réserver / demander un créneau.",
-            "5. Garder le ton propre et court.",
-            "",
-            "Contexte reçu :",
-            c
-          ].join("\n");
-        }
-
-        return [
-          `PLAN D’ACTION — ${t}`,
-          "",
-          "1. Lister les rendez-vous confirmés.",
-          "2. Distinguer : confirmé / à relancer / en attente.",
-          "3. Remplir les trous de planning avec des relances ciblées.",
-          "4. Prévoir les marges entre rendez-vous.",
-          "5. Fin de journée : vérifier ce qui glisse à demain.",
-          "",
-          "Contexte reçu :",
-          c
-        ].join("\n");
+      function buildPlan(intent,title,context){
+        const t=title||"Besoin", c=context||"Aucun contexte ajouté.";
+        const steps={
+          dispo:["1. Vérifier le planning réel avant toute promesse.","2. Identifier le service exact demandé.","3. Proposer un choix limité de créneaux.","4. Demander une confirmation simple au client.","5. Noter la réponse dans le suivi."],
+          confirm:["1. Recontrôler date, heure, service et durée.","2. Vérifier que le créneau n'est pas pris ailleurs.","3. Envoyer la confirmation courte.","4. Demander une réponse claire : OK / report / annulation.","5. Mettre le planning à jour immédiatement."],
+          relance:["1. Relancer sans pression inutile.","2. Rappeler le besoin traité.","3. Ouvrir une porte simple : confirmer / déplacer / reprendre plus tard.","4. Éviter les messages trop longs.","5. Noter le résultat de la relance."],
+          retard:["1. Vérifier si le client a prévenu.","2. Contacter une seule fois proprement.","3. Proposer report ou annulation selon la règle terrain.","4. Libérer le créneau si nécessaire.","5. Noter l'incident pour le suivi futur."],
+          service:["1. Présenter le service en langage simple.","2. Mettre le bénéfice client avant la technique.","3. Donner la durée, le cadre et la prochaine étape.","4. Finir par une action claire : réserver / demander un créneau.","5. Garder le ton propre et court."],
+          journee:["1. Lister les rendez-vous confirmés.","2. Distinguer : confirmé / à relancer / en attente.","3. Remplir les trous de planning avec des relances ciblées.","4. Prévoir les marges entre rendez-vous.","5. Fin de journée : vérifier ce qui glisse à demain."]
+        };
+        return [`PLAN D'ACTION — ${t}`,"", ...(steps[intent]||steps.journee),"","Contexte reçu :",c].join("\n");
       }
 
       function buildChecks(intent){
-        const common = [
-          "- Le slug affiché est-il le bon ?",
+        const common=[
+          /* ━━━ AVANT : "Le slug affiché est-il le bon ?" → banni ━━━ */
+          "- L'identifiant affiché est-il le bon ?",
           "- Le planning réel a-t-il été vérifié ?",
           "- Le message demande-t-il une action simple au client ?",
           "- La promesse faite correspond-elle à la réalité du terrain ?",
           "- Le suivi sera-t-il mis à jour après réponse ?"
         ];
-
-        if(intent === "dispo"){
-          common.push("- Ne pas proposer trop de créneaux.");
-          common.push("- Confirmer seulement après vérification réelle.");
-        }else if(intent === "confirm"){
-          common.push("- Vérifier heure, service, durée et conditions.");
-          common.push("- Éviter toute ambiguïté.");
-        }else if(intent === "relance"){
-          common.push("- Une relance propre suffit.");
-          common.push("- Ne pas noyer le client.");
-        }else if(intent === "retard"){
-          common.push("- Rester calme et ferme.");
-          common.push("- Décider vite si le créneau doit être libéré.");
-        }else if(intent === "service"){
-          common.push("- L’offre reste-t-elle lisible ?");
-          common.push("- La prochaine étape est-elle claire ?");
-        }else if(intent === "journee"){
-          common.push("- Les priorités du jour sont-elles visibles ?");
-          common.push("- Les trous de planning sont-ils traités ?");
-        }
-
+        if(intent==="dispo"){common.push("- Ne pas proposer trop de créneaux."); common.push("- Confirmer seulement après vérification réelle.");}
+        else if(intent==="confirm"){common.push("- Vérifier heure, service, durée et conditions."); common.push("- Éviter toute ambiguïté.");}
+        else if(intent==="relance"){common.push("- Une relance propre suffit."); common.push("- Ne pas noyer le client.");}
+        else if(intent==="retard"){common.push("- Rester calme et ferme."); common.push("- Décider vite si le créneau doit être libéré.");}
+        else if(intent==="service"){common.push("- L'offre reste-t-elle lisible ?"); common.push("- La prochaine étape est-elle claire ?");}
+        else if(intent==="journee"){common.push("- Les priorités du jour sont-elles visibles ?"); common.push("- Les trous de planning sont-ils traités ?");}
         return common.join("\n");
       }
 
       function generate(){
-        const title = els.inputTitle.value.trim();
-        const context = els.inputContext.value.trim();
-
-        const client = buildClientMessage(state.intent, title, context);
-        const plan = buildPlan(state.intent, title, context);
-        const checks = buildChecks(state.intent);
-
-        setOutput(els.outClient, client);
-        setOutput(els.outPlan, plan);
-        setOutput(els.outChecks, checks);
-
+        const title=els.inputTitle.value.trim(), context=els.inputContext.value.trim();
+        setOutput(els.outClient,buildClientMessage(state.intent,title,context));
+        setOutput(els.outPlan,buildPlan(state.intent,title,context));
+        setOutput(els.outChecks,buildChecks(state.intent));
         saveDraft();
       }
 
-      async function copyText(value){
-        const clean = String(value || "").trim();
-        if(!clean) return;
-        try{
-          await navigator.clipboard.writeText(clean);
-        }catch{}
-      }
+      async function copyText(value){ const clean=String(value||"").trim(); if(!clean)return; try{await navigator.clipboard.writeText(clean);}catch{} }
 
       function whatsappUrl(message){
-        const cleanPhone = normalizePhone(state.profile?.whatsapp || state.profile?.public_phone || state.phone || "");
-        const text = encodeURIComponent(message || "");
-        return cleanPhone
-          ? `https://wa.me/${cleanPhone}?text=${text}`
-          : `https://wa.me/?text=${text}`;
+        const cleanPhone=normalizePhone(state.profile?.whatsapp||state.profile?.public_phone||state.phone||"");
+        const text=encodeURIComponent(message||"");
+        return cleanPhone?`https://wa.me/${cleanPhone}?text=${text}`:`https://wa.me/?text=${text}`;
       }
 
-      function openWhatsapp(message){
-        const url = whatsappUrl(message);
-        window.open(url, "_blank", "noopener,noreferrer");
-      }
+      function openWhatsapp(message){ window.open(whatsappUrl(message),"_blank","noopener,noreferrer"); }
 
       function bindEvents(){
-        intentButtons.forEach(btn => {
-          btn.addEventListener("click", () => {
-            setIntent(btn.dataset.intent || "dispo");
-            saveDraft();
-          });
-        });
-
-        els.btnReload.addEventListener("click", boot);
-        els.btnGenerate.addEventListener("click", generate);
-        els.btnGenerateHero.addEventListener("click", generate);
-
-        els.btnSave.addEventListener("click", () => {
-          saveDraft();
-          els.btnSave.textContent = "Enregistré";
-          setTimeout(() => { els.btnSave.textContent = "Enregistrer"; }, 1200);
-        });
-
-        els.btnSaveHero.addEventListener("click", () => {
-          saveDraft();
-          els.btnSaveHero.textContent = "Brouillon OK";
-          setTimeout(() => { els.btnSaveHero.textContent = "Enregistrer le brouillon"; }, 1200);
-        });
-
-        els.btnCopyBrief.addEventListener("click", () => {
-          copyText([
-            "BRIEF CLAW RESA",
-            "",
-            "INTENTION",
-            state.intent,
-            "",
-            "TITRE",
-            els.inputTitle.value.trim() || "Sans titre",
-            "",
-            "CONTEXTE",
-            els.inputContext.value.trim() || "Aucun contexte"
-          ].join("\n"));
-        });
-
-        els.btnClear.addEventListener("click", clearDraftAndForm);
-
-        els.btnCopyClient.addEventListener("click", () => copyText(els.outClient.textContent));
-        els.btnWhatsappClient.addEventListener("click", () => openWhatsapp(els.outClient.textContent));
-        els.btnCopyPlan.addEventListener("click", () => copyText(els.outPlan.textContent));
-        els.btnCopyChecks.addEventListener("click", () => copyText(els.outChecks.textContent));
-
-        els.inputTitle.addEventListener("input", saveDraft);
-        els.inputContext.addEventListener("input", saveDraft);
+        intentButtons.forEach(btn=>{ btn.addEventListener("click",()=>{setIntent(btn.dataset.intent||"dispo");saveDraft();}); });
+        els.btnReload.addEventListener("click",boot);
+        els.btnGenerate.addEventListener("click",generate);
+        els.btnGenerateHero.addEventListener("click",generate);
+        els.btnSave.addEventListener("click",()=>{saveDraft();els.btnSave.textContent="Enregistré";setTimeout(()=>{els.btnSave.textContent="Enregistrer";},1200);});
+        els.btnSaveHero.addEventListener("click",()=>{saveDraft();els.btnSaveHero.textContent="Brouillon OK";setTimeout(()=>{els.btnSaveHero.textContent="Enregistrer le brouillon";},1200);});
+        els.btnCopyBrief.addEventListener("click",()=>{copyText(["BRIEF ATELIER DIGIY","","INTENTION",state.intent,"","TITRE",els.inputTitle.value.trim()||"Sans titre","","CONTEXTE",els.inputContext.value.trim()||"Aucun contexte"].join("\n"));});
+        els.btnClear.addEventListener("click",clearDraftAndForm);
+        els.btnCopyClient.addEventListener("click",()=>copyText(els.outClient.textContent));
+        els.btnWhatsappClient.addEventListener("click",()=>openWhatsapp(els.outClient.textContent));
+        els.btnCopyPlan.addEventListener("click",()=>copyText(els.outPlan.textContent));
+        els.btnCopyChecks.addEventListener("click",()=>copyText(els.outChecks.textContent));
+        els.inputTitle.addEventListener("input",saveDraft);
+        els.inputContext.addEventListener("input",saveDraft);
       }
 
       function updateContextBox(){
-        const label = getProfileLabel();
-        els.kAccess.textContent = state.access_ok ? "Actif" : "Aperçu";
-        els.kMode.textContent = state.preview ? "preview" : "réel";
-
-        els.contextBox.textContent = state.preview
-          ? `Aperçu chargé${state.slug ? " pour " + state.slug : ""}. Tu peux préparer un texte propre, mais aucune donnée métier sensible n’est injectée tant que l’accès réel n’est pas confirmé.`
-          : `${label} chargé sur le slug ${state.slug}. Tu peux préparer tes messages, tes relances et tes réponses en restant aligné sur le rail RESA réel.`;
+        const label=getProfileLabel();
+        els.kAccess.textContent=state.access_ok?"Actif":"Aperçu";
+        els.kMode.textContent=state.preview?"aperçu":"réel";
+        els.contextBox.textContent=state.preview
+          ? `Aperçu chargé${state.slug?" pour "+state.slug:""}. Tu peux préparer un texte propre, mais aucune donnée métier sensible n'est injectée tant que l'accès n'est pas confirmé.`
+          /* ━━━ AVANT : "rail RESA réel" visible → banni ━━━ */
+          : `${label} chargé. Tu peux préparer tes messages, tes relances et tes réponses en restant aligné sur le contexte réel.`;
       }
 
       async function boot(){
-        state.profile = null;
-        state.slug = "";
-        state.phone = "";
-        state.preview = true;
-        state.access_ok = false;
-        setIntent(state.intent || "dispo");
-
-        setOutput(els.outClient, "");
-        setOutput(els.outPlan, "");
-        setOutput(els.outChecks, "");
-        els.kDraft.textContent = "Aucun";
+        state.profile=null; state.slug=""; state.phone=""; state.preview=true; state.access_ok=false;
+        setIntent(state.intent||"dispo");
+        setOutput(els.outClient,""); setOutput(els.outPlan,""); setOutput(els.outChecks,"");
+        els.kDraft.textContent="Aucun";
 
         try{
           initClient();
+          const st=await resolveGuardState();
+          state.slug=normalizeSlug(st.slug||getFallbackSlug()||"");
+          state.phone=normalizePhone(st.phone||getFallbackPhone()||"");
+          state.access_ok=!!st.access_ok; state.preview=!!st.preview||!state.access_ok;
 
-          const st = await resolveGuardState();
-          state.slug = normalizeSlug(st.slug || getFallbackSlug() || "");
-          state.phone = normalizePhone(st.phone || getFallbackPhone() || "");
-          state.access_ok = !!st.access_ok;
-          state.preview = !!st.preview || !state.access_ok;
-
-          storageSet("digiy_resa_slug", state.slug || "");
-          storageSet("digiy_last_slug", state.slug || "");
-          storageSet("digiy_resa_phone", state.phone || "");
-          storageSet("DIGIY_PHONE", state.phone || "");
+          storageSet("digiy_resa_slug",state.slug||""); storageSet("digiy_last_slug",state.slug||"");
+          storageSet("digiy_resa_phone",state.phone||""); storageSet("DIGIY_PHONE",state.phone||"");
 
           if(state.preview){
-            if(st.reason === "guard_missing"){
-              setPreviewHero("Guard absent. Atelier vierge affiché.", state.slug);
-            }else if(st.reason === "guard_error"){
-              setPreviewHero("Guard indisponible. Atelier vierge affiché.", state.slug);
-            }else if(st.reason === "guard_empty"){
-              setPreviewHero("Aucune session détectée. Atelier vierge affiché.", state.slug);
-            }else if(state.slug){
-              setPreviewHero(`Slug détecté (${state.slug}) mais accès non confirmé. Atelier vierge affiché.`, state.slug);
-            }else{
-              setPreviewHero("Aucun slug détecté. Atelier vierge affiché.", state.slug);
-            }
+            /* ━━━ AVANT : "Slug détecté" / "Aucun slug détecté" → bannis ━━━ */
+            if(st.reason==="guard_missing")      setPreviewHero("Guard absent. Atelier vierge affiché.",state.slug);
+            else if(st.reason==="guard_error")   setPreviewHero("Vérification indisponible. Atelier vierge affiché.",state.slug);
+            else if(st.reason==="guard_empty")   setPreviewHero("Aucune session détectée. Atelier vierge affiché.",state.slug);
+            else if(state.slug)                  setPreviewHero(`Identifiant détecté (${state.slug}) mais accès non confirmé. Atelier vierge affiché.`,state.slug);
+            else                                 setPreviewHero("Aucun identifiant détecté. Atelier vierge affiché.",state.slug);
           }else{
             setLiveHero();
           }
 
-          setLinks(state.slug, state.phone);
+          setLinks(state.slug,state.phone);
           await loadProfile();
-
-          if(!state.preview){
-            setLiveHero();
-          }
-
+          if(!state.preview)setLiveHero();
           updateContextBox();
           restoreDraft();
         }catch(err){
-          console.error("[CLAW RESA] boot error", err);
-          state.preview = true;
-          setPreviewHero("Erreur de chargement. Atelier vierge affiché.", state.slug);
+          console.error("[RESA atelier] boot error",err);
+          state.preview=true;
+          setPreviewHero("Erreur de chargement. Atelier vierge affiché.",state.slug);
           updateContextBox();
         }
       }
