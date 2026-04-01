@@ -123,7 +123,7 @@
         <article class="claw-card">
           <div class="claw-head">
             <div>
-              <div class="claw-kicker">DIGIY ANALYSE</div>
+              <div class="claw-kicker">Lecture activité</div>
               <h2 class="claw-title">Lecture de ton espace</h2>
             </div>
             <div class="claw-mode" id="clawMode">Analyse en cours</div>
@@ -150,17 +150,13 @@
             <button class="btn ok"   id="btnOpenSlug"  type="button">🚀 Ouvrir mon espace</button>
             <button class="btn gold" id="btnVerify"    type="button">✅ Vérifier mon accès</button>
             <button class="btn"      id="btnPin"       type="button">🔐 Entrer par mon code</button>
-            <button class="btn info" id="btnDashboard" type="button">📊 Mon activité</button>
-            <button class="btn info" id="btnQr"        type="button">📎 Mon QR</button>
-            <button class="btn gold" id="btnPay"       type="button">💳 Je commence</button>
-            <button class="btn bad"  id="btnSupport"   type="button">💬 Support WhatsApp</button>
           </div>
           <div class="infoList">
             <div class="miniBox"><div class="miniLabel">Dernier identifiant gardé</div><div class="miniValue mono" id="savedSlug">—</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue mono" id="dashboardTarget">./dashboard-pro.html</div></div>
-            <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue mono" id="cockpitTarget">./cockpit.html</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue mono" id="qrTarget">./qr.html</div></div>
-            <div class="miniBox"><div class="miniLabel">Rejoindre DIGIY</div><div class="miniValue mono" id="payTarget">https://commencer-a-payer.digiylyfe.com/?module=RESA</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue" id="dashboardTarget">Prête à ouvrir</div></div>
+            <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue" id="cockpitTarget">Prête à ouvrir</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue" id="qrTarget">Prêt à préparer</div></div>
+            <div class="miniBox"><div class="miniLabel">Rejoindre DIGIY</div><div class="miniValue" id="payTarget">Activation de l'accès</div></div>
           </div>
         </div>
         <div class="box">
@@ -174,13 +170,13 @@
             <li>Tu sors ton QR sans rester devant la porte</li>
           </ol>
           <div class="hr"></div>
-          <div class="sectionTitle">Liens utiles</div>
+          <div class="sectionTitle">Repères utiles</div>
           <div class="infoList">
-            <div class="miniBox"><div class="miniLabel">Ma vitrine publique</div><div class="miniValue mono">https://resa-table-resto.digiylyfe.com/</div></div>
-            <div class="miniBox"><div class="miniLabel">Accès sécurisé</div><div class="miniValue mono">./pin.html?slug=...</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue mono">./dashboard-pro.html?slug=...</div></div>
-            <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue mono">./cockpit.html?slug=...</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue mono">./qr.html?slug=...</div></div>
+            <div class="miniBox"><div class="miniLabel">Ma vitrine publique</div><div class="miniValue">Visible côté client</div></div>
+            <div class="miniBox"><div class="miniLabel">Accès sécurisé</div><div class="miniValue">Entrée par ton code</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue">Lecture rapide de ton accès</div></div>
+            <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue">Pilotage du jour</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue">Accès et vitrine à partager</div></div>
           </div>
         </div>
       </div>
@@ -195,7 +191,6 @@
       </div>
       <div class="stickyActions">
         <button class="btn"      id="btnPinSticky"  type="button">Mon code</button>
-        <button class="btn info" id="btnQrSticky"   type="button">Mon QR</button>
         <button class="btn gold" id="btnPaySticky"  type="button">Je commence</button>
         <button class="btn ok"   id="btnOpenSticky" type="button">Mon espace</button>
       </div>
@@ -230,9 +225,9 @@
       function setNavLinks(slug){
         const c=normSlug(slug);
         $("navAccess").href=withSlug(ACCESS_URL,c);$("navDashboard").href=withSlug(DASHBOARD_URL,c);$("navCockpit").href=withSlug(PRO_URL,c);$("navPlanning").href=withSlug(PLANNING_URL,c);$("navQr").href=withSlug(QR_URL,c);$("navSettings").href=withSlug(SETTINGS_URL,c);$("navPin").href=withSlug(PIN_URL,c);
-        $("dashboardTarget").textContent=c?`./dashboard-pro.html?slug=${c}`:"./dashboard-pro.html";
-        $("cockpitTarget").textContent=c?`./cockpit.html?slug=${c}`:"./cockpit.html";
-        $("qrTarget").textContent=c?`./qr.html?slug=${c}`:"./qr.html";
+        $("dashboardTarget").textContent=c?"Activité prête pour cet identifiant":"Prête à ouvrir";
+        $("cockpitTarget").textContent=c?"Gestion prête pour cet identifiant":"Prête à ouvrir";
+        $("qrTarget").textContent=c?"QR prêt pour cet identifiant":"Prêt à préparer";
       }
       function setClaw(mode,summary,pills=[],items=[]){
         $("clawMode").textContent=mode||"Analyse en cours";$("clawSummary").textContent=summary||"Lecture de ton espace.";
@@ -244,6 +239,7 @@
       function setClawSlugReady(slug){setClaw("Identifiant prêt","Identifiant propre en place. Tu peux ouvrir ton espace, ton activité ou préparer ton QR.",[`Identifiant : ${slug}`,"Espace prêt","QR prêt"],[{title:"Lecture de l'espace",text:"L'identifiant est en place. Toutes les pages utiles suivent ce contexte."},{title:"Action utile",text:"Vérifie l'accès si tu veux confirmer l'abonnement avant d'ouvrir ta gestion."}]);}
       function setClawVerified(slug,phone){setClaw("Accès confirmé","Téléphone trouvé, accès confirmé, espace et QR prêts.",[`Identifiant : ${slug}`,`Téléphone : ${phone}`,"Accès OK","Espace vivant"],[{title:"Lecture de l'espace",text:"L'abonnement est actif sur Mes Réservations pour cet identifiant."},{title:"Suite logique",text:"Tu peux ouvrir ton espace, ton activité ou le QR sans rester bloqué devant la porte."}]);}
       function setClawBlocked(message){setClaw("Blocage","Un blocage est détecté. Remet l'accès d'équerre avant d'ouvrir ton espace.",["Accès refusé","Activation possible","Support dispo"],[{title:"Blocage principal",text:message||"L'identifiant n'a pas ouvert l'accès."},{title:"Action utile",text:"Passe par l'activation, puis reviens avec le bon identifiant ou ton PIN."}]);}
+      function on(id,event,handler){const el=$(id);if(el)el.addEventListener(event,handler);}
       function rememberSlug(slug){if(!slug)return;const c=normSlug(slug);localStorage.setItem("digiy_resa_last_slug",c);localStorage.setItem("digiy_last_slug",c);localStorage.setItem("DIGIY_SLUG",c);localStorage.setItem("digiy_slug",c);savedSlugBox.textContent=c;setNavLinks(c);}
       function readRememberedSlug(){const s=normSlug(qp.get("slug")||localStorage.getItem("digiy_resa_last_slug")||localStorage.getItem("digiy_last_slug")||localStorage.getItem("DIGIY_SLUG")||localStorage.getItem("digiy_slug")||"");savedSlugBox.textContent=s||"—";setNavLinks(s);return s;}
       function fillSlugFromMemory(){const c=readRememberedSlug();if(c)slugInput.value=c;}
@@ -291,13 +287,13 @@
           setStatus("⚠️ Vérification impossible pour le moment. PIN, activation ou support.","bad","ERREUR");setSticky("Erreur de vérification");setClawBlocked("Vérification impossible pour le moment.");
         }
       }
-      $("btnPin").addEventListener("click",openPin);$("btnPinSticky").addEventListener("click",openPin);
-      $("btnPay").addEventListener("click",openPay);$("btnPaySticky").addEventListener("click",openPay);
-      $("btnDashboard").addEventListener("click",openDashboard);$("btnQr").addEventListener("click",openQr);$("btnQrSticky").addEventListener("click",openQr);
-      $("btnSupport").addEventListener("click",()=>{wa(makeSupportMessage());});
-      $("btnVerify").addEventListener("click",()=>{handleVerify(false);});
-      $("btnOpenSlug").addEventListener("click",()=>{handleVerify(true);});
-      $("btnOpenSticky").addEventListener("click",()=>{handleVerify(true);});
+      on("btnPin","click",openPin);on("btnPinSticky","click",openPin);
+      on("btnPay","click",openPay);on("btnPaySticky","click",openPay);
+      on("btnDashboard","click",openDashboard);on("btnQr","click",openQr);on("btnQrSticky","click",openQr);
+      on("btnSupport","click",()=>{wa(makeSupportMessage());});
+      on("btnVerify","click",()=>{handleVerify(false);});
+      on("btnOpenSlug","click",()=>{handleVerify(true);});
+      on("btnOpenSticky","click",()=>{handleVerify(true);});
       slugInput.addEventListener("input",()=>{const s=normSlug(slugInput.value);if(s!==slugInput.value)slugInput.value=s;setSticky(s?("Identifiant prêt : "+s):"Prêt à ouvrir ton espace");setNavLinks(s);if(s)setClawSlugReady(s);else setClawNoSlug();});
       slugInput.addEventListener("keydown",(e)=>{if(e.key==="Enter")handleVerify(true);});
       setClawLoading();fillSlugFromMemory();

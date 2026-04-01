@@ -97,7 +97,6 @@
       </a>
     </div>
 
-    <div class="label mono" id="urlBox">Lien : —</div>
     <div class="note warn" id="note"></div>
 
     <section class="claw-grid">
@@ -105,7 +104,7 @@
         <div class="claw-head">
           <div>
             <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">DIGIY ANALYSE</div>
+            <div class="claw-kicker">Lecture activité</div>
             <!-- ━━━ AVANT : "Lecture légère du QR" → "Lecture de ton QR" ━━━ -->
             <h2 class="claw-title">Lecture de ton QR</h2>
           </div>
@@ -129,7 +128,6 @@
     </section>
 
     <div class="hr"></div>
-    <div class="mini mono" id="dbg"></div>
   </div>
 </div>
 
@@ -144,9 +142,7 @@
 
   const qrImg      = document.getElementById("qrImg");
   const qrAnchor   = document.getElementById("qrAnchor");
-  const urlBox     = document.getElementById("urlBox");
   const noteEl     = document.getElementById("note");
-  const dbgEl      = document.getElementById("dbg");
   const pillSlug   = document.getElementById("pillSlug");
   const pillState  = document.getElementById("pillState");
   const btnDownload= document.getElementById("btnDownload");
@@ -206,7 +202,7 @@
     setClaw("Identifiant manquant","Sans identifiant, le QR n'a pas de contexte propre. La fabrication est bloquée pour éviter un faux lien.",
       ["Identifiant absent","QR bloqué","Vérifier le lien"],
       [{title:"Blocage principal",text:"Il faut un identifiant réel pour fabriquer un QR propre."},
-       {title:"Action utile",text:"Ouvre ce fichier depuis ton espace de travail ou avec ?slug=... dans l'URL."}]);
+       {title:"Action utile",text:"Ouvre ce fichier depuis ton espace de travail pour récupérer le bon contexte."}]);
   }
 
   function setClawReady(sessionOk){
@@ -325,10 +321,8 @@
     /* ━━━ AVANT : "slug: —" · "session: impossible" · "URL: slug manquant" → bannis ━━━ */
     pillSlug.textContent = "Identifiant : —";
     pillState.textContent = "Accès : impossible";
-    urlBox.textContent   = "Lien : identifiant manquant";
-    dbgEl.textContent    = "module: RESA | identifiant manquant | ouvre depuis ton espace de travail ou ajoute ?slug=...";
     /* ━━━ AVANT : "❌ slug manquant. Ouvre ce fichier via le dashboard RESA" → banni ━━━ */
-    note("❌ Identifiant manquant. Ouvre ce fichier depuis ton espace de travail ou avec ?slug=... dans l'URL.","bad");
+    note("❌ Identifiant manquant. Ouvre ce fichier depuis ton espace de travail.","bad");
     setClawMissingSlug();
     setBusy(true);
     return;
@@ -356,16 +350,6 @@
     "public": publicUrl
   });
   url = qrProUrl;
-
-  urlBox.innerHTML = "<b>Lien :</b> "+escapeHtml(url);
-  dbgEl.textContent =
-    "identifiant: "+slug+
-    " | module: RESA"+
-    " | qr-base: "+QR_PRO_BASE+
-    " | return: "+DASHBOARD_PATH+
-    " | public: "+PUBLIC_PATH+
-    " | pin: "+PIN_PATH+
-    (phone?" | tel: "+phone:"");
 
   qrAnchor.href=url;
   note("⏳ Préparation du QR local…","warn");

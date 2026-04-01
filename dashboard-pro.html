@@ -140,7 +140,7 @@
         <div class="claw-head">
           <div>
             <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">DIGIY ANALYSE</div>
+            <div class="claw-kicker">Lecture activité</div>
             <!-- ━━━ AVANT : "Lecture légère du dashboard" → banni ━━━ -->
             <h2 class="claw-title">Lecture de ton activité</h2>
           </div>
@@ -172,7 +172,7 @@
           </div>
         </div>
         <div class="hr"></div>
-        <div class="mini" id="metaLine"><span>Plan : —</span><span>•</span><span>Paiement : —</span></div>
+        <div class="mini" id="metaLine"><span>Accès : —</span><span>•</span><span>Paiement : —</span></div>
         <div class="footer">
           <button class="btn" id="btnManageSub" type="button">Gérer mon abonnement</button>
         </div>
@@ -381,7 +381,7 @@
     setDot(""); setPill("Aperçu"); setHero(RESOLVED_SLUG,RESOLVED_PHONE,"aperçu");
     $("statusLine").textContent  = "Mode aperçu";
     $("expiryLine").textContent  = message||"Entre par ton PIN pour ouvrir l'accès.";
-    $("metaLine").innerHTML      = `<span>Plan : aperçu</span><span>•</span><span>Paiement : non vérifié</span>`;
+    $("metaLine").innerHTML      = `<span>Accès : aperçu</span><span>•</span><span>Paiement : non vérifié</span>`;
     $("moneyMonth").textContent  = "— FCFA";
     $("txCount").textContent     = "— transactions";
     $("todayHint").textContent   = "Aujourd'hui";
@@ -400,7 +400,7 @@
     setHero(RESOLVED_SLUG,RESOLVED_PHONE,level==="warn"?"accès requis":"erreur");
     $("statusLine").textContent  = level==="warn"?"Abonnement requis":"Erreur de vérification";
     $("expiryLine").textContent  = message;
-    $("metaLine").innerHTML      = `<span>Plan : —</span><span>•</span><span>Paiement : à activer</span>`;
+    $("metaLine").innerHTML      = `<span>Accès : requis</span><span>•</span><span>Paiement : à activer</span>`;
     $("moneyMonth").textContent  = "— FCFA";
     $("txCount").textContent     = "— transactions";
     $("todayHint").textContent   = "Aujourd'hui";
@@ -417,7 +417,7 @@
     $("statusLine").textContent  = "Abonnement actif";
     /* ━━━ AVANT : "Slug reconnu :" → "Identifiant reconnu :" ━━━ */
     $("expiryLine").textContent  = `Identifiant reconnu : ${slug}`;
-    $("metaLine").innerHTML      = `<span>Plan : standard</span><span>•</span><span>Paiement : OK</span>`;
+    $("metaLine").innerHTML      = `<span>Accès : actif</span><span>•</span><span>Paiement : OK</span>`;
     $("moneyMonth").textContent  = "— FCFA";
     $("txCount").textContent     = "— transactions";
     $("todayHint").textContent   = "Aujourd'hui";

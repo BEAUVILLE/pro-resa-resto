@@ -166,7 +166,7 @@
           <option value="pending">En attente</option>
           <option value="confirmed">Confirmées</option>
           <option value="done">Passées</option>
-          <option value="no_show">No-show</option>
+          <option value="no_show">Absent</option>
           <option value="cancelled">Annulées</option>
         </select>
       </div>
@@ -181,7 +181,7 @@
         <div class="claw-head">
           <div>
             <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">DIGIY ANALYSE</div>
+            <div class="claw-kicker">Lecture activité</div>
             <!-- ━━━ AVANT : "Aide légère sur le jour" → "Analyse du jour" ━━━ -->
             <h3 class="claw-title">Analyse du jour</h3>
           </div>
@@ -232,7 +232,7 @@
       function fmtTime(v){ const s=String(v||"").trim(); if(!s)return "—"; return s.slice(0,5); }
       function money(v){ const n=Number(v); if(!Number.isFinite(n))return ""; return n.toLocaleString("fr-FR")+" FCFA"; }
       function normStatus(v){ const s=String(v||"pending").toLowerCase().trim(); if(["pending","confirmed","cancelled","done","no_show"].includes(s))return s; return "pending"; }
-      function statusLabel(v){ const s=normStatus(v); if(s==="pending")return "En attente"; if(s==="confirmed")return "Confirmée"; if(s==="cancelled")return "Annulée"; if(s==="done")return "Passée"; if(s==="no_show")return "No-show"; return s; }
+      function statusLabel(v){ const s=normStatus(v); if(s==="pending")return "En attente"; if(s==="confirmed")return "Confirmée"; if(s==="cancelled")return "Annulée"; if(s==="done")return "Passée"; if(s==="no_show")return "Absent"; return s; }
 
       function storageGet(key){ try{ const s=sessionStorage.getItem(key); if(s)return s; }catch{} try{ const l=localStorage.getItem(key); if(l)return l; }catch{} return ""; }
       function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }

@@ -114,9 +114,9 @@
         <div id="status" class="status">Prêt.</div>
 
         <div class="meta">
-          <div class="row"><div class="k">Activité</div><div class="v">RESA</div></div>
-          <div class="row"><div class="k">Retour cible</div><div id="returnInfo" class="v">cockpit.html</div></div>
-          <div class="row"><div class="k">Session</div><div id="sessionInfo" class="v">Aucune</div></div>
+          <div class="row"><div class="k">Espace</div><div class="v">Mes réservations</div></div>
+          <div class="row"><div class="k">Retour prévu</div><div id="returnInfo" class="v">Mon espace</div></div>
+          <div class="row"><div class="k">État</div><div id="sessionInfo" class="v">À ouvrir</div></div>
         </div>
       </div>
 
@@ -189,10 +189,16 @@
       function describeReturnUrl(urlString){
         try{
           const url=new URL(urlString,location.href);
-          if(url.origin===location.origin)return url.pathname.split("/").pop()||"cockpit.html";
-          if(url.origin===new URL(CFG.PUBLIC_BASE_URL).origin)return "public/"+(url.pathname.split("/").pop()||"index.html");
+          if(url.origin===location.origin){
+            const page=url.pathname.split("/").pop()||"";
+            if(page==="planning.html") return "Mon planning";
+            if(page==="dashboard-pro.html") return "Mon activité";
+            if(page==="pin.html") return "Mon code";
+            return "Mon espace";
+          }
+          if(url.origin===new URL(CFG.PUBLIC_BASE_URL).origin)return "Ma vitrine";
           return url.hostname;
-        }catch(_){ return "cockpit.html"; }
+        }catch(_){ return "Mon espace"; }
       }
 
       function buildNormalizedSession({slug,phone,owner_id=null}){
@@ -392,7 +398,7 @@
         else{ el.btnPay.href=CFG.PAY_URL; el.btnPublic.href=buildPublicUrl(CFG.PUBLIC_FICHE_PATH,""); }
 
         if(saved?.verified_at||saved?.validated_at){
-          el.sessionInfo.textContent="Active";
+          el.sessionInfo.textContent="Ouvert";
           setStatus("Session locale déjà fraîche. Tu peux reprendre ton espace.","ok");
         }
       }
@@ -422,7 +428,7 @@
           if(!auth?.ok){ setStatus("PIN invalide.","err"); return; }
 
           const session=saveSession({slug,phone:auth.phone||phone,owner_id:auth.owner_id||null});
-          el.sessionInfo.textContent="Active";
+          el.sessionInfo.textContent="Ouvert";
           refreshLinks(session.slug,session.phone);
           /* ━━━ AVANT : "Ouverture de ton espace RESA..." → humain ━━━ */
           setStatus("PIN validé. Ouverture de ton espace…","ok");
