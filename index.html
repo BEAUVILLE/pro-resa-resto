@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Mes réservations · Espace Pro · DIGIY</title>
+  <title>Mes réservations · Mon espace · DIGIY</title>
   <meta name="theme-color" content="#0b5d3b"/>
-  <meta name="description" content="MON ESPACE RÉSERVATIONS by DIGIY — porte professionnelle pour la gestion multi-business des réservations."/>
+  <meta name="description" content="Mon espace réservations by DIGIY — porte d’entrée simple pour gérer ses réservations."/>
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -90,28 +90,28 @@
     <div class="shell">
       <div class="topbar">
         <span class="pill">📅 MES RÉSERVATIONS</span>
-        <span class="pill ok">Espace Pro · DIGIY</span>
+        <span class="pill ok">Mon espace · DIGIY</span>
       </div>
       <nav class="nav-rail" aria-label="Navigation Mes réservations">
         <a class="nav-link active" id="navAccess"    href="./index.html">Mon espace</a>
         <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Mon activité</a>
         <a class="nav-link"        id="navCockpit"   href="./cockpit.html">Ma gestion</a>
         <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
-        <a class="nav-link"        id="navQr"        href="./qr.html">QR</a>
+        <a class="nav-link"        id="navQr"        href="./qr.html">Mon QR</a>
         <a class="nav-link"        id="navSettings"  href="./etablissement.html">Mon profil</a>
-        <a class="nav-link"        id="navPin"       href="./pin.html">Mon PIN</a>
+        <a class="nav-link"        id="navPin"       href="./pin.html">Mon code</a>
         <a class="nav-link"        id="navPublic"    href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Ma vitrine</a>
       </nav>
       <div class="hero">
-        <h1>La porte premium de tes réservations multi-business</h1>
-        <p>Ici, tu entres proprement dans ton espace professionnel DIGIY. Restaurant, lounge, salon, plage privée, rooftop, service terrain : tu peux entrer par ton identifiant, par ton PIN, vérifier ton accès, ouvrir ton espace ou préparer ton QR.</p>
+        <h1>La porte d’entrée de tes réservations</h1>
+        <p>Ici, tu entres simplement dans ton espace DIGIY. Restaurant, lounge, salon, plage privée, rooftop ou service terrain : tu peux entrer par ton identifiant, par ton code, vérifier ton accès, ouvrir ton espace ou préparer ton QR.</p>
         <div class="badges">
           <span class="tag gold">📅 Réservations multi-business</span>
-          <span class="tag">🔐 Accès par PIN</span>
+          <span class="tag">🔐 Accès par code</span>
           <span class="tag">🧭 Accès par identifiant</span>
           <span class="tag">🛡️ Vérification d'abonnement</span>
           <span class="tag">💳 Activation directe</span>
-          <span class="tag info">📎 QR branché</span>
+          <span class="tag info">📎 QR prêt</span>
         </div>
       </div>
       <div class="hr"></div>
@@ -141,25 +141,25 @@
       <div class="grid">
         <div class="box">
           <div class="sectionTitle">Accès direct</div>
-          <p class="lead">Mets ton identifiant si tu l'as. Sinon, prends la porte PIN, vérifie ton accès, ouvre ton activité, ou prépare ton QR terrain.</p>
+          <p class="lead">Mets ton identifiant si tu l’as. Sinon, passe par ton code, vérifie ton accès, ouvre ton activité ou prépare ton QR.</p>
           <div style="margin-top:14px;">
-            <input id="slugInput" class="input" type="text" placeholder="Ton identifiant boutique" autocomplete="off" spellcheck="false"/>
-            <div class="hint">Ton identifiant unique — disponible dans ton lien pro ou ton QR.</div>
+            <input id="slugInput" class="input" type="text" placeholder="Ton identifiant d’activité" autocomplete="off" spellcheck="false"/>
+            <div class="hint">Ton identifiant unique, disponible dans ton lien ou ton QR.</div>
           </div>
           <div class="actionGrid">
             <button class="btn ok"   id="btnOpenSlug"  type="button">🚀 Ouvrir mon espace</button>
             <button class="btn gold" id="btnVerify"    type="button">✅ Vérifier mon accès</button>
-            <button class="btn"      id="btnPin"       type="button">🔐 Entrer par PIN</button>
+            <button class="btn"      id="btnPin"       type="button">🔐 Entrer par mon code</button>
             <button class="btn info" id="btnDashboard" type="button">📊 Mon activité</button>
-            <button class="btn info" id="btnQr"        type="button">📎 Mon QR terrain</button>
+            <button class="btn info" id="btnQr"        type="button">📎 Mon QR</button>
             <button class="btn gold" id="btnPay"       type="button">💳 Je commence</button>
             <button class="btn bad"  id="btnSupport"   type="button">💬 Support WhatsApp</button>
           </div>
           <div class="infoList">
-            <div class="miniBox"><div class="miniLabel">Dernier identifiant mémorisé</div><div class="miniValue mono" id="savedSlug">—</div></div>
+            <div class="miniBox"><div class="miniLabel">Dernier identifiant gardé</div><div class="miniValue mono" id="savedSlug">—</div></div>
             <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue mono" id="dashboardTarget">./dashboard-pro.html</div></div>
             <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue mono" id="cockpitTarget">./cockpit.html</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon QR terrain</div><div class="miniValue mono" id="qrTarget">./qr.html</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue mono" id="qrTarget">./qr.html</div></div>
             <div class="miniBox"><div class="miniLabel">Rejoindre DIGIY</div><div class="miniValue mono" id="payTarget">https://commencer-a-payer.digiylyfe.com/?module=RESA</div></div>
           </div>
         </div>
@@ -167,11 +167,11 @@
           <div class="sectionTitle">Comment ça marche</div>
           <ol class="steps">
             <li>Tu ouvres ton espace professionnel</li>
-            <li>Tu saisis ton identifiant ou tu passes par ton PIN</li>
+            <li>Tu saisis ton identifiant ou tu passes par ton code</li>
             <li>DIGIY retrouve le téléphone lié à ton identifiant</li>
             <li>DIGIY vérifie ton accès</li>
             <li>Tu entres dans ton activité ou ta gestion des réservations</li>
-            <li>Tu sors ton QR terrain sans rester devant la porte</li>
+            <li>Tu sors ton QR sans rester devant la porte</li>
           </ol>
           <div class="hr"></div>
           <div class="sectionTitle">Liens utiles</div>
@@ -180,7 +180,7 @@
             <div class="miniBox"><div class="miniLabel">Accès sécurisé</div><div class="miniValue mono">./pin.html?slug=...</div></div>
             <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue mono">./dashboard-pro.html?slug=...</div></div>
             <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue mono">./cockpit.html?slug=...</div></div>
-            <div class="miniBox"><div class="miniLabel">QR terrain</div><div class="miniValue mono">./qr.html?slug=...</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue mono">./qr.html?slug=...</div></div>
           </div>
         </div>
       </div>
@@ -194,8 +194,8 @@
         <div class="stickyValue" id="stickyValue">Prêt à ouvrir ton espace</div>
       </div>
       <div class="stickyActions">
-        <button class="btn"      id="btnPinSticky"  type="button">Mon PIN</button>
-        <button class="btn info" id="btnQrSticky"   type="button">QR</button>
+        <button class="btn"      id="btnPinSticky"  type="button">Mon code</button>
+        <button class="btn info" id="btnQrSticky"   type="button">Mon QR</button>
         <button class="btn gold" id="btnPaySticky"  type="button">Je commence</button>
         <button class="btn ok"   id="btnOpenSticky" type="button">Mon espace</button>
       </div>
@@ -239,9 +239,9 @@
         $("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
         $("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
       }
-      function setClawLoading(){setClaw("Chargement","En attente de ton identifiant pour te guider proprement.",["Mes réservations","Espace Pro","En cours"],[{title:"Lecture de ton espace",text:"Cette page sert de porte propre avant ta gestion."},{title:"Navigation utile",text:"Activité, gestion, planning, QR et PIN sont branchés sur le même identifiant."}]);}
+      function setClawLoading(){setClaw("Chargement","En attente de ton identifiant pour te guider proprement.",["Mes réservations","Mon espace","En cours"],[{title:"Lecture de ton espace",text:"Cette page sert de porte propre avant ta gestion."},{title:"Navigation utile",text:"Activité, gestion, planning, QR et code sont branchés sur le même identifiant."}]);}
       function setClawNoSlug(){setClaw("Identifiant attendu","Entre ton identifiant boutique ou passe par la porte PIN.",["Identifiant absent","PIN disponible","QR en attente"],[{title:"État actuel",text:"Tu peux coller un identifiant connu ou passer par ton PIN."},{title:"Action utile",text:"Le plus propre : entre un identifiant valide puis vérifie l'accès."}]);}
-      function setClawSlugReady(slug){setClaw("Identifiant prêt","Identifiant propre en place. Tu peux ouvrir ton espace, ton activité ou préparer le QR terrain.",[`Identifiant : ${slug}`,"Espace prêt","QR prêt"],[{title:"Lecture de l'espace",text:"L'identifiant est en place. Toutes les pages pro suivent ce contexte."},{title:"Action utile",text:"Vérifie l'accès si tu veux confirmer l'abonnement avant d'ouvrir ta gestion."}]);}
+      function setClawSlugReady(slug){setClaw("Identifiant prêt","Identifiant propre en place. Tu peux ouvrir ton espace, ton activité ou préparer ton QR.",[`Identifiant : ${slug}`,"Espace prêt","QR prêt"],[{title:"Lecture de l'espace",text:"L'identifiant est en place. Toutes les pages utiles suivent ce contexte."},{title:"Action utile",text:"Vérifie l'accès si tu veux confirmer l'abonnement avant d'ouvrir ta gestion."}]);}
       function setClawVerified(slug,phone){setClaw("Accès confirmé","Téléphone trouvé, accès confirmé, espace et QR prêts.",[`Identifiant : ${slug}`,`Téléphone : ${phone}`,"Accès OK","Espace vivant"],[{title:"Lecture de l'espace",text:"L'abonnement est actif sur Mes Réservations pour cet identifiant."},{title:"Suite logique",text:"Tu peux ouvrir ton espace, ton activité ou le QR sans rester bloqué devant la porte."}]);}
       function setClawBlocked(message){setClaw("Blocage","Un blocage est détecté. Remet l'accès d'équerre avant d'ouvrir ton espace.",["Accès refusé","Activation possible","Support dispo"],[{title:"Blocage principal",text:message||"L'identifiant n'a pas ouvert l'accès."},{title:"Action utile",text:"Passe par l'activation, puis reviens avec le bon identifiant ou ton PIN."}]);}
       function rememberSlug(slug){if(!slug)return;const c=normSlug(slug);localStorage.setItem("digiy_resa_last_slug",c);localStorage.setItem("digiy_last_slug",c);localStorage.setItem("DIGIY_SLUG",c);localStorage.setItem("digiy_slug",c);savedSlugBox.textContent=c;setNavLinks(c);}
@@ -304,7 +304,7 @@
       const autoSlug=normSlug(qp.get("slug")||""),autoOpen=qp.get("open")==="1";
       if(autoSlug&&autoOpen){setTimeout(()=>handleVerify(true),300);}
       else if(autoSlug){setStatus("🧭 Identifiant détecté. Tu peux vérifier, ouvrir ton espace, ton activité ou ton QR.","ok","DÉTECTÉ");setSticky("Identifiant détecté : "+autoSlug);setClawSlugReady(autoSlug);}
-      else{setStatus("💳 Espace Pro prêt. Identifiant, PIN, activité, QR ou activation : à toi de jouer.","info","MANUEL");setSticky("Prêt à ouvrir ton espace");setClawNoSlug();}
+      else{setStatus("💳 Mon espace est prêt. Identifiant, code, activité, QR ou activation : à toi de jouer.","info","MANUEL");setSticky("Prêt à ouvrir ton espace");setClawNoSlug();}
     })();
   </script>
 </body>

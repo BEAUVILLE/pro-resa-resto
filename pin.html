@@ -75,11 +75,11 @@
 
       <div class="body">
         <!-- ━━━ AVANT : "slug" × 2 visible → "identifiant" ━━━ -->
-        <p class="intro">Entre avec ton <strong>identifiant boutique</strong> ou ton <strong>téléphone</strong>, puis ton <strong>PIN</strong>. Une fois validé, la session est posée et tu rentres directement dans ton espace.</p>
+        <p class="intro">Entre avec ton <strong>identifiant d’activité</strong> ou ton <strong>téléphone</strong>, puis ton <strong>code</strong>. Une fois validé, la session est posée et tu rentres directement dans ton espace.</p>
 
         <div class="field">
           <!-- ━━━ AVANT : label "Slug" → "Identifiant boutique" ━━━ -->
-          <label for="slug">Identifiant boutique</label>
+          <label for="slug">Identifiant d’activité</label>
           <input id="slug" type="text" placeholder="resa-221771342889" autocomplete="off" />
         </div>
 
@@ -89,10 +89,10 @@
         </div>
 
         <div class="field">
-          <label for="pin">PIN</label>
+          <label for="pin">Code</label>
           <div class="pin-row">
             <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="one-time-code" />
-            <button id="togglePin" class="mini" type="button" aria-label="Afficher le PIN">👁️</button>
+            <button id="togglePin" class="mini" type="button" aria-label="Afficher le code">👁️</button>
           </div>
         </div>
 
@@ -114,7 +114,7 @@
         <div id="status" class="status">Prêt.</div>
 
         <div class="meta">
-          <div class="row"><div class="k">Module</div><div class="v">RESA</div></div>
+          <div class="row"><div class="k">Activité</div><div class="v">RESA</div></div>
           <div class="row"><div class="k">Retour cible</div><div id="returnInfo" class="v">cockpit.html</div></div>
           <div class="row"><div class="k">Session</div><div id="sessionInfo" class="v">Aucune</div></div>
         </div>
