@@ -88,12 +88,7 @@
       </div>
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
-        <!-- ━━━ AVANT : "Dashboard" · "CLAW" · "Profil / établissement" → bannis ━━━ -->
-        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Mon activité</a>
-        <a class="btn secondary" id="btnPlanningTop"  href="./planning.html">Planning</a>
-        <a class="btn secondary" id="btnQr"           href="./qr.html">Mon QR</a>
-        <a class="btn secondary" id="btnClaw"         href="./claw.html">Analyse</a>
-        <a class="btn"           id="btnSettings"     href="./etablissement.html">Mon profil</a>
+        <a class="btn" id="btnPlanningTop" href="./planning.html">Planning</a>
       </div>
     </div>
 
@@ -119,7 +114,7 @@
           <div class="mode" id="modeBadge">Aperçu</div>
           <!-- ━━━ heroName et heroDesc écrits par JS ━━━ -->
           <h2 id="heroName">MES RÉSERVATIONS</h2>
-          <p id="heroDesc">Lecture des réservations, suivi terrain, actions rapides.</p>
+          <p id="heroDesc">Va d'abord au planning, puis reviens ici pour lire les réservations du jour.</p>
 
           <div class="hero-meta">
             <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
@@ -129,12 +124,8 @@
           </div>
 
           <div class="hero-cta" id="heroCta">
-            <!-- ━━━ AVANT : "Ouvrir le dashboard" · "Ouvrir CLAW" · "Voir le profil" → bannis ━━━ -->
-            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Mon activité</a>
-            <a class="btn secondary" id="heroPlanning"  href="./planning.html">Planning</a>
-            <a class="btn secondary" id="heroQr"        href="./qr.html">Mon QR</a>
-            <a class="btn secondary" id="heroClaw"      href="./claw.html">Analyse</a>
-            <a class="btn ghost"     id="heroSettings"  href="./etablissement.html">Mon profil</a>
+            <a class="btn" id="heroPlanning" href="./planning.html">Planning</a>
+            <a class="btn ghost" href="#panelTitle">Voir les réservations du jour</a>
           </div>
         </div>
 
@@ -291,17 +282,17 @@
         $("navSettings").href = settingsHref;
         $("navHome").href     = homeHref;
 
-        $("btnDashboardTop").href = dashboardHref;
-        $("btnPlanningTop").href  = planningHref;
-        $("btnQr").href           = qrHref;
-        $("btnClaw").href         = clawHref;
-        $("btnSettings").href     = settingsHref;
+        if($("btnDashboardTop")) $("btnDashboardTop").href = dashboardHref;
+        if($("btnPlanningTop"))  $("btnPlanningTop").href  = planningHref;
+        if($("btnQr"))           $("btnQr").href           = qrHref;
+        if($("btnClaw"))         $("btnClaw").href         = clawHref;
+        if($("btnSettings"))     $("btnSettings").href     = settingsHref;
 
-        $("heroDashboard").href = dashboardHref;
-        $("heroPlanning").href  = planningHref;
-        $("heroQr").href        = qrHref;
-        $("heroClaw").href      = clawHref;
-        $("heroSettings").href  = settingsHref;
+        if($("heroDashboard")) $("heroDashboard").href = dashboardHref;
+        if($("heroPlanning"))  $("heroPlanning").href  = planningHref;
+        if($("heroQr"))        $("heroQr").href        = qrHref;
+        if($("heroClaw"))      $("heroClaw").href      = clawHref;
+        if($("heroSettings"))  $("heroSettings").href  = settingsHref;
       }
 
       async function rpc(name, args){ if(!sb)throw new Error("supabase_unavailable"); const{data,error}=await sb.rpc(name,args); if(error)throw error; return data; }
