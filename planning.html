@@ -89,6 +89,194 @@
     .claw-pills{display:flex;flex-wrap:wrap;gap:8px;}
     .claw-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--text);font-size:.82rem;font-weight:900;}
     .footer-note{margin-top:14px;color:var(--muted);font-size:.92rem;text-align:center;}
+
+    .quickResa{
+      margin-bottom:18px;
+      border:1px solid rgba(250,204,21,.22);
+      background:
+        radial-gradient(460px 180px at 100% 0%, rgba(250,204,21,.10), transparent 70%),
+        linear-gradient(180deg,rgba(250,204,21,.08),rgba(56,189,248,.04));
+      border-radius:20px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      display:grid;
+      gap:12px;
+    }
+    .quickResaTitle{
+      font-weight:900;
+      font-size:1rem;
+      margin:0;
+    }
+    .quickResaSub{
+      color:var(--muted);
+      line-height:1.55;
+      font-weight:700;
+      margin:0;
+    }
+    .quickGuide{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      display:grid;
+      gap:8px;
+    }
+    .quickGuide strong{
+      color:#fff1a8;
+      font-weight:900;
+      font-size:.92rem;
+    }
+    .quickGuide p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.45;
+      font-weight:700;
+      font-size:.88rem;
+    }
+    .quickExamples{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .quickExamples button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:999px;
+      padding:8px 10px;
+      font-family:var(--fontA);
+      font-weight:900;
+      font-size:.80rem;
+      cursor:pointer;
+    }
+    .quickExamples button:hover{
+      border-color:rgba(250,204,21,.35);
+      color:#fff1a8;
+    }
+    .quickInput{
+      width:100%;
+      min-height:88px;
+      resize:vertical;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      padding:12px;
+      font-family:var(--fontA);
+      font-weight:800;
+      outline:none;
+    }
+    .quickInput:focus{
+      border-color:rgba(250,204,21,.35);
+      box-shadow:0 0 0 3px rgba(250,204,21,.10);
+    }
+    .quickDraft{
+      display:none;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(34,197,94,.30);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+      line-height:1.5;
+      font-weight:800;
+    }
+    .quickDraft strong{color:#fff}
+    .memoryBox{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+      display:grid;
+      gap:10px;
+    }
+    .memoryHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .memoryTitle{
+      font-weight:900;
+      color:#fff1a8;
+      line-height:1.25;
+    }
+    .memoryHelp{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:700;
+      line-height:1.4;
+    }
+    .memoryList{
+      display:grid;
+      gap:8px;
+    }
+    .memoryItem{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:10px;
+      display:grid;
+      gap:5px;
+    }
+    .memoryItemTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .memoryItemTitle{
+      font-weight:900;
+      line-height:1.35;
+    }
+    .memoryItemAmount{
+      color:#b8ffd0;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .memoryItemMeta{
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.35;
+      font-weight:700;
+    }
+    .memoryEmpty{
+      padding:10px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.14);
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.45;
+      font-weight:700;
+    }
+    .memoryPayAction{
+      margin-top:6px;
+      display:inline-flex;
+      width:max-content;
+      max-width:100%;
+      min-height:36px;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      padding:8px 11px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.32);
+      background:rgba(250,204,21,.12);
+      color:#fff1a8;
+      font-size:.82rem;
+      font-weight:900;
+      text-decoration:none;
+    }
+    .memoryPayHint{
+      color:rgba(234,255,241,.70);
+      font-size:.76rem;
+      font-weight:700;
+      line-height:1.35;
+    }
+
     .loading{opacity:.72;pointer-events:none;}
     @media(max-width:640px){.wrap{width:min(96vw,96vw)}.actions-top,.nav-rail,.hero-cta,.toolbar-left,.toolbar-right{width:100%}.actions-top > *,.nav-rail > *,.hero-cta > *,.toolbar-left > *,.toolbar-right > *{flex:1 1 auto}}
   </style>
@@ -175,6 +363,51 @@
         <a class="btn ghost" id="btnSettings" href="./etablissement.html">Mon profil</a>
       </div>
     </section>
+
+
+    <section class="quickResa" id="quickResaNote">
+      <div>
+        <h3 class="quickResaTitle">🧠 Note rapide réservation</h3>
+        <p class="quickResaSub">Écris court, DIGIY prépare. Tu confirmes avant toute suite.</p>
+      </div>
+
+      <div class="quickGuide">
+        <strong>Une phrase suffit.</strong>
+        <p>Exemples : paiement client, acompte, prestation, achat produit ou client qui doit encore.</p>
+        <div class="quickExamples" id="quickResaExamples">
+          <button type="button">Client a payé 15000 cash</button>
+          <button type="button">Acompte rendez-vous 5000 Wave</button>
+          <button type="button">Prestation coiffure 12000 cash</button>
+          <button type="button">Achat produit 8000</button>
+          <button type="button">Client Fatou doit 3000</button>
+          <button type="button">Annulation client 18h</button>
+        </div>
+      </div>
+
+      <textarea class="quickInput" id="quickResaInput" placeholder="Ex : Prestation coiffure 12000 cash"></textarea>
+
+      <div class="hero-cta" style="margin-top:0">
+        <button class="btn" id="btnQuickResaPrepare" type="button">Préparer</button>
+        <button class="btn secondary" id="btnQuickResaConfirm" type="button" style="display:none">✅ Confirmer</button>
+        <button class="btn ghost" id="btnQuickResaClear" type="button">Effacer</button>
+      </div>
+
+      <div class="quickDraft" id="quickResaDraft"></div>
+
+      <div class="memoryBox">
+        <div class="memoryHead">
+          <div>
+            <div class="memoryTitle">Aide-mémoire rendez-vous</div>
+            <div class="memoryHelp">Dernières notes confirmées ici. Les notes argent peuvent partir vers Mon argent.</div>
+          </div>
+          <button class="btn ghost" id="btnQuickResaMemoryClear" type="button">Vider</button>
+        </div>
+        <div class="memoryList" id="quickResaMemoryList">
+          <div class="memoryEmpty">Aucune note réservation confirmée pour le moment.</div>
+        </div>
+      </div>
+    </section>
+
 
     <section class="claw" id="clawWrap">
       <article class="claw-card">
@@ -476,6 +709,353 @@
           </article>`).join("");
       }
 
+
+      function quickResaNorm(text){
+        return String(text || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+      }
+
+      function quickResaAmount(text){
+        const m = String(text || "").replace(/\s+/g, " ").match(/(\d[\d\s.,]*)\s*(f|fcfa|xof)?/i);
+        if(!m) return 0;
+        const raw = String(m[1] || "").replace(/[^\d]/g, "");
+        const n = Number(raw);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function quickResaChannel(text){
+        const t = quickResaNorm(text);
+        if(/\bwave\b/.test(t)) return "wave";
+        if(/\b(cash|especes|liquide)\b/.test(t)) return "cash";
+        if(/\b(orange money|om)\b/.test(t)) return "orange_money";
+        if(/\b(banque|virement)\b/.test(t)) return "bank";
+        return "other";
+      }
+
+      function quickResaComplement(text, type){
+        const s = String(text || "").trim();
+        const lower = quickResaNorm(s);
+
+        if(/\b(coiffure|brushing|tresse|ongle|ongles|massage|table|repas|consultation|rendez vous|rendez-vous)\b/.test(lower)){
+          const found = lower.match(/\b(coiffure|brushing|tresse|ongle|ongles|massage|table|repas|consultation|rendez vous|rendez-vous)\b/);
+          return found ? found[1].replace("rendez vous", "rendez-vous") : "";
+        }
+
+        if(/\b(produit|stock|materiel|materiaux|achat)\b/.test(lower)) return "produit";
+        if(/\b(acompte|avance)\b/.test(lower)) return "acompte";
+        if(/\b(annulation|annule|annuler)\b/.test(lower)) return "annulation";
+
+        if(/\b(client)\b && /\b(doit|reste)\b/.test(lower)){
+          const words = s.replace(/[.,;:!?]/g, " ").split(/\s+/).filter(Boolean);
+          const banned = new Set(["client","doit","reste","payer","cash","wave","fcfa","xof","f"]);
+          const candidates = words.filter(w => {
+            const clean = quickResaNorm(w).replace(/[^\p{L}\p{N}-]/gu, "");
+            if(!clean || /^\d+$/.test(clean)) return false;
+            return !banned.has(clean);
+          });
+          if(candidates.length){
+            const raw = candidates[candidates.length - 1].replace(/[^\p{L}\p{N}-]/gu, "");
+            return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : "";
+          }
+        }
+
+        return "";
+      }
+
+      function quickResaDraftFromText(text){
+        const sentence = String(text || "").trim().replace(/\s+/g, " ");
+        const lower = quickResaNorm(sentence);
+        const amount = quickResaAmount(sentence);
+        const channel = quickResaChannel(sentence);
+
+        let type = "note";
+        let title = "Note réservation";
+        let direction = "none";
+        let category = "resa_note";
+        let kind = "other";
+        let impact = "à classer";
+
+        if(/\b(annulation|annule|annuler|absent|no show)\b/.test(lower)){
+          type = "appointment_note";
+          title = "Note rendez-vous";
+          direction = "none";
+          category = "appointment_note";
+          kind = "other";
+          impact = "planning à vérifier";
+        } else if(/\b(client)\b.*\b(doit|reste)\b|\b(doit|reste)\b/.test(lower)){
+          type = "client_debt";
+          title = "Client doit encore";
+          direction = "out";
+          category = "client_debt";
+          kind = "expense";
+          impact = "à suivre";
+        } else if(/\b(acompte|avance)\b/.test(lower)){
+          type = "deposit";
+          title = "Acompte reçu";
+          direction = "in";
+          category = "deposit";
+          kind = "sale";
+          impact = "entrée réservation";
+        } else if(/\b(achat|produit|stock|materiel|materiaux)\b/.test(lower)){
+          type = "product_purchase";
+          title = "Achat produit";
+          direction = "out";
+          category = "product_purchase";
+          kind = "expense";
+          impact = "dépense service";
+        } else if(/\b(paye|payee|payé|payée|encaisse|encaissé|recu|reçu|prestation|service|coiffure|brushing|massage|repas|table|consultation)\b/.test(lower)){
+          type = "service_income";
+          title = "Prestation encaissée";
+          direction = "in";
+          category = "service_income";
+          kind = "sale";
+          impact = "recette réservation";
+        }
+
+        const complement = quickResaComplement(sentence, type);
+
+        return {
+          sentence,
+          type,
+          title,
+          amount_xof: amount,
+          channel,
+          direction,
+          category,
+          kind,
+          impact,
+          complement,
+          module: "RESA",
+          status: "draft",
+          created_at: new Date().toISOString()
+        };
+      }
+
+      function quickResaMemoryKey(){
+        return `digiy_resa_quick_memory:${RESOLVED_SLUG || getFallbackSlug() || "unknown"}`;
+      }
+
+      function quickResaDraftKey(){
+        return `digiy_resa_quick_draft:${RESOLVED_SLUG || getFallbackSlug() || "unknown"}`;
+      }
+
+      function readQuickResaMemory(){
+        try{
+          const raw = localStorage.getItem(quickResaMemoryKey());
+          const arr = raw ? JSON.parse(raw) : [];
+          return Array.isArray(arr) ? arr : [];
+        }catch{
+          return [];
+        }
+      }
+
+      function writeQuickResaMemory(items){
+        try{
+          localStorage.setItem(quickResaMemoryKey(), JSON.stringify((items || []).slice(0, 10)));
+          return true;
+        }catch{
+          return false;
+        }
+      }
+
+      function saveQuickResaDraft(draft, confirmed = false){
+        try{
+          localStorage.setItem(quickResaDraftKey(), JSON.stringify({
+            ...draft,
+            status: confirmed ? "confirmed_local" : "draft",
+            confirmed_at: confirmed ? new Date().toISOString() : null
+          }));
+          return true;
+        }catch{
+          return false;
+        }
+      }
+
+      function addQuickResaMemory(draft){
+        const item = {
+          ...draft,
+          memory_id: "resa_" + Date.now(),
+          confirmed_at: new Date().toISOString()
+        };
+        const list = readQuickResaMemory();
+        list.unshift(item);
+        writeQuickResaMemory(list);
+        renderQuickResaMemory();
+      }
+
+      function isQuickResaFinancial(item){
+        const type = String(item?.type || "").toLowerCase();
+        return ["service_income","deposit","product_purchase","client_debt"].includes(type);
+      }
+
+      function getResaPhone(){
+        const guardPhone = String(window.DIGIY_GUARD?.state?.phone || "").replace(/[^\d]/g, "");
+        const storagePhone = String(storageGet("digiy_phone") || storageGet("DIGIY_PHONE") || storageGet("digiy_resa_phone") || "").replace(/[^\d]/g, "");
+        return guardPhone || storagePhone || "";
+      }
+
+      function paySlugFromResaPhone(){
+        const p = getResaPhone();
+        return p ? "pay-" + p : "";
+      }
+
+      function payResaLabel(item){
+        const type = String(item?.type || "").toLowerCase();
+        const comp = String(item?.complement || "").trim();
+
+        if(type === "service_income") return comp ? "Prestation " + comp : "Prestation RESA";
+        if(type === "deposit") return "Acompte rendez-vous";
+        if(type === "product_purchase") return "Achat produit";
+        if(type === "client_debt") return comp ? "Client doit " + comp : "Client doit encore";
+        return item?.title || "Note réservation";
+      }
+
+      function buildPayFromResaUrl(item){
+        const phone = getResaPhone();
+        const paySlug = paySlugFromResaPhone();
+        const qsPay = new URLSearchParams();
+
+        if(paySlug) qsPay.set("slug", paySlug);
+        if(phone) qsPay.set("phone", phone);
+
+        qsPay.set("fromDraft", "1");
+        qsPay.set("direction", item?.direction === "in" ? "in" : "out");
+        qsPay.set("scope", "pro");
+        qsPay.set("amount", String(Math.round(Number(item?.amount_xof || 0))));
+        qsPay.set("kind", item?.kind || (item?.direction === "in" ? "sale" : "expense"));
+        qsPay.set("channel", item?.channel || "other");
+        qsPay.set("category", item?.category || "resa_note");
+        qsPay.set("source_module", "RESA");
+        qsPay.set("label", payResaLabel(item));
+        qsPay.set("note", String(item?.sentence || "").trim());
+        qsPay.set("complement", String(item?.complement || "").trim());
+        qsPay.set("intent", "resa_quick_note");
+
+        return "https://pro-pay.digiylyfe.com/admin.html?" + qsPay.toString();
+      }
+
+      function renderQuickResaDraft(draft){
+        const box = $("quickResaDraft");
+        const confirmBtn = $("btnQuickResaConfirm");
+        if(!box) return;
+
+        if(!draft || !draft.sentence){
+          box.style.display = "none";
+          box.innerHTML = "";
+          if(confirmBtn) confirmBtn.style.display = "none";
+          return;
+        }
+
+        const amountText = draft.amount_xof ? money(draft.amount_xof) : "montant à préciser";
+        const channelText = draft.channel === "other" ? "canal à préciser" : draft.channel;
+
+        box.style.display = "block";
+        if(confirmBtn) confirmBtn.style.display = "inline-flex";
+
+        box.innerHTML = `
+          <strong>Voilà ce que DIGIY RESA a préparé :</strong><br>
+          Type : ${escapeHtml(draft.title)}<br>
+          Montant : ${escapeHtml(amountText)}<br>
+          Canal : ${escapeHtml(channelText)}<br>
+          Impact : ${escapeHtml(draft.impact)}<br>
+          ${draft.complement ? `Complément : ${escapeHtml(draft.complement)}<br>` : ``}
+          <br>
+          <span style="color:rgba(234,255,241,.70)">Brouillon seulement. Rien n’est envoyé en base automatiquement.</span>
+        `;
+      }
+
+      function renderQuickResaMemory(){
+        const box = $("quickResaMemoryList");
+        if(!box) return;
+
+        const list = readQuickResaMemory();
+        if(!list.length){
+          box.innerHTML = `<div class="memoryEmpty">Aucune note réservation confirmée pour le moment.</div>`;
+          return;
+        }
+
+        box.innerHTML = list.slice(0, 10).map(item => {
+          const amount = item.amount_xof ? money(item.amount_xof) : "montant à préciser";
+          const channel = item.channel && item.channel !== "other" ? item.channel : "canal à préciser";
+          const comp = item.complement ? " · " + item.complement : "";
+
+          return `
+            <div class="memoryItem">
+              <div class="memoryItemTop">
+                <div class="memoryItemTitle">✅ ${escapeHtml(item.title || "Note réservation")}</div>
+                <div class="memoryItemAmount">${escapeHtml(amount)}</div>
+              </div>
+              <div class="memoryItemMeta">${escapeHtml(channel)} · ${escapeHtml(item.impact || "à classer")}${escapeHtml(comp)}</div>
+              <div class="memoryItemMeta">${escapeHtml(item.sentence || "")}</div>
+              ${isQuickResaFinancial(item) ? `
+                <a class="memoryPayAction" href="${escapeHtml(buildPayFromResaUrl(item))}">
+                  💼 Envoyer vers Mon argent
+                </a>
+                <div class="memoryPayHint">Abonnement Mon argent requis pour enregistrer.</div>
+              ` : ``}
+            </div>
+          `;
+        }).join("");
+      }
+
+      function clearQuickResaMemory(){
+        const ok = window.confirm("Vider l’aide-mémoire rendez-vous sur cet appareil ?");
+        if(!ok) return;
+        writeQuickResaMemory([]);
+        renderQuickResaMemory();
+      }
+
+      function bindQuickResaNote(){
+        const input = $("quickResaInput");
+        const prepare = $("btnQuickResaPrepare");
+        const confirm = $("btnQuickResaConfirm");
+        const clear = $("btnQuickResaClear");
+
+        $("quickResaExamples")?.querySelectorAll("button").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if(!input) return;
+            input.value = btn.textContent.trim();
+            input.focus();
+          });
+        });
+
+        prepare?.addEventListener("click", () => {
+          const sentence = String(input?.value || "").trim();
+          if(!sentence){
+            window.alert("Écris une note réservation avant de préparer.");
+            return;
+          }
+
+          const draft = quickResaDraftFromText(sentence);
+          saveQuickResaDraft(draft, false);
+          renderQuickResaDraft(draft);
+        });
+
+        confirm?.addEventListener("click", () => {
+          const draft = quickResaDraftFromText(String(input?.value || "").trim());
+          if(!draft.sentence){
+            window.alert("Prépare d’abord une note réservation.");
+            return;
+          }
+
+          saveQuickResaDraft(draft, true);
+          addQuickResaMemory(draft);
+          renderQuickResaDraft({...draft, status:"confirmed_local"});
+          if(confirm) confirm.style.display = "none";
+        });
+
+        clear?.addEventListener("click", () => {
+          if(input) input.value = "";
+          renderQuickResaDraft(null);
+        });
+
+        $("btnQuickResaMemoryClear")?.addEventListener("click", clearQuickResaMemory);
+        renderQuickResaMemory();
+      }
+
+
       async function boot(){
         document.body.classList.add("loading");
         try{
@@ -528,6 +1108,8 @@
           document.body.classList.remove("loading");
         }
       }
+
+      bindQuickResaNote();
 
       $("btnReload").addEventListener("click",boot);
       $("filterStatus").addEventListener("change",(e)=>{ ACTIVE_FILTER=e.target.value||"all"; renderTimeline(); });
