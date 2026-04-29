@@ -747,7 +747,7 @@
         if(/\b(acompte|avance)\b/.test(lower)) return "acompte";
         if(/\b(annulation|annule|annuler)\b/.test(lower)) return "annulation";
 
-        if(/\b(client)\b && /\b(doit|reste)\b/.test(lower)){
+        if(/\bclient\b/.test(lower) && /\b(doit|reste)\b/.test(lower)){
           const words = s.replace(/[.,;:!?]/g, " ").split(/\s+/).filter(Boolean);
           const banned = new Set(["client","doit","reste","payer","cash","wave","fcfa","xof","f"]);
           const candidates = words.filter(w => {
@@ -1008,12 +1008,20 @@
       }
 
       function bindQuickResaNote(){
+        if(window.__DIGIY_RESA_QUICK_BOUND) return;
+        window.__DIGIY_RESA_QUICK_BOUND = true;
+
         const input = $("quickResaInput");
+        if(!input){
+          window.__DIGIY_RESA_QUICK_BOUND = false;
+          return;
+        }
         const prepare = $("btnQuickResaPrepare");
         const confirm = $("btnQuickResaConfirm");
         const clear = $("btnQuickResaClear");
 
-        $("quickResaExamples")?.querySelectorAll("button").forEach(btn => {
+        const examplesBox = $("quickResaExamples");
+        if(examplesBox) examplesBox.querySelectorAll("button").forEach(btn => {
           btn.addEventListener("click", () => {
             if(!input) return;
             input.value = btn.textContent.trim();
@@ -1053,6 +1061,24 @@
 
         $("btnQuickResaMemoryClear")?.addEventListener("click", clearQuickResaMemory);
         renderQuickResaMemory();
+      }
+
+
+
+      function safeBindQuickResaNote(){
+        const run = () => {
+          try{
+            bindQuickResaNote();
+          }catch(err){
+            console.error("[RESA quick note] bind error", err);
+          }
+        };
+
+        if(document.readyState === "loading"){
+          document.addEventListener("DOMContentLoaded", run, { once:true });
+        }else{
+          run();
+        }
       }
 
 
@@ -1109,7 +1135,7 @@
         }
       }
 
-      bindQuickResaNote();
+      safeBindQuickResaNote();
 
       $("btnReload").addEventListener("click",boot);
       $("filterStatus").addEventListener("change",(e)=>{ ACTIVE_FILTER=e.target.value||"all"; renderTimeline(); });
