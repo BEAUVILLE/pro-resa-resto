@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mon activité · Mes réservations · DIGIY</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Je réserve — Accueil</title>
   <meta name="theme-color" content="#0b1020" />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -21,7 +21,7 @@
     *{box-sizing:border-box}
     body{margin:0;font-family:var(--fontA);background:radial-gradient(1200px 700px at 20% -20%, rgba(99,102,241,.25), transparent 70%),radial-gradient(900px 600px at 100% 0%, rgba(34,197,94,.15), transparent 55%),var(--bg);color:var(--text);}
     a{color:inherit;text-decoration:none}
-    .wrap{max-width:980px;margin:0 auto;padding:18px 14px 34px}
+    .wrap{max-width:980px;margin:0 auto;padding:18px 14px calc(104px + env(safe-area-inset-bottom,0px))}
     .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 6px;margin-bottom:10px;flex-wrap:wrap;}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px;}
     .brand .badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:rgba(99,102,241,.18);border:1px solid var(--line);}
@@ -76,6 +76,121 @@
     .footer{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
     .smallLink{color:var(--muted);text-decoration:none;font-weight:750;}.smallLink:hover{color:var(--text)}
     @media(max-width:640px){.right,.nav-rail,.hero-actions{width:100%}.right > *,.nav-rail > *,.hero-actions > *{flex:1 1 auto}}
+
+    #resaNotes, #resaToday{scroll-margin-top:96px}
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(11,16,32,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(238,241,255,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+
+    .bottomNav .ico{font-size:18px;line-height:1}
+
+    .bottomNav a.active{
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),#22c55e);
+      border-color:rgba(99,102,241,.34);
+      box-shadow:0 12px 26px rgba(99,102,241,.22);
+    }
+
+    .mobileHeroActions{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .quickResa{
+      border-color:rgba(34,197,94,.24);
+      background:
+        radial-gradient(460px 180px at 100% 0%, rgba(34,197,94,.10), transparent 70%),
+        rgba(18,26,51,.92);
+    }
+
+    .quickResa textarea{
+      width:100%;
+      min-height:92px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:12px;
+      font:inherit;
+      font-weight:850;
+      outline:none;
+      resize:vertical;
+      margin-top:10px;
+    }
+
+    .noteChips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .noteChip{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      font-family:inherit;
+    }
+
+    .draftBox{
+      display:none;
+      margin-top:10px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.08);
+      color:#d9ffe8;
+      font-size:13px;
+      font-weight:850;
+      line-height:1.55;
+    }
+
+    @media(max-width:640px){
+      .mobileHeroActions{grid-template-columns:1fr 1fr}
+      .nav-rail{display:none}
+      .right{display:none}
+    }
+
   </style>
 </head>
 <body>
@@ -85,39 +200,39 @@
         <div class="badge">🦅</div>
         <div>
           <!-- brandTitle et brandSub sont écrits par JS -->
-          <div id="brandTitle">MES RÉSERVATIONS</div>
-          <div class="muted" style="font-size:12px;font-weight:700;margin-top:2px" id="brandSub">Mon activité · vue synthèse</div>
+          <div id="brandTitle">JE RÉSERVE</div>
+          <div class="muted" style="font-size:12px;font-weight:700;margin-top:2px" id="brandSub">Accueil RESA</div>
         </div>
       </div>
       <div class="right">
         <div class="pill" id="pillStatus">Statut : <b>…</b></div>
         <!-- ━━━ AVANT : "Cockpit" · "CLAW" · "PIN" → bannis ━━━ -->
-        <a class="btn" id="btnCockpitTop"  href="./cockpit.html">Ma gestion</a>
-        <a class="btn" id="btnClawTop"     href="./claw.html">Analyse</a>
-        <a class="btn" id="btnPinTop"      href="./pin.html">Mon code</a>
+        <a class="btn" id="btnCockpitTop"  href="./cockpit.html">Réserv.</a>
+        <a class="btn" id="btnClawTop"     href="./claw.html">Aide</a>
+        <a class="btn" id="btnPinTop"      href="./pin.html">Accès</a>
         <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Mes réglages</a>
       </div>
     </div>
 
     <!-- ━━━ NAV — doctrine façade ━━━ -->
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <!-- ━━━ "Cockpit" → "Ma gestion" ━━━ -->
-      <a class="nav-link"        id="navCockpit"   href="./cockpit.html">Ma gestion</a>
-      <!-- ━━━ "Dashboard" → "Mon activité" ━━━ -->
-      <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Mon activité</a>
+      <!-- ━━━ "Cockpit" → "Réserv." ━━━ -->
+      <a class="nav-link"        id="navCockpit"   href="./cockpit.html">Réserv.</a>
+      <!-- ━━━ "Dashboard" → "Accueil" ━━━ -->
+      <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
       <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
-      <a class="nav-link"        id="navClaw"      href="./claw.html">Analyse</a>
-      <!-- ━━━ "Profil / établissement" → "Mon profil" ━━━ -->
-      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Mon profil</a>
-      <a class="nav-link"        id="navPin"       href="./pin.html">Mon code</a>
-      <!-- ━━━ "Accueil PRO" → "Mon espace" ━━━ -->
-      <a class="nav-link"        id="navHome"      href="./index.html">Mon espace</a>
+      <a class="nav-link"        id="navClaw"      href="./claw.html">Aide</a>
+      <!-- ━━━ "Profil / établissement" → "Plus" ━━━ -->
+      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Plus</a>
+      <a class="nav-link"        id="navPin"       href="./pin.html">Accès</a>
+      <!-- ━━━ "Accueil PRO" → "Façade" ━━━ -->
+      <a class="nav-link"        id="navHome"      href="./index.html">Façade</a>
     </nav>
 
     <section class="hero">
       <!-- ━━━ AVANT : "DIGIY RESA PRO — tableau de bord simple" → banni ━━━ -->
-      <h2 id="heroTitle">Mon activité · vue synthèse</h2>
-      <p id="heroDesc">Ici tu gardes une vue claire sur ton accès, ton abonnement, puis tu plonges dans ta gestion sans te perdre.</p>
+      <h2 id="heroTitle">Accueil RESA</h2>
+      <p id="heroDesc">Ici tu vois ce qui demande attention : réservations, planning, paiements à surveiller et notes rapides.</p>
 
       <div class="hero-meta">
         <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
@@ -128,10 +243,17 @@
 
       <div class="hero-actions">
         <!-- ━━━ AVANT : "Ouvrir le cockpit" · "Ouvrir CLAW" · "Voir le profil" → bannis ━━━ -->
-        <a class="btn primary" id="heroCockpit"  href="./cockpit.html">Ouvrir ma gestion</a>
-        <a class="btn"         id="heroPlanning" href="./planning.html">Voir le planning</a>
-        <a class="btn"         id="heroClaw"     href="./claw.html">Analyse</a>
-        <a class="btn"         id="heroSettings" href="./etablissement.html">Mon profil</a>
+        <a class="btn primary" id="heroCockpit"  href="./cockpit.html">Voir les réservations</a>
+        <a class="btn"         id="heroPlanning" href="./planning.html">Ouvrir le planning</a>
+        <a class="btn"         id="heroClaw"     href="./claw.html">Aide</a>
+        <a class="btn"         id="heroSettings" href="./etablissement.html">Plus</a>
+      </div>
+
+      <div class="mobileHeroActions">
+        <a class="btn primary" id="quickReservations" href="./cockpit.html">📋 Réserv.</a>
+        <a class="btn" id="quickPlanning" href="./planning.html">🗓️ Planning</a>
+        <a class="btn" id="quickNotes" href="#resaNotes">✍️ Notes</a>
+        <a class="btn" id="quickPlus" href="./etablissement.html">⚙️ Plus</a>
       </div>
     </section>
 
@@ -140,15 +262,15 @@
         <div class="claw-head">
           <div>
             <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">Lecture activité</div>
+            <div class="claw-kicker">Lecture accueil</div>
             <!-- ━━━ AVANT : "Lecture légère du dashboard" → banni ━━━ -->
-            <h2 class="claw-title">Lecture de ton activité</h2>
+            <h2 class="claw-title">Ce qui demande attention</h2>
           </div>
-          <!-- ━━━ AVANT : "Analyse légère" → "Analyse en cours" ━━━ -->
-          <div class="claw-mode" id="clawMode">Analyse en cours</div>
+          <!-- ━━━ AVANT : "Aide légère" → "Aide en cours" ━━━ -->
+          <div class="claw-mode" id="clawMode">Aide en cours</div>
         </div>
         <!-- ━━━ AVANT : "CLAW lit le rail RESA" · "slug" · "dashboard" → bannis ━━━ -->
-        <div class="claw-text" id="clawSummary">On lit ton espace : état d'accès, prochaine action logique et navigation utile entre les pages.</div>
+        <div class="claw-text" id="clawSummary">DIGIY lit l’état de ton accueil : réservations, planning, accès et prochaine action utile.</div>
         <div class="claw-pills" id="clawPills"></div>
       </article>
       <article class="claw-card">
@@ -163,7 +285,7 @@
 
     <div class="grid">
       <div class="card" id="cardStatus">
-        <h3>Mon abonnement</h3>
+        <h3>Mon accès</h3>
         <div class="row">
           <div class="statusDot" id="dot"></div>
           <div style="flex:1">
@@ -179,7 +301,7 @@
       </div>
 
       <div class="card" id="cardMoney">
-        <h3>Ce qui est rentré</h3>
+        <h3>Argent lié aux réservations</h3>
         <div class="bigMoney" id="moneyMonth">— FCFA</div>
         <div class="mini" id="moneyMeta">
           <span id="txCount">— transactions</span><span>•</span><span id="todayHint">Aujourd'hui</span>
@@ -198,9 +320,35 @@
         </div>
       </div>
 
+      <div class="card quickResa" id="resaNotes" style="grid-column:1/-1">
+        <h3>✍️ Notes rapides → Mon argent</h3>
+        <div class="muted" style="font-weight:750;line-height:1.6">
+          Acompte, client qui doit, nettoyage, achat, annulation ou petit paiement : une phrase suffit.
+          DIGIY prépare la trace vers Mon argent.
+        </div>
+
+        <textarea id="resaQuickNote" placeholder="Ex : Acompte réservation 10000 wave"></textarea>
+
+        <div class="noteChips">
+          <button class="noteChip" type="button">Acompte réservation 10000 wave</button>
+          <button class="noteChip" type="button">Client doit 5000</button>
+          <button class="noteChip" type="button">Dépense nettoyage 3000 cash</button>
+          <button class="noteChip" type="button">Achat boisson 8000</button>
+          <button class="noteChip" type="button">Paiement table 15000 cash</button>
+          <button class="noteChip" type="button">Annulation client</button>
+        </div>
+
+        <div class="footer">
+          <button class="btn primary" id="btnPrepareResaNote" type="button">Préparer</button>
+          <a class="btn" id="btnSendResaPay" href="https://pro-pay.digiylyfe.com/admin.html">Envoyer vers Mon argent</a>
+        </div>
+
+        <div class="draftBox" id="resaNoteDraft"></div>
+      </div>
+
       <div class="card" id="cardAction" style="grid-column:1/-1">
-        <h3>Action principale</h3>
-        <div class="muted" style="font-weight:750;margin-bottom:10px" id="actionDesc">Une action. Simple. Efficace.</div>
+        <h3>Action du moment</h3>
+        <div class="muted" style="font-weight:750;margin-bottom:10px" id="actionDesc">Une action utile maintenant.</div>
         <div class="row" style="justify-content:space-between">
           <div class="muted" style="font-weight:800" id="actionHint">—</div>
           <button class="btn primary" id="btnPrimaryAction" type="button">…</button>
@@ -211,21 +359,32 @@
         <div class="footer">
           <a class="smallLink" href="#" id="linkSupport">Support</a>
           <a class="smallLink" href="#" id="linkPayments">Mes paiements</a>
-          <a class="smallLink" href="#" id="linkClaw">Analyse</a>
+          <a class="smallLink" href="#" id="linkClaw">Aide</a>
         </div>
       </div>
     </div>
   </div>
+
+
+  <nav class="bottomNav" aria-label="Navigation RESA">
+    <div class="bottomNavInner">
+      <a class="active" id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
+      <a id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
+      <a id="bottomNotes" href="#resaNotes"><span class="ico">✍️</span><span>Notes</span></a>
+      <a id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
 
 <script>
 (() => {
   "use strict";
 
   const MODULE_CODE  = "RESA";
-  const MODULE_LABEL = "MES RÉSERVATIONS"; // façade
+  const MODULE_LABEL = "JE RÉSERVE"; // façade
   /* ━━━ AVANT : PRIMARY_ACTION_LABEL "Ouvrir le cockpit" → banni ━━━ */
-  const PRIMARY_ACTION_LABEL = "Ouvrir ma gestion";
-  const PRIMARY_ACTION_HINT  = "Entre dans ta gestion et pilote tes réservations.";
+  const PRIMARY_ACTION_LABEL = "Voir les réservations";
+  const PRIMARY_ACTION_HINT  = "Regarde les réservations ou ouvre le planning.";
 
   const ABOS_URL   = "https://commencer-a-payer.digiylyfe.com/";
   const SUPPORT_WA = "https://wa.me/221771342889";
@@ -310,6 +469,29 @@
     $("heroPlanning").href = planningHref;
     $("heroClaw").href     = clawHref;
     $("heroSettings").href = settingsHref;
+
+    const extraLinks = {
+      quickReservations: cockpitHref,
+      quickPlanning: planningHref,
+      quickPlus: settingsHref,
+      bottomHome: dashboardHref,
+      bottomReserv: cockpitHref,
+      bottomPlanning: planningHref,
+      bottomMore: settingsHref
+    };
+
+    Object.entries(extraLinks).forEach(([id, href]) => {
+      const el = $(id);
+      if (el) el.href = href;
+    });
+
+    const quickNotes = $("quickNotes");
+    const bottomNotes = $("bottomNotes");
+    if (quickNotes) quickNotes.href = "#resaNotes";
+    if (bottomNotes) bottomNotes.href = "#resaNotes";
+
+    const pay = $("btnSendResaPay");
+    if (pay) pay.href = buildResaPayDraftUrl(null);
   }
 
   function setHero(slug, phone, stateLabel){
@@ -334,15 +516,15 @@
   }
 
   function setClaw(mode, summary, pills=[], items=[]){
-    $("clawMode").textContent    = mode||"Analyse en cours";
-    $("clawSummary").textContent = summary||"Lecture de ton activité.";
+    $("clawMode").textContent    = mode||"Aide en cours";
+    $("clawSummary").textContent = summary||"Ce qui demande attention.";
     $("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
     $("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
   }
 
   function setClawLoading(){
     setClaw("Chargement","En attente de l'état réel pour te pousser une action nette.",
-      ["Mes réservations","Mon activité","Lecture simple"],
+      ["Mes réservations","Accueil","Lecture simple"],
       [{title:"Lecture du moment",text:"La page charge l'état d'accès et la prochaine étape utile."},
        {title:"Ce qu'on prépare",text:"Un résumé propre : accès vivant, aperçu, blocage abonnement ou erreur."}]);
   }
@@ -369,7 +551,7 @@
     setClaw("Lecture active","Accès confirmé. La vue synthèse joue son vrai rôle : lire l'état vite et pousser vers la bonne page.",
       [slug?`Identifiant : ${slug}`:"Identifiant : —",phone?`Téléphone : ${phone}`:"Téléphone : —","Accès actif","Navigation ouverte"],
       [{title:"Lecture de l'espace",text:"L'accès est confirmé. L'espace est stable et l'identifiant est bien reconnu."},
-       {title:"Action principale",text:"Ta gestion reste la porte centrale pour piloter les réservations et le flux du jour."},
+       {title:"Action du moment",text:"Ta gestion reste la porte centrale pour piloter les réservations et le flux du jour."},
        {title:"Navigation utile",text:"Planning pour lire le terrain, profil pour vérifier ta vitrine, analyse pour l'aide légère."}]);
   }
 
@@ -421,7 +603,7 @@
     $("moneyMonth").textContent  = "— FCFA";
     $("txCount").textContent     = "— transactions";
     $("todayHint").textContent   = "Aujourd'hui";
-    $("actionDesc").textContent  = "Une action. Simple. Efficace.";
+    $("actionDesc").textContent  = "Une action utile maintenant.";
     $("actionHint").textContent  = `Accès ouvert pour ${phone||"ton compte"}.`;
     $("btnPrimaryAction").textContent = PRIMARY_ACTION_LABEL;
     setNotifs([
@@ -455,9 +637,124 @@
     return await manualFallbackCheck();
   }
 
+  function parseResaNote(text){
+    const sentence = String(text || "").trim().replace(/\s+/g, " ");
+    const lower = sentence.toLowerCase();
+    const amountMatch = sentence.match(/(\d[\d\s.,]*)\s*(f|fcfa|xof)?/i);
+    const amount = amountMatch ? Number(String(amountMatch[1]).replace(/[^\d]/g, "")) || 0 : 0;
+
+    let channel = "other";
+    if (/\bwave\b/.test(lower)) channel = "wave";
+    else if (/\b(cash|espèces|especes|liquide)\b/.test(lower)) channel = "cash";
+    else if (/\b(orange money|om)\b/.test(lower)) channel = "orange_money";
+    else if (/\b(banque|virement)\b/.test(lower)) channel = "bank";
+
+    let direction = "out";
+    let kind = "expense";
+    let category = "other";
+    let label = "Note réservation";
+
+    if (/\b(acompte|paiement|réservation payée|reservation payee|table|client payé|client paye)\b/.test(lower)){
+      direction = "in";
+      kind = "sale";
+      category = "booking_income";
+      label = "Paiement réservation";
+    } else if (/\b(client)\b.*\b(doit|reste)\b|\b(doit|reste)\b/.test(lower)){
+      direction = "out";
+      kind = "other";
+      category = "client_debt";
+      label = "Client doit";
+    } else if (/\b(nettoyage|ménage|menage)\b/.test(lower)){
+      direction = "out";
+      kind = "expense";
+      category = "cleaning";
+      label = "Nettoyage";
+    } else if (/\b(achat|boisson|stock|préparation|preparation)\b/.test(lower)){
+      direction = "out";
+      kind = "expense";
+      category = "supplies";
+      label = "Achat réservation";
+    } else if (/\b(annulation|annulé|annule)\b/.test(lower)){
+      direction = "out";
+      kind = "other";
+      category = "cancellation";
+      label = "Annulation client";
+    }
+
+    return { sentence, amount_xof: amount, channel, direction, kind, category, label };
+  }
+
+  function buildResaPayDraftUrl(draft){
+    const d = draft || parseResaNote(($("resaQuickNote") || {}).value || "");
+    const phone = String(RESOLVED_PHONE || "").replace(/[^\d]/g, "");
+    const u = new URL("https://pro-pay.digiylyfe.com/admin.html");
+
+    if (phone){
+      u.searchParams.set("slug", "pay-" + phone);
+      u.searchParams.set("phone", phone);
+    }
+
+    u.searchParams.set("fromDraft", "1");
+    u.searchParams.set("intent", "quick_note");
+    u.searchParams.set("source_module", "RESA");
+    if (RESOLVED_SLUG) u.searchParams.set("source_slug", RESOLVED_SLUG);
+    u.searchParams.set("source_id", "resa-note-" + Date.now());
+
+    if (d.amount_xof){
+      u.searchParams.set("amount", String(d.amount_xof));
+      u.searchParams.set("amount_xof", String(d.amount_xof));
+    }
+
+    u.searchParams.set("channel", d.channel || "other");
+    u.searchParams.set("scope", "pro");
+    u.searchParams.set("movement_date", new Date().toISOString().slice(0,10));
+    u.searchParams.set("direction", d.direction || "out");
+    u.searchParams.set("kind", d.kind || "expense");
+    u.searchParams.set("category", d.category || "other");
+    u.searchParams.set("label", d.label || "Note réservation");
+    u.searchParams.set("note", d.sentence || "");
+
+    return u.toString();
+  }
+
+  function bindQuickResaNote(){
+    document.querySelectorAll(".noteChip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const input = $("resaQuickNote");
+        if (input) input.value = btn.textContent.trim();
+        const draftBox = $("resaNoteDraft");
+        if (draftBox) draftBox.style.display = "none";
+      });
+    });
+
+    $("btnPrepareResaNote")?.addEventListener("click", () => {
+      const input = $("resaQuickNote");
+      const draftBox = $("resaNoteDraft");
+      if (!input || !draftBox) return;
+
+      const draft = parseResaNote(input.value);
+      if (!draft.sentence){
+        draftBox.style.display = "block";
+        draftBox.textContent = "Écris une phrase simple : acompte, client qui doit, nettoyage, achat ou paiement.";
+        return;
+      }
+
+      draftBox.style.display = "block";
+      draftBox.innerHTML =
+        "<b>" + escapeHtml(draft.label) + "</b><br>" +
+        escapeHtml(draft.direction) + " · " + escapeHtml(draft.kind) + " · " + escapeHtml(draft.channel) + " · " + escapeHtml(draft.category) + "<br>" +
+        (draft.amount_xof ? draft.amount_xof.toLocaleString("fr-FR") + " FCFA" : "Montant à préciser") + "<br>" +
+        escapeHtml(draft.sentence);
+
+      const pay = $("btnSendResaPay");
+      if (pay) pay.href = buildResaPayDraftUrl(draft);
+    });
+  }
+
   async function boot(){
+    bindQuickResaNote();
     $("brandTitle").textContent  = MODULE_LABEL;
-    $("brandSub").textContent    = "Mon activité · vue synthèse";
+    $("brandSub").textContent    = "Accueil RESA";
     $("btnPrimaryAction").textContent = "Chargement…";
     $("actionHint").textContent  = PRIMARY_ACTION_HINT;
     setPill("…"); setClawLoading();
