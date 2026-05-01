@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Mon planning · Mes réservations · DIGIY</title>
+  <title>Je réserve — Planning</title>
   <meta name="theme-color" content="#061b14"/>
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -21,7 +21,7 @@
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--fontA);}
     a{color:inherit;text-decoration:none}
-    .wrap{width:min(1180px,92vw);margin:0 auto;padding:18px 0 48px;}
+    .wrap{width:min(1180px,92vw);margin:0 auto;padding:18px 0 calc(104px + env(safe-area-inset-bottom,0px));}
     .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
     .brand{display:grid;gap:4px;}
     .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:900;}
@@ -277,6 +277,93 @@
       line-height:1.35;
     }
 
+
+    #quickResaNote, #timeline, #planningTop{scroll-margin-top:96px}
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(6,27,20,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(234,255,241,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+
+    .bottomNav .ico{
+      font-size:18px;
+      line-height:1;
+    }
+
+    .bottomNav a.active{
+      color:#061b14;
+      background:linear-gradient(135deg,var(--gold),var(--ok));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      box-shadow:var(--shadow);
+    }
+
+    .mobileFastRow a.primary{
+      background:linear-gradient(90deg,var(--ok),var(--gold));
+      color:#062015;
+      border:none;
+    }
+
+    @media(max-width:640px){
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav-rail{display:none}
+      .actions-top{display:none}
+      .hero-cta{display:none}
+    }
+
     .loading{opacity:.72;pointer-events:none;}
     @media(max-width:640px){.wrap{width:min(96vw,96vw)}.actions-top,.nav-rail,.hero-cta,.toolbar-left,.toolbar-right{width:100%}.actions-top > *,.nav-rail > *,.hero-cta > *,.toolbar-left > *,.toolbar-right > *{flex:1 1 auto}}
   </style>
@@ -286,37 +373,37 @@
     <div class="topbar">
       <div class="brand">
         <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
-        <div class="eyebrow">MES RÉSERVATIONS</div>
-        <h1>Planning du jour</h1>
+        <div class="eyebrow">JE RÉSERVE</div>
+        <h1>Planning</h1>
         <div class="sub" id="topSub">Chargement du planning…</div>
       </div>
       <div class="actions-top">
         <button class="btn secondary" id="btnReload" type="button">Recharger</button>
-        <!-- ━━━ AVANT : "Retour dashboard" → "Mon activité" ━━━ -->
-        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Mon activité</a>
+        <!-- ━━━ AVANT : "Retour dashboard" → "Accueil" ━━━ -->
+        <a class="btn secondary" id="btnDashboardTop" href="./dashboard-pro.html">Accueil</a>
         <a class="btn warn"      id="btnPin"          href="./pin.html">Entrer par mon code</a>
       </div>
     </div>
 
     <!-- ━━━ NAV — doctrine façade ━━━ -->
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <!-- ━━━ "Dashboard" → "Mon activité" ━━━ -->
-      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Mon activité</a>
+      <!-- ━━━ "Dashboard" → "Accueil" ━━━ -->
+      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Accueil</a>
       <a class="nav-link active" id="navPlanning"  href="./planning.html">Planning</a>
-      <!-- ━━━ "Profil / établissement" → "Mon profil" ━━━ -->
-      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Mon profil</a>
-      <a class="nav-link"        id="navPin"        href="./pin.html">Mon code</a>
-      <!-- ━━━ "Accueil PRO" → "Mon espace" ━━━ -->
-      <a class="nav-link"        id="navHome"       href="./index.html">Mon espace</a>
+      <!-- ━━━ "Profil / établissement" → "Plus" ━━━ -->
+      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Plus</a>
+      <a class="nav-link"        id="navPin"        href="./pin.html">Accès</a>
+      <!-- ━━━ "Accueil PRO" → "Façade" ━━━ -->
+      <a class="nav-link"        id="navHome"       href="./index.html">Façade</a>
     </nav>
 
     <section class="hero">
       <div class="hero-grid">
         <div>
           <div class="mode" id="modeBadge">Aperçu</div>
-          <!-- heroName écrit par JS — default "MES RÉSERVATIONS" ━━━ -->
-          <h2 id="heroName">MES RÉSERVATIONS</h2>
-          <p id="heroDesc">Vue agenda simple pour lire les réservations et les services dans l'ordre du jour.</p>
+          <!-- heroName écrit par JS — default "JE RÉSERVE" ━━━ -->
+          <h2 id="heroName">JE RÉSERVE</h2>
+          <p id="heroDesc">Vue simple pour lire les réservations, les créneaux, les services et les notes du jour.</p>
           <div class="hero-meta">
             <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
             <div class="pill" id="heroSlug">Identifiant : —</div>
@@ -326,14 +413,21 @@
           </div>
           <div class="hero-cta">
             <!-- ━━━ AVANT : "Retour dashboard" · "Voir le profil" → bannis ━━━ -->
-            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Mon activité</a>
-            <a class="btn ghost"     id="heroSettings"  href="./etablissement.html">Mon profil</a>
+            <a class="btn secondary" id="heroDashboard" href="./dashboard-pro.html">Accueil</a>
+            <a class="btn ghost"     id="heroSettings"  href="./etablissement.html">Plus</a>
+          </div>
+
+          <div class="mobileFastRow" id="planningTop">
+            <a id="fastReservations" href="./cockpit.html">📋 Réserv.</a>
+            <a class="primary" id="fastPlanning" href="./planning.html">🗓️ Planning</a>
+            <a id="fastNotes" href="#quickResaNote">✍️ Notes</a>
+            <a id="fastPlus" href="./etablissement.html">⚙️ Plus</a>
           </div>
         </div>
 
         <div class="mini-card">
-          <strong id="miniTitle">Lecture rapide</strong>
-          <div id="miniText" style="color:var(--muted);line-height:1.55;">Ici tu vois qui arrive, à quelle heure, pour quel service, et avec quel statut.</div>
+          <strong id="miniTitle">Ce qui demande attention</strong>
+          <div id="miniText" style="color:var(--muted);line-height:1.55;">Ici tu vois qui arrive, à quelle heure, pour quel service, avec quel statut.</div>
           <div class="mini-stats">
             <div class="mini-stat"><div class="k">Réservations</div><div class="v" id="sTotal">0</div></div>
             <div class="mini-stat"><div class="k">Services actifs</div><div class="v" id="sServices">0</div></div>
@@ -359,16 +453,16 @@
         </select>
       </div>
       <div class="toolbar-right">
-        <!-- ━━━ AVANT : "Profil / établissement" → "Mon profil" ━━━ -->
-        <a class="btn ghost" id="btnSettings" href="./etablissement.html">Mon profil</a>
+        <!-- ━━━ AVANT : "Profil / établissement" → "Plus" ━━━ -->
+        <a class="btn ghost" id="btnSettings" href="./etablissement.html">Plus</a>
       </div>
     </section>
 
 
     <section class="quickResa" id="quickResaNote">
       <div>
-        <h3 class="quickResaTitle">🧠 Note rapide réservation</h3>
-        <p class="quickResaSub">Écris court, DIGIY prépare. Tu confirmes avant toute suite.</p>
+        <h3 class="quickResaTitle">🧠 Notes rapides</h3>
+        <p class="quickResaSub">Écris comme tu parles. DIGIY prépare la trace vers Mon argent.</p>
       </div>
 
       <div class="quickGuide">
@@ -397,7 +491,7 @@
       <div class="memoryBox">
         <div class="memoryHead">
           <div>
-            <div class="memoryTitle">Aide-mémoire rendez-vous</div>
+            <div class="memoryTitle">Aide-mémoire réservations</div>
             <div class="memoryHelp">Dernières notes confirmées ici. Les notes argent peuvent partir vers Mon argent.</div>
           </div>
           <button class="btn ghost" id="btnQuickResaMemoryClear" type="button">Vider</button>
@@ -415,14 +509,14 @@
           <div>
             <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
             <div class="claw-kicker">Lecture activité</div>
-            <!-- ━━━ AVANT : "Aide légère sur le jour" → "Analyse du jour" ━━━ -->
-            <h3 class="claw-title">Analyse du jour</h3>
+            <!-- ━━━ AVANT : "Aide légère sur le jour" → "Lecture du jour" ━━━ -->
+            <h3 class="claw-title">Lecture du jour</h3>
           </div>
           <!-- ━━━ AVANT : "Lecture neutre" → "Analyse en cours" ━━━ -->
           <div class="pill" id="clawMode">Analyse en cours</div>
         </div>
         <!-- ━━━ AVANT : "CLAW lit le jour en silence" → humain ━━━ -->
-        <div class="claw-text" id="clawSummary">On lit le jour : charge visible, points d'attention, respiration du planning.</div>
+        <div class="claw-text" id="clawSummary">DIGIY lit le jour : charge visible, points d’attention, respiration du planning.</div>
         <div class="claw-pills" id="clawPills"></div>
       </article>
       <article class="claw-card">
@@ -436,6 +530,17 @@
     <!-- ━━━ AVANT : "DIGIY RESA PRO — planning visuel multi business." → banni ━━━ -->
     <div class="footer-note" id="footerNote">DIGIYLYFE · Mes réservations · planning terrain.</div>
   </div>
+
+
+  <nav class="bottomNav" aria-label="Navigation RESA">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
+      <a class="active" id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
+      <a id="bottomNotes" href="#quickResaNote"><span class="ico">✍️</span><span>Notes</span></a>
+      <a id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
 
   <script>
     (() => {
@@ -510,6 +615,7 @@
 
       function setLinks(slug=""){
         const c=normalizeSlug(slug);
+        const reservationsHref = withSlug("./cockpit.html",       c);
         const planningHref  = withSlug("./planning.html",      c, ACTIVE_DATE?{date:ACTIVE_DATE}:{});
         const dashboardHref = withSlug("./dashboard-pro.html", c);
         const settingsHref  = withSlug("./etablissement.html", c);
@@ -525,6 +631,26 @@
         $("btnSettings").href   = settingsHref;
         $("heroDashboard").href = dashboardHref;
         $("heroSettings").href  = settingsHref;
+
+        const extraLinks = {
+          fastReservations: reservationsHref,
+          fastPlanning: planningHref,
+          fastPlus: settingsHref,
+          bottomHome: dashboardHref,
+          bottomReserv: reservationsHref,
+          bottomPlanning: planningHref,
+          bottomMore: settingsHref
+        };
+
+        Object.entries(extraLinks).forEach(([id, href]) => {
+          const el = $(id);
+          if(el) el.href = href;
+        });
+
+        const fastNotes = $("fastNotes");
+        const bottomNotes = $("bottomNotes");
+        if(fastNotes) fastNotes.href = "#quickResaNote";
+        if(bottomNotes) bottomNotes.href = "#quickResaNote";
       }
 
       async function resolveGuardState(){
@@ -539,8 +665,8 @@
       }
 
       function setHeroData(name,desc,slug,city,type,dateText){
-        /* ━━━ AVANT : "DIGIY RESA PRO" default → "MES RÉSERVATIONS" ━━━ */
-        $("heroName").textContent = name||"MES RÉSERVATIONS";
+        /* ━━━ AVANT : "DIGIY RESA PRO" default → "JE RÉSERVE" ━━━ */
+        $("heroName").textContent = name||"JE RÉSERVE";
         $("heroDesc").textContent = desc||"Lecture visuelle des réservations.";
         /* ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ */
         $("heroSlug").textContent = "Identifiant : "+(slug||"—");
@@ -566,7 +692,7 @@
         $("modeBadge").className="mode live";
         $("modeBadge").textContent="En direct";
         /* ━━━ AVANT : "Planning chargé pour" → humain ━━━ */
-        $("topSub").textContent=`Planning du jour pour ${RESOLVED_SLUG}`;
+        $("topSub").textContent=`Planning pour ${RESOLVED_SLUG}`;
         $("miniTitle").textContent="Lecture terrain";
         $("miniText").textContent="Le planning montre l'ordre du jour, les services demandés, les statuts et les personnes à accueillir.";
         $("footerNote").textContent="Planning vivant branché sur les réservations réelles.";
@@ -906,8 +1032,8 @@
         const comp = String(item?.complement || "").trim();
 
         if(type === "service_income") return comp ? "Prestation " + comp : "Prestation RESA";
-        if(type === "deposit") return "Acompte rendez-vous";
-        if(type === "product_purchase") return "Achat produit";
+        if(type === "deposit") return "Acompte réservation";
+        if(type === "product_purchase") return "Achat lié à la réservation";
         if(type === "client_debt") return comp ? "Client doit " + comp : "Client doit encore";
         return item?.title || "Note réservation";
       }
@@ -924,14 +1050,17 @@
         qsPay.set("direction", item?.direction === "in" ? "in" : "out");
         qsPay.set("scope", "pro");
         qsPay.set("amount", String(Math.round(Number(item?.amount_xof || 0))));
+        qsPay.set("amount_xof", String(Math.round(Number(item?.amount_xof || 0))));
         qsPay.set("kind", item?.kind || (item?.direction === "in" ? "sale" : "expense"));
         qsPay.set("channel", item?.channel || "other");
         qsPay.set("category", item?.category || "resa_note");
         qsPay.set("source_module", "RESA");
+        if(RESOLVED_SLUG) qsPay.set("source_slug", RESOLVED_SLUG);
+        qsPay.set("source_id", item?.memory_id || ("resa-note-" + Date.now()));
         qsPay.set("label", payResaLabel(item));
         qsPay.set("note", String(item?.sentence || "").trim());
         qsPay.set("complement", String(item?.complement || "").trim());
-        qsPay.set("intent", "resa_quick_note");
+        qsPay.set("intent", "quick_note");
 
         return "https://pro-pay.digiylyfe.com/admin.html?" + qsPay.toString();
       }
@@ -1090,7 +1219,7 @@
           $("dateInput").value=ACTIVE_DATE;
           const st=await resolveGuardState();
 
-          const previewHeroData = (slug) => setHeroData("MES RÉSERVATIONS","Vue agenda simple pour lire les réservations dans l'ordre du jour.",slug||"—","—","Multi business",fmtDateLong(ACTIVE_DATE));
+          const previewHeroData = (slug) => setHeroData("JE RÉSERVE","Vue agenda simple pour lire les réservations dans l'ordre du jour.",slug||"—","—","Multi business",fmtDateLong(ACTIVE_DATE));
 
           if(st?.preview){
             IS_PREVIEW=true;
@@ -1127,7 +1256,7 @@
         }catch(err){
           console.error(err);
           IS_PREVIEW=true; RESOLVED_SLUG=getFallbackSlug(); setLinks(RESOLVED_SLUG); setPreviewHero(RESOLVED_SLUG);
-          setHeroData("MES RÉSERVATIONS","Erreur de chargement. Aperçu affiché.",RESOLVED_SLUG||"—","—","Multi business",fmtDateLong(ACTIVE_DATE||todayISO()));
+          setHeroData("JE RÉSERVE","Erreur de chargement. Aperçu affiché.",RESOLVED_SLUG||"—","—","Multi business",fmtDateLong(ACTIVE_DATE||todayISO()));
           resetData(); renderStats(); buildClawFromData();
           renderEmptyState("Erreur de chargement. Recharge ou repasse par PIN.");
         }finally{
