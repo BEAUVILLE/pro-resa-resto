@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Mon profil · Mes réservations · DIGIY</title>
+  <title>Je réserve — Plus</title>
   <meta name="theme-color" content="#07140f"/>
-  <meta name="description" content="Mon profil et mon établissement · DIGIY — fiche publique et réservation." />
+  <meta name="description" content="Je réserve — Plus : fiche publique, établissement, contact, services, QR et accès utiles." />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -19,7 +19,7 @@
   <style>
     :root{--bg:#07140f;--bg2:#0b1d15;--card:#10241b;--card-2:#0d2018;--line:rgba(255,255,255,.10);--text:#ecfff4;--muted:rgba(236,255,244,.72);--primary:#22c55e;--primary-2:#16a34a;--gold:#facc15;--gold-soft:rgba(250,204,21,.12);--blue:#60a5fa;--shadow:0 20px 60px rgba(0,0,0,.38);--r:24px;--max:1120px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
     *{box-sizing:border-box}html{scroll-behavior:smooth}
-    body{margin:0;min-height:100vh;background:radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);color:var(--text);font-family:var(--fontA);padding:16px;}
+    body{margin:0;min-height:100vh;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));background:radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);color:var(--text);font-family:var(--fontA);padding:16px;}
     a{color:inherit;text-decoration:none}
     .wrap{max-width:var(--max);margin:auto;}
     .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:6px 2px;}
@@ -91,6 +91,89 @@
     .claw-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:1000;color:#ecfff4;}
     .claw-item span{color:var(--muted);font-size:13px;font-weight:800;line-height:1.55;display:block;}
     .footer{margin-top:16px;text-align:center;color:var(--muted);font-size:12px;font-weight:800;}
+
+    #servicesBox, #contactWhatsapp{scroll-margin-top:96px}
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(7,20,15,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(236,255,244,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+
+    .bottomNav .ico{font-size:18px;line-height:1}
+
+    .bottomNav a.active{
+      color:#07140f;
+      background:linear-gradient(135deg,var(--gold),var(--primary));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:950;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+    }
+
+    .mobileFastRow a.primary{
+      background:linear-gradient(90deg,var(--primary),var(--gold));
+      color:#07140f;
+      border:none;
+    }
+
+    @media(max-width:720px){
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav-rail{display:none}
+      .top-actions{display:none}
+      .hero-actions{display:none}
+    }
+
     .hidden{display:none !important}
     @media(max-width:720px){.top-actions,.nav-rail,.hero-actions{width:100%}.top-actions > *,.nav-rail > *,.hero-actions > *{flex:1 1 auto}}
   </style>
@@ -100,36 +183,36 @@
     <div class="topbar">
       <div class="brand">
         <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
-        <div class="eyebrow">MES RÉSERVATIONS</div>
+        <div class="eyebrow">JE RÉSERVE</div>
         <!-- ━━━ AVANT : "Profil / établissement" → banni ━━━ -->
-        <div class="brand-title">Mon profil · mon établissement</div>
+        <div class="brand-title">Plus · mon établissement</div>
         <!-- ━━━ AVANT : "Passerelle PRO vers la vraie fiche publique" → banni ━━━ -->
-        <div class="brand-sub" id="topSub">Ta fiche publique et tes informations de réservation.</div>
+        <div class="brand-sub" id="topSub">Fiche publique, contact, services et repères utiles.</div>
       </div>
       <div class="top-actions">
         <!-- ━━━ AVANT : "Cockpit" · "Dashboard" · "CLAW" → bannis ━━━ -->
-        <a class="btn" id="btnCockpitTop"   href="./cockpit.html">Ma gestion</a>
-        <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Mon activité</a>
-        <a class="btn" id="btnQrTop"        href="./qr.html">Mon QR</a>
-        <a class="btn" id="btnClawTop"      href="./claw.html">Analyse</a>
+        <a class="btn" id="btnCockpitTop"   href="./cockpit.html">Réserv.</a>
+        <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Accueil</a>
+        <a class="btn" id="btnQrTop"        href="./qr.html">QR</a>
+        <a class="btn" id="btnClawTop"      href="./claw.html">Aide</a>
       </div>
     </div>
 
     <!-- ━━━ NAV — doctrine façade ━━━ -->
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <!-- ━━━ "Cockpit" → "Ma gestion" ━━━ -->
-      <a class="nav-link"        id="navCockpit"  href="./cockpit.html">Ma gestion</a>
-      <!-- ━━━ "Dashboard" → "Mon activité" ━━━ -->
-      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Mon activité</a>
+      <!-- ━━━ "Cockpit" → "Réserv." ━━━ -->
+      <a class="nav-link"        id="navCockpit"  href="./cockpit.html">Réserv.</a>
+      <!-- ━━━ "Dashboard" → "Accueil" ━━━ -->
+      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Accueil</a>
       <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
-      <a class="nav-link"        id="navQr"        href="./qr.html">Mon QR</a>
-      <!-- ━━━ "CLAW" → "Analyse" ━━━ -->
-      <a class="nav-link"        id="navClaw"      href="./claw.html">Analyse</a>
-      <!-- ━━━ "Profil / établissement" → "Mon profil" active ━━━ -->
-      <a class="nav-link active" id="navSettings"  href="./etablissement.html">Mon profil</a>
-      <!-- ━━━ "Accueil PRO" → "Mon espace" ━━━ -->
-      <a class="nav-link"        id="navHome"      href="./index.html">Mon espace</a>
-      <a class="nav-link"        id="navPublic"    href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Ma vitrine</a>
+      <a class="nav-link"        id="navQr"        href="./qr.html">QR</a>
+      <!-- ━━━ "CLAW" → "Aide" ━━━ -->
+      <a class="nav-link"        id="navClaw"      href="./claw.html">Aide</a>
+      <!-- ━━━ "Profil / établissement" → "Plus" active ━━━ -->
+      <a class="nav-link active" id="navSettings"  href="./etablissement.html">Plus</a>
+      <!-- ━━━ "Accueil PRO" → "Façade" ━━━ -->
+      <a class="nav-link"        id="navHome"      href="./index.html">Façade</a>
+      <a class="nav-link"        id="navPublic"    href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Vitrine</a>
     </nav>
 
     <section class="hero">
@@ -146,7 +229,7 @@
               <div>
                 <div class="badge" id="pubBadge"><span class="dot"></span> Fiche publiée</div>
                 <h1 id="name">Chargement…</h1>
-                <div class="subtitle" id="subtitle">Ma fiche publique DIGIY</div>
+                <div class="subtitle" id="subtitle">Fiche client DIGIY</div>
                 <div class="hero-meta">
                   <div class="pill" id="cityPill">Ville : —</div>
                   <div class="pill" id="typePill">Activité : —</div>
@@ -160,12 +243,19 @@
               <a class="btn primary" id="btnReserve" href="https://resa-table-resto.digiylyfe.com/reserver.html" target="_blank" rel="noopener">📅 Réserver</a>
               <a class="btn gold"    id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
               <!-- ━━━ AVANT : "Cockpit" · "Dashboard" · "CLAW" → bannis ━━━ -->
-              <a class="btn" id="btnCockpitHero"  href="./cockpit.html">🧭 Ma gestion</a>
-              <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Mon activité</a>
+              <a class="btn" id="btnCockpitHero"  href="./cockpit.html">🧭 Réserv.</a>
+              <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Accueil</a>
               <a class="btn" id="btnPlanningHero"  href="./planning.html">🗓️ Planning</a>
-              <a class="btn" id="btnQrHero"        href="./qr.html">📎 Mon QR</a>
-              <a class="btn" id="btnClawHero"      href="./claw.html">🔍 Analyse</a>
-              <a class="btn" id="btnPublicHero"    href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Ma fiche publique</a>
+              <a class="btn" id="btnQrHero"        href="./qr.html">📎 QR</a>
+              <a class="btn" id="btnClawHero"      href="./claw.html">🔍 Aide</a>
+              <a class="btn" id="btnPublicHero"    href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Fiche client</a>
+            </div>
+
+            <div class="mobileFastRow">
+              <a id="fastReserv" href="./cockpit.html">📋 Réserv.</a>
+              <a id="fastPlanning" href="./planning.html">🗓️ Planning</a>
+              <a id="fastNotes" href="./planning.html#quickResaNote">✍️ Notes</a>
+              <a class="primary" id="fastPlus" href="./etablissement.html">⚙️ Plus</a>
             </div>
           </div>
 
@@ -181,12 +271,12 @@
 
     <section class="grid">
       <div class="card">
-        <h2>Zones &amp; repères</h2>
+        <h2>Repères terrain</h2>
         <div class="muted">Zones, quartier ou mots-clés utiles pour situer le commerce.</div>
         <div class="chips" id="zonesChips"><div class="chip">Zone non précisée</div></div>
       </div>
       <div class="card">
-        <h2>Contact direct</h2>
+        <h2>Contact</h2>
         <div class="hero-info-grid" style="margin-top:14px">
           <div class="fact"><div class="k">WhatsApp</div><div class="v" id="contactWhatsapp">—</div></div>
           <div class="fact"><div class="k">Réservation</div><div class="v" id="bookingHelp">Demande simple et confirmation côté commerce</div></div>
@@ -203,8 +293,8 @@
             <!-- ━━━ AVANT : "Lecture légère de l'établissement" → "Lecture de ton profil" ━━━ -->
             <h2 class="claw-title">Lecture de ton profil</h2>
           </div>
-          <!-- ━━━ AVANT : "Analyse légère" → "Analyse en cours" ━━━ -->
-          <div class="claw-mode" id="clawMode">Analyse en cours</div>
+          <!-- ━━━ AVANT : "Aide légère" → "Aide en cours" ━━━ -->
+          <div class="claw-mode" id="clawMode">Aide en cours</div>
         </div>
         <!-- ━━━ AVANT : "CLAW prépare une lecture simple" → humain ━━━ -->
         <div class="claw-text" id="clawSummary">On prépare une lecture simple de ton commerce : lisibilité de la fiche, accueil, réservation et repères utiles.</div>
@@ -222,7 +312,7 @@
     </section>
 
     <section class="card" style="margin-top:14px">
-      <h2>Services / prestations</h2>
+      <h2>Services proposés</h2>
       <!-- ━━━ AVANT : "rail RESA" visible → banni ━━━ -->
       <div class="muted">Les services proposés par ta boutique.</div>
       <div class="services" id="servicesBox">
@@ -230,8 +320,19 @@
       </div>
     </section>
 
-    <div class="footer">DIGIYLYFE · Mes réservations · profil terrain · multi business</div>
+    <div class="footer">DIGIYLYFE · Je réserve · profil terrain</div>
   </div>
+
+
+  <nav class="bottomNav" aria-label="Navigation RESA">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
+      <a id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
+      <a id="bottomNotes" href="./planning.html#quickResaNote"><span class="ico">✍️</span><span>Notes</span></a>
+      <a class="active" id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
 
   <script>
     (() => {
@@ -313,6 +414,24 @@
         document.getElementById("btnClawHero").href      = clawHref;
         document.getElementById("btnPublicHero").href    = publicFicheHref;
         document.getElementById("btnReserve").href       = reserveHref;
+
+        const notesHref = withSlug("./planning.html", c) + "#quickResaNote";
+        const extraLinks = {
+          fastReserv: cockpitHref,
+          fastPlanning: planningHref,
+          fastNotes: notesHref,
+          fastPlus: settingsHref,
+          bottomHome: dashboardHref,
+          bottomReserv: cockpitHref,
+          bottomPlanning: planningHref,
+          bottomNotes: notesHref,
+          bottomMore: settingsHref
+        };
+
+        Object.entries(extraLinks).forEach(([id, href]) => {
+          const el = document.getElementById(id);
+          if(el) el.href = href;
+        });
       }
 
       function safe(v,fallback="—"){ const s=String(v||"").trim(); return s||fallback; }
@@ -346,7 +465,7 @@
       }
 
       function setClaw(mode,summary,pills=[],items=[]){
-        document.getElementById("clawMode").textContent    = mode||"Analyse en cours";
+        document.getElementById("clawMode").textContent    = mode||"Aide en cours";
         document.getElementById("clawSummary").textContent = summary||"Lecture de ton profil.";
         document.getElementById("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
         document.getElementById("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
@@ -354,7 +473,7 @@
 
       function setClawLoading(){
         setClaw("Chargement","Lecture du profil en cours. En attente des vraies données.",
-          ["Mon profil","Réservation","Repères terrain"],
+          ["Plus","Réservation","Repères terrain"],
           [{title:"Lecture du commerce",text:"En attente du profil réel pour résumer le terrain proprement."},{title:"Préparation réservation",text:"Le type d'activité, les services et le canal de contact seront reliés."}]);
       }
 
@@ -459,7 +578,7 @@
           const businessType=safe(p.business_type||p.category,"Service local");
           const zones=Array.isArray(p.zones)?p.zones:String(p.zones_text||p.zones||"").split(",").map(s=>s.trim()).filter(Boolean);
 
-          document.title=`${name} · Mon profil · DIGIY`;
+          document.title=`${name} · Plus · DIGIY`;
           /* ━━━ AVANT : "Profil établissement chargé pour ${slug}" → humain ━━━ */
           document.getElementById("topSub").textContent=`Profil chargé — ${name}`;
 
