@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
   <!-- ━━━ AVANT : "DIGIY RESA PRO — Accès PIN" → banni ━━━ -->
-  <title>Mon accès · Mes réservations · DIGIY</title>
+  <title>Je réserve — Accès</title>
   <!-- ━━━ AVANT : "Accès sécurisé DIGIY RESA PRO par slug, téléphone et PIN." → banni ━━━ -->
-  <meta name="description" content="Accès sécurisé à ton espace · Mes réservations · DIGIY" />
+  <meta name="description" content="Je réserve — ouvrir l’accès et revenir vers Accueil, Réservations, Planning, Notes ou Plus." />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -28,7 +28,7 @@
       --fontA:"Outfit",ui-sans-serif,system-ui,-apple-system,sans-serif;
     }
     *{box-sizing:border-box}html,body{margin:0;padding:0}
-    body{min-height:100dvh;color:var(--text);font-family:var(--fontA);background:radial-gradient(circle at top, rgba(34,211,238,.10), transparent 30%),linear-gradient(180deg,var(--bg),var(--bg2));display:flex;align-items:center;justify-content:center;padding:20px;}
+    body{min-height:100dvh;color:var(--text);font-family:var(--fontA);background:radial-gradient(circle at top, rgba(34,211,238,.10), transparent 30%),linear-gradient(180deg,var(--bg),var(--bg2));display:flex;align-items:center;justify-content:center;padding:20px 20px calc(104px + env(safe-area-inset-bottom,0px));}
     .wrap{width:100%;max-width:var(--max)}
     .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;backdrop-filter:blur(12px);}
     .hero{padding:22px 22px 10px;border-bottom:1px solid rgba(255,255,255,.06);background:radial-gradient(circle at top right, rgba(34,211,238,.16), transparent 36%);}
@@ -53,6 +53,79 @@
     .status.err{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.28);color:#fee2e2;}
     .meta{display:grid;gap:8px;margin-top:16px;padding:14px;border-radius:18px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);}
     .row{display:flex;justify-content:space-between;gap:12px}.k{color:var(--muted)}.v{font-weight:700;text-align:right;word-break:break-word}
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(8,17,27,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(248,250,252,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+      background:transparent;
+    }
+
+    .bottomNav .ico{font-size:18px;line-height:1}
+
+    .bottomNav a.active{
+      color:#082f49;
+      background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+      border-color:rgba(103,232,249,.30);
+      box-shadow:0 12px 26px rgba(34,211,238,.18);
+    }
+
+    .fastLinks{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .fastLinks a{
+      min-height:42px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:.86rem;
+      font-weight:850;
+      padding:9px 10px;
+    }
+
+    @media(max-width:560px){
+      .fastLinks{grid-template-columns:1fr 1fr}
+    }
+
     .hidden{display:none!important}
     .foot{padding:0 20px 20px;text-align:center;color:#94a3b8;font-size:.84rem}
     @media(max-width:560px){.grid{grid-template-columns:1fr}}
@@ -66,20 +139,20 @@
           <div class="logo">📅</div>
           <div>
             <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
-            <h1>MES RÉSERVATIONS</h1>
+            <h1>JE RÉSERVE</h1>
             <!-- ━━━ AVANT : "PIN d'accès — session interne directe" → banni ━━━ -->
-            <p class="sub">Accès sécurisé à ton espace</p>
+            <p class="sub">Ouvrir mon accès</p>
           </div>
         </div>
       </div>
 
       <div class="body">
         <!-- ━━━ AVANT : "slug" × 2 visible → "identifiant" ━━━ -->
-        <p class="intro">Entre avec ton <strong>identifiant d’activité</strong> ou ton <strong>téléphone</strong>, puis ton <strong>code</strong>. Une fois validé, la session est posée et tu rentres directement dans ton espace.</p>
+        <p class="intro">Entre avec ton <strong>identifiant</strong> ou ton <strong>téléphone</strong>, puis ton <strong>code</strong>. Une fois validé, tu arrives sur l’Accueil puis tu circules entre Réservations, Planning, Notes et Plus.</p>
 
         <div class="field">
           <!-- ━━━ AVANT : label "Slug" → "Identifiant boutique" ━━━ -->
-          <label for="slug">Identifiant d’activité</label>
+          <label for="slug">Identifiant</label>
           <input id="slug" type="text" placeholder="resa-221771342889" autocomplete="off" />
         </div>
 
@@ -98,32 +171,50 @@
 
         <div class="actions">
           <!-- ━━━ AVANT : "Ouvrir mon espace RESA" → "Ouvrir mon espace" ━━━ -->
-          <button id="btnOpen" class="btn primary" type="button">🔓 Ouvrir mon espace</button>
-          <a id="btnReturn" class="btn secondary hidden" href="./cockpit.html">↩️ Retour cible</a>
+          <button id="btnOpen" class="btn primary" type="button">🔓 Entrer dans RESA</button>
+          <a id="btnReturn" class="btn secondary hidden" href="./cockpit.html">🏠 Retour accueil</a>
           <a id="btnPay" class="btn ghost" href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener">💳 Gérer mon abonnement</a>
         </div>
 
         <div class="grid">
           <!-- ━━━ AVANT : "🧭 Cockpit" → "Ma gestion" · "📊 Dashboard" → "Mon activité" ━━━ -->
-          <a id="btnCockpit"  class="btn secondary hidden" href="./cockpit.html">🧭 Ma gestion</a>
+          <a id="btnCockpit"  class="btn secondary hidden" href="./cockpit.html">📋 Réserv.</a>
           <a id="btnPlanning" class="btn secondary hidden" href="./planning.html">🗓️ Planning</a>
-          <a id="btnDashboard" class="btn secondary hidden" href="./dashboard-pro.html">📊 Mon activité</a>
-          <a id="btnPublic"   class="btn secondary hidden" href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Ma vitrine</a>
+          <a id="btnDashboard" class="btn secondary hidden" href="./dashboard-pro.html">🏠 Accueil</a>
+          <a id="btnPublic"   class="btn secondary hidden" href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Vitrine</a>
+        </div>
+
+        <div class="fastLinks">
+          <a id="fastHome" href="./dashboard-pro.html">🏠 Accueil</a>
+          <a id="fastReserv" href="./cockpit.html">📋 Réserv.</a>
+          <a id="fastPlanning" href="./planning.html">🗓️ Planning</a>
+          <a id="fastNotes" href="./planning.html#quickResaNote">✍️ Notes</a>
         </div>
 
         <div id="status" class="status">Prêt.</div>
 
         <div class="meta">
           <div class="row"><div class="k">Espace</div><div class="v">Mes réservations</div></div>
-          <div class="row"><div class="k">Retour prévu</div><div id="returnInfo" class="v">Mon espace</div></div>
+          <div class="row"><div class="k">Retour prévu</div><div id="returnInfo" class="v">Accueil</div></div>
           <div class="row"><div class="k">État</div><div id="sessionInfo" class="v">À ouvrir</div></div>
         </div>
       </div>
 
       <!-- ━━━ AVANT : "PIN MASTER compatible guard" → banni ━━━ -->
-      <div class="foot">DIGIYLYFE · Mes réservations · accès sécurisé</div>
+      <div class="foot">DIGIYLYFE · Je réserve · accès sécurisé</div>
     </section>
   </div>
+
+
+  <nav class="bottomNav" aria-label="Navigation RESA">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
+      <a id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
+      <a id="bottomNotes" href="./planning.html#quickResaNote"><span class="ico">✍️</span><span>Notes</span></a>
+      <a class="active" id="bottomMore" href="./pin.html"><span class="ico">🔐</span><span>Accès</span></a>
+    </div>
+  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -133,7 +224,7 @@
       const CFG = {
         MODULE: "RESA",
         MODULE_LOWER: "resa",
-        DEFAULT_NEXT: "./cockpit.html",
+        DEFAULT_NEXT: "./dashboard-pro.html",
         LOGIN_URL: "./pin.html",
         PAY_URL: window.DIGIY_PAY_URL || "https://commencer-a-payer.digiylyfe.com/",
         KEEP_PHONE_IN_URL: true,
@@ -148,7 +239,7 @@
         PUBLIC_FICHE_PATH: "fiche.html",
         PUBLIC_INDEX_PATH: "index.html",
         PUBLIC_ALLOWED_PATHS: ["/","/index.html","/fiche.html","/reserver.html"],
-        SAME_ORIGIN_ALLOWED_PATHS: ["/cockpit.html","/planning.html","/dashboard-pro.html","/index.html","/"]
+        SAME_ORIGIN_ALLOWED_PATHS: ["/cockpit.html","/planning.html","/dashboard-pro.html","/etablissement.html","/index.html","/"]
       };
 
       const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL||"").trim();
@@ -194,11 +285,11 @@
             if(page==="planning.html") return "Mon planning";
             if(page==="dashboard-pro.html") return "Mon activité";
             if(page==="pin.html") return "Mon code";
-            return "Mon espace";
+            return "Accueil";
           }
           if(url.origin===new URL(CFG.PUBLIC_BASE_URL).origin)return "Ma vitrine";
           return url.hostname;
-        }catch(_){ return "Mon espace"; }
+        }catch(_){ return "Accueil"; }
       }
 
       function buildNormalizedSession({slug,phone,owner_id=null}){
@@ -337,7 +428,9 @@
         let next=CFG.DEFAULT_NEXT;
         if(target==="planning")  next="./planning.html";
         if(target==="dashboard") next="./dashboard-pro.html";
+        if(target==="reserv")    next="./cockpit.html";
         if(target==="cockpit")   next="./cockpit.html";
+        if(target==="plus")      next="./etablissement.html";
 
         return buildSafeUrl(next,{
           slug: session.slug,
@@ -358,7 +451,7 @@
         el.btnDashboard.href = addPro("./dashboard-pro.html");
         el.btnPublic.href    = buildPublicUrl(CFG.PUBLIC_FICHE_PATH,s);
         el.btnPublic.setAttribute("target","_blank"); el.btnPublic.setAttribute("rel","noopener");
-        el.btnPay.href       = CFG.PAY_URL;
+        el.btnPay.href       = buildSafeUrl(CFG.PAY_URL, { module: CFG.MODULE, ...(s?{slug:s}:{}), ...(p?{phone:p}:{}) });
 
         if(s){
           el.btnCockpit.classList.remove("hidden");
@@ -377,11 +470,29 @@
           el.btnReturn.textContent="🌍 Retour public";
           el.btnReturn.setAttribute("target","_blank"); el.btnReturn.setAttribute("rel","noopener");
         }else{
-          el.btnReturn.textContent="↩️ Retour cible";
+          el.btnReturn.textContent="🏠 Retour accueil";
           el.btnReturn.removeAttribute("target"); el.btnReturn.removeAttribute("rel");
         }
 
         el.returnInfo.textContent=describeReturnUrl(returnUrl);
+
+        const notesHref = addPro("./planning.html") + "#quickResaNote";
+        const mobileLinks = {
+          fastHome: addPro("./dashboard-pro.html"),
+          fastReserv: addPro("./cockpit.html"),
+          fastPlanning: addPro("./planning.html"),
+          fastNotes: notesHref,
+          bottomHome: addPro("./dashboard-pro.html"),
+          bottomReserv: addPro("./cockpit.html"),
+          bottomPlanning: addPro("./planning.html"),
+          bottomNotes: notesHref,
+          bottomMore: addPro("./pin.html")
+        };
+
+        Object.entries(mobileLinks).forEach(([id, href]) => {
+          const node = document.getElementById(id);
+          if(node) node.href = href;
+        });
       }
 
       function hydrate(){
@@ -399,7 +510,7 @@
 
         if(saved?.verified_at||saved?.validated_at){
           el.sessionInfo.textContent="Ouvert";
-          setStatus("Session locale déjà fraîche. Tu peux reprendre ton espace.","ok");
+          setStatus("Session déjà ouverte. Tu peux reprendre l’accueil.","ok");
         }
       }
 
@@ -411,10 +522,10 @@
 
           /* ━━━ AVANT : "Renseigne au moins le slug ou le téléphone." → banni ━━━ */
           if(!slug&&!phone){ setStatus("Renseigne au moins ton identifiant ou ton téléphone.","err"); return; }
-          if(!pin){ setStatus("Entre ton PIN.","err"); return; }
+          if(!pin){ setStatus("Entre ton code.","err"); return; }
 
           el.btnOpen.disabled=true;
-          setStatus("Vérification du PIN…");
+          setStatus("Vérification du code…");
 
           if(slug&&!phone){ const sub=await resolveSubBySlug(slug); if(sub?.phone)phone=sub.phone; }
           if(phone&&!slug){ const sub=await resolveSubByPhone(phone); if(sub?.slug)slug=sub.slug; }
@@ -425,13 +536,13 @@
           if(!phone){ setStatus("Téléphone introuvable pour cet identifiant.","err"); return; }
 
           const auth=await verifyPin(phone,pin);
-          if(!auth?.ok){ setStatus("PIN invalide.","err"); return; }
+          if(!auth?.ok){ setStatus("Code invalide.","err"); return; }
 
           const session=saveSession({slug,phone:auth.phone||phone,owner_id:auth.owner_id||null});
           el.sessionInfo.textContent="Ouvert";
           refreshLinks(session.slug,session.phone);
           /* ━━━ AVANT : "Ouverture de ton espace RESA..." → humain ━━━ */
-          setStatus("PIN validé. Ouverture de ton espace…","ok");
+          setStatus("Code validé. Ouverture de l’accueil RESA…","ok");
 
           setTimeout(()=>{ window.location.href=buildReturnUrl(session); },220);
         }catch(err){
