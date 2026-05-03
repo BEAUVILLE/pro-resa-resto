@@ -85,6 +85,169 @@
     }
     .site-back-float:active{transform:scale(.97)}
 
+    .route-float{
+      gap:8px;
+      padding:8px;
+      max-width:calc(100vw - 24px);
+    }
+
+    .route-float a{
+      min-height:38px;
+      padding:8px 11px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      white-space:nowrap;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .route-float a:hover{
+      border-color:rgba(244,223,181,.36);
+      background:rgba(244,223,181,.09);
+      color:#fff4dc;
+    }
+
+    .audioBox{
+      position:relative;
+      margin-top:16px;
+      border:1px solid rgba(244,223,181,.36);
+      border-radius:22px;
+      padding:14px;
+      background:
+        radial-gradient(circle at top right, rgba(244,223,181,.18), transparent 42%),
+        radial-gradient(circle at bottom left, rgba(0,166,81,.15), transparent 44%),
+        linear-gradient(180deg, rgba(244,223,181,.10), rgba(0,166,81,.07) 60%, rgba(0,0,0,.10));
+      box-shadow:0 18px 42px rgba(0,0,0,.24), 0 0 0 1px rgba(244,223,181,.04) inset;
+      overflow:hidden;
+    }
+
+    .audioTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .audioLead{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin-bottom:8px;
+      padding:6px 11px;
+      border-radius:999px;
+      border:1px solid rgba(244,223,181,.34);
+      background:rgba(244,223,181,.12);
+      color:#fff4dc;
+      font-size:11px;
+      font-weight:1000;
+      letter-spacing:.03em;
+      text-transform:uppercase;
+    }
+
+    .audioLead .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--champ);
+      box-shadow:0 0 14px rgba(244,223,181,.75);
+      animation:audioPulse 1.5s ease-in-out infinite;
+    }
+
+    .audioTitle{
+      font-size:18px;
+      line-height:1.2;
+      font-weight:1000;
+      color:#fff4dc;
+    }
+
+    .audioText{
+      margin-top:6px;
+      max-width:640px;
+      color:rgba(248,245,239,.86);
+      font-size:14px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .audioHint{
+      margin-top:8px;
+      color:#ffecc8;
+      font-size:12px;
+      font-weight:1000;
+    }
+
+    .audioActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .audioBtn{
+      min-height:46px;
+      border-radius:999px;
+      border:1px solid rgba(244,223,181,.56);
+      background:linear-gradient(135deg, var(--champ), var(--champ-2));
+      color:#13200d;
+      font-weight:1000;
+      padding:10px 15px;
+      cursor:pointer;
+      box-shadow:0 12px 28px rgba(244,223,181,.22);
+      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+
+    .audioBtn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 16px 34px rgba(244,223,181,.30);
+      filter:saturate(1.05);
+    }
+
+    .audioBtn.stop{
+      background:rgba(239,68,68,.09);
+      border-color:rgba(239,68,68,.36);
+      color:#fecaca;
+      box-shadow:none;
+    }
+
+    .audioProgressWrap{
+      height:6px;
+      margin-top:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.11);
+      overflow:hidden;
+      position:relative;
+      z-index:1;
+    }
+
+    .audioProgress{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--champ), var(--senegal-2));
+      transition:width .2s linear;
+    }
+
+    .audioGlow{
+      position:absolute;
+      right:18px;
+      bottom:10px;
+      width:92px;
+      height:92px;
+      border-radius:999px;
+      background:radial-gradient(circle, rgba(244,223,181,.16), transparent 66%);
+      pointer-events:none;
+      filter:blur(3px);
+    }
+
+    @keyframes audioPulse{
+      0%,100%{transform:scale(1);opacity:1}
+      50%{transform:scale(1.25);opacity:.72}
+    }
+
     .wrap{max-width:1020px;margin:0 auto;padding:16px 14px 120px;}
 
     .shell{
@@ -554,11 +717,27 @@
         padding:10px 13px;
         font-size:13px;
       }
+      .route-float{
+        right:calc(env(safe-area-inset-right, 0px) + 10px);
+        padding:7px;
+        flex-wrap:wrap;
+      }
+      .route-float a{
+        flex:1 1 auto;
+        min-height:36px;
+        padding:8px 9px;
+        font-size:12px;
+      }
+      .audioActions,.audioBtn{width:100%}
     }
   </style>
 </head>
 <body>
-  <a class="site-back-float" href="https://digiylyfe.com/" target="_blank" rel="noopener">← Retour au site</a>
+  <nav class="site-back-float route-float" aria-label="Navigation DIGIY">
+    <a href="https://digiylyfe.com/" target="_blank" rel="noopener">🌍 Site</a>
+    <a id="routeHub" href="https://pro-espace.digiylyfe.com/" target="_blank" rel="noopener">🧭 HUB</a>
+    <a href="https://tarifs.digiylyfe.com/" target="_blank" rel="noopener">📦 Tarifs</a>
+  </nav>
 
   <div class="wrap">
     <div class="shell">
@@ -593,6 +772,23 @@
           <span class="tag">🛡️ Vérification d'abonnement</span>
           <span class="tag">💳 Activation directe</span>
           <span class="tag info">📎 QR prêt</span>
+        </div>
+
+        <div class="audioBox" aria-label="Explication audio RESA">
+          <div class="audioTop">
+            <div>
+              <div class="audioLead"><span class="dot"></span> Conseil DIGIY · écoute d'abord</div>
+              <div class="audioTitle">🎧 Comprendre RESA avant d’ouvrir ton planning</div>
+              <div class="audioText">Une voix explique comment le client choisit un moment, comment le pro garde son planning, et pourquoi la réservation devient plus autonome.</div>
+              <div class="audioHint">👉 Une minute pour comprendre : planning, QR, vitrine, accès et réservations.</div>
+            </div>
+            <div class="audioActions">
+              <button class="audioBtn" id="btnResaAudio" type="button">🎧 Écouter DIGIY</button>
+              <button class="audioBtn stop" id="btnResaAudioStop" type="button">⏹ Stop</button>
+            </div>
+          </div>
+          <div class="audioProgressWrap" aria-hidden="true"><div class="audioProgress" id="resaAudioProgress"></div></div>
+          <div class="audioGlow" aria-hidden="true"></div>
         </div>
       </div>
 
@@ -1123,5 +1319,110 @@
       }
     })();
   </script>
+  <script>
+    (function(){
+      "use strict";
+
+      const AUDIO_TEXT = "Bienvenue dans Mes Réservations by DIGIY. RESA sert à laisser le client choisir un moment clair, sans appeler dix fois, sans perdre le fil WhatsApp, et sans bloquer le professionnel dans le désordre. Le client voit une vitrine, choisit un créneau, envoie sa demande, et le professionnel garde son planning sous la main. Restaurant, salon, plage privée, rooftop, service ou activité terrain : l’idée reste la même. Le pro garde la main, le QR aide à partager, le planning aide à organiser, et DIGIY accompagne sans prendre la place du métier. Tu peux ouvrir ton espace, vérifier ton accès, préparer ton QR, ou entrer dans ta gestion. Une réservation bien posée, c’est du temps gagné, moins d’oubli, et un client mieux accueilli.";
+
+      const btnPlay = document.getElementById("btnResaAudio");
+      const btnStop = document.getElementById("btnResaAudioStop");
+      const progress = document.getElementById("resaAudioProgress");
+      const routeHub = document.getElementById("routeHub");
+      let playing = false;
+      let timer = null;
+
+      function normPhone(v){
+        const d = String(v || "").replace(/[^\d]/g, "");
+        if(!d) return "";
+        if(d.startsWith("221") && d.length === 12) return d;
+        if(d.length === 9) return "221" + d;
+        return d;
+      }
+
+      function syncHub(){
+        try{
+          if(!routeHub) return;
+          const q = new URLSearchParams(location.search);
+          const phone = normPhone(q.get("phone") || q.get("tel") || localStorage.getItem("digiy_resa_phone") || localStorage.getItem("digiy_phone") || "");
+          const u = new URL("https://pro-espace.digiylyfe.com/");
+          if(phone) u.searchParams.set("phone", phone);
+          routeHub.href = u.toString();
+        }catch(_){}
+      }
+
+      function getVoice(){
+        const synth = window.speechSynthesis;
+        if(!synth) return null;
+        const voices = synth.getVoices() || [];
+        return voices.find(v => /^fr/i.test(v.lang || "") && /audrey|amelie|hortense|julie|thomas|paul|french/i.test(v.name || ""))
+          || voices.find(v => /^fr/i.test(v.lang || ""))
+          || null;
+      }
+
+      function stopAudio(){
+        try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(_){}
+        clearInterval(timer);
+        timer = null;
+        playing = false;
+        if(btnPlay) btnPlay.textContent = "🎧 Écouter DIGIY";
+        if(progress) progress.style.width = "0%";
+      }
+
+      function playAudio(){
+        if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
+          alert("Audio indisponible sur ce navigateur.");
+          return;
+        }
+
+        if(playing){
+          stopAudio();
+          return;
+        }
+
+        stopAudio();
+
+        const utter = new SpeechSynthesisUtterance(AUDIO_TEXT);
+        utter.lang = "fr-FR";
+        utter.rate = 0.86;
+        utter.pitch = 1.04;
+        utter.volume = 1;
+
+        const voice = getVoice();
+        if(voice) utter.voice = voice;
+
+        const wordCount = AUDIO_TEXT.split(/\s+/).length;
+        const duration = Math.max(20000, wordCount * 460);
+        let elapsed = 0;
+
+        utter.onstart = function(){
+          playing = true;
+          if(btnPlay) btnPlay.textContent = "⏸️ Lecture en cours";
+          timer = setInterval(function(){
+            elapsed += 250;
+            if(progress) progress.style.width = Math.min(96, (elapsed / duration) * 100) + "%";
+          }, 250);
+        };
+
+        utter.onend = function(){
+          if(progress) progress.style.width = "100%";
+          setTimeout(stopAudio, 300);
+        };
+
+        utter.onerror = stopAudio;
+        window.speechSynthesis.speak(utter);
+      }
+
+      if(btnPlay) btnPlay.addEventListener("click", playAudio);
+      if(btnStop) btnStop.addEventListener("click", stopAudio);
+      if(window.speechSynthesis && typeof window.speechSynthesis.onvoiceschanged !== "undefined"){
+        window.speechSynthesis.onvoiceschanged = getVoice;
+      }
+      window.addEventListener("beforeunload", stopAudio);
+      document.addEventListener("visibilitychange", function(){ if(document.hidden) stopAudio(); });
+      syncHub();
+    })();
+  </script>
+
 </body>
 </html>
