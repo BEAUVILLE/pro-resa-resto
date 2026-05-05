@@ -12,7 +12,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-planning-v4"></script>
+  <script src="./guard.js?v=resa-planning-secure-pin8h"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -406,7 +406,7 @@
           <p id="heroDesc">Vue simple pour lire les réservations, les créneaux, les services et les notes du jour.</p>
           <div class="hero-meta">
             <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
-            <div class="pill" id="heroSlug">Identifiant : —</div>
+            <div class="pill" id="heroSession">Session : protégée</div>
             <div class="pill" id="heroCity">Ville : —</div>
             <div class="pill" id="heroType">Activité : —</div>
             <div class="pill" id="heroDate">Date : —</div>
@@ -508,15 +508,15 @@
         <div class="claw-head">
           <div>
             <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">Lecture activité</div>
+            <div class="claw-kicker">Mon assistant DIGIY</div>
             <!-- ━━━ AVANT : "Aide légère sur le jour" → "Lecture du jour" ━━━ -->
             <h3 class="claw-title">Lecture du jour</h3>
           </div>
           <!-- ━━━ AVANT : "Lecture neutre" → "Analyse en cours" ━━━ -->
-          <div class="pill" id="clawMode">Analyse en cours</div>
+          <div class="pill" id="clawMode">Aide en cours</div>
         </div>
         <!-- ━━━ AVANT : "CLAW lit le jour en silence" → humain ━━━ -->
-        <div class="claw-text" id="clawSummary">DIGIY lit le jour : charge visible, points d’attention, respiration du planning.</div>
+        <div class="claw-text" id="clawSummary">DIGIY t’aide à lire le jour : charge visible, points d’attention, respiration du planning.</div>
         <div class="claw-pills" id="clawPills"></div>
       </article>
       <article class="claw-card">
@@ -548,12 +548,7 @@
 
       const MODULE = "RESA";
 
-      try{
-        window.DIGIY_GUARD?.boot?.({module:"RESA",login:"./pin.html",dashboard:"./dashboard-pro.html",requireSlug:true,checkSubscription:true,storageSlugKey:"digiy_resa_slug",storageLastSlugKey:"digiy_last_slug"});
-      }catch{}
-
       const query     = new URL(location.href).searchParams;
-      const querySlug = query.get("slug") || "";
       const queryDate = query.get("date") || "";
 
       const $ = (id) => document.getElementById(id);
@@ -576,32 +571,81 @@
       function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }
       function safeJsonParse(v){ try{ return typeof v==="string"?JSON.parse(v):v; }catch{ return null; } }
 
+      function cleanVisibleUrl(){
+        try{
+          const u = new URL(location.href);
+          const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
+          if(legacySlug){
+            storageSet("digiy_resa_slug", legacySlug);
+            storageSet("digiy_resa_last_slug", legacySlug);
+          }
+          ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          history.replaceState({}, document.title, u.pathname + u.search + u.hash);
+        }catch(_){}
+      }
+
       function getSessionSlug(){
-        const r=safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION")); if(r?.slug)return normalizeSlug(r.slug);
-        const g=safeJsonParse(storageGet("DIGIY_PRO_SESSION")); if(g?.module===MODULE&&g?.slug)return normalizeSlug(g.slug);
+        const direct =
+          safeJsonParse(storageGet("DIGIY_RESA_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_RESA_PIN_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_SESSION_RESA")) ||
+          safeJsonParse(storageGet("digiy_resa_session"));
+
+        if(direct?.module === MODULE && direct?.slug) return normalizeSlug(direct.slug);
+
+        const generic = safeJsonParse(storageGet("DIGIY_ACCESS"));
+        if(generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+
         return "";
       }
-      function getFallbackSlug(){ return normalizeSlug(querySlug||storageGet("digiy_resa_slug")||storageGet("digiy_resa_last_slug")||storageGet("digiy_last_slug")||storageGet("DIGIY_SLUG")||storageGet("digiy_slug")||getSessionSlug()||""); }
+      function getFallbackSlug(){
+        return normalizeSlug(
+          storageGet("digiy_resa_slug") ||
+          storageGet("digiy_resa_last_slug") ||
+          getSessionSlug() ||
+          ""
+        );
+      }
 
       /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          buildSafeUrl — VERSION BLINDÉE
          new URL(path, location.href) fragile selon l'env.
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
       function buildSafeUrl(base, params){
-        const baseStr=(base==null?"":String(base)).trim();
-        if(!baseStr)return location.href;
+        const baseStr = (base == null ? "" : String(base)).trim();
+        if(!baseStr) return "./dashboard-pro.html";
+
         let u;
         try{
-          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
-          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
-        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
-        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+          if(/^https?:\/\//i.test(baseStr)){
+            u = new URL(baseStr);
+          }else{
+            u = new URL(baseStr, location.href);
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
+          return baseStr;
+        }
+
+        ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+
+        try{
+          Object.entries(params || {}).forEach(([k,v]) => {
+            if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
+            if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+          });
+        }catch(e){}
+
+        if(u.origin === location.origin){
+          const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+          return "./" + file + (u.search || "") + (u.hash || "");
+        }
+
         return u.toString();
       }
 
-      function withSlug(path, slug="", extra={}){
-        const clean=normalizeSlug(slug);
-        return buildSafeUrl(path,{...(clean?{slug:clean}:{}),...extra});
+      function cleanPath(path, extra = {}){
+        return buildSafeUrl(path, extra);
       }
 
       function initClient(){
@@ -613,24 +657,26 @@
 
       async function rpc(name,args){ if(!sb)throw new Error("supabase_unavailable"); const{data,error}=await sb.rpc(name,args); if(error)throw error; return data; }
 
-      function setLinks(slug=""){
-        const c=normalizeSlug(slug);
-        const reservationsHref = withSlug("./cockpit.html",       c);
-        const planningHref  = withSlug("./planning.html",      c, ACTIVE_DATE?{date:ACTIVE_DATE}:{});
-        const dashboardHref = withSlug("./dashboard-pro.html", c);
-        const settingsHref  = withSlug("./etablissement.html", c);
-        const pinHref       = withSlug("./pin.html",           c);
-        const homeHref      = withSlug("./index.html",         c);
-        $("navDashboard").href  = dashboardHref;
-        $("navPlanning").href   = planningHref;
-        $("navSettings").href   = settingsHref;
-        $("navPin").href        = pinHref;
-        $("navHome").href       = homeHref;
-        $("btnDashboardTop").href= dashboardHref;
-        $("btnPin").href        = pinHref;
-        $("btnSettings").href   = settingsHref;
+      function setLinks(){
+        const dateParam = ACTIVE_DATE ? {date: ACTIVE_DATE} : {};
+
+        const reservationsHref = cleanPath("./cockpit.html", dateParam);
+        const planningHref = cleanPath("./planning.html", dateParam);
+        const dashboardHref = cleanPath("./dashboard-pro.html");
+        const settingsHref = cleanPath("./etablissement.html");
+        const pinHref = cleanPath("./pin.html");
+        const homeHref = cleanPath("./index.html");
+
+        $("navDashboard").href = dashboardHref;
+        $("navPlanning").href = planningHref;
+        $("navSettings").href = settingsHref;
+        $("navPin").href = pinHref;
+        $("navHome").href = homeHref;
+        $("btnDashboardTop").href = dashboardHref;
+        $("btnPin").href = pinHref;
+        $("btnSettings").href = settingsHref;
         $("heroDashboard").href = dashboardHref;
-        $("heroSettings").href  = settingsHref;
+        $("heroSettings").href = settingsHref;
 
         const extraLinks = {
           fastReservations: reservationsHref,
@@ -654,48 +700,57 @@
       }
 
       async function resolveGuardState(){
-        const fallbackSlug=getFallbackSlug();
-        if(!window.DIGIY_GUARD)return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_missing"};
+        const fallbackSlug = getFallbackSlug();
+
+        if(!window.DIGIY_GUARD){
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_missing"};
+        }
+
         try{
-          if(window.DIGIY_GUARD.ready&&typeof window.DIGIY_GUARD.ready.then==="function")await window.DIGIY_GUARD.ready;
-        }catch{return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_error"};}
-        const st=window.DIGIY_GUARD?.state||null;
-        if(!st)return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_empty"};
-        return{...st,slug:normalizeSlug(st.slug||fallbackSlug||"")};
+          if(typeof window.DIGIY_GUARD.ready === "function"){
+            const st = await window.DIGIY_GUARD.ready();
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          if(window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function"){
+            const st = await window.DIGIY_GUARD.ready;
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          const st = window.DIGIY_GUARD.state || null;
+          if(!st) return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_empty"};
+
+          return {...st, slug:normalizeSlug(st.slug || fallbackSlug || "")};
+        }catch{
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_error"};
+        }
       }
 
-      function setHeroData(name,desc,slug,city,type,dateText){
-        /* ━━━ AVANT : "DIGIY RESA PRO" default → "JE RÉSERVE" ━━━ */
-        $("heroName").textContent = name||"JE RÉSERVE";
-        $("heroDesc").textContent = desc||"Lecture visuelle des réservations.";
-        /* ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ */
-        $("heroSlug").textContent = "Identifiant : "+(slug||"—");
-        $("heroCity").textContent = "Ville : "+(city||"—");
-        $("heroType").textContent = "Activité : "+(type||"—");
-        $("heroDate").textContent = "Date : "+(dateText||"—");
+      function setHeroData(name,desc,city,type,dateText){
+        $("heroName").textContent = name || "JE RÉSERVE";
+        $("heroDesc").textContent = desc || "Lecture visuelle des réservations.";
+        $("heroSession").textContent = "Session : 8h après code PIN";
+        $("heroCity").textContent = "Ville : " + (city || "—");
+        $("heroType").textContent = "Activité : " + (type || "—");
+        $("heroDate").textContent = "Date : " + (dateText || "—");
       }
 
-      function setPreviewHero(slug=""){
-        $("modeBadge").className="mode";
-        $("modeBadge").textContent="Aperçu";
-        /* ━━━ AVANT : "Slug détecté" / "Aucun slug détecté" → bannis ━━━ */
-        $("topSub").textContent=slug
-          ? `Identifiant détecté (${slug}) mais accès non confirmé. Aucune donnée réelle affichée.`
-          : "Aucun identifiant détecté. Aucune donnée réelle affichée.";
-        $("miniTitle").textContent="Accès protégé";
-        $("miniText").textContent="Le planning reste lisible sans inventer de fausses réservations. Entre par PIN pour ouvrir le jour vivant.";
-        /* ━━━ AVANT : "DIGIY RESA PRO — planning visuel multi business." → banni ━━━ */
-        $("footerNote").textContent="Aperçu actif — zéro démo, zéro fausse réservation.";
+      function setPreviewHero(){
+        $("modeBadge").className = "mode";
+        $("modeBadge").textContent = "Aperçu";
+        $("topSub").textContent = "Session RESA non ouverte. Aucune donnée réelle affichée.";
+        $("miniTitle").textContent = "Accès protégé";
+        $("miniText").textContent = "Le planning reste lisible sans inventer de fausses réservations. Entre par PIN pour ouvrir le jour vivant.";
+        $("footerNote").textContent = "Aperçu actif — zéro démo, zéro fausse réservation.";
       }
 
       function setLiveHero(){
-        $("modeBadge").className="mode live";
-        $("modeBadge").textContent="En direct";
-        /* ━━━ AVANT : "Planning chargé pour" → humain ━━━ */
-        $("topSub").textContent=`Planning pour ${RESOLVED_SLUG}`;
-        $("miniTitle").textContent="Lecture terrain";
-        $("miniText").textContent="Le planning montre l'ordre du jour, les services demandés, les statuts et les personnes à accueillir.";
-        $("footerNote").textContent="Planning vivant branché sur les réservations réelles.";
+        $("modeBadge").className = "mode live";
+        $("modeBadge").textContent = "En direct";
+        $("topSub").textContent = "Planning chargé.";
+        $("miniTitle").textContent = "Lecture terrain";
+        $("miniText").textContent = "Le planning montre l'ordre du jour, les services demandés, les statuts et les personnes à accueillir.";
+        $("footerNote").textContent = "Planning vivant branché sur les réservations réelles.";
       }
 
       function resetData(){ PROFILE=null; SERVICES=[]; BOOKINGS=[]; }
@@ -739,7 +794,7 @@
           setClawMode("Accès attendu");
           /* ━━━ AVANT : "CLAW reste branché au rail RESA" · "slug" visibles → bannis ━━━ */
           setClaw(
-            "L'espace est visible mais sans accès confirmé, aucune donnée inventée n'est affichée. Entre par PIN pour ouvrir le jour vivant.",
+            "L’espace est visible mais sans accès confirmé, aucune donnée inventée n’est affichée. Entre par PIN pour ouvrir le jour vivant.",
             [
               {title:"Lecture des disponibilités",text:"Entre par PIN pour lire le jour réel et voir où le planning respire."},
               {title:"Préparation réservation",text:"Le vrai planning peut aider à choisir un créneau et préparer l'accueil."},
@@ -748,7 +803,7 @@
             [
               ACTIVE_DATE?`Date : ${fmtDate(ACTIVE_DATE)}`:"Date : —",
               /* ━━━ AVANT : "Slug : ..." → "Identifiant : ..." ━━━ */
-              RESOLVED_SLUG?`Identifiant : ${RESOLVED_SLUG}`:"Identifiant non confirmé",
+              "Session non ouverte",
               "Zéro démo"
             ]
           );
@@ -782,7 +837,7 @@
         const payload=await rpc("digiy_resa_get_bookings_by_day",{p_slug:RESOLVED_SLUG,p_date:ACTIVE_DATE});
         if(!payload?.ok)throw new Error(payload?.error||"bookings_not_found");
         const rows=Array.isArray(payload.bookings)?payload.bookings:[];
-        BOOKINGS=rows.map(r=>({id:String(r.id||""),booking_date:r.booking_date||ACTIVE_DATE,booking_time:r.booking_time||"",customer_name:r.customer_name||"Sans nom",customer_phone:r.customer_phone||"",guests_count:r.guests_count??"",service_name:r.service_name||"",duration_minutes:r.duration_minutes??"",price_fcfa:r.price_fcfa??"",status:normStatus(r.status),note:r.note_text||r.note||"",created_at:r.created_at||null}));
+        BOOKINGS=rows.map(r=>({id:String(r.id||""),booking_date:r.booking_date||ACTIVE_DATE,booking_time:r.booking_time||"",customer_name:r.customer_name||"Sans nom",guests_count:r.guests_count??"",service_name:r.service_name||"",duration_minutes:r.duration_minutes??"",price_fcfa:r.price_fcfa??"",status:normStatus(r.status),note:r.note_text||r.note||"",created_at:r.created_at||null}));
       }
 
       function renderStats(){
@@ -822,7 +877,6 @@
                 <div class="booking-main">
                   <div class="booking-name">${escapeHtml(row.customer_name)}</div>
                   <div class="meta">
-                    <span>📞 ${escapeHtml(row.customer_phone||"—")}</span>
                     <span>👥 ${escapeHtml(String(row.guests_count||"—"))}</span>
                     <span>🧾 ${escapeHtml(row.created_at?fmtDate(row.created_at):"—")}</span>
                   </div>
@@ -1016,17 +1070,6 @@
         return ["service_income","deposit","product_purchase","client_debt"].includes(type);
       }
 
-      function getResaPhone(){
-        const guardPhone = String(window.DIGIY_GUARD?.state?.phone || "").replace(/[^\d]/g, "");
-        const storagePhone = String(storageGet("digiy_phone") || storageGet("DIGIY_PHONE") || storageGet("digiy_resa_phone") || "").replace(/[^\d]/g, "");
-        return guardPhone || storagePhone || "";
-      }
-
-      function paySlugFromResaPhone(){
-        const p = getResaPhone();
-        return p ? "pay-" + p : "";
-      }
-
       function payResaLabel(item){
         const type = String(item?.type || "").toLowerCase();
         const comp = String(item?.complement || "").trim();
@@ -1039,12 +1082,7 @@
       }
 
       function buildPayFromResaUrl(item){
-        const phone = getResaPhone();
-        const paySlug = paySlugFromResaPhone();
         const qsPay = new URLSearchParams();
-
-        if(paySlug) qsPay.set("slug", paySlug);
-        if(phone) qsPay.set("phone", phone);
 
         qsPay.set("fromDraft", "1");
         qsPay.set("direction", item?.direction === "in" ? "in" : "out");
@@ -1055,7 +1093,6 @@
         qsPay.set("channel", item?.channel || "other");
         qsPay.set("category", item?.category || "resa_note");
         qsPay.set("source_module", "RESA");
-        if(RESOLVED_SLUG) qsPay.set("source_slug", RESOLVED_SLUG);
         qsPay.set("source_id", item?.memory_id || ("resa-note-" + Date.now()));
         qsPay.set("label", payResaLabel(item));
         qsPay.set("note", String(item?.sentence || "").trim());
@@ -1212,6 +1249,7 @@
 
 
       async function boot(){
+        cleanVisibleUrl();
         document.body.classList.add("loading");
         try{
           initClient();
@@ -1219,12 +1257,12 @@
           $("dateInput").value=ACTIVE_DATE;
           const st=await resolveGuardState();
 
-          const previewHeroData = (slug) => setHeroData("JE RÉSERVE","Vue agenda simple pour lire les réservations dans l'ordre du jour.",slug||"—","—","Multi business",fmtDateLong(ACTIVE_DATE));
+          const previewHeroData = () => setHeroData("JE RÉSERVE","Vue agenda simple pour lire les réservations dans l’ordre du jour.","—","Multi business",fmtDateLong(ACTIVE_DATE));
 
           if(st?.preview){
             IS_PREVIEW=true;
             RESOLVED_SLUG=normalizeSlug(st.slug||getFallbackSlug()||"");
-            setLinks(RESOLVED_SLUG); setPreviewHero(RESOLVED_SLUG); previewHeroData(RESOLVED_SLUG);
+            setLinks(); setPreviewHero(); previewHeroData();
             resetData(); renderStats(); buildClawFromData();
             renderEmptyState("Accès non ouvert. Entre par PIN pour lire le planning vivant.");
             return;
@@ -1234,29 +1272,29 @@
             IS_PREVIEW=false;
             RESOLVED_SLUG=normalizeSlug(st.slug||getFallbackSlug()||"");
             if(!RESOLVED_SLUG){
-              IS_PREVIEW=true; setLinks(""); setPreviewHero(""); previewHeroData("");
+              IS_PREVIEW=true; setLinks(); setPreviewHero(); previewHeroData();
               resetData(); renderStats(); buildClawFromData();
               /* ━━━ AVANT : "Slug manquant. Ouvre le module..." → humain ━━━ */
-              renderEmptyState("Identifiant manquant. Ouvre avec un lien valide puis recharge.");
+              renderEmptyState("Contexte RESA absent. Reviens par ton accès puis recharge.");
               return;
             }
-            storageSet("digiy_resa_last_slug",RESOLVED_SLUG);storageSet("digiy_resa_slug",RESOLVED_SLUG);storageSet("digiy_last_slug",RESOLVED_SLUG);storageSet("DIGIY_SLUG",RESOLVED_SLUG);
-            setLinks(RESOLVED_SLUG); setLiveHero();
+            storageSet("digiy_resa_last_slug",RESOLVED_SLUG);storageSet("digiy_resa_slug",RESOLVED_SLUG);
+            setLinks(); setLiveHero();
             await Promise.all([loadProfile(),loadServices(),loadBookings()]);
-            setHeroData(PROFILE?.display_name||"Ma boutique",PROFILE?.bio||"Vue agenda simple pour lire les réservations du jour.",RESOLVED_SLUG,PROFILE?.city||"—",PROFILE?.business_type||PROFILE?.category||"Multi business",fmtDateLong(ACTIVE_DATE));
+            setHeroData(PROFILE?.display_name||"Mon activité",PROFILE?.bio||"Vue agenda simple pour lire les réservations du jour.",PROFILE?.city||"—",PROFILE?.business_type||PROFILE?.category||"Multi business",fmtDateLong(ACTIVE_DATE));
             renderStats(); buildClawFromData(); renderTimeline();
             return;
           }
 
           IS_PREVIEW=true;
           RESOLVED_SLUG=normalizeSlug(st?.slug||getFallbackSlug()||"");
-          setLinks(RESOLVED_SLUG); setPreviewHero(RESOLVED_SLUG); previewHeroData(RESOLVED_SLUG);
+          setLinks(); setPreviewHero(); previewHeroData();
           resetData(); renderStats(); buildClawFromData();
           renderEmptyState("Accès non confirmé. Le planning réel reste protégé.");
         }catch(err){
           console.error(err);
-          IS_PREVIEW=true; RESOLVED_SLUG=getFallbackSlug(); setLinks(RESOLVED_SLUG); setPreviewHero(RESOLVED_SLUG);
-          setHeroData("JE RÉSERVE","Erreur de chargement. Aperçu affiché.",RESOLVED_SLUG||"—","—","Multi business",fmtDateLong(ACTIVE_DATE||todayISO()));
+          IS_PREVIEW=true; RESOLVED_SLUG=getFallbackSlug(); setLinks(); setPreviewHero();
+          setHeroData("JE RÉSERVE","Erreur de chargement. Aperçu affiché.","—","Multi business",fmtDateLong(ACTIVE_DATE||todayISO()));
           resetData(); renderStats(); buildClawFromData();
           renderEmptyState("Erreur de chargement. Recharge ou repasse par PIN.");
         }finally{
@@ -1268,7 +1306,7 @@
 
       $("btnReload").addEventListener("click",boot);
       $("filterStatus").addEventListener("change",(e)=>{ ACTIVE_FILTER=e.target.value||"all"; renderTimeline(); });
-      $("dateInput").addEventListener("change",()=>{ ACTIVE_DATE=$("dateInput").value||todayISO(); setLinks(RESOLVED_SLUG); boot(); });
+      $("dateInput").addEventListener("change",()=>{ ACTIVE_DATE=$("dateInput").value||todayISO(); setLinks(); boot(); });
 
       boot();
     })();
