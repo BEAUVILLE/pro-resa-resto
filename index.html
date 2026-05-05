@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Mes réservations · Mon espace · DIGIY</title>
+  <title>Mes réservations · Mon espace · DIGIY-RESA</title>
   <meta name="theme-color" content="#0b5d3b"/>
-  <meta name="description" content="Mon espace réservations by DIGIY — porte d’entrée simple pour gérer ses réservations."/>
+  <meta name="description" content="Mon espace réservations by DIGIY — entrée sécurisée par code PIN pour gérer ses réservations."/>
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -758,18 +758,18 @@
       </nav>
 
       <div class="hero">
-        <h1>La porte d’entrée de tes réservations</h1>
+        <h1>Ton espace pour recevoir au bon moment</h1>
         <p>
-          Ici, tu entres simplement dans ton espace DIGIY. Restaurant, lounge, salon, plage privée,
-          rooftop ou service terrain : tu peux entrer par ton identifiant, par ton code, vérifier ton accès,
-          ouvrir ton activité, préparer ton QR ou lancer ton activation.
+          Restaurant, lounge, salon, plage privée, rooftop ou service terrain : ici, tu retrouves
+          vite le bon geste. Si tu es déjà abonné, entre simplement par ton code PIN :
+          ta session reste ouverte pendant 8 heures sur ton appareil.
         </p>
 
         <div class="badges">
           <span class="tag gold">📅 Réservations multi-business</span>
           <span class="tag">🔐 Accès par code</span>
-          <span class="tag">🧭 Accès par identifiant</span>
-          <span class="tag">🛡️ Vérification d'abonnement</span>
+          <span class="tag">⏱️ Session 8h</span>
+          <span class="tag">🛡️ Coffre sécurisé</span>
           <span class="tag">💳 Activation directe</span>
           <span class="tag info">📎 QR prêt</span>
         </div>
@@ -778,9 +778,9 @@
           <div class="audioTop">
             <div>
               <div class="audioLead"><span class="dot"></span> Conseil DIGIY · écoute d'abord</div>
-              <div class="audioTitle">🎧 Comprendre RESA avant d’ouvrir ton planning</div>
-              <div class="audioText">Une voix explique comment le client choisit un moment, comment le pro garde son planning, et pourquoi la réservation devient plus autonome.</div>
-              <div class="audioHint">👉 Une minute pour comprendre : planning, QR, vitrine, accès et réservations.</div>
+              <div class="audioTitle">🎧 Comprendre RESA et ton assistant maison</div>
+              <div class="audioText">Une voix explique comment RESA aide le client à choisir le bon moment, pendant que le pro entre par son code, garde la main sur son planning, son QR, sa vitrine et son accueil.</div>
+              <div class="audioHint">👉 Une minute pour comprendre : recevoir, organiser, partager et avancer sans se perdre.</div>
             </div>
             <div class="audioActions">
               <button class="audioBtn" id="btnResaAudio" type="button">🎧 Écouter DIGIY</button>
@@ -803,18 +803,18 @@
         <article class="claw-card">
           <div class="claw-head">
             <div>
-              <div class="claw-kicker">Lecture activité</div>
-              <h2 class="claw-title">Lecture de ton espace</h2>
+              <div class="claw-kicker">Assistant maison</div>
+              <h2 class="claw-title">Mon assistant DIGIY</h2>
             </div>
             <div class="claw-mode" id="clawMode">Analyse en cours</div>
           </div>
-          <div class="claw-text" id="clawSummary">On lit ton espace d'entrée : identifiant, accès, QR, activité et prochaine action utile.</div>
+          <div class="claw-text" id="clawSummary">Une aide simple pour savoir quoi faire maintenant : planning, QR, activité, profil ou code.</div>
           <div class="claw-pills" id="clawPills"></div>
         </article>
 
         <article class="claw-card">
           <div class="claw-list" id="clawList">
-            <div class="claw-item"><strong>Chargement</strong><span>En attente de ton identifiant pour te guider proprement.</span></div>
+            <div class="claw-item"><strong>Assistant prêt</strong><span>Entre par ton code PIN : l’assistant t’oriente ensuite vers le bon geste.</span></div>
           </div>
         </article>
       </section>
@@ -823,45 +823,41 @@
 
       <div class="grid">
         <div class="box">
-          <div class="sectionTitle">Accès direct</div>
+          <div class="sectionTitle">Entrée sécurisée</div>
           <p class="lead">
-            Mets ton identifiant si tu l’as. Sinon, passe par ton code, vérifie ton accès,
-            ouvre ton activité, ta gestion, ton QR, le support ou l’activation.
+            Si tu es déjà abonné, entre par ton code PIN. Ta session reste ouverte pendant 8 heures.
+            Ensuite, ton assistant DIGIY te guide vers le planning, le QR, l’activité ou le profil.
           </p>
 
-          <div style="margin-top:14px;">
-            <input id="slugInput" class="input" type="text" placeholder="Ton identifiant d’activité" autocomplete="off" spellcheck="false"/>
-            <div class="hint">Ton identifiant unique, disponible dans ton lien ou ton QR.</div>
-          </div>
 
           <div class="actionGrid">
-            <button class="btn ok" id="btnOpenSlug" type="button">🚀 Ouvrir mon espace</button>
-            <button class="btn gold" id="btnVerify" type="button">✅ Vérifier mon accès</button>
+            <button class="btn ok" id="btnOpenSlug" type="button">🔐 Entrer avec mon code</button>
+            <button class="btn gold" id="btnVerify" type="button">⏱️ Session 8h</button>
             <button class="btn" id="btnPin" type="button">🔐 Entrer par mon code</button>
             <button class="btn info" id="btnDashboard" type="button">📊 Ouvrir mon activité</button>
             <button class="btn info" id="btnQr" type="button">📎 Ouvrir mon QR</button>
             <button class="btn gold" id="btnPay" type="button">💳 Je commence</button>
-            <button class="btn bad" id="btnSupport" type="button">💬 Contacter le support</button>
+            <button class="btn bad" id="btnSupport" type="button">💬 Aide DIGIY</button>
           </div>
 
           <div class="infoList">
-            <div class="miniBox"><div class="miniLabel">Dernier identifiant gardé</div><div class="miniValue mono" id="savedSlug">—</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue" id="dashboardTarget">Prête à ouvrir</div></div>
-            <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue" id="cockpitTarget">Prête à ouvrir</div></div>
-            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue" id="qrTarget">Prêt à préparer</div></div>
-            <div class="miniBox"><div class="miniLabel">Rejoindre DIGIY</div><div class="miniValue" id="payTarget">Activation de l'accès</div></div>
+            <div class="miniBox"><div class="miniLabel">Déjà abonné</div><div class="miniValue">Entre avec ton code PIN</div></div>
+            <div class="miniBox"><div class="miniLabel">Durée de session</div><div class="miniValue">8 heures sur ton appareil</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon activité</div><div class="miniValue" id="dashboardTarget">Ouverture après accès</div></div>
+            <div class="miniBox"><div class="miniLabel">Ma gestion</div><div class="miniValue" id="cockpitTarget">Ouverture après accès</div></div>
+            <div class="miniBox"><div class="miniLabel">Mon QR</div><div class="miniValue" id="qrTarget">Préparation après accès</div></div>
           </div>
         </div>
 
         <div class="box">
-          <div class="sectionTitle">Comment ça marche</div>
+          <div class="sectionTitle">Comment ton assistant t’aide</div>
           <ol class="steps">
             <li>Tu ouvres ton espace professionnel</li>
-            <li>Tu saisis ton identifiant ou tu passes par ton code</li>
-            <li>DIGIY retrouve le téléphone lié à ton identifiant</li>
-            <li>DIGIY vérifie ton accès</li>
-            <li>Tu entres dans ton activité ou ta gestion des réservations</li>
-            <li>Tu sors ton QR sans rester devant la porte</li>
+            <li>Si tu es déjà abonné, tu entres par ton code PIN</li>
+            <li>La session reste ouverte pendant 8 heures sur ton appareil</li>
+            <li>Ton assistant t’oriente vers le bon geste</li>
+            <li>Tu ouvres ton planning, ton activité, ton profil ou ton QR</li>
+            <li>Tu partages ta vitrine sans exposer tes accès privés</li>
           </ol>
 
           <div class="hr"></div>
@@ -901,62 +897,30 @@
       "use strict";
 
       const MODULE = "RESA";
-      const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
-      const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
-
-      const ACCESS_URL = "./index.html";
-      const PIN_URL = "./pin.html";
+      const PIN_RETURN = "dashboard-pro.html";
+      const PIN_URL = "./pin.html?module=RESA&return=dashboard-pro.html";
       const DASHBOARD_URL = "./dashboard-pro.html";
       const PRO_URL = "./cockpit.html";
       const PLANNING_URL = "./planning.html";
       const QR_URL = "./qr.html";
       const SETTINGS_URL = "./etablissement.html";
       const PAY_URL = "https://commencer-a-payer.digiylyfe.com/?module=RESA";
-      const SUPPORT_WA = "+221771342889";
-
-      if(!window.supabase){
-        alert("Librairie Supabase non chargée.");
-        return;
-      }
-
-      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth:{
-          persistSession:false,
-          autoRefreshToken:false,
-          detectSessionInUrl:false,
-          storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}
-        }
-      });
+      const HUB_URL = "https://pro-espace.digiylyfe.com/";
 
       const $ = (id) => document.getElementById(id);
-      const qp = new URLSearchParams(location.search);
-
-      const slugInput = $("slugInput");
-      const savedSlugBox = $("savedSlug");
-      const stickyValue = $("stickyValue");
 
       function setStatus(text,tone,mini){
-        $("statusBox").className = "status " + (tone || "warn");
-        $("statusText").textContent = text || "";
-        $("statusMini").textContent = mini || "INFO";
+        const box = $("statusBox");
+        const label = $("statusText");
+        const small = $("statusMini");
+        if(box) box.className = "status " + (tone || "info");
+        if(label) label.textContent = text || "";
+        if(small) small.textContent = mini || "INFO";
       }
 
       function setSticky(text){
-        stickyValue.textContent = text || "Prêt";
-      }
-
-      function normSlug(v){
-        return String(v || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g,"-")
-          .replace(/[^a-z0-9-]/g,"")
-          .replace(/-+/g,"-")
-          .replace(/^-|-$/g,"");
-      }
-
-      function normPhone(v){
-        return String(v || "").replace(/[^\d]/g,"");
+        const el = $("stickyValue");
+        if(el) el.textContent = text || "Prêt";
       }
 
       function escapeHtml(v){
@@ -968,125 +932,107 @@
           .replaceAll("'","&#39;");
       }
 
-      function buildSafeUrl(base,params){
-        const baseStr = (base == null ? "" : String(base)).trim();
-        if(!baseStr) return location.href;
+      function setClaw(mode,summary,pills=[],items=[]){
+        const clawMode = $("clawMode");
+        const clawSummary = $("clawSummary");
+        const clawPills = $("clawPills");
+        const clawList = $("clawList");
 
-        let u;
-        try{
-          if(/^https?:\/\//i.test(baseStr)){
-            u = new URL(baseStr);
-          }else{
-            const origin = location.protocol + "//" + location.host;
-            const full = baseStr.startsWith("/") ? origin + baseStr : origin + "/" + baseStr;
-            u = new URL(full);
-          }
-        }catch(e){
-          console.warn("[DIGIY] buildSafeUrl KO:", baseStr, e.message);
-          return baseStr;
+        if(clawMode) clawMode.textContent = mode || "Assistant prêt";
+        if(clawSummary) clawSummary.textContent = summary || "Mon assistant DIGIY t’aide à choisir le bon geste.";
+
+        if(clawPills){
+          clawPills.innerHTML = (Array.isArray(pills) ? pills : [])
+            .filter(Boolean)
+            .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
+            .join("");
         }
 
+        if(clawList){
+          clawList.innerHTML = (Array.isArray(items) ? items : [])
+            .filter(Boolean)
+            .map(item => `<div class="claw-item"><strong>${escapeHtml(item.title || "Point utile")}</strong><span>${escapeHtml(item.text || "—")}</span></div>`)
+            .join("");
+        }
+      }
+
+      function setAssistantHome(){
+        setClaw(
+          "Code PIN",
+          "Si tu es déjà abonné, entre par ton code PIN. La session reste ouverte 8 heures sur ton appareil.",
+          ["Code PIN", "Session 8h", "Planning", "QR"],
+          [
+            {title:"Déjà abonné",text:"Entre avec ton code. DIGIY ouvre la maison sans afficher d’accès privé."},
+            {title:"Après l’entrée",text:"Tu peux aller vers le planning, l’activité, la gestion, le profil ou le QR."},
+            {title:"Geste conseillé",text:"Pour recevoir : planning. Pour partager : QR. Pour régler ton lieu : profil."}
+          ]
+        );
+      }
+
+      function setNavLinks(){
+        const links = {
+          navAccess:"./index.html",
+          navDashboard:DASHBOARD_URL,
+          navCockpit:PRO_URL,
+          navPlanning:PLANNING_URL,
+          navQr:QR_URL,
+          navSettings:SETTINGS_URL,
+          navPin:PIN_URL
+        };
+
+        Object.entries(links).forEach(([id,href]) => {
+          const el = $(id);
+          if(el) el.href = href;
+        });
+      }
+
+      function prepareResaPinContext(){
         try{
-          Object.entries(params || {}).forEach(([k,v]) => {
-            if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
-          });
-        }catch(e){}
+          sessionStorage.setItem("digiy_pin_module", MODULE);
+          sessionStorage.setItem("DIGIY_PIN_MODULE", MODULE);
+          sessionStorage.setItem("digiy_pin_return", PIN_RETURN);
+          sessionStorage.setItem("DIGIY_PIN_RETURN", PIN_RETURN);
 
-        return u.toString();
+          localStorage.setItem("digiy_active_module", MODULE);
+          localStorage.setItem("DIGIY_ACTIVE_MODULE", MODULE);
+          localStorage.setItem("digiy_last_module", MODULE);
+          localStorage.setItem("DIGIY_LAST_MODULE", MODULE);
+
+          localStorage.removeItem("digiy_explore_after_pin");
+          localStorage.removeItem("DIGIY_EXPLORE_AFTER_PIN");
+          localStorage.removeItem("explore_after_pin");
+        }catch(_){ }
       }
 
-      function withSlug(path,slug){
-        const c = normSlug(slug);
-        return buildSafeUrl(path, c ? { slug:c } : {});
+      function openLocal(path){
+        location.href = path;
       }
 
-      function setNavLinks(slug){
-        const c = normSlug(slug);
-
-        $("navAccess").href    = withSlug(ACCESS_URL, c);
-        $("navDashboard").href = withSlug(DASHBOARD_URL, c);
-        $("navCockpit").href   = withSlug(PRO_URL, c);
-        $("navPlanning").href  = withSlug(PLANNING_URL, c);
-        $("navQr").href        = withSlug(QR_URL, c);
-        $("navSettings").href  = withSlug(SETTINGS_URL, c);
-        $("navPin").href       = withSlug(PIN_URL, c);
-
-        $("dashboardTarget").textContent = c ? "Activité prête pour cet identifiant" : "Prête à ouvrir";
-        $("cockpitTarget").textContent   = c ? "Gestion prête pour cet identifiant" : "Prête à ouvrir";
-        $("qrTarget").textContent        = c ? "QR prêt pour cet identifiant" : "Prêt à préparer";
-        $("payTarget").textContent       = c ? "Activation prête pour cet identifiant" : "Activation de l'accès";
+      function openPin(){
+        prepareResaPinContext();
+        location.href = PIN_URL;
       }
 
-      function setClaw(mode,summary,pills=[],items=[]){
-        $("clawMode").textContent = mode || "Analyse en cours";
-        $("clawSummary").textContent = summary || "Lecture de ton espace.";
-        $("clawPills").innerHTML = (Array.isArray(pills) ? pills : [])
-          .filter(Boolean)
-          .map(p => `<div class="claw-pill">${escapeHtml(p)}</div>`)
-          .join("");
-
-        $("clawList").innerHTML = (Array.isArray(items) ? items : [])
-          .filter(Boolean)
-          .map(item => `<div class="claw-item"><strong>${escapeHtml(item.title || "Point utile")}</strong><span>${escapeHtml(item.text || "—")}</span></div>`)
-          .join("");
+      function openPay(){
+        location.href = PAY_URL;
       }
 
-      function setClawLoading(){
+      function showSessionInfo(){
+        setStatus("🔐 Déjà abonné ? Entre par ton code PIN. La session reste ouverte 8 heures.", "ok", "PIN 8H");
+        setSticky("Code PIN · session 8h");
+        setAssistantHome();
+      }
+
+      function openHelp(){
+        setStatus("💬 Besoin d’aide ? Entre d’abord par ton code PIN, puis passe par le HUB si nécessaire.", "info", "AIDE");
+        setSticky("Aide DIGIY · passe par le code");
         setClaw(
-          "Chargement",
-          "En attente de ton identifiant pour te guider proprement.",
-          ["Mes réservations","Mon espace","En cours"],
+          "Aide DIGIY",
+          "Pour protéger l’espace, cette page ne transporte aucun numéro. Le bon chemin reste le code PIN puis le HUB.",
+          ["Sécurité", "Code PIN", "HUB"],
           [
-            {title:"Lecture de ton espace",text:"Cette page sert de porte propre avant ta gestion."},
-            {title:"Navigation utile",text:"Activité, gestion, planning, QR et code sont branchés sur le même identifiant."}
-          ]
-        );
-      }
-
-      function setClawNoSlug(){
-        setClaw(
-          "Identifiant attendu",
-          "Entre ton identifiant boutique ou passe par la porte PIN.",
-          ["Identifiant absent","PIN disponible","QR en attente"],
-          [
-            {title:"État actuel",text:"Tu peux coller un identifiant connu ou passer par ton PIN."},
-            {title:"Action utile",text:"Le plus propre : entre un identifiant valide puis vérifie l'accès."}
-          ]
-        );
-      }
-
-      function setClawSlugReady(slug){
-        setClaw(
-          "Identifiant prêt",
-          "Identifiant propre en place. Tu peux ouvrir ton espace, ton activité ou préparer ton QR.",
-          [`Identifiant : ${slug}`,"Espace prêt","QR prêt"],
-          [
-            {title:"Lecture de l'espace",text:"L'identifiant est en place. Toutes les pages utiles suivent ce contexte."},
-            {title:"Action utile",text:"Vérifie l'accès si tu veux confirmer l'abonnement avant d'ouvrir ta gestion."}
-          ]
-        );
-      }
-
-      function setClawVerified(slug,phone){
-        setClaw(
-          "Accès confirmé",
-          "Téléphone trouvé, accès confirmé, espace et QR prêts.",
-          [`Identifiant : ${slug}`,`Téléphone : ${phone}`,"Accès OK","Espace vivant"],
-          [
-            {title:"Lecture de l'espace",text:"L'abonnement est actif sur Mes Réservations pour cet identifiant."},
-            {title:"Suite logique",text:"Tu peux ouvrir ton espace, ton activité ou le QR sans rester bloqué devant la porte."}
-          ]
-        );
-      }
-
-      function setClawBlocked(message){
-        setClaw(
-          "Blocage",
-          "Un blocage est détecté. Remet l'accès d'équerre avant d'ouvrir ton espace.",
-          ["Accès refusé","Activation possible","Support dispo"],
-          [
-            {title:"Blocage principal",text:message || "L'identifiant n'a pas ouvert l'accès."},
-            {title:"Action utile",text:"Passe par l'activation, puis reviens avec le bon identifiant ou ton PIN."}
+            {title:"Pourquoi ce choix",text:"On évite d’afficher ou de transporter des accès privés dans les liens visibles."},
+            {title:"Bon geste",text:"Entre par ton code. Si besoin, rejoins le HUB depuis la navigation du haut."}
           ]
         );
       }
@@ -1096,260 +1042,38 @@
         if(el) el.addEventListener(event,handler);
       }
 
-      function rememberSlug(slug){
-        if(!slug) return;
-        const c = normSlug(slug);
-        localStorage.setItem("digiy_resa_last_slug", c);
-        localStorage.setItem("digiy_last_slug", c);
-        localStorage.setItem("DIGIY_SLUG", c);
-        localStorage.setItem("digiy_slug", c);
-        savedSlugBox.textContent = c;
-        setNavLinks(c);
-      }
-
-      function readRememberedSlug(){
-        const s = normSlug(
-          qp.get("slug") ||
-          localStorage.getItem("digiy_resa_last_slug") ||
-          localStorage.getItem("digiy_last_slug") ||
-          localStorage.getItem("DIGIY_SLUG") ||
-          localStorage.getItem("digiy_slug") ||
-          ""
-        );
-        savedSlugBox.textContent = s || "—";
-        setNavLinks(s);
-        return s;
-      }
-
-      function fillSlugFromMemory(){
-        const c = readRememberedSlug();
-        if(c) slugInput.value = c;
-      }
-
-      function pinUrlWithSlug(){
-        return withSlug(PIN_URL, normSlug(slugInput.value || ""));
-      }
-
-      function dashboardUrlWithSlug(){
-        return withSlug(DASHBOARD_URL, normSlug(slugInput.value || ""));
-      }
-
-      function cockpitUrlWithSlug(){
-        return withSlug(PRO_URL, normSlug(slugInput.value || ""));
-      }
-
-      function qrUrlWithSlug(){
-        return withSlug(QR_URL, normSlug(slugInput.value || ""));
-      }
-
-      function payUrlWithSlug(){
-        const slug = normSlug(slugInput.value || "");
-        return buildSafeUrl(
-          PAY_URL,
-          slug ? { slug, "return": cockpitUrlWithSlug() } : { "return": cockpitUrlWithSlug() }
-        );
-      }
-
-      function openPin(){ location.href = pinUrlWithSlug(); }
-      function openPay(){ location.href = payUrlWithSlug(); }
-      function openDashboard(){ location.href = dashboardUrlWithSlug(); }
-      function openQr(){ location.href = qrUrlWithSlug(); }
-      function openCockpit(slug){ location.href = withSlug(PRO_URL, slug); }
-
-      function makeSupportMessage(){
-        const slug = normSlug(slugInput.value || "");
-        let msg = "DIGIY Mes Réservations — Support\n\n";
-        if(slug) msg += "Identifiant: " + slug + "\n";
-        msg += "PIN: " + pinUrlWithSlug() + "\n";
-        msg += "Activité: " + dashboardUrlWithSlug() + "\n";
-        msg += "Gestion: " + cockpitUrlWithSlug() + "\n";
-        msg += "QR: " + qrUrlWithSlug() + "\n\n";
-        msg += "J'ai besoin d'aide pour accéder à mon espace professionnel.";
-        return msg;
-      }
-
-      function wa(msg){
-        location.href = "https://wa.me/" + SUPPORT_WA.replace(/\+/g,"") + "?text=" + encodeURIComponent(msg);
-      }
-
-      async function resolveSlug(slug){
-        const c = normSlug(slug);
-        if(!c) throw new Error("identifiant_absent");
-
-        const { data, error } = await sb
-          .from("digiy_subscriptions_public")
-          .select("phone,module,slug")
-          .eq("slug", c)
-          .eq("module", MODULE)
-          .limit(1)
-          .maybeSingle();
-
-        if(error) throw error;
-        if(!data?.phone) throw new Error("identifiant_introuvable");
-
-        return {
-          phone:normPhone(data.phone),
-          module:String(data.module || ""),
-          slug:String(data.slug || c)
-        };
-      }
-
-      async function verifyAccessBySlug(slug){
-        const sub = await resolveSlug(slug);
-        const { data, error } = await sb.rpc("digiy_has_access", {
-          p_phone:sub.phone,
-          p_module:MODULE
-        });
-
-        if(error) throw error;
-        if(!data) throw new Error("acces_refuse");
-
-        return {
-          ok:true,
-          phone:sub.phone,
-          module:sub.module,
-          slug:sub.slug
-        };
-      }
-
-      async function handleVerify(redirectAfter){
-        const slug = normSlug(slugInput.value || "");
-        if(!slug){
-          setStatus("⚠️ Entre ton identifiant ou passe par ton PIN.", "warn", "IDENTIFIANT");
-          setSticky("Identifiant manquant");
-          setClawNoSlug();
-          slugInput.focus();
-          return;
-        }
-
-        try{
-          setStatus("⏳ Vérification de l'identifiant et de l'abonnement…", "warn", "CHECK");
-          setSticky("Vérification en cours…");
-          setClawSlugReady(slug);
-
-          const result = await verifyAccessBySlug(slug);
-
-          rememberSlug(result.slug);
-          slugInput.value = result.slug;
-
-          setStatus("✅ Accès confirmé. Espace, activité et QR sont prêts.", "ok", "ACTIF");
-          setSticky(result.slug + " · accès OK");
-          setClawVerified(result.slug, result.phone);
-
-          if(redirectAfter) openCockpit(result.slug);
-        }catch(err){
-          console.error(err);
-          const msg = String(err?.message || err || "");
-
-          if(msg === "identifiant_introuvable"){
-            setStatus("❌ Identifiant introuvable. Passe par ton PIN ou vérifie ton lien.", "bad", "INCONNU");
-            setSticky("Identifiant introuvable");
-            setClawBlocked("Identifiant introuvable. Vérifie le lien ou passe par ton PIN.");
-            return;
-          }
-
-          if(msg === "acces_refuse"){
-            setStatus("🔒 Abonnement non actif. Active ton accès ou contacte le support.", "bad", "BLOQUÉ");
-            setSticky("Abonnement non actif");
-            setClawBlocked("Abonnement non actif pour cet identifiant.");
-            return;
-          }
-
-          if(msg === "identifiant_absent"){
-            setStatus("⚠️ Identifiant manquant.", "warn", "IDENTIFIANT");
-            setSticky("Identifiant manquant");
-            setClawNoSlug();
-            return;
-          }
-
-          setStatus("⚠️ Vérification impossible pour le moment. PIN, activation ou support.", "bad", "ERREUR");
-          setSticky("Erreur de vérification");
-          setClawBlocked("Vérification impossible pour le moment.");
-        }
-      }
+      prepareResaPinContext();
+      setNavLinks();
+      showSessionInfo();
 
       on("btnPin","click", openPin);
       on("btnPinSticky","click", openPin);
-
+      on("btnOpenSlug","click", openPin);
+      on("btnOpenSticky","click", openPin);
+      on("btnVerify","click", showSessionInfo);
+      on("btnDashboard","click", () => openLocal(DASHBOARD_URL));
+      on("btnQr","click", () => openLocal(QR_URL));
+      on("btnQrSticky","click", () => openLocal(QR_URL));
       on("btnPay","click", openPay);
       on("btnPaySticky","click", openPay);
+      on("btnSupport","click", openHelp);
 
-      on("btnDashboard","click", openDashboard);
-
-      on("btnQr","click", openQr);
-      on("btnQrSticky","click", openQr);
-
-      on("btnSupport","click", () => {
-        wa(makeSupportMessage());
-      });
-
-      on("btnVerify","click", () => { handleVerify(false); });
-      on("btnOpenSlug","click", () => { handleVerify(true); });
-      on("btnOpenSticky","click", () => { handleVerify(true); });
-
-      slugInput.addEventListener("input", () => {
-        const s = normSlug(slugInput.value);
-        if(s !== slugInput.value) slugInput.value = s;
-        setSticky(s ? ("Identifiant prêt : " + s) : "Prêt à ouvrir ton espace");
-        setNavLinks(s);
-        if(s) setClawSlugReady(s);
-        else setClawNoSlug();
-      });
-
-      slugInput.addEventListener("keydown", (e) => {
-        if(e.key === "Enter") handleVerify(true);
-      });
-
-      setClawLoading();
-      fillSlugFromMemory();
-
-      const autoSlug = normSlug(qp.get("slug") || "");
-      const autoOpen = qp.get("open") === "1";
-
-      if(autoSlug && autoOpen){
-        setTimeout(() => handleVerify(true), 300);
-      }else if(autoSlug){
-        setStatus("🧭 Identifiant détecté. Tu peux vérifier, ouvrir ton espace, ton activité ou ton QR.", "ok", "DÉTECTÉ");
-        setSticky("Identifiant détecté : " + autoSlug);
-        setClawSlugReady(autoSlug);
-      }else{
-        setStatus("💳 Mon espace est prêt. Identifiant, code, activité, QR, support ou activation : à toi de jouer.", "info", "MANUEL");
-        setSticky("Prêt à ouvrir ton espace");
-        setClawNoSlug();
-      }
+      const routeHub = $("routeHub");
+      if(routeHub) routeHub.href = HUB_URL;
     })();
   </script>
   <script>
     (function(){
       "use strict";
 
-      const AUDIO_TEXT = "Bienvenue dans Mes Réservations by DIGIY. RESA sert à laisser le client choisir un moment clair, sans appeler dix fois, sans perdre le fil WhatsApp, et sans bloquer le professionnel dans le désordre. Le client voit une vitrine, choisit un créneau, envoie sa demande, et le professionnel garde son planning sous la main. Restaurant, salon, plage privée, rooftop, service ou activité terrain : l’idée reste la même. Le pro garde la main, le QR aide à partager, le planning aide à organiser, et DIGIY accompagne sans prendre la place du métier. Tu peux ouvrir ton espace, vérifier ton accès, préparer ton QR, ou entrer dans ta gestion. Une réservation bien posée, c’est du temps gagné, moins d’oubli, et un client mieux accueilli.";
+      const AUDIO_TEXT = "Bienvenue dans Mes Réservations by DIGIY. RESA n’est pas seulement un calendrier. C’est une scène pour les pros qui reçoivent. Le client découvre un lieu, un service, une ambiance, puis choisit le bon moment sans appeler dix fois et sans perdre le fil WhatsApp. Si tu es déjà abonné, tu entres simplement par ton code PIN. La session reste ouverte huit heures sur ton appareil. Le professionnel garde la main sur son planning, ses créneaux, son QR, son profil et son accueil. Mon assistant DIGIY n’est pas là pour faire du spectacle avec de grands mots. Il connaît la maison et t’aide simplement à choisir le bon geste : ouvrir le planning, préparer le QR, voir l’activité, modifier le profil, passer par ton code ou demander de l’aide. Restaurant, salon, plage privée, rooftop, service ou activité terrain : l’idée reste la même. Le pro devant, DIGIY derrière, le client mieux accueilli.";
 
       const btnPlay = document.getElementById("btnResaAudio");
       const btnStop = document.getElementById("btnResaAudioStop");
       const progress = document.getElementById("resaAudioProgress");
-      const routeHub = document.getElementById("routeHub");
       let playing = false;
       let timer = null;
 
-      function normPhone(v){
-        const d = String(v || "").replace(/[^\d]/g, "");
-        if(!d) return "";
-        if(d.startsWith("221") && d.length === 12) return d;
-        if(d.length === 9) return "221" + d;
-        return d;
-      }
-
-      function syncHub(){
-        try{
-          if(!routeHub) return;
-          const q = new URLSearchParams(location.search);
-          const phone = normPhone(q.get("phone") || q.get("tel") || localStorage.getItem("digiy_resa_phone") || localStorage.getItem("digiy_phone") || "");
-          const u = new URL("https://pro-espace.digiylyfe.com/");
-          if(phone) u.searchParams.set("phone", phone);
-          routeHub.href = u.toString();
-        }catch(_){}
-      }
 
       function getVoice(){
         const synth = window.speechSynthesis;
@@ -1420,7 +1144,6 @@
       }
       window.addEventListener("beforeunload", stopAudio);
       document.addEventListener("visibilitychange", function(){ if(document.hidden) stopAudio(); });
-      syncHub();
     })();
   </script>
 
