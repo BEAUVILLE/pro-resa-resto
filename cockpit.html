@@ -12,67 +12,436 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-cockpit-final-vierge"></script>
+  <script src="./guard.js?v=resa-cockpit-secure-pin8h"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#061b14;--card:#0b2a1f;--card2:#0f3327;--line:rgba(255,255,255,.12);--text:#eafff1;--muted:rgba(234,255,241,.72);--gold:#facc15;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--accent:#38bdf8;--shadow:0 18px 55px rgba(0,0,0,.35);--radius:18px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--fontA);}
-    a{color:inherit;text-decoration:none}
-    .wrap{width:min(1180px,92vw);margin:0 auto;padding:18px 0 calc(104px + env(safe-area-inset-bottom,0px));}
-    .topbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
-    .brand{display:flex;flex-direction:column;gap:4px;}
-    .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:900;}
-    h1{margin:0;font-size:clamp(1.5rem,3.4vw,2.3rem);line-height:1.05;}
-    .sub{color:var(--muted);font-size:.95rem;}
-    .actions-top{display:flex;gap:10px;flex-wrap:wrap;}
-    .btn{appearance:none;border:1px solid var(--line);background:linear-gradient(180deg,#103428,#0c271e);color:var(--text);border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fontA);}
-    .btn:hover{transform:translateY(-1px)}.btn.secondary{background:#0c241b}.btn.ghost{background:rgba(255,255,255,.04);border-style:dashed;color:var(--muted);}
-    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow);}
-    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:#0b241b;color:var(--text);font-weight:900;}
-    .nav-link.active{background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.34);color:#fff1a8;}
-    .hero{background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow);margin-bottom:18px;}
-    .hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;}
-    .hero h2{margin:0 0 8px;font-size:1.2rem;}
-    .hero p{margin:0 0 8px;color:var(--muted);line-height:1.5;}
-    .mini-card{background:rgba(0,0,0,.14);border:1px solid var(--line);border-radius:18px;padding:14px;}
-    .mini-card strong{display:block;margin-bottom:8px;}
-    .mode{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 12px;border-radius:999px;border:1px solid rgba(250,204,21,.24);background:rgba(250,204,21,.10);color:#fff1a8;font-size:.9rem;font-weight:900;}
-    .mode.live{border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.10);color:#b8ffd0;}
-    .hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-    .hero-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-    .hero-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);color:var(--muted);font-size:.84rem;font-weight:900;}
-    .grid-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px;}
-    .stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);}
-    .stat .label{color:var(--muted);font-size:.88rem;margin-bottom:8px;}
-    .stat .value{font-size:1.8rem;font-weight:900;line-height:1;}
-    .panel{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;}
-    .panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
-    .panel-head h3{margin:0;font-size:1.05rem;}
-    .filters{display:flex;gap:8px;flex-wrap:wrap;}
-    .chip{border:1px solid var(--line);background:#0b241b;color:var(--text);padding:10px 12px;border-radius:999px;cursor:pointer;font-weight:800;font-family:var(--fontA);}
-    .chip.active{background:#11392b;border-color:rgba(250,204,21,.45);color:#fff3b0;}
-    .list{display:grid;gap:14px;padding:16px;}
-    .booking{background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:14px;}
-    .booking-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;}
-    .booking-main{display:grid;gap:6px;}
-    .booking-name{font-weight:900;font-size:1.08rem;}
-    .meta{display:flex;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:.95rem;}
-    .badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:9px 12px;font-weight:900;border:1px solid transparent;white-space:nowrap;}
-    .badge.pending{background:rgba(245,158,11,.14);color:#ffd38a;border-color:rgba(245,158,11,.25)}
-    .badge.confirmed{background:rgba(34,197,94,.14);color:#9ef2ba;border-color:rgba(34,197,94,.25)}
-    .badge.cancelled{background:rgba(239,68,68,.14);color:#ffb0b0;border-color:rgba(239,68,68,.25)}
-    .badge.done{background:rgba(56,189,248,.14);color:#b7ecff;border-color:rgba(56,189,248,.25)}
-    .badge.no_show{background:rgba(250,204,21,.12);color:#fff1a8;border-color:rgba(250,204,21,.24)}
-    .note{border-left:3px solid rgba(250,204,21,.4);padding-left:12px;color:var(--muted);line-height:1.5;}
-    .service-box{display:flex;gap:8px;flex-wrap:wrap;}
-    .service-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted);font-size:.82rem;font-weight:900;}
-    .empty{padding:28px 18px;color:var(--muted);text-align:center;}
-    .footer-note{margin-top:14px;color:var(--muted);font-size:.92rem;text-align:center;}
+    :root{
+      --bg:#061b14;
+      --card:#0b2a1f;
+      --card2:#0f3327;
+      --line:rgba(255,255,255,.12);
+      --text:#eafff1;
+      --muted:rgba(234,255,241,.72);
+      --gold:#facc15;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --accent:#38bdf8;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+      --radius:18px;
+      --fontA:"Outfit",system-ui,-apple-system,sans-serif;
+    }
 
-    #bookingList, #panelTitle{scroll-margin-top:96px}
+    *{box-sizing:border-box}
+
+    html,
+    body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--fontA);
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .wrap{
+      width:min(1180px,92vw);
+      margin:0 auto;
+      padding:18px 0 calc(104px + env(safe-area-inset-bottom,0px));
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:900;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.5rem,3.4vw,2.3rem);
+      line-height:1.05;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .actions-top{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#103428,#0c271e);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-family:var(--fontA);
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn.secondary{
+      background:#0c241b;
+    }
+
+    .btn.ghost{
+      background:rgba(255,255,255,.04);
+      border-style:dashed;
+      color:var(--muted);
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .nav-link.active{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.34);
+      color:#fff1a8;
+    }
+
+    .hero{
+      background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:16px;
+    }
+
+    .hero h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+
+    .hero p{
+      margin:0 0 8px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .mini-card{
+      background:rgba(0,0,0,.14);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .mini-card strong{
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.10);
+      color:#fff1a8;
+      font-size:.9rem;
+      font-weight:900;
+    }
+
+    .mode.live{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+    }
+
+    .hero-cta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.14);
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:900;
+    }
+
+    .grid-stats{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:.88rem;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:1.8rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .panel-head h3{
+      margin:0;
+      font-size:1.05rem;
+    }
+
+    .filters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      font-family:var(--fontA);
+    }
+
+    .chip.active{
+      background:#11392b;
+      border-color:rgba(250,204,21,.45);
+      color:#fff3b0;
+    }
+
+    .list{
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+
+    .booking{
+      background:var(--card2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      display:grid;
+      gap:14px;
+    }
+
+    .booking-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .booking-main{
+      display:grid;
+      gap:6px;
+    }
+
+    .booking-name{
+      font-weight:900;
+      font-size:1.08rem;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:9px 12px;
+      font-weight:900;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+
+    .badge.pending{
+      background:rgba(245,158,11,.14);
+      color:#ffd38a;
+      border-color:rgba(245,158,11,.25);
+    }
+
+    .badge.confirmed{
+      background:rgba(34,197,94,.14);
+      color:#9ef2ba;
+      border-color:rgba(34,197,94,.25);
+    }
+
+    .badge.cancelled{
+      background:rgba(239,68,68,.14);
+      color:#ffb0b0;
+      border-color:rgba(239,68,68,.25);
+    }
+
+    .badge.done{
+      background:rgba(56,189,248,.14);
+      color:#b7ecff;
+      border-color:rgba(56,189,248,.25);
+    }
+
+    .badge.no_show{
+      background:rgba(250,204,21,.12);
+      color:#fff1a8;
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .note{
+      border-left:3px solid rgba(250,204,21,.4);
+      padding-left:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .service-box{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .service-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:900;
+    }
+
+    .empty{
+      padding:28px 18px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .footer-note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.92rem;
+      text-align:center;
+    }
+
+    #bookingList,
+    #panelTitle{
+      scroll-margin-top:96px;
+    }
 
     .bottomNav{
       position:fixed;
@@ -110,7 +479,10 @@
       text-decoration:none;
     }
 
-    .bottomNav .ico{font-size:18px;line-height:1}
+    .bottomNav .ico{
+      font-size:18px;
+      line-height:1;
+    }
 
     .bottomNav a.active{
       color:#061b14;
@@ -148,25 +520,43 @@
       border:none;
     }
 
+    .loading{
+      opacity:.72;
+      pointer-events:none;
+    }
+
+    @media(max-width:980px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid-stats{grid-template-columns:repeat(3,1fr)}
+    }
+
     @media(max-width:640px){
+      .wrap{width:min(96vw,96vw)}
+      .grid-stats{grid-template-columns:repeat(2,1fr)}
+      .booking-top{flex-direction:column}
+      .actions-top,
+      .filters,
+      .hero-cta,
+      .nav-rail{
+        width:100%;
+      }
+      .actions-top > *,
+      .hero-cta > *,
+      .nav-rail > *{
+        flex:1 1 auto;
+      }
       .mobileFastRow{grid-template-columns:1fr 1fr}
       .nav-rail{display:none}
       .actions-top{display:none}
       .hero-cta{display:none}
     }
-
-    .loading{opacity:.72;pointer-events:none;}
-    @media(max-width:980px){.hero-grid{grid-template-columns:1fr}.grid-stats{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:640px){.wrap{width:min(96vw,96vw)}.grid-stats{grid-template-columns:repeat(2,1fr)}.booking-top{flex-direction:column}.actions-top,.filters,.hero-cta,.nav-rail{width:100%}.actions-top > *,.hero-cta > *,.nav-rail > *{flex:1 1 auto}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
         <div class="eyebrow">JE RÉSERVE</div>
-        <!-- ━━━ AVANT : "Cockpit réservations" → banni ━━━ -->
         <h1>Réservations</h1>
         <div class="sub" id="topSub">Chargement des réservations…</div>
       </div>
@@ -176,33 +566,25 @@
       </div>
     </div>
 
-    <!-- ━━━ NAV — doctrine façade ━━━ -->
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <!-- ━━━ "Cockpit" → "Réserv." ━━━ -->
-      <a class="nav-link active" id="navCockpit"  href="./cockpit.html">Réserv.</a>
-      <!-- ━━━ "Dashboard" → "Accueil" ━━━ -->
-      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Accueil</a>
-      <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
-      <a class="nav-link"        id="navQr"        href="./qr.html">QR</a>
-      <!-- ━━━ "CLAW" → "Aide" ━━━ -->
-      <a class="nav-link"        id="navClaw"      href="./claw.html">Aide</a>
-      <!-- ━━━ "Profil / établissement" → "Plus" ━━━ -->
-      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Plus</a>
-      <!-- ━━━ "Accueil PRO" → "Façade" ━━━ -->
-      <a class="nav-link"        id="navHome"      href="./index.html">Façade</a>
+      <a class="nav-link active" id="navCockpit" href="./cockpit.html">Réserv.</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+      <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
+      <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
+      <a class="nav-link" id="navHome" href="./index.html">Façade</a>
     </nav>
 
     <section class="hero">
       <div class="hero-grid">
         <div>
           <div class="mode" id="modeBadge">Aperçu</div>
-          <!-- ━━━ heroName et heroDesc écrits par JS ━━━ -->
           <h2 id="heroName">JE RÉSERVE</h2>
           <p id="heroDesc">Ici tu lis les réservations du jour, les clients, les statuts et les services demandés.</p>
 
           <div class="hero-meta">
-            <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
-            <div class="hero-pill" id="heroSlug">Identifiant : —</div>
+            <div class="hero-pill" id="heroSession">Session : protégée</div>
             <div class="hero-pill" id="heroCity">Ville : —</div>
             <div class="hero-pill" id="heroType">Activité : —</div>
           </div>
@@ -229,7 +611,6 @@
       </div>
     </section>
 
-    <!-- Stats : labels métier conservés (Pending, Done, No-show = termes pro) -->
     <section class="grid-stats">
       <div class="stat"><div class="label">Total</div><div class="value" id="sTotal">0</div></div>
       <div class="stat"><div class="label">En attente</div><div class="value" id="sPending">0</div></div>
@@ -243,22 +624,20 @@
       <div class="panel-head">
         <h3 id="panelTitle">Liste des réservations</h3>
         <div class="filters" id="filters">
-          <button class="chip active" data-filter="all"       type="button">Toutes</button>
-          <button class="chip"        data-filter="pending"   type="button">En attente</button>
-          <button class="chip"        data-filter="confirmed" type="button">Confirmées</button>
-          <button class="chip"        data-filter="done"      type="button">Passées</button>
-          <button class="chip"        data-filter="no_show"   type="button">Absent</button>
-          <button class="chip"        data-filter="cancelled" type="button">Annulées</button>
+          <button class="chip active" data-filter="all" type="button">Toutes</button>
+          <button class="chip" data-filter="pending" type="button">En attente</button>
+          <button class="chip" data-filter="confirmed" type="button">Confirmées</button>
+          <button class="chip" data-filter="done" type="button">Passées</button>
+          <button class="chip" data-filter="no_show" type="button">Absent</button>
+          <button class="chip" data-filter="cancelled" type="button">Annulées</button>
         </div>
       </div>
       <div class="list" id="bookingList"></div>
       <div class="empty" id="emptyState" style="display:none;">Aucune réservation pour l'instant.</div>
     </section>
 
-    <!-- ━━━ AVANT : "DIGIY RESA PRO — cockpit métier multi business." → banni ━━━ -->
     <div class="footer-note" id="footerNote">DIGIYLYFE · Mes réservations · gestion terrain.</div>
   </div>
-
 
   <nav class="bottomNav" aria-label="Navigation RESA">
     <div class="bottomNavInner">
@@ -274,130 +653,262 @@
     (() => {
       "use strict";
 
-      const MODULE   = "RESA";
-      const QR_PATH  = "./qr.html";
-      const CLAW_PATH= "./claw.html";
+      const MODULE = "RESA";
+      const QR_PATH = "./qr.html";
+      const ASSISTANT_PATH = "./claw.html";
 
-      try{
-        window.DIGIY_GUARD?.boot?.({module:"RESA",login:"./pin.html",dashboard:"./cockpit.html",requireSlug:true,checkSubscription:true,storageSlugKey:"digiy_resa_slug",storageLastSlugKey:"digiy_last_slug"});
-      }catch{}
-
-      const query     = new URL(location.href).searchParams;
-      const querySlug = query.get("slug") || "";
+      const query = new URL(location.href).searchParams;
       const queryDate = query.get("date") || "";
 
       const $ = (id) => document.getElementById(id);
 
       let sb = null;
-      let ALL_BOOKINGS  = [];
+      let ALL_BOOKINGS = [];
       let ACTIVE_FILTER = "all";
-      let PROFILE       = null;
+      let PROFILE = null;
       let RESOLVED_SLUG = "";
-      let ACTIVE_DATE   = "";
-      let IS_PREVIEW    = true;
+      let ACTIVE_DATE = "";
+      let IS_PREVIEW = true;
 
-      function normalizeSlug(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
+      }
 
-      function escapeHtml(v){ return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
 
-      function safeJsonParse(v){ try{ return typeof v==="string"?JSON.parse(v):v; }catch{ return null; } }
+      function safeJsonParse(v){
+        try{ return typeof v === "string" ? JSON.parse(v) : v; }catch{ return null; }
+      }
 
-      function storageGet(key){ try{ const s=sessionStorage.getItem(key); if(s)return s; }catch{} try{ const l=localStorage.getItem(key); if(l)return l; }catch{} return ""; }
-      function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }
-
-      function getSessionSlug(){
-        const r=safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
-        if(r?.slug)return normalizeSlug(r.slug);
-        const g=safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
-        if(g?.module===MODULE&&g?.slug)return normalizeSlug(g.slug);
+      function storageGet(key){
+        try{ const s = sessionStorage.getItem(key); if(s) return s; }catch{}
+        try{ const l = localStorage.getItem(key); if(l) return l; }catch{}
         return "";
       }
 
-      function getFallbackSlug(){ return normalizeSlug(querySlug||storageGet("digiy_resa_slug")||storageGet("digiy_resa_last_slug")||storageGet("digiy_last_slug")||storageGet("DIGIY_SLUG")||storageGet("digiy_slug")||getSessionSlug()||""); }
+      function storageSet(key,value){
+        try{ sessionStorage.setItem(key,String(value ?? "")); }catch{}
+        try{ localStorage.setItem(key,String(value ?? "")); }catch{}
+      }
+
+      function cleanVisibleUrl(){
+        try{
+          const u = new URL(location.href);
+          const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
+          if(legacySlug){
+            storageSet("digiy_resa_slug", legacySlug);
+            storageSet("digiy_resa_last_slug", legacySlug);
+          }
+          ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          history.replaceState({}, document.title, u.pathname + u.search + u.hash);
+        }catch(_){}
+      }
+
+      function getSessionSlug(){
+        const direct =
+          safeJsonParse(storageGet("DIGIY_RESA_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_RESA_PIN_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_SESSION_RESA")) ||
+          safeJsonParse(storageGet("digiy_resa_session"));
+
+        if(direct?.module === MODULE && direct?.slug) return normalizeSlug(direct.slug);
+
+        const generic = safeJsonParse(storageGet("DIGIY_ACCESS"));
+        if(generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+
+        return "";
+      }
+
+      function getFallbackSlug(){
+        return normalizeSlug(
+          storageGet("digiy_resa_slug") ||
+          storageGet("digiy_resa_last_slug") ||
+          getSessionSlug() ||
+          ""
+        );
+      }
 
       function fmtDate(v){
-        if(!v)return "—";
-        try{ const d=new Date(v); if(Number.isNaN(d.getTime()))return String(v); return d.toLocaleDateString("fr-FR",{year:"numeric",month:"2-digit",day:"2-digit"}); }catch{ return String(v); }
+        if(!v) return "—";
+        try{
+          const d = new Date(v);
+          if(Number.isNaN(d.getTime())) return String(v);
+          return d.toLocaleDateString("fr-FR",{year:"numeric",month:"2-digit",day:"2-digit"});
+        }catch{
+          return String(v);
+        }
       }
+
       function fmtDateTime(v){
-        if(!v)return "—";
-        try{ return new Date(v).toLocaleString("fr-FR",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}); }catch{ return String(v); }
+        if(!v) return "—";
+        try{
+          return new Date(v).toLocaleString("fr-FR",{
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+            hour:"2-digit",
+            minute:"2-digit"
+          });
+        }catch{
+          return String(v);
+        }
       }
-      function normStatus(v){ const s=String(v||"pending").toLowerCase().trim(); if(["pending","confirmed","cancelled","done","no_show"].includes(s))return s; return "pending"; }
-      function statusLabel(v){ const s=normStatus(v); if(s==="pending")return "En attente"; if(s==="confirmed")return "Confirmée"; if(s==="cancelled")return "Annulée"; if(s==="done")return "Passée"; if(s==="no_show")return "Absent"; return s; }
-      function bookingIdOf(row){ return String(row?.id??row?.booking_id??row?.reservation_id??""); }
-      function money(v){ const n=Number(v); if(!Number.isFinite(n))return ""; return n.toLocaleString("fr-FR")+" FCFA"; }
-      function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+
+      function normStatus(v){
+        const s = String(v || "pending").toLowerCase().trim();
+        if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
+        return "pending";
+      }
+
+      function statusLabel(v){
+        const s = normStatus(v);
+        if(s === "pending") return "En attente";
+        if(s === "confirmed") return "Confirmée";
+        if(s === "cancelled") return "Annulée";
+        if(s === "done") return "Passée";
+        if(s === "no_show") return "Absent";
+        return s;
+      }
+
+      function bookingIdOf(row){
+        return String(row?.id ?? row?.booking_id ?? row?.reservation_id ?? "");
+      }
+
+      function money(v){
+        const n = Number(v);
+        if(!Number.isFinite(n)) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
+
+      function todayISO(){
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      }
 
       function normalizeRows(payload){
-        let rows=[];
-        if(Array.isArray(payload))rows=payload;
-        else if(Array.isArray(payload?.rows))rows=payload.rows;
-        else if(Array.isArray(payload?.bookings))rows=payload.bookings;
-        else if(Array.isArray(payload?.data))rows=payload.data;
-        return rows.map(r=>({id:bookingIdOf(r),status:normStatus(r.status),status_note:r.status_note||"",created_at:r.created_at||r.inserted_at||r.requested_at||null,customer_name:r.customer_name||r.client_name||r.full_name||r.name||"Sans nom",customer_phone:r.customer_phone||r.phone||r.whatsapp||"",booking_date:r.booking_date||r.reservation_date||r.date||"",booking_time:r.booking_time||r.reservation_time||r.time||"",guests_count:r.guests_count??r.people_count??r.pax??r.covers??"",service_id:r.service_id||"",service_name:r.service_name||"",duration_minutes:r.duration_minutes??"",price_fcfa:r.price_fcfa??"",note:r.note||r.note_text||r.message||r.special_request||""}));
+        let rows = [];
+        if(Array.isArray(payload)) rows = payload;
+        else if(Array.isArray(payload?.rows)) rows = payload.rows;
+        else if(Array.isArray(payload?.bookings)) rows = payload.bookings;
+        else if(Array.isArray(payload?.data)) rows = payload.data;
+
+        return rows.map(r => ({
+          id: bookingIdOf(r),
+          status: normStatus(r.status),
+          status_note: r.status_note || "",
+          created_at: r.created_at || r.inserted_at || r.requested_at || null,
+          customer_name: r.customer_name || r.client_name || r.full_name || r.name || "Sans nom",
+          booking_date: r.booking_date || r.reservation_date || r.date || "",
+          booking_time: r.booking_time || r.reservation_time || r.time || "",
+          guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
+          service_id: r.service_id || "",
+          service_name: r.service_name || "",
+          duration_minutes: r.duration_minutes ?? "",
+          price_fcfa: r.price_fcfa ?? "",
+          note: r.note || r.note_text || r.message || r.special_request || ""
+        }));
       }
 
       function initClient(){
-        if(window.DIGIY_SB){sb=window.DIGIY_SB;return;}
-        if(!window.supabase?.createClient)throw new Error("Supabase JS non chargé.");
-        sb=window.supabase.createClient(window.DIGIY_SUPABASE_URL,window.DIGIY_SUPABASE_ANON_KEY||window.DIGIY_SUPABASE_ANON,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}}});
-        window.DIGIY_SB=sb;
+        if(window.DIGIY_SB){
+          sb = window.DIGIY_SB;
+          return;
+        }
+
+        if(!window.supabase?.createClient) throw new Error("Supabase JS non chargé.");
+
+        sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+          {
+            auth:{
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false,
+              storage:{
+                getItem:()=>null,
+                setItem:()=>{},
+                removeItem:()=>{}
+              }
+            }
+          }
+        );
+
+        window.DIGIY_SB = sb;
       }
 
-      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         buildSafeUrl — VERSION BLINDÉE
-         new URL(path, location.href) fragile selon l'env.
-      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
       function buildSafeUrl(base, params){
-        const baseStr=(base==null?"":String(base)).trim();
-        if(!baseStr)return location.href;
+        const baseStr = (base == null ? "" : String(base)).trim();
+        if(!baseStr) return "./dashboard-pro.html";
+
         let u;
         try{
-          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
-          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
-        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
-        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+          if(/^https?:\/\//i.test(baseStr)){
+            u = new URL(baseStr);
+          }else{
+            u = new URL(baseStr, location.href);
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
+          return baseStr;
+        }
+
+        ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+
+        try{
+          Object.entries(params || {}).forEach(([k,v]) => {
+            if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
+            if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+          });
+        }catch(e){}
+
+        if(u.origin === location.origin){
+          const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+          return "./" + file + (u.search || "") + (u.hash || "");
+        }
+
         return u.toString();
       }
 
-      function withSlug(path, slug="", extra={}){
-        const clean=normalizeSlug(slug);
-        return buildSafeUrl(path,{...(clean?{slug:clean}:{}),...extra});
+      function cleanPath(path, extra = {}){
+        return buildSafeUrl(path, extra);
       }
 
-      function setLinks(slug=""){
-        const c=normalizeSlug(slug);
-        const cockpitHref   = withSlug("./cockpit.html",      c, ACTIVE_DATE?{date:ACTIVE_DATE}:{});
-        const notesHref     = withSlug("./planning.html",     c, ACTIVE_DATE?{date:ACTIVE_DATE}:{}) + "#quickResaNote";
-        const dashboardHref = withSlug("./dashboard-pro.html",c);
-        const planningHref  = withSlug("./planning.html",     c, ACTIVE_DATE?{date:ACTIVE_DATE}:{});
-        const qrHref        = withSlug(QR_PATH,               c);
-        const clawHref      = withSlug(CLAW_PATH,             c);
-        const settingsHref  = withSlug("./etablissement.html",c);
-        const homeHref      = withSlug("./index.html",        c);
+      function setLinks(){
+        const dateParam = ACTIVE_DATE ? {date: ACTIVE_DATE} : {};
 
-        $("navCockpit").href  = cockpitHref;
-        $("navDashboard").href= dashboardHref;
-        $("navPlanning").href = planningHref;
-        $("navQr").href       = qrHref;
-        $("navClaw").href     = clawHref;
-        $("navSettings").href = settingsHref;
-        $("navHome").href     = homeHref;
+        const cockpitHref = cleanPath("./cockpit.html", dateParam);
+        const notesHref = cleanPath("./planning.html", dateParam) + "#quickResaNote";
+        const dashboardHref = cleanPath("./dashboard-pro.html");
+        const planningHref = cleanPath("./planning.html", dateParam);
+        const qrHref = cleanPath(QR_PATH);
+        const assistantHref = cleanPath(ASSISTANT_PATH);
+        const settingsHref = cleanPath("./etablissement.html");
+        const homeHref = cleanPath("./index.html");
 
-        if($("btnDashboardTop")) $("btnDashboardTop").href = dashboardHref;
-        if($("btnPlanningTop"))  $("btnPlanningTop").href  = planningHref;
-        if($("btnQr"))           $("btnQr").href           = qrHref;
-        if($("btnClaw"))         $("btnClaw").href         = clawHref;
-        if($("btnSettings"))     $("btnSettings").href     = settingsHref;
-
-        if($("heroDashboard")) $("heroDashboard").href = dashboardHref;
-        if($("heroPlanning"))  $("heroPlanning").href  = planningHref;
-        if($("heroQr"))        $("heroQr").href        = qrHref;
-        if($("heroClaw"))      $("heroClaw").href      = clawHref;
-        if($("heroSettings"))  $("heroSettings").href  = settingsHref;
-
-        const extraLinks = {
+        const links = {
+          navCockpit: cockpitHref,
+          navDashboard: dashboardHref,
+          navPlanning: planningHref,
+          navQr: qrHref,
+          navAssistant: assistantHref,
+          navSettings: settingsHref,
+          navHome: homeHref,
+          btnPlanningTop: planningHref,
+          heroPlanning: planningHref,
           fastPlanning: planningHref,
           fastNotes: notesHref,
           fastPlus: settingsHref,
@@ -408,7 +919,7 @@
           bottomMore: settingsHref
         };
 
-        Object.entries(extraLinks).forEach(([id, href]) => {
+        Object.entries(links).forEach(([id, href]) => {
           const el = $(id);
           if(el) el.href = href;
         });
@@ -417,217 +928,233 @@
         if(fastReserv) fastReserv.href = "#panelTitle";
       }
 
-      async function rpc(name, args){ if(!sb)throw new Error("supabase_unavailable"); const{data,error}=await sb.rpc(name,args); if(error)throw error; return data; }
+      async function rpc(name,args){
+        if(!sb) throw new Error("supabase_unavailable");
+        const {data,error} = await sb.rpc(name,args);
+        if(error) throw error;
+        return data;
+      }
 
-      function resetStats(){$("sTotal").textContent="0";$("sPending").textContent="0";$("sConfirmed").textContent="0";$("sDone").textContent="0";$("sNoShow").textContent="0";$("sCancelled").textContent="0";}
-      function resetView(){$("emptyState").style.display="none";$("bookingList").innerHTML="";ALL_BOOKINGS=[];PROFILE=null;}
+      function resetStats(){
+        $("sTotal").textContent = "0";
+        $("sPending").textContent = "0";
+        $("sConfirmed").textContent = "0";
+        $("sDone").textContent = "0";
+        $("sNoShow").textContent = "0";
+        $("sCancelled").textContent = "0";
+      }
+
+      function resetView(){
+        $("emptyState").style.display = "none";
+        $("bookingList").innerHTML = "";
+        ALL_BOOKINGS = [];
+        PROFILE = null;
+      }
 
       async function resolveGuardState(){
-        const fallbackSlug=getFallbackSlug();
-        if(!window.DIGIY_GUARD)return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_missing"};
+        const fallbackSlug = getFallbackSlug();
+
+        if(!window.DIGIY_GUARD){
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_missing"};
+        }
+
         try{
-          if(window.DIGIY_GUARD.ready&&typeof window.DIGIY_GUARD.ready.then==="function")await window.DIGIY_GUARD.ready;
-        }catch{ return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_error"}; }
-        const st=window.DIGIY_GUARD?.state||null;
-        if(!st)return{ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_empty"};
-        return{...st,slug:normalizeSlug(st.slug||fallbackSlug||"")};
+          if(typeof window.DIGIY_GUARD.ready === "function"){
+            const st = await window.DIGIY_GUARD.ready();
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          if(window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function"){
+            const st = await window.DIGIY_GUARD.ready;
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          const st = window.DIGIY_GUARD.state || null;
+          if(!st) return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_empty"};
+
+          return {...st, slug:normalizeSlug(st.slug || fallbackSlug || "")};
+        }catch{
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_error"};
+        }
       }
 
-      function setHeroPills(slug,city,type){
-        /* ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ */
-        $("heroSlug").textContent = "Identifiant : "+(slug||"—");
-        $("heroCity").textContent = "Ville : "+(city||"—");
-        $("heroType").textContent = "Activité : "+(type||"—");
+      function setHeroPills(city,type){
+        $("heroSession").textContent = "Session : 8h après code PIN";
+        $("heroCity").textContent = "Ville : " + (city || "—");
+        $("heroType").textContent = "Activité : " + (type || "—");
       }
 
-      function setPreviewHero(message="", slug=""){
-        const clean=normalizeSlug(slug);
-        $("modeBadge").className="mode";
-        $("modeBadge").textContent="Aperçu";
-        /* ━━━ AVANT : heroName "DIGIY RESA PRO" → banni ━━━ */
-        $("heroName").textContent="JE RÉSERVE";
-        $("heroDesc").textContent="Espace visible, mais identité pas encore ouverte. Aucune fausse réservation affichée.";
-        setHeroPills(clean,"—","Multi business");
-        $("topSub").textContent=message||"Aperçu sans données.";
-        $("panelTitle").textContent=`Réservations du ${fmtDate(ACTIVE_DATE)}`;
-        /* ━━━ AVANT : "DIGIY RESA PRO — cockpit métier" → banni ━━━ */
-        $("footerNote").textContent="Aperçu actif — aucune donnée de démonstration.";
-        $("miniTitle").textContent="Espace vierge DIGIY";
-        $("miniText").textContent="Ici, on garde une coquille propre : pas de fausses réservations, pas de brouillage. Les vraies données n'entrent que si l'accès est confirmé.";
-        setLinks(clean);
+      function setPreviewHero(message = ""){
+        $("modeBadge").className = "mode";
+        $("modeBadge").textContent = "Aperçu";
+        $("heroName").textContent = "JE RÉSERVE";
+        $("heroDesc").textContent = "Espace visible, mais session non ouverte. Aucune fausse réservation affichée.";
+        setHeroPills("—","Multi business");
+        $("topSub").textContent = message || "Aperçu sans données.";
+        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("footerNote").textContent = "Aperçu actif — aucune donnée de démonstration.";
+        $("miniTitle").textContent = "Espace vierge DIGIY";
+        $("miniText").textContent = "Ici, on garde une coquille propre : pas de fausses réservations, pas de brouillage. Les vraies données n'entrent que si l'accès est confirmé.";
+        setLinks();
       }
 
       function setLiveHero(){
-        $("modeBadge").className="mode live";
-        $("modeBadge").textContent="En direct";
-        /* ━━━ AVANT : "Cockpit chargé pour …" → humain ━━━ */
-        $("topSub").textContent=`Espace chargé pour ${RESOLVED_SLUG}`;
-        $("panelTitle").textContent=`Réservations du ${fmtDate(ACTIVE_DATE)}`;
-        $("footerNote").textContent="Espace vivant branché sur les réservations réelles.";
-        $("miniTitle").textContent="Ce qui demande attention";
-        $("miniText").textContent="Ici tu vois les réservations, les services choisis et les statuts à suivre.";
-        setLinks(RESOLVED_SLUG);
+        $("modeBadge").className = "mode live";
+        $("modeBadge").textContent = "En direct";
+        $("topSub").textContent = "Espace chargé.";
+        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("footerNote").textContent = "Espace vivant branché sur les réservations réelles.";
+        $("miniTitle").textContent = "Ce qui demande attention";
+        $("miniText").textContent = "Ici tu vois les réservations, les services choisis et les statuts à suivre.";
+        setLinks();
       }
 
       async function loadProfile(){
-        const data=await rpc("resa_public_profile_by_slug",{p_slug:RESOLVED_SLUG});
-        if(!data?.ok)throw new Error(data?.error||"profile_not_found");
-        PROFILE=data.profile||{};
-        const title=PROFILE?.display_name||"Ma boutique";
-        const city=PROFILE?.city||"—";
-        const type=PROFILE?.business_type||PROFILE?.category||"Multi business";
-        $("heroName").textContent=title;
-        $("heroDesc").textContent=PROFILE?.bio||"Lecture des réservations, suivi terrain, actions rapides.";
-        setHeroPills(RESOLVED_SLUG,city,type);
+        const data = await rpc("resa_public_profile_by_slug",{p_slug:RESOLVED_SLUG});
+        if(!data?.ok) throw new Error(data?.error || "profile_not_found");
+
+        PROFILE = data.profile || {};
+        const title = PROFILE?.display_name || "Mon activité";
+        const city = PROFILE?.city || "—";
+        const type = PROFILE?.business_type || PROFILE?.category || "Multi business";
+
+        $("heroName").textContent = title;
+        $("heroDesc").textContent = PROFILE?.bio || "Lecture des réservations, suivi terrain, actions rapides.";
+        setHeroPills(city,type);
       }
 
       async function loadBookings(){
-        const payload=await rpc("digiy_resa_get_bookings_by_day",{p_slug:RESOLVED_SLUG,p_date:ACTIVE_DATE});
-        if(!payload?.ok)throw new Error(payload?.error||"bookings_not_found");
-        ALL_BOOKINGS=normalizeRows(payload.bookings||[]);
+        const payload = await rpc("digiy_resa_get_bookings_by_day",{
+          p_slug:RESOLVED_SLUG,
+          p_date:ACTIVE_DATE
+        });
+
+        if(!payload?.ok) throw new Error(payload?.error || "bookings_not_found");
+
+        ALL_BOOKINGS = normalizeRows(payload.bookings || []);
         renderStatsFromRows();
         renderBookings();
       }
 
       function renderStatsFromRows(){
-        const rows=ALL_BOOKINGS||[];
-        $("sTotal").textContent=String(rows.length);
-        $("sPending").textContent=String(rows.filter(r=>normStatus(r.status)==="pending").length);
-        $("sConfirmed").textContent=String(rows.filter(r=>normStatus(r.status)==="confirmed").length);
-        $("sDone").textContent=String(rows.filter(r=>normStatus(r.status)==="done").length);
-        $("sNoShow").textContent=String(rows.filter(r=>normStatus(r.status)==="no_show").length);
-        $("sCancelled").textContent=String(rows.filter(r=>normStatus(r.status)==="cancelled").length);
+        const rows = ALL_BOOKINGS || [];
+        $("sTotal").textContent = String(rows.length);
+        $("sPending").textContent = String(rows.filter(r => normStatus(r.status) === "pending").length);
+        $("sConfirmed").textContent = String(rows.filter(r => normStatus(r.status) === "confirmed").length);
+        $("sDone").textContent = String(rows.filter(r => normStatus(r.status) === "done").length);
+        $("sNoShow").textContent = String(rows.filter(r => normStatus(r.status) === "no_show").length);
+        $("sCancelled").textContent = String(rows.filter(r => normStatus(r.status) === "cancelled").length);
       }
 
-      function filterRows(rows){ if(ACTIVE_FILTER==="all")return rows; return rows.filter(r=>normStatus(r.status)===ACTIVE_FILTER); }
+      function filterRows(rows){
+        if(ACTIVE_FILTER === "all") return rows;
+        return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+      }
 
       function serviceHtml(row){
-        const bits=[];
-        if(row.service_name)bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
-        if(row.duration_minutes)bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
-        if(money(row.price_fcfa))bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
-        if(!bits.length)return "";
+        const bits = [];
+
+        if(row.service_name) bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
+        if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
+        if(money(row.price_fcfa)) bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
+
+        if(!bits.length) return "";
+
         return `<div class="service-box">${bits.join("")}</div>`;
       }
 
       function renderBookings(){
-        const list=$("bookingList"),empty=$("emptyState");
-        const rows=filterRows(ALL_BOOKINGS);
+        const list = $("bookingList");
+        const empty = $("emptyState");
+        const rows = filterRows(ALL_BOOKINGS);
+
         if(!rows.length){
-          list.innerHTML="";
-          empty.style.display="block";
-          empty.textContent=IS_PREVIEW
+          list.innerHTML = "";
+          empty.style.display = "block";
+          empty.textContent = IS_PREVIEW
             ? "Aucune donnée affichée en aperçu. Entre avec une session valide pour lire les vraies réservations."
             : "Aucune réservation pour cette date.";
           return;
         }
-        empty.style.display="none";
-        list.innerHTML=rows.map(row=>{
-          const status=normStatus(row.status);
+
+        empty.style.display = "none";
+
+        list.innerHTML = rows.map(row => {
+          const status = normStatus(row.status);
+
           return `
             <article class="booking">
               <div class="booking-top">
                 <div class="booking-main">
                   <div class="booking-name">${escapeHtml(row.customer_name)}</div>
                   <div class="meta">
-                    <span>📅 ${escapeHtml(row.booking_date?fmtDate(row.booking_date):"—")}</span>
-                    <span>🕒 ${escapeHtml(row.booking_time||"—")}</span>
-                    <span>👥 ${escapeHtml(row.guests_count||"—")}</span>
-                    <span>📞 ${escapeHtml(row.customer_phone||"—")}</span>
+                    <span>📅 ${escapeHtml(row.booking_date ? fmtDate(row.booking_date) : "—")}</span>
+                    <span>🕒 ${escapeHtml(row.booking_time || "—")}</span>
+                    <span>👥 ${escapeHtml(row.guests_count || "—")}</span>
                     <span>🧾 ${escapeHtml(fmtDateTime(row.created_at))}</span>
                   </div>
                 </div>
                 <div class="badge ${status}">${escapeHtml(statusLabel(status))}</div>
               </div>
               ${serviceHtml(row)}
-              ${row.note?`<div class="note">"${escapeHtml(row.note)}"</div>`:""}
+              ${row.note ? `<div class="note">"${escapeHtml(row.note)}"</div>` : ""}
             </article>`;
         }).join("");
       }
 
       function initFilters(){
-        $("filters").querySelectorAll(".chip").forEach(chip=>{
-          chip.addEventListener("click",()=>{
-            $("filters").querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+        $("filters").querySelectorAll(".chip").forEach(chip => {
+          chip.addEventListener("click", () => {
+            $("filters").querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
-            ACTIVE_FILTER=chip.dataset.filter||"all";
+            ACTIVE_FILTER = chip.dataset.filter || "all";
             renderBookings();
           });
         });
       }
 
       async function boot(){
+        cleanVisibleUrl();
         document.body.classList.add("loading");
-        resetView(); resetStats();
-        ACTIVE_DATE=queryDate||todayISO();
+        resetView();
+        resetStats();
+        ACTIVE_DATE = queryDate || todayISO();
 
         try{
           initClient();
-          const st=await resolveGuardState();
 
-          if(st?.preview){
-            IS_PREVIEW=true;
-            RESOLVED_SLUG=normalizeSlug(st.slug||getFallbackSlug()||"");
-            setPreviewHero("",RESOLVED_SLUG);
+          const st = await resolveGuardState();
+          const stateModule = String(st?.module || st?.module_code || MODULE).toUpperCase();
+
+          if(st?.preview || !st?.access_ok || stateModule !== MODULE){
+            IS_PREVIEW = true;
+            RESOLVED_SLUG = normalizeSlug(st?.slug || getFallbackSlug() || "");
+            setPreviewHero("Session RESA non ouverte. Entre par ton code PIN pour lire les vraies réservations.");
             renderBookings();
-
-            /* ━━━ AVANT : "Aucun slug détecté" · "Slug inconnu" · "Slug détecté" → bannis ━━━ */
-            if(st.reason==="preview_no_identity"){
-              $("topSub").textContent="Aucun identifiant détecté. Aperçu affiché.";
-            }else if(st.reason==="unknown_identity"){
-              $("topSub").textContent="Identifiant inconnu. Aperçu affiché.";
-            }else if(st.reason==="guard_error"){
-              $("topSub").textContent="Vérification indisponible. Aperçu affiché.";
-            }else if(st.reason==="guard_missing"){
-              $("topSub").textContent="Guard absent. Aperçu affiché.";
-            }else{
-              $("topSub").textContent=RESOLVED_SLUG
-                ? `Identifiant détecté (${RESOLVED_SLUG}) mais accès non confirmé. Aperçu affiché.`
-                : "Aperçu affiché.";
-            }
             return;
           }
 
-          if(st?.access_ok){
-            IS_PREVIEW=false;
-            RESOLVED_SLUG=normalizeSlug(st.slug||getFallbackSlug()||"");
+          IS_PREVIEW = false;
+          RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
 
-            if(!RESOLVED_SLUG){
-              IS_PREVIEW=true;
-              /* ━━━ AVANT : "Accès OK mais slug absent." → humain ━━━ */
-              setPreviewHero("Accès OK mais identifiant absent. Aperçu affiché.");
-              renderBookings();
-              return;
-            }
-
-            storageSet("digiy_resa_last_slug",RESOLVED_SLUG);
-            storageSet("digiy_resa_slug",RESOLVED_SLUG);
-            storageSet("digiy_last_slug",RESOLVED_SLUG);
-            storageSet("DIGIY_SLUG",RESOLVED_SLUG);
-
-            setLiveHero();
-            await loadProfile();
-            await loadBookings();
+          if(!RESOLVED_SLUG){
+            IS_PREVIEW = true;
+            setPreviewHero("Session ouverte, mais contexte RESA absent. Reviens par ton accès.");
+            renderBookings();
             return;
           }
 
-          IS_PREVIEW=true;
-          RESOLVED_SLUG=normalizeSlug(st?.slug||getFallbackSlug()||"");
-          setPreviewHero("",RESOLVED_SLUG);
-          renderBookings();
+          storageSet("digiy_resa_last_slug",RESOLVED_SLUG);
+          storageSet("digiy_resa_slug",RESOLVED_SLUG);
 
-          if(st?.reason==="no_subscription"){
-            $("topSub").textContent="Accès non actif. Aperçu affiché.";
-          }else if(st?.reason==="unknown_identity"){
-            $("topSub").textContent="Identifiant inconnu. Aperçu affiché.";
-          }else{
-            $("topSub").textContent="Accès indisponible. Aperçu affiché.";
-          }
+          setLiveHero();
+          await loadProfile();
+          await loadBookings();
         }catch(err){
           console.error(err);
-          IS_PREVIEW=true;
-          RESOLVED_SLUG=getFallbackSlug();
-          setPreviewHero("Erreur de chargement. Aperçu affiché.",RESOLVED_SLUG);
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = getFallbackSlug();
+          setPreviewHero("Erreur de chargement. Aperçu affiché.");
           renderBookings();
         }finally{
           document.body.classList.remove("loading");
