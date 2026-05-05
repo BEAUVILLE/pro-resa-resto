@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Je réserve — Plus</title>
   <meta name="theme-color" content="#07140f"/>
-  <meta name="description" content="Je réserve — Plus : fiche publique, établissement, contact, services, QR et accès utiles." />
+  <meta name="description" content="Je réserve — Plus : fiche publique, établissement, services, QR et accès utiles." />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -13,213 +13,150 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-etablissement-secure-pin8h"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#07140f;--bg2:#0b1d15;--card:#10241b;--card-2:#0d2018;--line:rgba(255,255,255,.10);--text:#ecfff4;--muted:rgba(236,255,244,.72);--primary:#22c55e;--primary-2:#16a34a;--gold:#facc15;--gold-soft:rgba(250,204,21,.12);--blue:#60a5fa;--shadow:0 20px 60px rgba(0,0,0,.38);--r:24px;--max:1120px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}
-    body{margin:0;min-height:100vh;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));background:radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);color:var(--text);font-family:var(--fontA);padding:16px;}
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:var(--max);margin:auto;}
-    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:6px 2px;}
-    .brand{display:flex;flex-direction:column;gap:4px;}
-    .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:950;}
-    .brand-title{font-size:clamp(20px,2.8vw,30px);font-weight:1000;line-height:1.05;}
-    .brand-sub{color:var(--muted);font-size:14px;font-weight:800;}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
-    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow);}
-    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.14);color:var(--text);font-weight:950;}
-    .nav-link.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.28);color:#bbf7d0;}
-    .hero,.card{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.018));box-shadow:var(--shadow);}
-    .hero{overflow:hidden;}
-    .hero-grid-main{display:grid;grid-template-columns:420px 1fr;min-height:430px;}
-    @media(max-width:940px){.hero-grid-main{grid-template-columns:1fr}}
-    .hero-media{position:relative;min-height:320px;background:#0a1712;}
-    .hero-media img{width:100%;height:100%;object-fit:cover;display:block;background:#0f1d17;}
-    .hero-media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,.34), rgba(0,0,0,.08));pointer-events:none;}
-    .hero-media-fallback{width:100%;height:100%;min-height:320px;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%, rgba(250,204,21,.18), transparent 30%),radial-gradient(circle at 75% 15%, rgba(34,197,94,.14), transparent 28%),linear-gradient(180deg, #111827, #0b1120);color:#fff;font-size:54px;font-weight:1000;}
-    .hero-badge{position:absolute;left:16px;bottom:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(7,20,15,.72);color:#fff6c9;font-size:12px;font-weight:950;backdrop-filter:blur(8px);}
-    .hero-badge .dot{width:8px;height:8px;border-radius:999px;background:var(--primary);box-shadow:0 0 0 4px rgba(34,197,94,.14);}
-    .hero-content{padding:24px;display:grid;gap:18px;align-content:start;}
-    .hero-top{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;}
-    .hero-main{display:flex;gap:14px;align-items:flex-start;min-width:0;}
-    .avatar{width:72px;height:72px;border-radius:20px;flex:0 0 auto;display:grid;place-items:center;font-size:24px;font-weight:1000;color:#041b12;background:linear-gradient(135deg, var(--gold), var(--primary));box-shadow:0 12px 28px rgba(34,197,94,.22);overflow:hidden;}
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block;}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid rgba(34,197,94,.28);background:rgba(34,197,94,.12);color:#bbf7d0;font-size:12px;font-weight:950;width:max-content;margin-bottom:10px;}
-    .badge .dot{width:8px;height:8px;border-radius:999px;background:var(--primary);box-shadow:0 0 0 4px rgba(34,197,94,.14);}
-    h1{margin:0;font-size:clamp(30px, 4vw, 42px);line-height:1.04;letter-spacing:-.02em;}
-    .subtitle{margin-top:8px;color:var(--muted);font-size:16px;font-weight:800;line-height:1.5;}
-    .hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted);font-size:12px;font-weight:900;max-width:100%;}
-    .slug-pill{color:var(--gold);border-color:rgba(250,204,21,.22);background:var(--gold-soft);}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;}
-    .btn{min-height:48px;padding:12px 16px;border-radius:14px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:.18s ease;font-family:var(--fontA);}
-    .btn:hover{transform:translateY(-1px)}
-    .btn.primary{background:linear-gradient(135deg, var(--primary), var(--primary-2));color:#041b12;border-color:transparent;box-shadow:0 12px 28px rgba(34,197,94,.22);}
-    .btn.gold{background:rgba(250,204,21,.12);color:var(--gold);border-color:rgba(250,204,21,.22);}
-    .hero-info-grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));}
-    @media(max-width:700px){.hero-info-grid{grid-template-columns:1fr}}
-    .fact{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16);}
-    .fact .k{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px;}
-    .fact .v{font-size:15px;font-weight:900;line-height:1.5;}
-    .grid{display:grid;gap:14px;margin-top:14px;}
-    @media(min-width:920px){.grid{grid-template-columns:1.05fr .95fr}}
-    .card{padding:18px;}
-    h2{margin:0 0 10px;font-size:21px;}
-    .muted{color:var(--muted);font-size:14px;font-weight:800;line-height:1.55;}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-    .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--muted);font-size:12px;font-weight:900;}
-    .services{display:grid;gap:10px;margin-top:14px;}
-    .service{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16);}
-    .service-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;}
-    .service-name{font-size:16px;font-weight:1000;color:var(--gold);line-height:1.2;}
-    .service-meta{display:flex;gap:8px;flex-wrap:wrap;}
-    .service-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted);font-size:11px;font-weight:950;}
-    .claw-grid{display:grid;gap:14px;margin-top:14px;grid-template-columns:1.12fr .88fr;}
-    @media(max-width:920px){.claw-grid{grid-template-columns:1fr}}
-    .claw-card{padding:18px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg, rgba(96,165,250,.08), rgba(34,197,94,.06));box-shadow:var(--shadow);}
-    .claw-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-    .claw-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b7ecff;font-weight:1000;margin-bottom:6px;}
-    .claw-title{margin:0;font-size:20px;font-weight:1000;}
-    .claw-mode{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid rgba(96,165,250,.18);background:rgba(96,165,250,.08);color:#d7efff;font-size:12px;font-weight:950;}
-    .claw-text{color:var(--muted);font-size:14px;font-weight:800;line-height:1.65;}
-    .claw-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-    .claw-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--text);font-size:12px;font-weight:950;}
-    .claw-list{display:grid;gap:10px;margin-top:12px;}
-    .claw-item{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.16);}
-    .claw-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:1000;color:#ecfff4;}
-    .claw-item span{color:var(--muted);font-size:13px;font-weight:800;line-height:1.55;display:block;}
-    .footer{margin-top:16px;text-align:center;color:var(--muted);font-size:12px;font-weight:800;}
-
-    #servicesBox, #contactWhatsapp{scroll-margin-top:96px}
-
-    .bottomNav{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      z-index:99990;
-      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-      background:rgba(7,20,15,.94);
-      border-top:1px solid rgba(255,255,255,.10);
-      backdrop-filter:blur(16px);
-      -webkit-backdrop-filter:blur(16px);
+    :root{
+      --bg:#07140f;--bg2:#0b1d15;--card:#10241b;--line:rgba(255,255,255,.10);
+      --text:#ecfff4;--muted:rgba(236,255,244,.72);--primary:#22c55e;--primary-2:#16a34a;
+      --gold:#facc15;--gold-soft:rgba(250,204,21,.12);--blue:#60a5fa;
+      --shadow:0 20px 60px rgba(0,0,0,.38);--r:24px;--max:1120px;
+      --fontA:"Outfit",system-ui,-apple-system,sans-serif;
     }
-
-    .bottomNavInner{
-      width:min(100%,760px);
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:6px;
-    }
-
-    .bottomNav a{
-      min-height:58px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      align-content:center;
-      gap:3px;
-      color:rgba(236,255,244,.70);
-      font-size:11px;
-      font-weight:950;
-      text-align:center;
-      border:1px solid transparent;
-      text-decoration:none;
-    }
-
-    .bottomNav .ico{font-size:18px;line-height:1}
-
-    .bottomNav a.active{
-      color:#07140f;
-      background:linear-gradient(135deg,var(--gold),var(--primary));
-      border-color:rgba(250,204,21,.28);
-      box-shadow:0 12px 26px rgba(34,197,94,.18);
-    }
-
-    .mobileFastRow{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:10px;
-      margin-top:14px;
-    }
-
-    .mobileFastRow a{
-      min-height:46px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:16px 16px calc(104px + env(safe-area-inset-bottom,0px));
+      background:
+        radial-gradient(900px 520px at 10% -10%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 520px at 110% 0%, rgba(250,204,21,.10), transparent 55%),
+        linear-gradient(180deg, #07140f, #05100c 55%, #040b08 100%);
       color:var(--text);
-      text-decoration:none;
-      font-weight:950;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:10px 12px;
+      font-family:var(--fontA);
     }
-
-    .mobileFastRow a.primary{
-      background:linear-gradient(90deg,var(--primary),var(--gold));
-      color:#07140f;
-      border:none;
-    }
-
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:var(--max);margin:auto}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:6px 2px}
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:950}
+    .brand-title{font-size:clamp(20px,2.8vw,30px);font-weight:1000;line-height:1.05}
+    .brand-sub{color:var(--muted);font-size:14px;font-weight:800}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow)}
+    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.14);color:var(--text);font-weight:950}
+    .nav-link.active{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.28);color:#bbf7d0}
+    .hero,.card{border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.018));box-shadow:var(--shadow)}
+    .hero{overflow:hidden}
+    .hero-grid-main{display:grid;grid-template-columns:420px 1fr;min-height:430px}
+    @media(max-width:940px){.hero-grid-main{grid-template-columns:1fr}}
+    .hero-media{position:relative;min-height:320px;background:#0a1712}
+    .hero-media img{width:100%;height:100%;object-fit:cover;display:block;background:#0f1d17}
+    .hero-media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.34),rgba(0,0,0,.08));pointer-events:none}
+    .hero-media-fallback{width:100%;height:100%;min-height:320px;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,rgba(250,204,21,.18),transparent 30%),radial-gradient(circle at 75% 15%,rgba(34,197,94,.14),transparent 28%),linear-gradient(180deg,#111827,#0b1120);color:#fff;font-size:54px;font-weight:1000}
+    .hero-badge{position:absolute;left:16px;bottom:16px;z-index:2;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(7,20,15,.72);color:#fff6c9;font-size:12px;font-weight:950;backdrop-filter:blur(8px)}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--primary);box-shadow:0 0 0 4px rgba(34,197,94,.14)}
+    .hero-content{padding:24px;display:grid;gap:18px;align-content:start}
+    .hero-top{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+    .hero-main{display:flex;gap:14px;align-items:flex-start;min-width:0}
+    .avatar{width:72px;height:72px;border-radius:20px;flex:0 0 auto;display:grid;place-items:center;font-size:24px;font-weight:1000;color:#041b12;background:linear-gradient(135deg,var(--gold),var(--primary));box-shadow:0 12px 28px rgba(34,197,94,.22);overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid rgba(34,197,94,.28);background:rgba(34,197,94,.12);color:#bbf7d0;font-size:12px;font-weight:950;width:max-content;margin-bottom:10px}
+    h1{margin:0;font-size:clamp(30px,4vw,42px);line-height:1.04;letter-spacing:-.02em}
+    .subtitle{margin-top:8px;color:var(--muted);font-size:16px;font-weight:800;line-height:1.5}
+    .hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--muted);font-size:12px;font-weight:900;max-width:100%}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .btn{min-height:48px;padding:12px 16px;border-radius:14px;font-weight:950;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:.18s ease;font-family:var(--fontA)}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#041b12;border-color:transparent;box-shadow:0 12px 28px rgba(34,197,94,.22)}
+    .btn.gold{background:rgba(250,204,21,.12);color:var(--gold);border-color:rgba(250,204,21,.22)}
+    .hero-info-grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(max-width:700px){.hero-info-grid{grid-template-columns:1fr}}
+    .fact{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16)}
+    .fact .k{font-size:12px;color:var(--muted);font-weight:800;margin-bottom:6px}
+    .fact .v{font-size:15px;font-weight:900;line-height:1.5}
+    .grid{display:grid;gap:14px;margin-top:14px}
+    @media(min-width:920px){.grid{grid-template-columns:1.05fr .95fr}}
+    .card{padding:18px}
+    h2{margin:0 0 10px;font-size:21px}
+    .muted{color:var(--muted);font-size:14px;font-weight:800;line-height:1.55}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--muted);font-size:12px;font-weight:900}
+    .services{display:grid;gap:10px;margin-top:14px}
+    .service{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.16)}
+    .service-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start}
+    .service-name{font-size:16px;font-weight:1000;color:var(--gold);line-height:1.2}
+    .service-meta{display:flex;gap:8px;flex-wrap:wrap}
+    .service-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted);font-size:11px;font-weight:950}
+    .assistant-grid{display:grid;gap:14px;margin-top:14px;grid-template-columns:1.12fr .88fr}
+    @media(max-width:920px){.assistant-grid{grid-template-columns:1fr}}
+    .assistant-card{padding:18px;border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(180deg,rgba(96,165,250,.08),rgba(34,197,94,.06));box-shadow:var(--shadow)}
+    .assistant-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .assistant-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b7ecff;font-weight:1000;margin-bottom:6px}
+    .assistant-title{margin:0;font-size:20px;font-weight:1000}
+    .assistant-mode{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:999px;border:1px solid rgba(96,165,250,.18);background:rgba(96,165,250,.08);color:#d7efff;font-size:12px;font-weight:950}
+    .assistant-text{color:var(--muted);font-size:14px;font-weight:800;line-height:1.65}
+    .assistant-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .assistant-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--text);font-size:12px;font-weight:950}
+    .assistant-list{display:grid;gap:10px;margin-top:12px}
+    .assistant-item{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.16)}
+    .assistant-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:1000;color:#ecfff4}
+    .assistant-item span{color:var(--muted);font-size:13px;font-weight:800;line-height:1.55;display:block}
+    .footer{margin-top:16px;text-align:center;color:var(--muted);font-size:12px;font-weight:800}
+    #servicesBox{scroll-margin-top:96px}
+    .bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:99990;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(7,20,15,.94);border-top:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .bottomNavInner{width:min(100%,760px);margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .bottomNav a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(236,255,244,.70);font-size:11px;font-weight:950;text-align:center;border:1px solid transparent;text-decoration:none}
+    .bottomNav .ico{font-size:18px;line-height:1}
+    .bottomNav a.active{color:#07140f;background:linear-gradient(135deg,var(--gold),var(--primary));border-color:rgba(250,204,21,.28);box-shadow:0 12px 26px rgba(34,197,94,.18)}
+    .mobileFastRow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+    .mobileFastRow a{min-height:46px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);text-decoration:none;font-weight:950;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px}
+    .mobileFastRow a.primary{background:linear-gradient(90deg,var(--primary),var(--gold));color:#07140f;border:none}
+    .hidden{display:none!important}
     @media(max-width:720px){
       .mobileFastRow{grid-template-columns:1fr 1fr}
       .nav-rail{display:none}
       .top-actions{display:none}
       .hero-actions{display:none}
     }
-
-    .hidden{display:none !important}
-    @media(max-width:720px){.top-actions,.nav-rail,.hero-actions{width:100%}.top-actions > *,.nav-rail > *,.hero-actions > *{flex:1 1 auto}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
         <div class="eyebrow">JE RÉSERVE</div>
-        <!-- ━━━ AVANT : "Profil / établissement" → banni ━━━ -->
         <div class="brand-title">Plus · mon établissement</div>
-        <!-- ━━━ AVANT : "Passerelle PRO vers la vraie fiche publique" → banni ━━━ -->
-        <div class="brand-sub" id="topSub">Fiche publique, contact, services et repères utiles.</div>
+        <div class="brand-sub" id="topSub">Fiche publique, services, QR et repères utiles.</div>
       </div>
       <div class="top-actions">
-        <!-- ━━━ AVANT : "Cockpit" · "Dashboard" · "CLAW" → bannis ━━━ -->
-        <a class="btn" id="btnCockpitTop"   href="./cockpit.html">Réserv.</a>
+        <a class="btn" id="btnCockpitTop" href="./cockpit.html">Réserv.</a>
         <a class="btn" id="btnDashboardTop" href="./dashboard-pro.html">Accueil</a>
-        <a class="btn" id="btnQrTop"        href="./qr.html">QR</a>
-        <a class="btn" id="btnClawTop"      href="./claw.html">Aide</a>
+        <a class="btn" id="btnQrTop" href="./qr.html">QR</a>
+        <a class="btn" id="btnAssistantTop" href="./claw.html">Aide</a>
       </div>
     </div>
 
-    <!-- ━━━ NAV — doctrine façade ━━━ -->
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <!-- ━━━ "Cockpit" → "Réserv." ━━━ -->
-      <a class="nav-link"        id="navCockpit"  href="./cockpit.html">Réserv.</a>
-      <!-- ━━━ "Dashboard" → "Accueil" ━━━ -->
-      <a class="nav-link"        id="navDashboard" href="./dashboard-pro.html">Accueil</a>
-      <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
-      <a class="nav-link"        id="navQr"        href="./qr.html">QR</a>
-      <!-- ━━━ "CLAW" → "Aide" ━━━ -->
-      <a class="nav-link"        id="navClaw"      href="./claw.html">Aide</a>
-      <!-- ━━━ "Profil / établissement" → "Plus" active ━━━ -->
-      <a class="nav-link active" id="navSettings"  href="./etablissement.html">Plus</a>
-      <!-- ━━━ "Accueil PRO" → "Façade" ━━━ -->
-      <a class="nav-link"        id="navHome"      href="./index.html">Façade</a>
-      <a class="nav-link"        id="navPublic"    href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Vitrine</a>
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">Réserv.</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+      <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
+      <a class="nav-link active" id="navSettings" href="./etablissement.html">Plus</a>
+      <a class="nav-link" id="navHome" href="./index.html">Façade</a>
+      <a class="nav-link" id="navPublic" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">Vitrine</a>
     </nav>
 
     <section class="hero">
       <div class="hero-grid-main">
         <div class="hero-media" id="heroMedia">
           <div class="hero-media-fallback">📅</div>
-          <div class="hero-badge" id="heroBadge"><span class="dot"></span> Commerce public</div>
+          <div class="hero-badge" id="heroBadge"><span class="dot"></span> Fiche publique</div>
         </div>
 
         <div class="hero-content">
@@ -227,28 +164,25 @@
             <div class="hero-main">
               <div class="avatar" id="avatar">RE</div>
               <div>
-                <div class="badge" id="pubBadge"><span class="dot"></span> Fiche publiée</div>
+                <div class="badge" id="pubBadge"><span class="dot"></span> Session protégée</div>
                 <h1 id="name">Chargement…</h1>
                 <div class="subtitle" id="subtitle">Fiche client DIGIY</div>
                 <div class="hero-meta">
+                  <div class="pill" id="sessionPill">Session : 8h après code PIN</div>
                   <div class="pill" id="cityPill">Ville : —</div>
                   <div class="pill" id="typePill">Activité : —</div>
-                  <!-- ━━━ AVANT : "slug :" → "Identifiant :" ━━━ -->
-                  <div class="pill slug-pill" id="slugPill">Identifiant : —</div>
                 </div>
               </div>
             </div>
 
             <div class="hero-actions">
-              <a class="btn primary" id="btnReserve" href="https://resa-table-resto.digiylyfe.com/reserver.html" target="_blank" rel="noopener">📅 Réserver</a>
-              <a class="btn gold"    id="btnWhatsApp" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>
-              <!-- ━━━ AVANT : "Cockpit" · "Dashboard" · "CLAW" → bannis ━━━ -->
-              <a class="btn" id="btnCockpitHero"  href="./cockpit.html">🧭 Réserv.</a>
+              <a class="btn primary" id="btnReserve" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">📅 Voir côté client</a>
+              <a class="btn" id="btnCockpitHero" href="./cockpit.html">🧭 Réserv.</a>
               <a class="btn" id="btnDashboardHero" href="./dashboard-pro.html">📊 Accueil</a>
-              <a class="btn" id="btnPlanningHero"  href="./planning.html">🗓️ Planning</a>
-              <a class="btn" id="btnQrHero"        href="./qr.html">📎 QR</a>
-              <a class="btn" id="btnClawHero"      href="./claw.html">🔍 Aide</a>
-              <a class="btn" id="btnPublicHero"    href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Fiche client</a>
+              <a class="btn" id="btnPlanningHero" href="./planning.html">🗓️ Planning</a>
+              <a class="btn" id="btnQrHero" href="./qr.html">📎 QR</a>
+              <a class="btn" id="btnAssistantHero" href="./claw.html">🔍 Aide</a>
+              <a class="btn" id="btnPublicHero" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">🌍 Vitrine</a>
             </div>
 
             <div class="mobileFastRow">
@@ -272,39 +206,34 @@
     <section class="grid">
       <div class="card">
         <h2>Repères terrain</h2>
-        <div class="muted">Zones, quartier ou mots-clés utiles pour situer le commerce.</div>
+        <div class="muted">Zones, quartier ou mots-clés utiles pour situer ton activité.</div>
         <div class="chips" id="zonesChips"><div class="chip">Zone non précisée</div></div>
       </div>
       <div class="card">
-        <h2>Contact</h2>
+        <h2>Contact client</h2>
         <div class="hero-info-grid" style="margin-top:14px">
-          <div class="fact"><div class="k">WhatsApp</div><div class="v" id="contactWhatsapp">—</div></div>
-          <div class="fact"><div class="k">Réservation</div><div class="v" id="bookingHelp">Demande simple et confirmation côté commerce</div></div>
+          <div class="fact"><div class="k">Côté public</div><div class="v" id="contactPublic">Géré sur la vitrine client contrôlée</div></div>
+          <div class="fact"><div class="k">Réservation</div><div class="v" id="bookingHelp">Demande simple et confirmation côté professionnel</div></div>
         </div>
       </div>
     </section>
 
-    <section class="claw-grid">
-      <article class="claw-card">
-        <div class="claw-head">
+    <section class="assistant-grid">
+      <article class="assistant-card">
+        <div class="assistant-head">
           <div>
-            <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">Lecture activité</div>
-            <!-- ━━━ AVANT : "Lecture légère de l'établissement" → "Lecture de ton profil" ━━━ -->
-            <h2 class="claw-title">Lecture de ton profil</h2>
+            <div class="assistant-kicker">Mon assistant DIGIY</div>
+            <h2 class="assistant-title">Lecture de ton profil</h2>
           </div>
-          <!-- ━━━ AVANT : "Aide légère" → "Aide en cours" ━━━ -->
-          <div class="claw-mode" id="clawMode">Aide en cours</div>
+          <div class="assistant-mode" id="assistantMode">Aide en cours</div>
         </div>
-        <!-- ━━━ AVANT : "CLAW prépare une lecture simple" → humain ━━━ -->
-        <div class="claw-text" id="clawSummary">On prépare une lecture simple de ton commerce : lisibilité de la fiche, accueil, réservation et repères utiles.</div>
-        <div class="claw-pills" id="clawPills"></div>
+        <div class="assistant-text" id="assistantSummary">On prépare une lecture simple de ton commerce : lisibilité de la fiche, accueil, réservation et repères utiles.</div>
+        <div class="assistant-pills" id="assistantPills"></div>
       </article>
-      <article class="claw-card">
-        <div class="claw-list" id="clawList">
-          <div class="claw-item">
+      <article class="assistant-card">
+        <div class="assistant-list" id="assistantList">
+          <div class="assistant-item">
             <strong>Chargement</strong>
-            <!-- ━━━ AVANT : "CLAW attend les vraies données du rail RESA." → banni ━━━ -->
             <span>En attente des vraies données pour une lecture utile.</span>
           </div>
         </div>
@@ -313,8 +242,7 @@
 
     <section class="card" style="margin-top:14px">
       <h2>Services proposés</h2>
-      <!-- ━━━ AVANT : "rail RESA" visible → banni ━━━ -->
-      <div class="muted">Les services proposés par ta boutique.</div>
+      <div class="muted">Les services proposés par ton activité côté client.</div>
       <div class="services" id="servicesBox">
         <div class="service"><div class="muted">Chargement des services…</div></div>
       </div>
@@ -322,7 +250,6 @@
 
     <div class="footer">DIGIYLYFE · Je réserve · profil terrain</div>
   </div>
-
 
   <nav class="bottomNav" aria-label="Navigation RESA">
     <div class="bottomNavInner">
@@ -339,84 +266,151 @@
       "use strict";
 
       const MODULE = "RESA";
-      const SUPABASE_URL      = window.DIGIY_SUPABASE_URL;
+      const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
       const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
-      const PUBLIC_BASE_URL   = "https://resa-table-resto.digiylyfe.com";
-      const PUBLIC_INDEX_URL  = `${PUBLIC_BASE_URL}/`;
+      const PUBLIC_INDEX_URL = "https://resa-table-resto.digiylyfe.com/";
+
       const supabaseLib = window.supabase;
-      const qsp = new URLSearchParams(location.search);
+      const $ = (id) => document.getElementById(id);
 
-      function storageGet(key){ try{ const s=sessionStorage.getItem(key); if(s)return s; }catch{} try{ const l=localStorage.getItem(key); if(l)return l; }catch{} return ""; }
-      function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }
+      let RESOLVED_SLUG = "";
+      let CURRENT_STATE = null;
 
-      function normalizeSlug(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
+      function storageGet(key){
+        try{ const s = sessionStorage.getItem(key); if(s) return s; }catch{}
+        try{ const l = localStorage.getItem(key); if(l) return l; }catch{}
+        return "";
+      }
 
-      const slug = normalizeSlug(
-        qsp.get("slug")||storageGet("digiy_resa_slug")||storageGet("digiy_resa_last_slug")||storageGet("digiy_last_slug")||storageGet("DIGIY_SLUG")||""
-      );
+      function storageSet(key,value){
+        try{ sessionStorage.setItem(key,String(value ?? "")); }catch{}
+        try{ localStorage.setItem(key,String(value ?? "")); }catch{}
+      }
 
-      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         buildSafeUrl — VERSION BLINDÉE
-         new URL(path, location.href) fragile selon l'env.
-      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
+      }
+
+      function cleanVisibleUrl(){
+        try{
+          const u = new URL(location.href);
+          const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
+          if(legacySlug){
+            storageSet("digiy_resa_slug", legacySlug);
+            storageSet("digiy_resa_last_slug", legacySlug);
+          }
+          ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          history.replaceState({}, document.title, u.pathname + u.search + u.hash);
+        }catch(_){}
+      }
+
       function buildSafeUrl(base, params){
-        const baseStr=(base==null?"":String(base)).trim();
-        if(!baseStr)return location.href;
+        const baseStr = String(base || "").trim();
+        if(!baseStr) return "./dashboard-pro.html";
+
         let u;
         try{
-          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
-          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
-        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
-        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
+          u = /^https?:\/\//i.test(baseStr) ? new URL(baseStr) : new URL(baseStr, location.href);
+        }catch(e){
+          console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
+          return baseStr;
+        }
+
+        ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+
+        try{
+          Object.entries(params || {}).forEach(([k,v]) => {
+            if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
+            if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+          });
+        }catch(e){}
+
+        if(u.origin === location.origin){
+          const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+          return "./" + file + (u.search || "") + (u.hash || "");
+        }
+
         return u.toString();
       }
 
-      function withSlug(path, slugValue="", extra={}){
-        const c=normalizeSlug(slugValue);
-        return buildSafeUrl(path,{...(c?{slug:c}:{}),...extra});
+      function safe(v,fallback="—"){
+        const s = String(v || "").trim();
+        return s || fallback;
       }
 
-      function buildPublicUrl(page, slugValue="", extra={}){
-        const c=normalizeSlug(slugValue);
-        return buildSafeUrl(PUBLIC_INDEX_URL+page,{...(c?{slug:c}:{}),...extra});
+      function initials(name){
+        const s = safe(name,"RE");
+        return s.split(/\s+/).slice(0,2).map(x => (x[0] || "").toUpperCase()).join("") || "RE";
       }
 
-      function setNavLinks(slugValue){
-        const c=normalizeSlug(slugValue);
-        const cockpitHref   = withSlug("./cockpit.html",      c);
-        const dashboardHref = withSlug("./dashboard-pro.html",c);
-        const planningHref  = withSlug("./planning.html",     c);
-        const qrHref        = withSlug("./qr.html",           c);
-        const clawHref      = withSlug("./claw.html",         c);
-        const settingsHref  = withSlug("./etablissement.html",c);
-        const homeHref      = withSlug("./index.html",        c);
-        const publicFicheHref  = buildPublicUrl("fiche.html",c);
-        const reserveHref      = buildPublicUrl("reserver.html",c);
+      function escapeHtml(str){
+        return String(str ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#39;");
+      }
 
-        document.getElementById("navCockpit").href  = cockpitHref;
-        document.getElementById("navDashboard").href= dashboardHref;
-        document.getElementById("navPlanning").href = planningHref;
-        document.getElementById("navQr").href       = qrHref;
-        document.getElementById("navClaw").href     = clawHref;
-        document.getElementById("navSettings").href = settingsHref;
-        document.getElementById("navHome").href     = homeHref;
-        document.getElementById("navPublic").href   = PUBLIC_INDEX_URL;
+      function pickMainImage(p){
+        return [p?.cover_url,p?.photo_url,p?.image_url,p?.cover_image_url].filter(Boolean)[0] || "";
+      }
 
-        document.getElementById("btnCockpitTop").href   = cockpitHref;
-        document.getElementById("btnDashboardTop").href = dashboardHref;
-        document.getElementById("btnQrTop").href        = qrHref;
-        document.getElementById("btnClawTop").href      = clawHref;
+      function publicUrlFromProfile(profile){
+        const p = profile || {};
+        const urls = [
+          p.public_url,
+          p.profile_url,
+          p.fiche_url,
+          p.page_url,
+          p.booking_url,
+          p.reservation_url
+        ].map(v => String(v || "").trim()).filter(Boolean);
 
-        document.getElementById("btnCockpitHero").href   = cockpitHref;
-        document.getElementById("btnDashboardHero").href = dashboardHref;
-        document.getElementById("btnPlanningHero").href  = planningHref;
-        document.getElementById("btnQrHero").href        = qrHref;
-        document.getElementById("btnClawHero").href      = clawHref;
-        document.getElementById("btnPublicHero").href    = publicFicheHref;
-        document.getElementById("btnReserve").href       = reserveHref;
+        const first = urls.find(v => /^https:\/\/[a-z0-9.-]+/i.test(v));
+        return first || PUBLIC_INDEX_URL;
+      }
 
-        const notesHref = withSlug("./planning.html", c) + "#quickResaNote";
-        const extraLinks = {
+      function reservationUrlFromProfile(profile){
+        const p = profile || {};
+        const direct = String(p.reservation_url || p.booking_url || "").trim();
+        if(/^https:\/\/[a-z0-9.-]+/i.test(direct)) return direct;
+        return publicUrlFromProfile(profile);
+      }
+
+      function setNavLinks(){
+        const cockpitHref = buildSafeUrl("./cockpit.html");
+        const dashboardHref = buildSafeUrl("./dashboard-pro.html");
+        const planningHref = buildSafeUrl("./planning.html");
+        const qrHref = buildSafeUrl("./qr.html");
+        const assistantHref = buildSafeUrl("./claw.html");
+        const settingsHref = buildSafeUrl("./etablissement.html");
+        const homeHref = buildSafeUrl("./index.html");
+        const notesHref = buildSafeUrl("./planning.html") + "#quickResaNote";
+
+        const links = {
+          navCockpit: cockpitHref,
+          navDashboard: dashboardHref,
+          navPlanning: planningHref,
+          navQr: qrHref,
+          navAssistant: assistantHref,
+          navSettings: settingsHref,
+          navHome: homeHref,
+          btnCockpitTop: cockpitHref,
+          btnDashboardTop: dashboardHref,
+          btnQrTop: qrHref,
+          btnAssistantTop: assistantHref,
+          btnCockpitHero: cockpitHref,
+          btnDashboardHero: dashboardHref,
+          btnPlanningHero: planningHref,
+          btnQrHero: qrHref,
+          btnAssistantHero: assistantHref,
           fastReserv: cockpitHref,
           fastPlanning: planningHref,
           fastNotes: notesHref,
@@ -428,186 +422,292 @@
           bottomMore: settingsHref
         };
 
-        Object.entries(extraLinks).forEach(([id, href]) => {
-          const el = document.getElementById(id);
+        Object.entries(links).forEach(([id, href]) => {
+          const el = $(id);
           if(el) el.href = href;
         });
+
+        $("navPublic").href = PUBLIC_INDEX_URL;
+        $("btnReserve").href = PUBLIC_INDEX_URL;
+        $("btnPublicHero").href = PUBLIC_INDEX_URL;
       }
 
-      function safe(v,fallback="—"){ const s=String(v||"").trim(); return s||fallback; }
-      function initials(name){ const s=safe(name,"RE"); return s.split(/\s+/).slice(0,2).map(x=>(x[0]||"").toUpperCase()).join("")||"RE"; }
-      function waLink(phone,name){ const c=String(phone||"").replace(/[^\d]/g,""); if(!c)return ""; const msg=`Bonjour ${name||""}, je vous contacte via votre fiche DIGIY.`; return "https://wa.me/"+c+"?text="+encodeURIComponent(msg); }
-      function escapeHtml(str){ return String(str??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;"); }
-      function pickMainImage(p){ return [p?.cover_url,p?.photo_url,p?.image_url,p?.cover_image_url].filter(Boolean)[0]||""; }
-
       function setHeroImage(profile,displayName,city,activity){
-        const heroMedia=document.getElementById("heroMedia");
-        const imageUrl=pickMainImage(profile);
-        const badgeText=city&&activity?`${activity} public · ${city}`:city?"Commerce public · "+city:"Commerce public";
+        const heroMedia = $("heroMedia");
+        const imageUrl = pickMainImage(profile);
+        const badgeText = city && activity ? `${activity} public · ${city}` : city ? "Fiche publique · " + city : "Fiche publique";
+
         if(imageUrl){
-          heroMedia.innerHTML=`<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(displayName)}" loading="eager" onerror="this.outerHTML='<div class=&quot;hero-media-fallback&quot;>📅</div>';"/><div class="hero-badge" id="heroBadge"><span class="dot"></span> ${escapeHtml(badgeText)}</div>`;
+          heroMedia.innerHTML = `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(displayName)}" loading="eager" onerror="this.outerHTML='<div class=&quot;hero-media-fallback&quot;>📅</div>';"/><div class="hero-badge" id="heroBadge"><span class="dot"></span> ${escapeHtml(badgeText)}</div>`;
         }else{
-          heroMedia.innerHTML=`<div class="hero-media-fallback">📅</div><div class="hero-badge" id="heroBadge"><span class="dot"></span> ${escapeHtml(badgeText)}</div>`;
+          heroMedia.innerHTML = `<div class="hero-media-fallback">📅</div><div class="hero-badge" id="heroBadge"><span class="dot"></span> ${escapeHtml(badgeText)}</div>`;
         }
       }
 
       function setAvatar(profile,displayName){
-        const avatar=document.getElementById("avatar");
-        const photo=profile?.photo_url||profile?.logo_url||"";
-        if(photo){ avatar.innerHTML=`<img src="${escapeHtml(photo)}" alt="${escapeHtml(displayName)}" onerror="this.parentNode.textContent='${escapeHtml(initials(displayName))}'">`;
-        }else{ avatar.textContent=initials(displayName); }
+        const avatar = $("avatar");
+        const photo = profile?.photo_url || profile?.logo_url || "";
+
+        if(photo){
+          avatar.innerHTML = `<img src="${escapeHtml(photo)}" alt="${escapeHtml(displayName)}" onerror="this.parentNode.textContent='${escapeHtml(initials(displayName))}'">`;
+        }else{
+          avatar.textContent = initials(displayName);
+        }
       }
 
       function renderZones(zones){
-        const box=document.getElementById("zonesChips");
-        if(!zones||!zones.length){box.innerHTML=`<div class="chip">Zone non précisée</div>`;return;}
-        box.innerHTML=zones.map(z=>`<div class="chip">${escapeHtml(z)}</div>`).join("");
+        const box = $("zonesChips");
+        if(!zones || !zones.length){
+          box.innerHTML = `<div class="chip">Zone non précisée</div>`;
+          return;
+        }
+        box.innerHTML = zones.map(z => `<div class="chip">${escapeHtml(z)}</div>`).join("");
       }
 
-      function setClaw(mode,summary,pills=[],items=[]){
-        document.getElementById("clawMode").textContent    = mode||"Aide en cours";
-        document.getElementById("clawSummary").textContent = summary||"Lecture de ton profil.";
-        document.getElementById("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
-        document.getElementById("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
+      function setAssistant(mode,summary,pills=[],items=[]){
+        $("assistantMode").textContent = mode || "Aide en cours";
+        $("assistantSummary").textContent = summary || "Lecture de ton profil.";
+        $("assistantPills").innerHTML = (Array.isArray(pills) ? pills : [])
+          .filter(Boolean)
+          .map(p => `<div class="assistant-pill">${escapeHtml(p)}</div>`)
+          .join("");
+
+        $("assistantList").innerHTML = (Array.isArray(items) ? items : [])
+          .filter(Boolean)
+          .map(item => `<div class="assistant-item"><strong>${escapeHtml(item.title || "Point utile")}</strong><span>${escapeHtml(item.text || "—")}</span></div>`)
+          .join("");
       }
 
-      function setClawLoading(){
-        setClaw("Chargement","Lecture du profil en cours. En attente des vraies données.",
+      function setAssistantLoading(){
+        setAssistant(
+          "Chargement",
+          "Lecture du profil en cours. En attente des vraies données.",
           ["Plus","Réservation","Repères terrain"],
-          [{title:"Lecture du commerce",text:"En attente du profil réel pour résumer le terrain proprement."},{title:"Préparation réservation",text:"Le type d'activité, les services et le canal de contact seront reliés."}]);
+          [
+            {title:"Lecture du commerce", text:"En attente du profil réel pour résumer le terrain proprement."},
+            {title:"Préparation réservation", text:"Le type d'activité, les services et le canal client seront reliés côté vitrine."}
+          ]
+        );
       }
 
-      function setClawUnavailable(message="Commerce indisponible."){
-        setClaw("Lecture limitée",message,
+      function setAssistantUnavailable(message="Profil indisponible."){
+        setAssistant(
+          "Lecture limitée",
+          message,
           ["Profil protégé","Données indisponibles"],
-          [{title:"État actuel",text:"La fiche n'est pas exploitable pour une lecture utile pour l'instant."},{title:"Action simple",text:"Vérifier l'identifiant, la publication publique et la cohérence du profil."}]);
+          [
+            {title:"État actuel", text:"La fiche n'est pas exploitable pour une lecture utile pour l'instant."},
+            {title:"Action simple", text:"Reviens par ton code PIN ou vérifie la publication de la fiche client."}
+          ]
+        );
       }
 
-      function buildClawFromProfile(profile,services){
-        const p=profile||{};
-        const list=Array.isArray(services)?services:[];
-        const businessType=safe(p.business_type||p.category,"Service local");
-        const city=safe(p.city,"Ville à préciser");
-        const hasWhatsapp=!!String(p.whatsapp||"").trim();
-        const hasAddress=!!String(p.address_text||p.address||"").trim();
-        const hasHours=!!String(p.opening_hours_text||p.hours_text||"").trim();
-        const hasBio=!!String(p.bio||"").trim();
-        const zones=Array.isArray(p.zones)?p.zones:String(p.zones_text||p.zones||"").split(",").map(s=>s.trim()).filter(Boolean);
-        const pills=[`Ville : ${city}`,`Activité : ${businessType}`,list.length?`Services : ${list.length}`:"Services non détaillés",hasWhatsapp?"WhatsApp prêt":"WhatsApp à préciser"];
-        const items=[
-          {title:"Lecture commerce",text:`La fiche présente un commerce ${businessType.toLowerCase()} à ${city}. ${hasBio?"La présentation est posée.":"La présentation mérite encore une phrase claire."}`},
-          {title:"Accueil client",text:`${hasAddress?"Adresse visible.":"Adresse à préciser."} ${hasHours?"Horaires visibles.":"Horaires à préciser."} ${p.capacity?"Capacité annoncée.":"Capacité encore floue."}`},
-          {title:"Réservation",text:list.length?"Le client voit des services concrets, la réservation est plus facile à comprendre.":"La fiche renvoie surtout vers WhatsApp ; ajouter quelques services clairs aide le choix du client."}
+      function buildAssistantFromProfile(profile,services){
+        const p = profile || {};
+        const list = Array.isArray(services) ? services : [];
+        const businessType = safe(p.business_type || p.category,"Service local");
+        const city = safe(p.city,"Ville à préciser");
+        const hasAddress = !!String(p.address_text || p.address || "").trim();
+        const hasHours = !!String(p.opening_hours_text || p.hours_text || "").trim();
+        const hasBio = !!String(p.bio || "").trim();
+        const zones = Array.isArray(p.zones)
+          ? p.zones
+          : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
+
+        const pills = [
+          `Ville : ${city}`,
+          `Activité : ${businessType}`,
+          list.length ? `Services : ${list.length}` : "Services non détaillés",
+          "Contact public côté vitrine"
         ];
-        if(zones.length){items.push({title:"Repères terrain",text:`Zones visibles : ${zones.slice(0,4).join(", ")}${zones.length>4?"…":""}.`});}
-        else{items.push({title:"Repères terrain",text:"Les zones ne sont pas encore précisées. Un ou deux repères locaux peuvent aider le client à se situer vite."});}
-        setClaw("Lecture active","On lit ton profil sans créer un nouveau système : terrain, qualité d'accueil et clarté de la réservation.",pills,items);
+
+        const items = [
+          {
+            title:"Lecture activité",
+            text:`La fiche présente une activité ${businessType.toLowerCase()} à ${city}. ${hasBio ? "La présentation est posée." : "La présentation mérite encore une phrase claire."}`
+          },
+          {
+            title:"Accueil client",
+            text:`${hasAddress ? "Adresse visible côté fiche." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : "Capacité encore floue."}`
+          },
+          {
+            title:"Réservation",
+            text:list.length ? "Le client voit des services concrets, la réservation est plus facile à comprendre." : "Ajouter quelques services clairs aide le client à choisir sans hésiter."
+          }
+        ];
+
+        if(zones.length){
+          items.push({title:"Repères terrain", text:`Zones visibles : ${zones.slice(0,4).join(", ")}${zones.length > 4 ? "…" : ""}.`});
+        }else{
+          items.push({title:"Repères terrain", text:"Les zones ne sont pas encore précisées. Un ou deux repères locaux peuvent aider le client à se situer vite."});
+        }
+
+        setAssistant(
+          "Lecture active",
+          "Mon assistant DIGIY lit ton profil sans exposer les données du coffre : terrain, qualité d'accueil et clarté de la réservation.",
+          pills,
+          items
+        );
       }
 
-      function money(v){ const n=Number(v); if(!Number.isFinite(n))return ""; return n.toLocaleString("fr-FR")+" FCFA"; }
+      function money(v){
+        const n = Number(v);
+        if(!Number.isFinite(n)) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
 
       function setUnavailableState(title,subtitle){
-        document.getElementById("name").textContent=title;
-        document.getElementById("subtitle").textContent=subtitle;
-        document.getElementById("topSub").textContent=subtitle;
-        document.getElementById("btnReserve").classList.add("hidden");
-        document.getElementById("btnWhatsApp").classList.add("hidden");
-        document.getElementById("heroMedia").innerHTML=`<div class="hero-media-fallback">📅</div><div class="hero-badge"><span class="dot"></span> Commerce public</div>`;
-        document.getElementById("servicesBox").innerHTML=`<div class="service"><div class="muted">Services indisponibles.</div></div>`;
-        setClawUnavailable(subtitle||"Commerce indisponible.");
+        $("name").textContent = title;
+        $("subtitle").textContent = subtitle;
+        $("topSub").textContent = subtitle;
+        $("btnReserve").classList.add("hidden");
+        $("heroMedia").innerHTML = `<div class="hero-media-fallback">📅</div><div class="hero-badge"><span class="dot"></span> Fiche publique</div>`;
+        $("servicesBox").innerHTML = `<div class="service"><div class="muted">Services indisponibles.</div></div>`;
+        $("contactPublic").textContent = "Non disponible pour le moment";
+        setAssistantUnavailable(subtitle || "Profil indisponible.");
+      }
+
+      async function getGuardState(){
+        if(!window.DIGIY_GUARD){
+          return {preview:true,access_ok:false,reason:"guard_absent"};
+        }
+
+        try{
+          if(typeof window.DIGIY_GUARD.ready === "function"){
+            return await window.DIGIY_GUARD.ready();
+          }
+          if(window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function"){
+            return await window.DIGIY_GUARD.ready;
+          }
+          return window.DIGIY_GUARD.state || {preview:true,access_ok:false,reason:"guard_empty"};
+        }catch{
+          return {preview:true,access_ok:false,reason:"guard_error"};
+        }
       }
 
       async function loadServices(sb,slugValue){
-        if(!slugValue)return [];
+        if(!slugValue) return [];
         try{
-          const{data,error}=await sb.from("digiy_resa_services").select("id,service_name,duration_minutes,price_fcfa,is_active").eq("slug",slugValue).eq("is_active",true).order("service_name",{ascending:true});
-          if(error)throw error;
-          return Array.isArray(data)?data:[];
-        }catch(e){console.error(e);return [];}
+          const {data,error} = await sb
+            .from("digiy_resa_services")
+            .select("id,service_name,duration_minutes,price_fcfa,is_active")
+            .eq("slug",slugValue)
+            .eq("is_active",true)
+            .order("service_name",{ascending:true});
+
+          if(error) throw error;
+          return Array.isArray(data) ? data : [];
+        }catch(e){
+          console.error(e);
+          return [];
+        }
       }
 
       function renderServices(services,businessType){
-        const box=document.getElementById("servicesBox");
-        if(!services.length){box.innerHTML=`<div class="service"><div class="muted">Aucun service détaillé pour l'instant. Le client peut passer par WhatsApp pour préciser son besoin.</div></div>`;return;}
-        box.innerHTML=services.map(s=>`
+        const box = $("servicesBox");
+
+        if(!services.length){
+          box.innerHTML = `<div class="service"><div class="muted">Aucun service détaillé pour l'instant. Ajoute quelques services pour aider le client à comprendre ce qu’il peut réserver.</div></div>`;
+          return;
+        }
+
+        box.innerHTML = services.map(s => `
           <article class="service">
             <div class="service-top">
-              <div class="service-name">${escapeHtml(s.service_name||"Service")}</div>
+              <div class="service-name">${escapeHtml(s.service_name || "Service")}</div>
               <div class="service-meta">
-                ${s.duration_minutes?`<span class="service-pill">⏱️ ${escapeHtml(String(s.duration_minutes))} min</span>`:""}
-                ${money(s.price_fcfa)?`<span class="service-pill">💰 ${escapeHtml(money(s.price_fcfa))}</span>`:""}
+                ${s.duration_minutes ? `<span class="service-pill">⏱️ ${escapeHtml(String(s.duration_minutes))} min</span>` : ""}
+                ${money(s.price_fcfa) ? `<span class="service-pill">💰 ${escapeHtml(money(s.price_fcfa))}</span>` : ""}
               </div>
             </div>
-            <div class="muted" style="margin-top:8px">${businessType?`Prestation ${escapeHtml(String(businessType).toLowerCase())} disponible sur réservation.`:"Prestation disponible sur réservation."}</div>
-          </article>`).join("");
+            <div class="muted" style="margin-top:8px">${businessType ? `Prestation ${escapeHtml(String(businessType).toLowerCase())} disponible sur réservation.` : "Prestation disponible sur réservation."}</div>
+          </article>
+        `).join("");
       }
 
       async function boot(){
-        setNavLinks(slug);
-        /* ━━━ AVANT : "slug :" → "Identifiant :" ━━━ */
-        document.getElementById("slugPill").textContent = "Identifiant : "+(slug||"—");
-        setClawLoading();
+        cleanVisibleUrl();
+        setNavLinks();
+        setAssistantLoading();
 
-        if(!supabaseLib||typeof supabaseLib.createClient!=="function"){
+        if(!supabaseLib || typeof supabaseLib.createClient !== "function"){
           console.error("Supabase JS non chargé.");
           setUnavailableState("Service indisponible","La bibliothèque de connexion n'est pas chargée.");
           return;
         }
 
-        const sb=supabaseLib.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}}});
+        const st = await getGuardState();
+        const moduleName = String(st?.module || st?.module_code || MODULE).toUpperCase();
 
-        if(!slug){
-          /* ━━━ AVANT : "Slug manquant" / "sans identifiant commerce" → humain ━━━ */
-          setUnavailableState("Identifiant manquant","Impossible d'ouvrir ce profil sans identifiant boutique.");
-          document.getElementById("servicesBox").innerHTML=`<div class="service"><div class="muted">Aucun service à afficher.</div></div>`;
-          /* ━━━ AVANT : "sans slug valide" → humain ━━━ */
-          setClawUnavailable("Impossible de lire l'établissement sans identifiant valide.");
+        if(!st?.access_ok || moduleName !== MODULE){
+          setUnavailableState("Accès protégé","Entre avec ton code PIN pour ouvrir une session RESA de 8 heures.");
+          return;
+        }
+
+        RESOLVED_SLUG = normalizeSlug(st.slug || "");
+
+        if(!RESOLVED_SLUG){
+          setUnavailableState("Contexte absent","Session ouverte, mais le profil RESA n'est pas retrouvé sur cet appareil.");
           return;
         }
 
         try{
-          storageSet("digiy_resa_last_slug",slug);storageSet("digiy_resa_slug",slug);storageSet("digiy_last_slug",slug);storageSet("DIGIY_SLUG",slug);
+          storageSet("digiy_resa_last_slug",RESOLVED_SLUG);
+          storageSet("digiy_resa_slug",RESOLVED_SLUG);
 
-          const{data,error}=await sb.rpc("resa_public_profile_by_slug",{p_slug:slug});
-          if(error)throw error;
-          if(!data?.ok)throw new Error(data?.error||"not_found");
+          const sb = supabaseLib.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
+            auth:{
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false,
+              storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}
+            }
+          });
 
-          const p=data.profile||{};
-          const name=safe(p.display_name,"Commerce DIGIY");
-          const city=safe(p.city);
-          const businessType=safe(p.business_type||p.category,"Service local");
-          const zones=Array.isArray(p.zones)?p.zones:String(p.zones_text||p.zones||"").split(",").map(s=>s.trim()).filter(Boolean);
+          const {data,error} = await sb.rpc("resa_public_profile_by_slug",{p_slug:RESOLVED_SLUG});
+          if(error) throw error;
+          if(!data?.ok) throw new Error(data?.error || "not_found");
 
-          document.title=`${name} · Plus · DIGIY`;
-          /* ━━━ AVANT : "Profil établissement chargé pour ${slug}" → humain ━━━ */
-          document.getElementById("topSub").textContent=`Profil chargé — ${name}`;
+          const p = data.profile || {};
+          const name = safe(p.display_name,"Activité DIGIY");
+          const city = safe(p.city);
+          const businessType = safe(p.business_type || p.category,"Service local");
+          const zones = Array.isArray(p.zones)
+            ? p.zones
+            : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
+
+          document.title = `${name} · Plus · DIGIY`;
+          $("topSub").textContent = `Profil chargé — ${name}`;
 
           setHeroImage(p,name,city,businessType);
           setAvatar(p,name);
 
-          document.getElementById("name").textContent=name;
-          document.getElementById("subtitle").textContent=`${city} · ${businessType}`;
-          document.getElementById("cityPill").textContent="Ville : "+city;
-          document.getElementById("typePill").textContent="Activité : "+businessType;
-          document.getElementById("bio").textContent=safe(p.bio,"Présentation à découvrir.");
-          document.getElementById("address").textContent=safe(p.address_text||p.address,"Adresse à préciser");
-          document.getElementById("hours").textContent=safe(p.opening_hours_text||p.hours_text,"Horaires à préciser");
-          document.getElementById("capacity").textContent=p.capacity?`${p.capacity} places / accueil`:"Capacité à préciser";
-          document.getElementById("contactWhatsapp").textContent=safe(p.whatsapp,"WhatsApp à préciser");
-          document.getElementById("bookingHelp").textContent=`Réservation simple pour ${businessType.toLowerCase()}`;
+          $("name").textContent = name;
+          $("subtitle").textContent = `${city} · ${businessType}`;
+          $("cityPill").textContent = "Ville : " + city;
+          $("typePill").textContent = "Activité : " + businessType;
+          $("bio").textContent = safe(p.bio,"Présentation à découvrir.");
+          $("address").textContent = safe(p.address_text || p.address,"Adresse à préciser");
+          $("hours").textContent = safe(p.opening_hours_text || p.hours_text,"Horaires à préciser");
+          $("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : "Capacité à préciser";
+          $("contactPublic").textContent = "Visible uniquement côté vitrine client contrôlée";
+          $("bookingHelp").textContent = `Réservation simple pour ${businessType.toLowerCase()}`;
+
+          const publicUrl = publicUrlFromProfile(p);
+          const reserveUrl = reservationUrlFromProfile(p);
+
+          $("navPublic").href = publicUrl;
+          $("btnPublicHero").href = publicUrl;
+          $("btnReserve").href = reserveUrl;
 
           renderZones(zones);
 
-          const wa=document.getElementById("btnWhatsApp");
-          const waHref=waLink(p.whatsapp,name);
-          if(waHref){wa.href=waHref;}else{wa.removeAttribute("href");wa.classList.remove("gold");wa.textContent="WhatsApp indisponible";}
-
-          const services=await loadServices(sb,slug);
+          const services = await loadServices(sb,RESOLVED_SLUG);
           renderServices(services,businessType);
-          buildClawFromProfile(p,services);
+          buildAssistantFromProfile(p,services);
         }catch(e){
           console.error(e);
-          setUnavailableState("Commerce indisponible","Cette fiche n'est pas disponible publiquement.");
+          setUnavailableState("Profil indisponible","Cette fiche n'est pas disponible pour le moment.");
         }
       }
 
