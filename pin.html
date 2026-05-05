@@ -4,10 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
-  <!-- ━━━ AVANT : "DIGIY RESA PRO — Accès PIN" → banni ━━━ -->
   <title>Je réserve — Accès</title>
-  <!-- ━━━ AVANT : "Accès sécurisé DIGIY RESA PRO par slug, téléphone et PIN." → banni ━━━ -->
-  <meta name="description" content="Je réserve — ouvrir l’accès et revenir vers Accueil, Réservations, Planning, Notes ou Plus." />
+  <meta name="description" content="Je réserve — entrer avec son code PIN et ouvrir une session sécurisée de 8 heures." />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -24,81 +22,99 @@
       --bg:#08111b;--bg2:#020617;--card:rgba(255,255,255,.05);--line:rgba(255,255,255,.10);
       --text:#f8fafc;--muted:#cbd5e1;--cyan:#22d3ee;--cyan2:#67e8f9;--green:#22c55e;
       --red:#ef4444;--radius:24px;--shadow:0 20px 60px rgba(0,0,0,.35);--max:560px;
-      /* ━━━ AVANT : Inter banni → Outfit ━━━ */
       --fontA:"Outfit",ui-sans-serif,system-ui,-apple-system,sans-serif;
     }
-    *{box-sizing:border-box}html,body{margin:0;padding:0}
-    body{min-height:100dvh;color:var(--text);font-family:var(--fontA);background:radial-gradient(circle at top, rgba(34,211,238,.10), transparent 30%),linear-gradient(180deg,var(--bg),var(--bg2));display:flex;align-items:center;justify-content:center;padding:20px 20px calc(104px + env(safe-area-inset-bottom,0px));}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      min-height:100dvh;
+      color:var(--text);
+      font-family:var(--fontA);
+      background:
+        radial-gradient(circle at top, rgba(34,211,238,.10), transparent 30%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px 20px calc(104px + env(safe-area-inset-bottom,0px));
+    }
+    a{color:inherit}
     .wrap{width:100%;max-width:var(--max)}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;backdrop-filter:blur(12px);}
-    .hero{padding:22px 22px 10px;border-bottom:1px solid rgba(255,255,255,.06);background:radial-gradient(circle at top right, rgba(34,211,238,.16), transparent 36%);}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+    .hero{
+      padding:22px 22px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background:radial-gradient(circle at top right, rgba(34,211,238,.16), transparent 36%);
+    }
     .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(103,232,249,.12));border:1px solid rgba(34,211,238,.24);font-size:24px;}
-    h1{margin:0;font-size:1.1rem}.sub{margin:4px 0 0;color:var(--muted);font-size:.92rem}
-    .body{padding:20px}.intro{margin:0 0 16px;color:var(--muted);line-height:1.5}.field{margin-bottom:12px}
-    label{display:block;margin-bottom:7px;font-weight:700;font-size:.92rem}
-    input{width:100%;min-height:52px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text);padding:0 14px;font-size:1rem;outline:none;font-family:var(--fontA);}
-    input:focus{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 4px rgba(34,211,238,.12);}
+    .logo{
+      width:50px;height:50px;border-radius:16px;display:grid;place-items:center;
+      background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(103,232,249,.12));
+      border:1px solid rgba(34,211,238,.24);
+      font-size:24px;
+    }
+    h1{margin:0;font-size:1.1rem}
+    .sub{margin:4px 0 0;color:var(--muted);font-size:.92rem}
+    .body{padding:20px}
+    .intro{margin:0 0 16px;color:var(--muted);line-height:1.55}
+    .intro strong{color:#e0fbff}
+    .notice{
+      margin:0 0 14px;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid rgba(34,211,238,.18);
+      background:rgba(34,211,238,.07);
+      color:#dffaff;
+      line-height:1.5;
+      font-weight:750;
+    }
+    .field{margin-bottom:12px}
+    label{display:block;margin-bottom:7px;font-weight:800;font-size:.92rem}
+    input{
+      width:100%;min-height:52px;border-radius:16px;border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);color:var(--text);padding:0 14px;font-size:1rem;outline:none;
+      font-family:var(--fontA);
+    }
+    input:focus{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 4px rgba(34,211,238,.12)}
     .pin-row{display:flex;gap:10px}
-    .pin-row input{flex:1;text-align:center;letter-spacing:.25em;font-weight:800;}
-    .mini{min-width:56px;min-height:52px;border:none;border-radius:16px;cursor:pointer;background:rgba(255,255,255,.06);color:var(--text);font-size:1rem;font-weight:800;font-family:var(--fontA);}
+    .pin-row input{flex:1;text-align:center;letter-spacing:.25em;font-weight:900}
+    .mini{
+      min-width:56px;min-height:52px;border:none;border-radius:16px;cursor:pointer;background:rgba(255,255,255,.06);
+      color:var(--text);font-size:1rem;font-weight:900;font-family:var(--fontA);
+    }
     .actions{display:grid;gap:10px;margin-top:16px}
-    .btn{appearance:none;border:none;min-height:54px;border-radius:18px;padding:0 16px;text-decoration:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:1rem;font-family:var(--fontA);}
+    .btn{
+      appearance:none;border:none;min-height:54px;border-radius:18px;padding:0 16px;text-decoration:none;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:900;font-size:1rem;
+      font-family:var(--fontA);text-align:center;
+    }
     .btn.primary{background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:#082f49}
     .btn.secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.08)}
     .btn.ghost{background:transparent;color:#a5f3fc;border:1px solid rgba(165,243,252,.25)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-    .status{margin-top:16px;border-radius:16px;padding:12px 14px;min-height:48px;line-height:1.5;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--muted);white-space:pre-line;}
-    .status.ok{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.28);color:#dcfce7;}
-    .status.err{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.28);color:#fee2e2;}
-    .meta{display:grid;gap:8px;margin-top:16px;padding:14px;border-radius:18px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);}
-    .row{display:flex;justify-content:space-between;gap:12px}.k{color:var(--muted)}.v{font-weight:700;text-align:right;word-break:break-word}
-
-    .bottomNav{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      z-index:99990;
-      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-      background:rgba(8,17,27,.94);
-      border-top:1px solid rgba(255,255,255,.10);
-      backdrop-filter:blur(16px);
-      -webkit-backdrop-filter:blur(16px);
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .status{
+      margin-top:16px;border-radius:16px;padding:12px 14px;min-height:48px;line-height:1.5;
+      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);white-space:pre-line;
     }
-
-    .bottomNavInner{
-      width:min(100%,760px);
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:6px;
+    .status.ok{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.28);color:#dcfce7}
+    .status.err{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.28);color:#fee2e2}
+    .meta{
+      display:grid;gap:8px;margin-top:16px;padding:14px;border-radius:18px;
+      background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);
     }
-
-    .bottomNav a{
-      min-height:58px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      align-content:center;
-      gap:3px;
-      color:rgba(248,250,252,.70);
-      font-size:11px;
-      font-weight:950;
-      text-align:center;
-      border:1px solid transparent;
-      text-decoration:none;
-      background:transparent;
-    }
-
-    .bottomNav .ico{font-size:18px;line-height:1}
-
-    .bottomNav a.active{
-      color:#082f49;
-      background:linear-gradient(135deg,var(--cyan),var(--cyan2));
-      border-color:rgba(103,232,249,.30);
-      box-shadow:0 12px 26px rgba(34,211,238,.18);
-    }
+    .row{display:flex;justify-content:space-between;gap:12px}
+    .k{color:var(--muted)}
+    .v{font-weight:800;text-align:right;word-break:break-word}
 
     .fastLinks{
       display:grid;
@@ -106,29 +122,39 @@
       gap:10px;
       margin-top:10px;
     }
-
     .fastLinks a{
-      min-height:42px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:.86rem;
-      font-weight:850;
+      min-height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);color:var(--text);text-decoration:none;
+      display:inline-flex;align-items:center;justify-content:center;font-size:.86rem;font-weight:850;
       padding:9px 10px;
     }
 
-    @media(max-width:560px){
-      .fastLinks{grid-template-columns:1fr 1fr}
+    .bottomNav{
+      position:fixed;left:0;right:0;bottom:0;z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(8,17,27,.94);border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    }
+    .bottomNavInner{
+      width:min(100%,760px);margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+    }
+    .bottomNav a{
+      min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;
+      color:rgba(248,250,252,.70);font-size:11px;font-weight:950;text-align:center;border:1px solid transparent;
+      text-decoration:none;background:transparent;
+    }
+    .bottomNav .ico{font-size:18px;line-height:1}
+    .bottomNav a.active{
+      color:#082f49;background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+      border-color:rgba(103,232,249,.30);box-shadow:0 12px 26px rgba(34,211,238,.18);
     }
 
     .hidden{display:none!important}
     .foot{padding:0 20px 20px;text-align:center;color:#94a3b8;font-size:.84rem}
-    @media(max-width:560px){.grid{grid-template-columns:1fr}}
+    @media(max-width:560px){
+      .grid{grid-template-columns:1fr}
+      .fastLinks{grid-template-columns:1fr 1fr}
+    }
   </style>
 </head>
 <body>
@@ -138,31 +164,24 @@
         <div class="brand">
           <div class="logo">📅</div>
           <div>
-            <!-- ━━━ AVANT : "DIGIY RESA PRO" → banni ━━━ -->
             <h1>JE RÉSERVE</h1>
-            <!-- ━━━ AVANT : "PIN d'accès — session interne directe" → banni ━━━ -->
-            <p class="sub">Ouvrir mon accès</p>
+            <p class="sub">Accès par code PIN</p>
           </div>
         </div>
       </div>
 
       <div class="body">
-        <!-- ━━━ AVANT : "slug" × 2 visible → "identifiant" ━━━ -->
-        <p class="intro">Entre avec ton <strong>identifiant</strong> ou ton <strong>téléphone</strong>, puis ton <strong>code</strong>. Une fois validé, tu arrives sur l’Accueil puis tu circules entre Réservations, Planning, Notes et Plus.</p>
+        <p class="intro">
+          Déjà abonné ? Entre simplement ton <strong>code PIN</strong>.
+          Une fois validé, ta session reste ouverte <strong>8 heures</strong> sur cet appareil.
+        </p>
+
+        <p class="notice">
+          Ton espace RESA reste protégé. Aucun numéro ne s’affiche ici et aucun numéro n’est ajouté aux liens visibles.
+        </p>
 
         <div class="field">
-          <!-- ━━━ AVANT : label "Slug" → "Identifiant boutique" ━━━ -->
-          <label for="slug">Identifiant</label>
-          <input id="slug" type="text" placeholder="resa-221771342889" autocomplete="off" />
-        </div>
-
-        <div class="field">
-          <label for="phone">Téléphone</label>
-          <input id="phone" type="tel" inputmode="numeric" placeholder="221771342889" autocomplete="tel" />
-        </div>
-
-        <div class="field">
-          <label for="pin">Code</label>
+          <label for="pin">Code PIN</label>
           <div class="pin-row">
             <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="••••" autocomplete="one-time-code" />
             <button id="togglePin" class="mini" type="button" aria-label="Afficher le code">👁️</button>
@@ -170,18 +189,16 @@
         </div>
 
         <div class="actions">
-          <!-- ━━━ AVANT : "Ouvrir mon espace RESA" → "Ouvrir mon espace" ━━━ -->
           <button id="btnOpen" class="btn primary" type="button">🔓 Entrer dans RESA</button>
-          <a id="btnReturn" class="btn secondary hidden" href="./cockpit.html">🏠 Retour accueil</a>
-          <a id="btnPay" class="btn ghost" href="https://commencer-a-payer.digiylyfe.com/" target="_blank" rel="noopener">💳 Gérer mon abonnement</a>
+          <a id="btnReturn" class="btn secondary hidden" href="./dashboard-pro.html">🏠 Retour accueil</a>
+          <a id="btnPay" class="btn ghost" href="https://commencer-a-payer.digiylyfe.com/?module=RESA" target="_blank" rel="noopener">💳 Activer ou renouveler</a>
         </div>
 
         <div class="grid">
-          <!-- ━━━ AVANT : "🧭 Cockpit" → "Ma gestion" · "📊 Dashboard" → "Mon activité" ━━━ -->
           <a id="btnCockpit"  class="btn secondary hidden" href="./cockpit.html">📋 Réserv.</a>
           <a id="btnPlanning" class="btn secondary hidden" href="./planning.html">🗓️ Planning</a>
           <a id="btnDashboard" class="btn secondary hidden" href="./dashboard-pro.html">🏠 Accueil</a>
-          <a id="btnPublic"   class="btn secondary hidden" href="https://resa-table-resto.digiylyfe.com/fiche.html" target="_blank" rel="noopener">🌍 Vitrine</a>
+          <a id="btnPublic"   class="btn secondary hidden" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">🌍 Vitrine</a>
         </div>
 
         <div class="fastLinks">
@@ -191,7 +208,7 @@
           <a id="fastNotes" href="./planning.html#quickResaNote">✍️ Notes</a>
         </div>
 
-        <div id="status" class="status">Prêt.</div>
+        <div id="status" class="status">Prêt. Entre ton code PIN pour ouvrir une session RESA de 8 heures.</div>
 
         <div class="meta">
           <div class="row"><div class="k">Espace</div><div class="v">Mes réservations</div></div>
@@ -200,11 +217,9 @@
         </div>
       </div>
 
-      <!-- ━━━ AVANT : "PIN MASTER compatible guard" → banni ━━━ -->
       <div class="foot">DIGIYLYFE · Je réserve · accès sécurisé</div>
     </section>
   </div>
-
 
   <nav class="bottomNav" aria-label="Navigation RESA">
     <div class="bottomNavInner">
@@ -227,340 +242,429 @@
         DEFAULT_NEXT: "./dashboard-pro.html",
         LOGIN_URL: "./pin.html",
         PAY_URL: window.DIGIY_PAY_URL || "https://commencer-a-payer.digiylyfe.com/",
-        KEEP_PHONE_IN_URL: true,
+        KEEP_PHONE_IN_URL: false,
         SESSION_MAX_AGE_MS: 8 * 60 * 60 * 1000,
-        STORAGE_KEYS: ["DIGIY_RESA_PIN_SESSION","DIGIY_RESA_SESSION","DIGIY_PIN_SESSION","DIGIY_ACCESS","DIGIY_SESSION_RESA","digiy_resa_session"],
+        STORAGE_KEYS: ["DIGIY_RESA_PIN_SESSION","DIGIY_RESA_SESSION","DIGIY_SESSION_RESA","digiy_resa_session"],
+        WRITE_COMPAT_KEYS: ["DIGIY_RESA_PIN_SESSION","DIGIY_RESA_SESSION","DIGIY_SESSION_RESA","digiy_resa_session","DIGIY_ACCESS"],
         SLUG_KEY: "digiy_resa_slug",
         PHONE_KEY: "digiy_resa_phone",
         LAST_SLUG_KEY: "digiy_resa_last_slug",
         RPC_VERIFY_PIN: "digiy_verify_pin",
         TABLE_SUBS: "digiy_subscriptions_public",
         PUBLIC_BASE_URL: "https://resa-table-resto.digiylyfe.com/",
-        PUBLIC_FICHE_PATH: "fiche.html",
-        PUBLIC_INDEX_PATH: "index.html",
-        PUBLIC_ALLOWED_PATHS: ["/","/index.html","/fiche.html","/reserver.html"],
-        SAME_ORIGIN_ALLOWED_PATHS: ["/cockpit.html","/planning.html","/dashboard-pro.html","/etablissement.html","/index.html","/"]
+        SAME_ORIGIN_ALLOWED_PATHS: ["/cockpit.html","/planning.html","/dashboard-pro.html","/etablissement.html","/index.html","/pin.html","/"]
       };
 
-      const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL||"").trim();
-      const SUPABASE_KEY = String(window.DIGIY_SUPABASE_ANON||window.DIGIY_SUPABASE_ANON_KEY||"").trim();
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const BOOT_PARAMS = new URLSearchParams(window.location.search);
+      const SUPABASE_URL = String(window.DIGIY_SUPABASE_URL || "").trim();
+      const SUPABASE_KEY = String(window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY || "").trim();
+
+      if(!window.supabase){
+        alert("Librairie Supabase non chargée.");
+        return;
+      }
+
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth:{
+          persistSession:false,
+          autoRefreshToken:false,
+          detectSessionInUrl:false,
+          storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}
+        }
+      });
 
       const el = {
-        slug:$("slug"), phone:$("phone"), pin:$("pin"), togglePin:$("togglePin"),
-        btnOpen:$("btnOpen"), btnReturn:$("btnReturn"), btnPay:$("btnPay"),
-        btnCockpit:$("btnCockpit"), btnPlanning:$("btnPlanning"), btnDashboard:$("btnDashboard"),
-        btnPublic:$("btnPublic"), status:$("status"), returnInfo:$("returnInfo"), sessionInfo:$("sessionInfo")
+        pin:$("pin"),
+        togglePin:$("togglePin"),
+        btnOpen:$("btnOpen"),
+        btnReturn:$("btnReturn"),
+        btnPay:$("btnPay"),
+        btnCockpit:$("btnCockpit"),
+        btnPlanning:$("btnPlanning"),
+        btnDashboard:$("btnDashboard"),
+        btnPublic:$("btnPublic"),
+        status:$("status"),
+        returnInfo:$("returnInfo"),
+        sessionInfo:$("sessionInfo")
       };
 
       function $(id){ return document.getElementById(id); }
-      function qs(name){ return new URLSearchParams(window.location.search).get(name); }
-
+      function qs(name){ return BOOT_PARAMS.get(name); }
       function normSlug(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
       function normPhone(v){ const d=String(v||"").replace(/[^\d]/g,""); if(!d)return ""; if(d.startsWith("221")&&d.length===12)return d; if(d.length===9)return "221"+d; return d; }
       function normPin(v){ return String(v||"").trim().replace(/\s+/g,""); }
       function safeJsonParse(raw){ try{return JSON.parse(raw);}catch(_){return null;} }
+      function nowMs(){ return Date.now(); }
+      function isRecent(ts){ const n=Number(ts||0); return !!n && (Date.now()-n)<=CFG.SESSION_MAX_AGE_MS; }
 
-      function setStatus(message,type=""){
-        el.status.className=`status${type?" "+type:""}`;
-        el.status.textContent=message;
+      function cleanVisibleUrl(){
+        try{
+          const u = new URL(location.href);
+          ["phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          if(u.searchParams.has("slug")){
+            const s = normSlug(u.searchParams.get("slug"));
+            if(s){
+              try{ sessionStorage.setItem(CFG.SLUG_KEY, s); }catch(_){}
+              try{ localStorage.setItem(CFG.SLUG_KEY, s); }catch(_){}
+              try{ localStorage.setItem(CFG.LAST_SLUG_KEY, s); }catch(_){}
+            }
+            u.searchParams.delete("slug");
+          }
+          const clean = u.pathname + (u.search ? u.search : "") + (u.hash || "");
+          history.replaceState({}, document.title, clean);
+        }catch(_){}
       }
 
-      function nowMs(){ return Date.now(); }
-      function isRecent(ts){ const n=Number(ts||0); if(!n)return false; return (Date.now()-n)<=CFG.SESSION_MAX_AGE_MS; }
+      function setStatus(message,type=""){
+        el.status.className = `status${type ? " " + type : ""}`;
+        el.status.textContent = message;
+      }
 
-      function buildPublicUrl(page=CFG.PUBLIC_FICHE_PATH, slug="", extra={}){
-        /* PUBLIC_BASE_URL est absolue — new URL ici est sûr ━━━ */
-        const url=new URL(page,CFG.PUBLIC_BASE_URL);
-        const s=normSlug(slug); if(s)url.searchParams.set("slug",s);
-        Object.entries(extra||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v).trim()!=="")url.searchParams.set(k,String(v));});
-        return url.toString();
+      function buildCleanUrl(base){
+        const baseStr = String(base || "").trim();
+        if(!baseStr) return "./dashboard-pro.html";
+        try{
+          if(/^https?:\/\//i.test(baseStr)){
+            const u = new URL(baseStr);
+            ["phone","tel","resa_"+"tel","slug"].forEach(k => u.searchParams.delete(k));
+            return u.toString();
+          }
+          const u = new URL(baseStr, location.href);
+          ["phone","tel","resa_"+"tel","slug"].forEach(k => u.searchParams.delete(k));
+          return u.pathname.split("/").pop() ? ("./" + u.pathname.split("/").pop() + (u.hash || "")) : "./dashboard-pro.html";
+        }catch(_){
+          return baseStr;
+        }
+      }
+
+      function cleanReturnUrl(){
+        const raw = qs("return");
+        if(!raw) return CFG.DEFAULT_NEXT;
+        try{
+          const u = new URL(raw, location.href);
+          if(u.origin !== location.origin) return CFG.DEFAULT_NEXT;
+          if(!CFG.SAME_ORIGIN_ALLOWED_PATHS.includes(u.pathname)) return CFG.DEFAULT_NEXT;
+          ["phone","tel","resa_"+"tel","slug","module","from"].forEach(k => u.searchParams.delete(k));
+          return "." + u.pathname.slice(u.pathname.lastIndexOf("/"));
+        }catch(_){
+          return CFG.DEFAULT_NEXT;
+        }
       }
 
       function describeReturnUrl(urlString){
         try{
-          const url=new URL(urlString,location.href);
-          if(url.origin===location.origin){
-            const page=url.pathname.split("/").pop()||"";
-            if(page==="planning.html") return "Mon planning";
-            if(page==="dashboard-pro.html") return "Mon activité";
-            if(page==="pin.html") return "Mon code";
-            return "Accueil";
-          }
-          if(url.origin===new URL(CFG.PUBLIC_BASE_URL).origin)return "Ma vitrine";
-          return url.hostname;
-        }catch(_){ return "Accueil"; }
-      }
-
-      function buildNormalizedSession({slug,phone,owner_id=null}){
-        const t=nowMs();
-        return{slug:normSlug(slug),phone:normPhone(phone),owner_id:owner_id||null,module:CFG.MODULE,access:true,access_ok:true,ok:true,verified:true,preview:false,verified_at:t,validated_at:new Date(t).toISOString(),validated_at_ms:t,ts:t,reason:"pin_ok"};
-      }
-
-      function saveSession(payload){
-        const session=buildNormalizedSession(payload);
-        for(const key of CFG.STORAGE_KEYS){
-          try{localStorage.setItem(key,JSON.stringify(session));}catch(_){}
-          try{sessionStorage.setItem(key,JSON.stringify(session));}catch(_){}
+          const url = new URL(urlString, location.href);
+          const page = url.pathname.split("/").pop() || "";
+          if(page === "planning.html") return "Planning";
+          if(page === "cockpit.html") return "Réservations";
+          if(page === "etablissement.html") return "Plus";
+          return "Accueil";
+        }catch(_){
+          return "Accueil";
         }
-        try{localStorage.setItem(CFG.SLUG_KEY,session.slug);}catch(_){}
-        try{sessionStorage.setItem(CFG.SLUG_KEY,session.slug);}catch(_){}
-        try{localStorage.setItem(CFG.PHONE_KEY,session.phone);}catch(_){}
-        try{sessionStorage.setItem(CFG.PHONE_KEY,session.phone);}catch(_){}
-        try{localStorage.setItem(CFG.LAST_SLUG_KEY,session.slug);}catch(_){}
-        try{sessionStorage.setItem(CFG.LAST_SLUG_KEY,session.slug);}catch(_){}
-        try{window.DIGIY_ACCESS=Object.assign({},window.DIGIY_ACCESS||{},session);}catch(_){}
-        return session;
       }
 
-      function readSession(){
-        for(const key of CFG.STORAGE_KEYS){
-          let parsed=null;
-          try{parsed=safeJsonParse(localStorage.getItem(key)); if(!parsed)parsed=safeJsonParse(sessionStorage.getItem(key));}catch(_){}
-          if(!parsed||typeof parsed!=="object")continue;
-          const moduleName=String(parsed.module||parsed.module_code||"").trim().toUpperCase();
-          if(moduleName&&moduleName!==CFG.MODULE)continue;
-          const access=!!parsed.access||!!parsed.access_ok||!!parsed.ok||!!parsed.has_access;
-          const verifiedAt=Number(parsed.verified_at||parsed.validated_at_ms||parsed.ts||0)||0;
-          const validatedAt=parsed.validated_at||null;
-          let recent=false;
-          if(verifiedAt&&isRecent(verifiedAt))recent=true;
-          if(!recent&&validatedAt){const dt=new Date(validatedAt).getTime(); if(dt&&isRecent(dt))recent=true;}
-          if(!access||!recent)continue;
-          return{slug:normSlug(parsed.slug||""),phone:normPhone(parsed.phone||""),owner_id:parsed.owner_id||null,verified_at:verifiedAt,validated_at:validatedAt};
+      function readStoredSession(){
+        const keys = [...CFG.STORAGE_KEYS, "DIGIY_ACCESS"];
+        for(const key of keys){
+          let parsed = null;
+          try{ parsed = safeJsonParse(sessionStorage.getItem(key)); }catch(_){}
+          if(!parsed){ try{ parsed = safeJsonParse(localStorage.getItem(key)); }catch(_){} }
+          if(!parsed || typeof parsed !== "object") continue;
+
+          const moduleName = String(parsed.module || parsed.module_code || "").trim().toUpperCase();
+          if(moduleName && moduleName !== CFG.MODULE) continue;
+
+          const access = !!parsed.access || !!parsed.access_ok || !!parsed.ok || !!parsed.has_access || !!parsed.verified;
+          const verifiedAt = Number(parsed.verified_at || parsed.validated_at_ms || parsed.ts || 0) || 0;
+          const validatedAt = parsed.validated_at || null;
+          let recent = false;
+
+          if(verifiedAt && isRecent(verifiedAt)) recent = true;
+          if(!recent && validatedAt){
+            const dt = new Date(validatedAt).getTime();
+            if(dt && isRecent(dt)) recent = true;
+          }
+
+          if(!access || !recent) continue;
+
+          return {
+            slug:normSlug(parsed.slug || ""),
+            phone:normPhone(parsed.phone || parsed.p_phone || ""),
+            owner_id:parsed.owner_id || null,
+            verified_at:verifiedAt,
+            validated_at:validatedAt
+          };
         }
         return null;
+      }
+
+      function readHiddenContext(){
+        const session = readStoredSession();
+        let slug = normSlug(qs("slug") || session?.slug || "");
+        let phone = normPhone(session?.phone || "");
+
+        try{ if(!slug) slug = normSlug(sessionStorage.getItem(CFG.SLUG_KEY) || localStorage.getItem(CFG.SLUG_KEY) || localStorage.getItem(CFG.LAST_SLUG_KEY) || ""); }catch(_){}
+        try{ if(!phone) phone = normPhone(sessionStorage.getItem(CFG.PHONE_KEY) || localStorage.getItem(CFG.PHONE_KEY) || ""); }catch(_){}
+
+        return {slug, phone, session};
       }
 
       async function resolveSubBySlug(slug){
-        const s=normSlug(slug); if(!s)return null;
-        const tries=[{slug:s,module:CFG.MODULE},{slug:s,module:CFG.MODULE_LOWER},{slug:s}];
-        for(const q of tries){
-          const{data,error}=await supabase.from(CFG.TABLE_SUBS).select("phone,slug,module").match(q).limit(1);
-          if(!error&&Array.isArray(data)&&data[0])return{slug:normSlug(data[0].slug),phone:normPhone(data[0].phone),module:String(data[0].module||CFG.MODULE).toUpperCase()};
-        }
-        return null;
-      }
+        const s = normSlug(slug);
+        if(!s) return null;
 
-      async function resolveSubByPhone(phone){
-        const p=normPhone(phone); if(!p)return null;
-        const tries=[{phone:p,module:CFG.MODULE},{phone:p,module:CFG.MODULE_LOWER},{phone:p}];
+        const tries = [
+          {slug:s,module:CFG.MODULE},
+          {slug:s,module:CFG.MODULE_LOWER},
+          {slug:s}
+        ];
+
         for(const q of tries){
-          const{data,error}=await supabase.from(CFG.TABLE_SUBS).select("phone,slug,module").match(q).limit(1);
-          if(!error&&Array.isArray(data)&&data[0])return{slug:normSlug(data[0].slug),phone:normPhone(data[0].phone),module:String(data[0].module||CFG.MODULE).toUpperCase()};
+          const {data,error} = await supabase
+            .from(CFG.TABLE_SUBS)
+            .select("phone,slug,module")
+            .match(q)
+            .limit(1);
+
+          if(!error && Array.isArray(data) && data[0]){
+            const moduleName = String(data[0].module || CFG.MODULE).trim().toUpperCase();
+            if(moduleName && moduleName !== CFG.MODULE) continue;
+            return {
+              slug:normSlug(data[0].slug),
+              phone:normPhone(data[0].phone),
+              module:moduleName
+            };
+          }
         }
         return null;
       }
 
       function parseVerifyPinPayload(raw,fallbackPhone=""){
-        const data=Array.isArray(raw)?raw[0]:raw;
-        if(!data)return null;
-        if(typeof data==="object"&&!Array.isArray(data)){
-          if(data.ok===true)return{ok:true,phone:normPhone(data.phone||data.p_phone||fallbackPhone||""),module:String(data.module||data.p_module||CFG.MODULE).toUpperCase(),owner_id:data.owner_id||null};
-          const vals=Object.values(data);
-          if(vals.length>=3){const okLike=vals[0]===true||vals[0]==="t"||vals[0]==="true"||vals[0]===1; if(okLike)return{ok:true,module:String(vals[1]||CFG.MODULE).toUpperCase(),phone:normPhone(vals[2]||fallbackPhone||""),owner_id:vals[4]||null};}
-        }
-        if(typeof data==="string"){
-          const txt=data.trim();
-          if(txt.startsWith("(")&&txt.endsWith(")")){
-            const m=txt.match(/^\(([^,]+),([^,]+),([^,]+),?(.*)\)$/);
-            if(m){const okToken=String(m[1]||"").trim().replace(/^"|"$/g,""); const moduleToken=String(m[2]||"").trim().replace(/^"|"$/g,""); const phoneToken=String(m[3]||"").trim().replace(/^"|"$/g,""); const okLike=okToken==="t"||okToken==="true"||okToken==="1"; if(okLike)return{ok:true,module:String(moduleToken||CFG.MODULE).toUpperCase(),phone:normPhone(phoneToken||fallbackPhone||""),owner_id:null};}
+        const data = Array.isArray(raw) ? raw[0] : raw;
+        if(!data) return null;
+
+        if(typeof data === "object" && !Array.isArray(data)){
+          if(data.ok === true){
+            const moduleName = String(data.module || data.p_module || CFG.MODULE).toUpperCase();
+            if(moduleName !== CFG.MODULE) return null;
+            return {
+              ok:true,
+              phone:normPhone(data.phone || data.p_phone || fallbackPhone || ""),
+              module:moduleName,
+              owner_id:data.owner_id || null
+            };
+          }
+
+          const vals = Object.values(data);
+          if(vals.length >= 3){
+            const okLike = vals[0] === true || vals[0] === "t" || vals[0] === "true" || vals[0] === 1;
+            const moduleName = String(vals[1] || CFG.MODULE).toUpperCase();
+            if(okLike && moduleName === CFG.MODULE){
+              return {
+                ok:true,
+                module:moduleName,
+                phone:normPhone(vals[2] || fallbackPhone || ""),
+                owner_id:vals[4] || null
+              };
+            }
           }
         }
+
+        if(typeof data === "string"){
+          const txt = data.trim();
+          if(txt.startsWith("(") && txt.endsWith(")")){
+            const m = txt.match(/^\(([^,]+),([^,]+),([^,]+),?(.*)\)$/);
+            if(m){
+              const okToken = String(m[1] || "").trim().replace(/^"|"$/g,"");
+              const moduleName = String(m[2] || CFG.MODULE).trim().replace(/^"|"$/g,"").toUpperCase();
+              const phoneToken = String(m[3] || "").trim().replace(/^"|"$/g,"");
+              const okLike = okToken === "t" || okToken === "true" || okToken === "1";
+              if(okLike && moduleName === CFG.MODULE){
+                return {ok:true,module:moduleName,phone:normPhone(phoneToken || fallbackPhone || ""),owner_id:null};
+              }
+            }
+          }
+        }
+
         return null;
       }
 
-      async function verifyPin(phone,pin){
-        const p=normPhone(phone); const code=normPin(pin);
-        const tries=[{p_phone:p,p_module:CFG.MODULE,p_pin:code},{p_phone:p,p_module:CFG.MODULE_LOWER,p_pin:code}];
+      async function verifyPin(hiddenPhone,pin){
+        const p = normPhone(hiddenPhone);
+        const code = normPin(pin);
+        if(!p || !code) return null;
+
+        const tries = [
+          {p_phone:p,p_module:CFG.MODULE,p_pin:code},
+          {p_phone:p,p_module:CFG.MODULE_LOWER,p_pin:code}
+        ];
+
         for(const body of tries){
-          const{data,error}=await supabase.rpc(CFG.RPC_VERIFY_PIN,body);
-          if(error)continue;
-          const parsed=parseVerifyPinPayload(data,p);
-          if(parsed?.ok)return parsed;
+          const {data,error} = await supabase.rpc(CFG.RPC_VERIFY_PIN, body);
+          if(error) continue;
+          const parsed = parseVerifyPinPayload(data, p);
+          if(parsed?.ok) return parsed;
         }
+
         return null;
       }
 
-      function isAllowedSameOriginPath(pathname){ return CFG.SAME_ORIGIN_ALLOWED_PATHS.includes(pathname); }
-      function isAllowedPublicPath(pathname){ return CFG.PUBLIC_ALLOWED_PATHS.includes(pathname); }
-
-      /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         buildSafeUrl — VERSION BLINDÉE
-         new URL(path, location.href) fragile selon l'env.
-      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-      function buildSafeUrl(base, params){
-        const baseStr=(base==null?"":String(base)).trim();
-        if(!baseStr)return location.href;
-        let u;
-        try{
-          if(/^https?:\/\//i.test(baseStr)){u=new URL(baseStr);}
-          else{const o=location.protocol+"//"+location.host;const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr;u=new URL(f);}
-        }catch(e){console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message);return baseStr;}
-        try{Object.entries(params||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v));});}catch(e){}
-        return u.toString();
+      function buildNormalizedSession({slug,phone,owner_id=null}){
+        const t = nowMs();
+        return {
+          slug:normSlug(slug),
+          phone:normPhone(phone),
+          owner_id:owner_id || null,
+          module:CFG.MODULE,
+          access:true,
+          access_ok:true,
+          ok:true,
+          verified:true,
+          preview:false,
+          verified_at:t,
+          validated_at:new Date(t).toISOString(),
+          validated_at_ms:t,
+          ts:t,
+          reason:"pin_ok"
+        };
       }
 
-      function buildReturnUrl(session){
-        const ret=qs("return");
+      function saveSession(payload){
+        const session = buildNormalizedSession(payload);
 
-        if(ret){
-          try{
-            const u=new URL(ret,location.href);
-            const publicOrigin=new URL(CFG.PUBLIC_BASE_URL).origin;
-            if(u.origin===location.origin&&isAllowedSameOriginPath(u.pathname)){
-              u.searchParams.set("slug",session.slug);
-              if(CFG.KEEP_PHONE_IN_URL&&session.phone)u.searchParams.set("phone",session.phone);
-              u.searchParams.set("module",CFG.MODULE); u.searchParams.set("from","pin");
-              return u.toString();
-            }
-            if(u.origin===publicOrigin&&isAllowedPublicPath(u.pathname)){
-              u.searchParams.set("slug",session.slug); u.searchParams.delete("phone"); u.searchParams.delete("module"); u.searchParams.delete("from");
-              return u.toString();
-            }
-          }catch(_){}
+        try{ localStorage.setItem("DIGIY_ACTIVE_MODULE", CFG.MODULE); }catch(_){}
+        try{ sessionStorage.setItem("DIGIY_ACTIVE_MODULE", CFG.MODULE); }catch(_){}
+
+        for(const key of CFG.WRITE_COMPAT_KEYS){
+          try{ localStorage.setItem(key, JSON.stringify(session)); }catch(_){}
+          try{ sessionStorage.setItem(key, JSON.stringify(session)); }catch(_){}
         }
 
-        const target=(qs("target")||"").trim().toLowerCase();
-        if(target==="public")return buildPublicUrl(CFG.PUBLIC_FICHE_PATH,session.slug);
+        try{ localStorage.setItem(CFG.SLUG_KEY, session.slug); }catch(_){}
+        try{ sessionStorage.setItem(CFG.SLUG_KEY, session.slug); }catch(_){}
+        try{ localStorage.setItem(CFG.PHONE_KEY, session.phone); }catch(_){}
+        try{ sessionStorage.setItem(CFG.PHONE_KEY, session.phone); }catch(_){}
+        try{ localStorage.setItem(CFG.LAST_SLUG_KEY, session.slug); }catch(_){}
+        try{ sessionStorage.setItem(CFG.LAST_SLUG_KEY, session.slug); }catch(_){}
+        try{ window.DIGIY_ACCESS = Object.assign({}, window.DIGIY_ACCESS || {}, session); }catch(_){}
 
-        /* ━━━ AVANT : new URL(next, location.href) → buildSafeUrl ━━━ */
-        let next=CFG.DEFAULT_NEXT;
-        if(target==="planning")  next="./planning.html";
-        if(target==="dashboard") next="./dashboard-pro.html";
-        if(target==="reserv")    next="./cockpit.html";
-        if(target==="cockpit")   next="./cockpit.html";
-        if(target==="plus")      next="./etablissement.html";
-
-        return buildSafeUrl(next,{
-          slug: session.slug,
-          ...(CFG.KEEP_PHONE_IN_URL&&session.phone?{phone:session.phone}:{}),
-          module: CFG.MODULE,
-          from: "pin"
-        });
+        return session;
       }
 
-      function refreshLinks(slug,phone){
-        const s=normSlug(slug); const p=normPhone(phone);
-
-        /* ━━━ AVANT : new URL(base, location.href) × 3 → buildSafeUrl ━━━ */
-        const addPro=(base)=>buildSafeUrl(base,{...(s?{slug:s}:{}),...(CFG.KEEP_PHONE_IN_URL&&p?{phone:p}:{})});
-
-        el.btnCockpit.href   = addPro("./cockpit.html");
-        el.btnPlanning.href  = addPro("./planning.html");
-        el.btnDashboard.href = addPro("./dashboard-pro.html");
-        el.btnPublic.href    = buildPublicUrl(CFG.PUBLIC_FICHE_PATH,s);
-        el.btnPublic.setAttribute("target","_blank"); el.btnPublic.setAttribute("rel","noopener");
-        el.btnPay.href       = buildSafeUrl(CFG.PAY_URL, { module: CFG.MODULE, ...(s?{slug:s}:{}), ...(p?{phone:p}:{}) });
-
-        if(s){
-          el.btnCockpit.classList.remove("hidden");
-          el.btnPlanning.classList.remove("hidden");
-          el.btnDashboard.classList.remove("hidden");
-          el.btnPublic.classList.remove("hidden");
-        }
-
-        const dummy={slug:s,phone:p};
-        const returnUrl=buildReturnUrl(dummy);
-        el.btnReturn.href=returnUrl;
-        el.btnReturn.classList.remove("hidden");
-
-        const target=(qs("target")||"").trim().toLowerCase();
-        if(target==="public"||returnUrl.startsWith(CFG.PUBLIC_BASE_URL)){
-          el.btnReturn.textContent="🌍 Retour public";
-          el.btnReturn.setAttribute("target","_blank"); el.btnReturn.setAttribute("rel","noopener");
-        }else{
-          el.btnReturn.textContent="🏠 Retour accueil";
-          el.btnReturn.removeAttribute("target"); el.btnReturn.removeAttribute("rel");
-        }
-
-        el.returnInfo.textContent=describeReturnUrl(returnUrl);
-
-        const notesHref = addPro("./planning.html") + "#quickResaNote";
-        const mobileLinks = {
-          fastHome: addPro("./dashboard-pro.html"),
-          fastReserv: addPro("./cockpit.html"),
-          fastPlanning: addPro("./planning.html"),
-          fastNotes: notesHref,
-          bottomHome: addPro("./dashboard-pro.html"),
-          bottomReserv: addPro("./cockpit.html"),
-          bottomPlanning: addPro("./planning.html"),
-          bottomNotes: notesHref,
-          bottomMore: addPro("./pin.html")
+      function refreshLinks(){
+        const cleanLinks = {
+          btnCockpit:"./cockpit.html",
+          btnPlanning:"./planning.html",
+          btnDashboard:"./dashboard-pro.html",
+          fastHome:"./dashboard-pro.html",
+          fastReserv:"./cockpit.html",
+          fastPlanning:"./planning.html",
+          fastNotes:"./planning.html#quickResaNote",
+          bottomHome:"./dashboard-pro.html",
+          bottomReserv:"./cockpit.html",
+          bottomPlanning:"./planning.html",
+          bottomNotes:"./planning.html#quickResaNote",
+          bottomMore:"./pin.html"
         };
 
-        Object.entries(mobileLinks).forEach(([id, href]) => {
+        Object.entries(cleanLinks).forEach(([id, href]) => {
           const node = document.getElementById(id);
-          if(node) node.href = href;
+          if(node) node.href = buildCleanUrl(href);
         });
+
+        el.btnPublic.href = CFG.PUBLIC_BASE_URL;
+        el.btnPay.href = CFG.PAY_URL + "?module=RESA";
+
+        el.btnCockpit.classList.remove("hidden");
+        el.btnPlanning.classList.remove("hidden");
+        el.btnDashboard.classList.remove("hidden");
+        el.btnPublic.classList.remove("hidden");
+
+        const ret = cleanReturnUrl();
+        el.btnReturn.href = buildCleanUrl(ret);
+        el.btnReturn.classList.remove("hidden");
+        el.btnReturn.textContent = "🏠 Retour accueil";
+        el.returnInfo.textContent = describeReturnUrl(ret);
       }
 
       function hydrate(){
-        const qSlug=normSlug(qs("slug")); const qPhone=normPhone(qs("phone")); const saved=readSession();
-        let storedSlug="", storedPhone="";
-        try{storedSlug=normSlug(sessionStorage.getItem(CFG.SLUG_KEY)||localStorage.getItem(CFG.SLUG_KEY)||localStorage.getItem(CFG.LAST_SLUG_KEY)||"");}catch(_){}
-        try{storedPhone=normPhone(sessionStorage.getItem(CFG.PHONE_KEY)||localStorage.getItem(CFG.PHONE_KEY)||"");}catch(_){}
+        const saved = readStoredSession();
+        refreshLinks();
 
-        el.slug.value  = qSlug  || saved?.slug  || storedSlug;
-        el.phone.value = qPhone || saved?.phone || storedPhone;
-
-        if(saved?.slug||saved?.phone){ refreshLinks(saved.slug||el.slug.value, saved.phone||el.phone.value); }
-        else if(el.slug.value||el.phone.value){ refreshLinks(el.slug.value, el.phone.value); }
-        else{ el.btnPay.href=CFG.PAY_URL; el.btnPublic.href=buildPublicUrl(CFG.PUBLIC_FICHE_PATH,""); }
-
-        if(saved?.verified_at||saved?.validated_at){
-          el.sessionInfo.textContent="Ouvert";
-          setStatus("Session déjà ouverte. Tu peux reprendre l’accueil.","ok");
+        if(saved?.verified_at || saved?.validated_at){
+          el.sessionInfo.textContent = "Ouvert";
+          setStatus("Session RESA déjà ouverte. Elle reste active 8 heures sur cet appareil.","ok");
+        }else{
+          el.sessionInfo.textContent = "À ouvrir";
+          setStatus("Prêt. Entre ton code PIN pour ouvrir une session RESA de 8 heures.");
         }
+
+        cleanVisibleUrl();
       }
 
       async function login(){
         try{
-          let slug=normSlug(el.slug.value);
-          let phone=normPhone(el.phone.value);
-          const pin=normPin(el.pin.value);
+          const pin = normPin(el.pin.value);
+          if(!pin){
+            setStatus("Entre ton code PIN.","err");
+            return;
+          }
 
-          /* ━━━ AVANT : "Renseigne au moins le slug ou le téléphone." → banni ━━━ */
-          if(!slug&&!phone){ setStatus("Renseigne au moins ton identifiant ou ton téléphone.","err"); return; }
-          if(!pin){ setStatus("Entre ton code.","err"); return; }
-
-          el.btnOpen.disabled=true;
+          el.btnOpen.disabled = true;
           setStatus("Vérification du code…");
 
-          if(slug&&!phone){ const sub=await resolveSubBySlug(slug); if(sub?.phone)phone=sub.phone; }
-          if(phone&&!slug){ const sub=await resolveSubByPhone(phone); if(sub?.slug)slug=sub.slug; }
+          let {slug, phone} = readHiddenContext();
 
-          /* ━━━ AVANT : "Slug inconnu." → "Identifiant inconnu." ━━━ */
-          if(!slug){ setStatus("Identifiant inconnu.","err"); return; }
-          /* ━━━ AVANT : "Téléphone introuvable pour ce slug." → humain ━━━ */
-          if(!phone){ setStatus("Téléphone introuvable pour cet identifiant.","err"); return; }
+          if(slug && !phone){
+            const sub = await resolveSubBySlug(slug);
+            if(sub?.phone) phone = sub.phone;
+            if(sub?.slug) slug = sub.slug;
+          }
 
-          const auth=await verifyPin(phone,pin);
-          if(!auth?.ok){ setStatus("Code invalide.","err"); return; }
+          if(!phone){
+            setStatus(
+              "Accès non retrouvé sur cet appareil.\nOuvre d’abord RESA depuis ton espace ou ton QR, puis reviens entrer ton code PIN.",
+              "err"
+            );
+            return;
+          }
 
-          const session=saveSession({slug,phone:auth.phone||phone,owner_id:auth.owner_id||null});
-          el.sessionInfo.textContent="Ouvert";
-          refreshLinks(session.slug,session.phone);
-          /* ━━━ AVANT : "Ouverture de ton espace RESA..." → humain ━━━ */
-          setStatus("Code validé. Ouverture de l’accueil RESA…","ok");
+          const auth = await verifyPin(phone, pin);
+          if(!auth?.ok){
+            setStatus("Code invalide pour RESA.","err");
+            return;
+          }
 
-          setTimeout(()=>{ window.location.href=buildReturnUrl(session); },220);
+          const session = saveSession({
+            slug,
+            phone:auth.phone || phone,
+            owner_id:auth.owner_id || null
+          });
+
+          el.sessionInfo.textContent = "Ouvert";
+          refreshLinks();
+          setStatus("Code validé. Session RESA ouverte pour 8 heures.","ok");
+
+          setTimeout(() => {
+            window.location.href = buildCleanUrl(cleanReturnUrl());
+          }, 220);
         }catch(err){
           console.error(err);
-          setStatus(err?.message||"Erreur de vérification.","err");
+          setStatus(err?.message || "Erreur de vérification.","err");
         }finally{
-          el.btnOpen.disabled=false;
+          el.btnOpen.disabled = false;
         }
       }
 
-      el.togglePin.addEventListener("click",()=>{
-        const visible=el.pin.type==="text"; el.pin.type=visible?"password":"text"; el.togglePin.textContent=visible?"👁️":"🙈";
+      el.togglePin.addEventListener("click", () => {
+        const visible = el.pin.type === "text";
+        el.pin.type = visible ? "password" : "text";
+        el.togglePin.textContent = visible ? "👁️" : "🙈";
       });
 
-      el.btnOpen.addEventListener("click",login);
-      [el.slug,el.phone,el.pin].forEach(node=>{ node.addEventListener("keydown",e=>{ if(e.key==="Enter")login(); }); });
-      el.slug.addEventListener("input",()=>refreshLinks(el.slug.value,el.phone.value));
-      el.phone.addEventListener("input",()=>refreshLinks(el.slug.value,el.phone.value));
+      el.btnOpen.addEventListener("click", login);
+      el.pin.addEventListener("keydown", e => { if(e.key === "Enter") login(); });
 
       hydrate();
     })();
