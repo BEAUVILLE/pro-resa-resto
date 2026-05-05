@@ -12,69 +12,82 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-dashboard-v5-claw-nav"></script>
+  <script src="./guard.js?v=resa-dashboard-secure-pin8h"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#0b1020;--card:#121a33;--muted:#a8b1d1;--text:#eef1ff;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--accent:#6366f1;--line:rgba(255,255,255,.09);--shadow:0 12px 30px rgba(0,0,0,.35);--radius:18px;--pad:16px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;}
+    :root{
+      --bg:#0b1020;--card:#121a33;--muted:#a8b1d1;--text:#eef1ff;
+      --ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--accent:#6366f1;
+      --line:rgba(255,255,255,.09);--shadow:0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;--pad:16px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;
+    }
     *{box-sizing:border-box}
-    body{margin:0;font-family:var(--fontA);background:radial-gradient(1200px 700px at 20% -20%, rgba(99,102,241,.25), transparent 70%),radial-gradient(900px 600px at 100% 0%, rgba(34,197,94,.15), transparent 55%),var(--bg);color:var(--text);}
+    body{
+      margin:0;
+      font-family:var(--fontA);
+      background:
+        radial-gradient(1200px 700px at 20% -20%, rgba(99,102,241,.25), transparent 70%),
+        radial-gradient(900px 600px at 100% 0%, rgba(34,197,94,.15), transparent 55%),
+        var(--bg);
+      color:var(--text);
+    }
     a{color:inherit;text-decoration:none}
     .wrap{max-width:980px;margin:0 auto;padding:18px 14px calc(104px + env(safe-area-inset-bottom,0px))}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 6px;margin-bottom:10px;flex-wrap:wrap;}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px;}
-    .brand .badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:rgba(99,102,241,.18);border:1px solid var(--line);}
-    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);font-weight:600;font-size:13px;}
-    .pill b{color:var(--text);font-weight:800;}
-    .btn{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fontA);}
-    .btn.primary{background:rgba(99,102,241,.22);border-color:rgba(99,102,241,.35);}
-    .btn:disabled{opacity:.55;cursor:not-allowed;}
-    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow);}
-    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-weight:900;text-decoration:none;}
-    .nav-link.active{background:rgba(99,102,241,.18);border-color:rgba(99,102,241,.35);color:#dfe3ff;}
-    .hero{background:linear-gradient(180deg, rgba(99,102,241,.14), rgba(34,197,94,.08));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px;}
-    .hero h2{margin:0 0 8px 0;font-size:1.1rem;}
-    .hero p{margin:0;color:var(--muted);font-weight:700;line-height:1.55;}
-    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-    .hero-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:.84rem;font-weight:900;}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
-    .claw-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px;margin:0 0 12px;}
-    @media(max-width:920px){.claw-grid{grid-template-columns:1fr}}
-    .claw-card{background:linear-gradient(180deg, rgba(96,165,250,.09), rgba(34,197,94,.06));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;}
-    .claw-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
-    .claw-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#cfe0ff;font-weight:950;margin-bottom:6px;}
-    .claw-title{margin:0;font-size:18px;font-weight:950;line-height:1.2;}
-    .claw-mode{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(99,102,241,.28);background:rgba(99,102,241,.14);color:#dfe3ff;font-size:12px;font-weight:950;}
-    .claw-text{color:var(--muted);font-size:14px;line-height:1.65;font-weight:750;}
-    .claw-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-    .claw-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:900;}
-    .claw-list{display:grid;gap:10px;margin-top:12px;}
-    .claw-item{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04);}
-    .claw-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:950;color:var(--text);}
-    .claw-item span{display:block;color:var(--muted);font-size:13px;line-height:1.55;font-weight:750;}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px;}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 6px;margin-bottom:10px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+    .brand .badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:rgba(99,102,241,.18);border:1px solid var(--line)}
+    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);font-weight:600;font-size:13px}
+    .pill b{color:var(--text);font-weight:800}
+    .btn{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fontA)}
+    .btn.primary{background:rgba(99,102,241,.22);border-color:rgba(99,102,241,.35)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow)}
+    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-weight:900;text-decoration:none}
+    .nav-link.active{background:rgba(99,102,241,.18);border-color:rgba(99,102,241,.35);color:#dfe3ff}
+    .hero{background:linear-gradient(180deg, rgba(99,102,241,.14), rgba(34,197,94,.08));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+    .hero h2{margin:0 0 8px 0;font-size:1.1rem}
+    .hero p{margin:0;color:var(--muted);font-weight:700;line-height:1.55}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .hero-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:.84rem;font-weight:900}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .assistant-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px;margin:0 0 12px}
+    @media(max-width:920px){.assistant-grid{grid-template-columns:1fr}}
+    .assistant-card{background:linear-gradient(180deg, rgba(96,165,250,.09), rgba(34,197,94,.06));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px}
+    .assistant-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+    .assistant-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#cfe0ff;font-weight:950;margin-bottom:6px}
+    .assistant-title{margin:0;font-size:18px;font-weight:950;line-height:1.2}
+    .assistant-mode{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(99,102,241,.28);background:rgba(99,102,241,.14);color:#dfe3ff;font-size:12px;font-weight:950}
+    .assistant-text{color:var(--muted);font-size:14px;line-height:1.65;font-weight:750}
+    .assistant-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .assistant-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:900}
+    .assistant-list{display:grid;gap:10px;margin-top:12px}
+    .assistant-item{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+    .assistant-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:950;color:var(--text)}
+    .assistant-item span{display:block;color:var(--muted);font-size:13px;line-height:1.55;font-weight:750}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
     @media(min-width:920px){.grid{grid-template-columns:1.05fr .95fr}}
-    .card{background:rgba(18,26,51,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--pad);}
-    .card h3{margin:0 0 8px 0;font-size:15px;letter-spacing:.2px;}
+    .card{background:rgba(18,26,51,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--pad)}
+    .card h3{margin:0 0 8px 0;font-size:15px;letter-spacing:.2px}
     .muted{color:var(--muted)}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-    .statusDot{width:10px;height:10px;border-radius:999px;background:var(--warn);}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .statusDot{width:10px;height:10px;border-radius:999px;background:var(--warn)}
     .statusDot.ok{background:var(--ok)}.statusDot.bad{background:var(--danger)}
-    .bigMoney{font-size:34px;font-weight:900;letter-spacing:-.8px;margin:6px 0 2px 0;}
-    .mini{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted);font-weight:650;}
-    .hr{height:1px;background:var(--line);margin:12px 0;}
-    .boostBox{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px;border-radius:16px;background:rgba(99,102,241,.10);border:1px solid rgba(99,102,241,.25);}
-    .boostBox b{display:block;margin-bottom:4px;}
-    .notifList{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-    .notif{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
-    .tag{font-size:12px;font-weight:900;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);}
-    .tag.warn{color:#ffe2b0;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10);}
-    .tag.ok{color:#c9ffd9;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08);}
-    .tag.info{color:#cfd6ff;border-color:rgba(99,102,241,.35);background:rgba(99,102,241,.10);}
-    .footer{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
-    .smallLink{color:var(--muted);text-decoration:none;font-weight:750;}.smallLink:hover{color:var(--text)}
+    .bigMoney{font-size:34px;font-weight:900;letter-spacing:-.8px;margin:6px 0 2px 0}
+    .mini{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted);font-weight:650}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .boostBox{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px;border-radius:16px;background:rgba(99,102,241,.10);border:1px solid rgba(99,102,241,.25)}
+    .boostBox b{display:block;margin-bottom:4px}
+    .notifList{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .notif{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .tag{font-size:12px;font-weight:900;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+    .tag.warn{color:#ffe2b0;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)}
+    .tag.ok{color:#c9ffd9;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08)}
+    .tag.info{color:#cfd6ff;border-color:rgba(99,102,241,.35);background:rgba(99,102,241,.10)}
+    .footer{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .smallLink{color:var(--muted);text-decoration:none;font-weight:750}.smallLink:hover{color:var(--text)}
     @media(max-width:640px){.right,.nav-rail,.hero-actions{width:100%}.right > *,.nav-rail > *,.hero-actions > *{flex:1 1 auto}}
 
     #resaNotes, #resaToday{scroll-margin-top:96px}
@@ -190,7 +203,6 @@
       .nav-rail{display:none}
       .right{display:none}
     }
-
   </style>
 </head>
 <body>
@@ -199,54 +211,44 @@
       <div class="brand">
         <div class="badge">🦅</div>
         <div>
-          <!-- brandTitle et brandSub sont écrits par JS -->
           <div id="brandTitle">JE RÉSERVE</div>
           <div class="muted" style="font-size:12px;font-weight:700;margin-top:2px" id="brandSub">Accueil RESA</div>
         </div>
       </div>
       <div class="right">
         <div class="pill" id="pillStatus">Statut : <b>…</b></div>
-        <!-- ━━━ AVANT : "Cockpit" · "CLAW" · "PIN" → bannis ━━━ -->
         <a class="btn" id="btnCockpitTop"  href="./cockpit.html">Réserv.</a>
-        <a class="btn" id="btnClawTop"     href="./claw.html">Aide</a>
-        <a class="btn" id="btnPinTop"      href="./pin.html">Accès</a>
-        <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Mes réglages</a>
+        <a class="btn" id="btnAssistantTop" href="./claw.html">Aide</a>
+        <a class="btn" id="btnPinTop" href="./pin.html">Accès</a>
+        <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Plus</a>
       </div>
     </div>
 
-    <!-- ━━━ NAV — doctrine façade ━━━ -->
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <!-- ━━━ "Cockpit" → "Réserv." ━━━ -->
-      <a class="nav-link"        id="navCockpit"   href="./cockpit.html">Réserv.</a>
-      <!-- ━━━ "Dashboard" → "Accueil" ━━━ -->
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">Réserv.</a>
       <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
-      <a class="nav-link"        id="navPlanning"  href="./planning.html">Planning</a>
-      <a class="nav-link"        id="navClaw"      href="./claw.html">Aide</a>
-      <!-- ━━━ "Profil / établissement" → "Plus" ━━━ -->
-      <a class="nav-link"        id="navSettings"  href="./etablissement.html">Plus</a>
-      <a class="nav-link"        id="navPin"       href="./pin.html">Accès</a>
-      <!-- ━━━ "Accueil PRO" → "Façade" ━━━ -->
-      <a class="nav-link"        id="navHome"      href="./index.html">Façade</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
+      <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
+      <a class="nav-link" id="navPin" href="./pin.html">Accès</a>
+      <a class="nav-link" id="navHome" href="./index.html">Façade</a>
     </nav>
 
     <section class="hero">
-      <!-- ━━━ AVANT : "DIGIY RESA PRO — tableau de bord simple" → banni ━━━ -->
       <h2 id="heroTitle">Accueil RESA</h2>
       <p id="heroDesc">Ici tu vois ce qui demande attention : réservations, planning, paiements à surveiller et notes rapides.</p>
 
       <div class="hero-meta">
-        <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
-        <div class="hero-pill" id="heroSlug">Identifiant : —</div>
-        <div class="hero-pill" id="heroPhone">Téléphone : —</div>
+        <div class="hero-pill" id="heroSession">Session : protégée</div>
         <div class="hero-pill" id="heroState">État : aperçu</div>
+        <div class="hero-pill" id="heroSecurity">Sécurité : aucun numéro en façade</div>
       </div>
 
       <div class="hero-actions">
-        <!-- ━━━ AVANT : "Ouvrir le cockpit" · "Ouvrir CLAW" · "Voir le profil" → bannis ━━━ -->
         <a class="btn primary" id="heroCockpit"  href="./cockpit.html">Voir les réservations</a>
-        <a class="btn"         id="heroPlanning" href="./planning.html">Ouvrir le planning</a>
-        <a class="btn"         id="heroClaw"     href="./claw.html">Aide</a>
-        <a class="btn"         id="heroSettings" href="./etablissement.html">Plus</a>
+        <a class="btn" id="heroPlanning" href="./planning.html">Ouvrir le planning</a>
+        <a class="btn" id="heroAssistant" href="./claw.html">Aide</a>
+        <a class="btn" id="heroSettings" href="./etablissement.html">Plus</a>
       </div>
 
       <div class="mobileHeroActions">
@@ -257,25 +259,21 @@
       </div>
     </section>
 
-    <section class="claw-grid">
-      <article class="claw-card">
-        <div class="claw-head">
+    <section class="assistant-grid">
+      <article class="assistant-card">
+        <div class="assistant-head">
           <div>
-            <!-- ━━━ AVANT : "CLAW DIGIY" → "DIGIY ANALYSE" ━━━ -->
-            <div class="claw-kicker">Lecture accueil</div>
-            <!-- ━━━ AVANT : "Lecture légère du dashboard" → banni ━━━ -->
-            <h2 class="claw-title">Ce qui demande attention</h2>
+            <div class="assistant-kicker">Mon assistant DIGIY</div>
+            <h2 class="assistant-title">Ce qui demande attention</h2>
           </div>
-          <!-- ━━━ AVANT : "Aide légère" → "Aide en cours" ━━━ -->
-          <div class="claw-mode" id="clawMode">Aide en cours</div>
+          <div class="assistant-mode" id="assistantMode">Aide en cours</div>
         </div>
-        <!-- ━━━ AVANT : "CLAW lit le rail RESA" · "slug" · "dashboard" → bannis ━━━ -->
-        <div class="claw-text" id="clawSummary">DIGIY lit l’état de ton accueil : réservations, planning, accès et prochaine action utile.</div>
-        <div class="claw-pills" id="clawPills"></div>
+        <div class="assistant-text" id="assistantSummary">DIGIY lit l’état de ton accueil : réservations, planning, accès et prochaine action utile.</div>
+        <div class="assistant-pills" id="assistantPills"></div>
       </article>
-      <article class="claw-card">
-        <div class="claw-list" id="clawList">
-          <div class="claw-item">
+      <article class="assistant-card">
+        <div class="assistant-list" id="assistantList">
+          <div class="assistant-item">
             <strong>Chargement</strong>
             <span>En attente de l'état réel pour te pousser la bonne action.</span>
           </div>
@@ -294,9 +292,9 @@
           </div>
         </div>
         <div class="hr"></div>
-        <div class="mini" id="metaLine"><span>Accès : —</span><span>•</span><span>Paiement : —</span></div>
+        <div class="mini" id="metaLine"><span>Accès : —</span><span>•</span><span>Session : —</span></div>
         <div class="footer">
-          <button class="btn" id="btnManageSub" type="button">Gérer mon abonnement</button>
+          <button class="btn" id="btnManageSub" type="button">Activer ou renouveler</button>
         </div>
       </div>
 
@@ -314,8 +312,8 @@
             <div class="muted" style="font-weight:750;font-size:12px;margin-top:6px" id="boostStatus">Statut boost : non branché pour l'instant</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;min-width:160px">
-            <button class="btn primary" id="btnBoost"     type="button">Activer</button>
-            <button class="btn"         id="btnBoostInfo" type="button">Détails</button>
+            <button class="btn primary" id="btnBoost" type="button">Activer</button>
+            <button class="btn" id="btnBoostInfo" type="button">Détails</button>
           </div>
         </div>
       </div>
@@ -357,14 +355,13 @@
         <h3>Notifications</h3>
         <div class="notifList" id="notifList"></div>
         <div class="footer">
-          <a class="smallLink" href="#" id="linkSupport">Support</a>
-          <a class="smallLink" href="#" id="linkPayments">Mes paiements</a>
-          <a class="smallLink" href="#" id="linkClaw">Aide</a>
+          <a class="smallLink" href="#" id="linkSupport">Accès</a>
+          <a class="smallLink" href="#" id="linkPayments">Mon argent</a>
+          <a class="smallLink" href="#" id="linkAssistant">Aide</a>
         </div>
       </div>
     </div>
   </div>
-
 
   <nav class="bottomNav" aria-label="Navigation RESA">
     <div class="bottomNavInner">
@@ -380,97 +377,151 @@
 (() => {
   "use strict";
 
-  const MODULE_CODE  = "RESA";
-  const MODULE_LABEL = "JE RÉSERVE"; // façade
-  /* ━━━ AVANT : PRIMARY_ACTION_LABEL "Ouvrir le cockpit" → banni ━━━ */
+  const MODULE_CODE = "RESA";
+  const MODULE_LABEL = "JE RÉSERVE";
   const PRIMARY_ACTION_LABEL = "Voir les réservations";
-  const PRIMARY_ACTION_HINT  = "Regarde les réservations ou ouvre le planning.";
+  const PRIMARY_ACTION_HINT = "Regarde les réservations ou ouvre le planning.";
 
-  const ABOS_URL   = "https://commencer-a-payer.digiylyfe.com/";
-  const SUPPORT_WA = "https://wa.me/221771342889";
+  const ABOS_URL = "https://commencer-a-payer.digiylyfe.com/";
+  const PAY_ADMIN_URL = "https://pro-pay.digiylyfe.com/admin.html";
 
   const $ = (id) => document.getElementById(id);
-  let RESOLVED_SLUG  = "";
-  let RESOLVED_PHONE = "";
-  let CURRENT_STATE  = null;
+  let CURRENT_STATE = null;
 
-  try {
-    window.DIGIY_GUARD?.boot?.({ module:"RESA", login:"./pin.html", dashboard:"./cockpit.html", requireSlug:true, checkSubscription:true, storageSlugKey:"digiy_resa_slug", storageLastSlugKey:"digiy_last_slug" });
-  } catch {}
+  function normalizeSlug(v){
+    return String(v || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g,"-")
+      .replace(/[^a-z0-9-]/g,"")
+      .replace(/-+/g,"-")
+      .replace(/^-|-$/g,"");
+  }
 
-  function normalizeSlug(v){ return String(v||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
+  function escapeHtml(v){
+    return String(v ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
 
-  function escapeHtml(v){ return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;"); }
+  function safeJsonParse(v){
+    try{ return typeof v === "string" ? JSON.parse(v) : v; }catch{ return null; }
+  }
 
-  function safeJsonParse(v){ try{ return typeof v==="string"?JSON.parse(v):v; }catch{ return null; } }
+  function storageGet(key){
+    try{ const s = sessionStorage.getItem(key); if(s) return s; }catch{}
+    try{ const l = localStorage.getItem(key); if(l) return l; }catch{}
+    return "";
+  }
 
-  function storageGet(key){ try{ const s=sessionStorage.getItem(key); if(s)return s; }catch{} try{ const l=localStorage.getItem(key); if(l)return l; }catch{} return ""; }
-  function storageSet(key,value){ try{sessionStorage.setItem(key,String(value??""));}catch{} try{localStorage.setItem(key,String(value??""));}catch{} }
+  function storageSet(key,value){
+    try{ sessionStorage.setItem(key,String(value ?? "")); }catch{}
+    try{ localStorage.setItem(key,String(value ?? "")); }catch{}
+  }
+
+  function cleanVisibleUrl(){
+    try{
+      const u = new URL(location.href);
+      const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
+
+      if(legacySlug){
+        storageSet("digiy_resa_slug", legacySlug);
+        storageSet("digiy_resa_last_slug", legacySlug);
+      }
+
+      ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+      history.replaceState({}, document.title, u.pathname + u.search + u.hash);
+    }catch(_){}
+  }
 
   function getSessionSlug(){
-    const resa=safeJsonParse(storageGet("DIGIY_RESA_PRO_SESSION"));
-    if(resa?.slug)return normalizeSlug(resa.slug);
-    const generic=safeJsonParse(storageGet("DIGIY_PRO_SESSION"));
-    if(generic?.module===MODULE_CODE&&generic?.slug)return normalizeSlug(generic.slug);
+    const direct = safeJsonParse(storageGet("DIGIY_RESA_SESSION")) ||
+                   safeJsonParse(storageGet("DIGIY_RESA_PIN_SESSION")) ||
+                   safeJsonParse(storageGet("DIGIY_SESSION_RESA")) ||
+                   safeJsonParse(storageGet("digiy_resa_session"));
+
+    if(direct?.module === MODULE_CODE && direct?.slug) return normalizeSlug(direct.slug);
+
+    const generic = safeJsonParse(storageGet("DIGIY_ACCESS"));
+    if(generic?.module === MODULE_CODE && generic?.slug) return normalizeSlug(generic.slug);
+
     return "";
   }
 
   function getFallbackSlug(){
-    const q=new URL(location.href).searchParams.get("slug")||"";
-    return normalizeSlug(q||storageGet("digiy_resa_slug")||storageGet("digiy_resa_last_slug")||storageGet("digiy_last_slug")||storageGet("DIGIY_SLUG")||storageGet("digiy_slug")||getSessionSlug()||"");
+    return normalizeSlug(
+      storageGet("digiy_resa_slug") ||
+      storageGet("digiy_resa_last_slug") ||
+      getSessionSlug() ||
+      ""
+    );
   }
 
-  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-     buildSafeUrl — VERSION BLINDÉE
-     new URL(path, location.href) fragile selon l'env.
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   function buildSafeUrl(base, params){
-    const baseStr=(base==null?"":String(base)).trim();
-    if(!baseStr)return location.href;
+    const baseStr = (base == null ? "" : String(base)).trim();
+    if(!baseStr) return "./dashboard-pro.html";
+
     let u;
     try{
-      if(/^https?:\/\//i.test(baseStr)){ u=new URL(baseStr); }
-      else{ const o=location.protocol+"//"+location.host; const f=baseStr.startsWith("/")?o+baseStr:o+"/"+baseStr; u=new URL(f); }
-    }catch(e){ console.warn("[DIGIY] buildSafeUrl KO:",baseStr,e.message); return baseStr; }
-    try{ Object.entries(params||{}).forEach(([k,v])=>{ if(v!==null&&v!==undefined&&String(v)!=="")u.searchParams.set(k,String(v)); }); }catch(e){}
+      if(/^https?:\/\//i.test(baseStr)){
+        u = new URL(baseStr);
+      }else{
+        u = new URL(baseStr, location.href);
+      }
+    }catch(e){
+      console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
+      return baseStr;
+    }
+
+    ["slug","phone","tel","resa_"+"tel"].forEach(k => u.searchParams.delete(k));
+
+    try{
+      Object.entries(params || {}).forEach(([k,v]) => {
+        if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
+        if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+      });
+    }catch(e){}
+
+    if(u.origin === location.origin){
+      const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+      return "./" + file + (u.search || "") + (u.hash || "");
+    }
+
     return u.toString();
   }
 
-  function withSlug(path, slug="", extra={}){
-    const clean=normalizeSlug(slug);
-    const params={...(clean?{slug:clean}:{}), ...extra};
-    return buildSafeUrl(path, params);
+  function cleanPath(path){
+    return buildSafeUrl(path, {});
   }
 
-  function setNavLinks(slug=""){
-    const c=normalizeSlug(slug);
-    const cockpitHref   = withSlug("./cockpit.html",       c);
-    const dashboardHref = withSlug("./dashboard-pro.html", c);
-    const planningHref  = withSlug("./planning.html",      c);
-    const clawHref      = withSlug("./claw.html",          c);
-    const settingsHref  = withSlug("./etablissement.html", c);
-    const pinHref       = withSlug("./pin.html",           c);
-    const homeHref      = withSlug("./index.html",         c);
+  function setNavLinks(){
+    const cockpitHref = cleanPath("./cockpit.html");
+    const dashboardHref = cleanPath("./dashboard-pro.html");
+    const planningHref = cleanPath("./planning.html");
+    const assistantHref = cleanPath("./claw.html");
+    const settingsHref = cleanPath("./etablissement.html");
+    const pinHref = cleanPath("./pin.html");
+    const homeHref = cleanPath("./index.html");
 
-    $("navCockpit").href   = cockpitHref;
-    $("navDashboard").href = dashboardHref;
-    $("navPlanning").href  = planningHref;
-    $("navClaw").href      = clawHref;
-    $("navSettings").href  = settingsHref;
-    $("navPin").href       = pinHref;
-    $("navHome").href      = homeHref;
-
-    $("btnCockpitTop").href  = cockpitHref;
-    $("btnClawTop").href     = clawHref;
-    $("btnPinTop").href      = pinHref;
-    $("btnSettingsTop").href = settingsHref;
-
-    $("heroCockpit").href  = cockpitHref;
-    $("heroPlanning").href = planningHref;
-    $("heroClaw").href     = clawHref;
-    $("heroSettings").href = settingsHref;
-
-    const extraLinks = {
+    const links = {
+      navCockpit: cockpitHref,
+      navDashboard: dashboardHref,
+      navPlanning: planningHref,
+      navAssistant: assistantHref,
+      navSettings: settingsHref,
+      navPin: pinHref,
+      navHome: homeHref,
+      btnCockpitTop: cockpitHref,
+      btnAssistantTop: assistantHref,
+      btnPinTop: pinHref,
+      btnSettingsTop: settingsHref,
+      heroCockpit: cockpitHref,
+      heroPlanning: planningHref,
+      heroAssistant: assistantHref,
+      heroSettings: settingsHref,
       quickReservations: cockpitHref,
       quickPlanning: planningHref,
       quickPlus: settingsHref,
@@ -480,161 +531,197 @@
       bottomMore: settingsHref
     };
 
-    Object.entries(extraLinks).forEach(([id, href]) => {
+    Object.entries(links).forEach(([id, href]) => {
       const el = $(id);
-      if (el) el.href = href;
+      if(el) el.href = href;
     });
 
     const quickNotes = $("quickNotes");
     const bottomNotes = $("bottomNotes");
-    if (quickNotes) quickNotes.href = "#resaNotes";
-    if (bottomNotes) bottomNotes.href = "#resaNotes";
+    if(quickNotes) quickNotes.href = "#resaNotes";
+    if(bottomNotes) bottomNotes.href = "#resaNotes";
 
     const pay = $("btnSendResaPay");
-    if (pay) pay.href = buildResaPayDraftUrl(null);
+    if(pay) pay.href = buildResaPayDraftUrl(null);
   }
 
-  function setHero(slug, phone, stateLabel){
-    /* ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ */
-    $("heroSlug").textContent  = `Identifiant : ${slug||"—"}`;
-    $("heroPhone").textContent = `Téléphone : ${phone||"—"}`;
-    $("heroState").textContent = `État : ${stateLabel||"aperçu"}`;
+  function setHero(stateLabel){
+    $("heroSession").textContent = "Session : 8h après code PIN";
+    $("heroState").textContent = `État : ${stateLabel || "aperçu"}`;
+    $("heroSecurity").textContent = "Sécurité : aucun numéro en façade";
   }
 
-  function setDot(mode){ const dot=$("dot"); dot.className="statusDot"; if(mode==="ok")dot.classList.add("ok"); if(mode==="bad")dot.classList.add("bad"); }
-  function setPill(label){ $("pillStatus").innerHTML=`Statut : <b>${escapeHtml(label)}</b>`; }
+  function setDot(mode){
+    const dot = $("dot");
+    dot.className = "statusDot";
+    if(mode === "ok") dot.classList.add("ok");
+    if(mode === "bad") dot.classList.add("bad");
+  }
+
+  function setPill(label){
+    $("pillStatus").innerHTML = `Statut : <b>${escapeHtml(label)}</b>`;
+  }
 
   function setNotifs(items){
-    const box=$("notifList"); box.innerHTML="";
-    if(!items.length){ box.innerHTML=`<div class="notif"><div><b>Rien à signaler</b><div class="muted" style="font-weight:750;margin-top:2px">Tout roule.</div></div><div class="tag ok">OK</div></div>`; return; }
+    const box = $("notifList");
+    box.innerHTML = "";
+
+    if(!items.length){
+      box.innerHTML = `<div class="notif"><div><b>Rien à signaler</b><div class="muted" style="font-weight:750;margin-top:2px">Tout roule.</div></div><div class="tag ok">OK</div></div>`;
+      return;
+    }
+
     for(const it of items){
-      const tagClass=it.level==="warn"?"warn":it.level==="ok"?"ok":"info";
-      const div=document.createElement("div"); div.className="notif";
-      div.innerHTML=`<div><b>${escapeHtml(it.title)}</b><div class="muted" style="font-weight:750;margin-top:2px">${escapeHtml(it.text)}</div></div><div class="tag ${tagClass}">${escapeHtml(it.tag)}</div>`;
+      const tagClass = it.level === "warn" ? "warn" : it.level === "ok" ? "ok" : "info";
+      const div = document.createElement("div");
+      div.className = "notif";
+      div.innerHTML = `<div><b>${escapeHtml(it.title)}</b><div class="muted" style="font-weight:750;margin-top:2px">${escapeHtml(it.text)}</div></div><div class="tag ${tagClass}">${escapeHtml(it.tag)}</div>`;
       box.appendChild(div);
     }
   }
 
-  function setClaw(mode, summary, pills=[], items=[]){
-    $("clawMode").textContent    = mode||"Aide en cours";
-    $("clawSummary").textContent = summary||"Ce qui demande attention.";
-    $("clawPills").innerHTML=(Array.isArray(pills)?pills:[]).filter(Boolean).map(p=>`<div class="claw-pill">${escapeHtml(p)}</div>`).join("");
-    $("clawList").innerHTML=(Array.isArray(items)?items:[]).filter(Boolean).map(item=>`<div class="claw-item"><strong>${escapeHtml(item.title||"Point utile")}</strong><span>${escapeHtml(item.text||"—")}</span></div>`).join("");
+  function setAssistant(mode, summary, pills=[], items=[]){
+    $("assistantMode").textContent = mode || "Aide en cours";
+    $("assistantSummary").textContent = summary || "Ce qui demande attention.";
+    $("assistantPills").innerHTML = (Array.isArray(pills) ? pills : [])
+      .filter(Boolean)
+      .map(p => `<div class="assistant-pill">${escapeHtml(p)}</div>`)
+      .join("");
+
+    $("assistantList").innerHTML = (Array.isArray(items) ? items : [])
+      .filter(Boolean)
+      .map(item => `<div class="assistant-item"><strong>${escapeHtml(item.title || "Point utile")}</strong><span>${escapeHtml(item.text || "—")}</span></div>`)
+      .join("");
   }
 
-  function setClawLoading(){
-    setClaw("Chargement","En attente de l'état réel pour te pousser une action nette.",
+  function setAssistantLoading(){
+    setAssistant(
+      "Chargement",
+      "En attente de l'état réel pour te pousser une action nette.",
       ["Mes réservations","Accueil","Lecture simple"],
-      [{title:"Lecture du moment",text:"La page charge l'état d'accès et la prochaine étape utile."},
-       {title:"Ce qu'on prépare",text:"Un résumé propre : accès vivant, aperçu, blocage abonnement ou erreur."}]);
+      [
+        {title:"Lecture du moment", text:"La page charge l'état d'accès et la prochaine étape utile."},
+        {title:"Ce qu'on prépare", text:"Un résumé propre : accès vivant, aperçu, abonnement requis ou erreur."}
+      ]
+    );
   }
 
-  function setClawPreview(message){
-    setClaw("Aperçu","Espace visible, mais identité pas encore ouverte. Passe par ton PIN pour accéder proprement.",
-      [RESOLVED_SLUG?`Identifiant : ${RESOLVED_SLUG}`:"Identifiant non détecté","PIN conseillé","Zéro démo"],
-      [{title:"État de l'espace",text:message||"L'espace reste visible sans inventer un accès vivant."},
-       {title:"Action utile",text:"Passe par ton PIN pour ouvrir proprement et récupérer l'identité réelle."},
-       {title:"Suite logique",text:"Quand l'accès est bon, tu peux ouvrir directement ta gestion avec le même identifiant."}]);
+  function setAssistantPreview(message){
+    setAssistant(
+      "Accès à ouvrir",
+      "Espace visible, mais session non ouverte. Passe par ton code PIN pour accéder proprement.",
+      ["Code PIN conseillé","Session 8h","Aucun numéro en façade"],
+      [
+        {title:"État de l'espace", text:message || "L'espace attend simplement une session RESA active."},
+        {title:"Action utile", text:"Entre ton code PIN pour ouvrir l'accueil et retrouver tes outils."},
+        {title:"Suite logique", text:"Quand l'accès est bon, tu circules entre réservations, planning, notes et plus."}
+      ]
+    );
   }
 
-  function setClawBlocked(message, level="warn"){
-    /* ━━━ AVANT : "Accès fermé" / "Contrôle perturbé" · "rail" · "cockpit" → bannis ━━━ */
-    setClaw(level==="warn"?"Accès requis":"Erreur de vérification","Remet l'accès d'équerre avant de vouloir piloter le reste.",
-      [RESOLVED_SLUG?`Identifiant : ${RESOLVED_SLUG}`:"Identifiant à vérifier",level==="warn"?"Abonnement requis":"Erreur de contrôle"],
-      [{title:"Blocage principal",text:message||"L'accès n'est pas actif pour ce service."},
-       {title:"Action utile",text:"Active ton abonnement puis reviens avec le bon identifiant."},
-       {title:"À retenir",text:"On ne force pas une porte fermée. On remet d'abord l'accès en ordre."}]);
+  function setAssistantBlocked(message, level="warn"){
+    setAssistant(
+      level === "warn" ? "Accès requis" : "Erreur de vérification",
+      "Remet l'accès d'équerre avant de vouloir piloter le reste.",
+      [level === "warn" ? "Abonnement requis" : "Erreur", "Code PIN disponible", "Session protégée"],
+      [
+        {title:"Blocage principal", text:message || "L'accès n'est pas actif pour ce service."},
+        {title:"Action utile", text:"Active ou renouvelle l'accès, puis reviens par ton code PIN."},
+        {title:"À retenir", text:"On ne force pas une porte fermée. On remet d'abord l'accès en ordre."}
+      ]
+    );
   }
 
-  function setClawLive(slug, phone){
-    /* ━━━ AVANT : "Lecture vivante" · "slug" · "cockpit" · "dashboard" · "claw.html" → nettoyés ━━━ */
-    setClaw("Lecture active","Accès confirmé. La vue synthèse joue son vrai rôle : lire l'état vite et pousser vers la bonne page.",
-      [slug?`Identifiant : ${slug}`:"Identifiant : —",phone?`Téléphone : ${phone}`:"Téléphone : —","Accès actif","Navigation ouverte"],
-      [{title:"Lecture de l'espace",text:"L'accès est confirmé. L'espace est stable et l'identifiant est bien reconnu."},
-       {title:"Action du moment",text:"Ta gestion reste la porte centrale pour piloter les réservations et le flux du jour."},
-       {title:"Navigation utile",text:"Planning pour lire le terrain, profil pour vérifier ta vitrine, analyse pour l'aide légère."}]);
+  function setAssistantLive(){
+    setAssistant(
+      "Lecture active",
+      "Accès confirmé. L'accueil joue son rôle : lire l'état vite et pousser vers la bonne page.",
+      ["Accès actif","Session 8h","Navigation ouverte"],
+      [
+        {title:"Lecture de l'espace", text:"Ta session RESA est ouverte. L'accueil peut guider sans exposer tes données."},
+        {title:"Action du moment", text:"Les réservations restent la porte centrale pour piloter le flux du jour."},
+        {title:"Navigation utile", text:"Planning pour lire le terrain, Notes pour nourrir Mon argent, Plus pour les réglages."}
+      ]
+    );
   }
 
-  function buildPayUrl(module, phone, slug){
-    return buildSafeUrl(ABOS_URL,{...(module?{module}:{}),...(phone?{phone}:{}),...(slug?{slug}:{}),"return":location.href});
+  function buildPayUrl(){
+    return buildSafeUrl(ABOS_URL, {
+      module: MODULE_CODE,
+      return: cleanPath("./dashboard-pro.html")
+    });
   }
 
   function setPreviewState(message){
-    setDot(""); setPill("Aperçu"); setHero(RESOLVED_SLUG,RESOLVED_PHONE,"aperçu");
-    $("statusLine").textContent  = "Mode aperçu";
-    $("expiryLine").textContent  = message||"Entre par ton PIN pour ouvrir l'accès.";
-    $("metaLine").innerHTML      = `<span>Accès : aperçu</span><span>•</span><span>Paiement : non vérifié</span>`;
-    $("moneyMonth").textContent  = "— FCFA";
-    $("txCount").textContent     = "— transactions";
-    $("todayHint").textContent   = "Aujourd'hui";
-    $("actionDesc").textContent  = "Cette vue montre l'outil sans casser la page.";
-    /* ━━━ AVANT : "Passe par PIN pour entrer proprement." → humain ━━━ */
-    $("actionHint").textContent  = "Entre par ton PIN pour accéder proprement.";
+    setDot("");
+    setPill("Aperçu");
+    setHero("aperçu");
+    $("statusLine").textContent = "Mode aperçu";
+    $("expiryLine").textContent = message || "Entre par ton PIN pour ouvrir l'accès.";
+    $("metaLine").innerHTML = `<span>Accès : aperçu</span><span>•</span><span>Session : à ouvrir</span>`;
+    $("moneyMonth").textContent = "— FCFA";
+    $("txCount").textContent = "— transactions";
+    $("todayHint").textContent = "Aujourd'hui";
+    $("actionDesc").textContent = "Cette vue montre l'outil sans ouvrir le coffre.";
+    $("actionHint").textContent = "Entre par ton PIN pour accéder proprement.";
     $("btnPrimaryAction").textContent = "Entrer par mon PIN";
-    setNotifs([{level:"info",tag:"APERÇU",title:"Accès visuel disponible",text:"L'espace attend simplement ton identité ou ton accès actif."}]);
-    setClawPreview(message);
+    setNotifs([{level:"info",tag:"PIN",title:"Session à ouvrir",text:"L'espace attend ton code PIN pour ouvrir une session de 8 heures."}]);
+    setAssistantPreview(message);
   }
 
   function setBlockedState(message, level="warn"){
     setDot("bad");
-    /* ━━━ AVANT : pill "Bloqué" → "Accès requis" ━━━ */
-    setPill(level==="warn"?"Accès requis":"Erreur");
-    setHero(RESOLVED_SLUG,RESOLVED_PHONE,level==="warn"?"accès requis":"erreur");
-    $("statusLine").textContent  = level==="warn"?"Abonnement requis":"Erreur de vérification";
-    $("expiryLine").textContent  = message;
-    $("metaLine").innerHTML      = `<span>Accès : requis</span><span>•</span><span>Paiement : à activer</span>`;
-    $("moneyMonth").textContent  = "— FCFA";
-    $("txCount").textContent     = "— transactions";
-    $("todayHint").textContent   = "Aujourd'hui";
-    $("actionDesc").textContent  = "L'action logique ici, c'est activer ou payer proprement.";
-    /* ━━━ AVANT : "Retour vers le backbone PAY." → banni ━━━ */
-    $("actionHint").textContent  = "Rejoins DIGIY pour activer ton accès.";
+    setPill(level === "warn" ? "Accès requis" : "Erreur");
+    setHero(level === "warn" ? "accès requis" : "erreur");
+    $("statusLine").textContent = level === "warn" ? "Abonnement requis" : "Erreur de vérification";
+    $("expiryLine").textContent = message;
+    $("metaLine").innerHTML = `<span>Accès : requis</span><span>•</span><span>Session : à ouvrir</span>`;
+    $("moneyMonth").textContent = "— FCFA";
+    $("txCount").textContent = "— transactions";
+    $("todayHint").textContent = "Aujourd'hui";
+    $("actionDesc").textContent = "L'action logique ici, c'est activer ou renouveler proprement.";
+    $("actionHint").textContent = "Rejoins DIGIY pour activer ton accès.";
     $("btnPrimaryAction").textContent = "Activer mon accès";
     setNotifs([{level:"warn",tag:"ABO",title:"Accès requis",text:message}]);
-    setClawBlocked(message,level);
+    setAssistantBlocked(message, level);
   }
 
-  function setLiveState(slug, phone){
-    setDot("ok"); setPill("Actif"); setHero(slug,phone,"actif");
-    $("statusLine").textContent  = "Abonnement actif";
-    /* ━━━ AVANT : "Slug reconnu :" → "Identifiant reconnu :" ━━━ */
-    $("expiryLine").textContent  = `Identifiant reconnu : ${slug}`;
-    $("metaLine").innerHTML      = `<span>Accès : actif</span><span>•</span><span>Paiement : OK</span>`;
-    $("moneyMonth").textContent  = "— FCFA";
-    $("txCount").textContent     = "— transactions";
-    $("todayHint").textContent   = "Aujourd'hui";
-    $("actionDesc").textContent  = "Une action utile maintenant.";
-    $("actionHint").textContent  = `Accès ouvert pour ${phone||"ton compte"}.`;
+  function setLiveState(){
+    setDot("ok");
+    setPill("Actif");
+    setHero("actif");
+    $("statusLine").textContent = "Accès ouvert";
+    $("expiryLine").textContent = "Session RESA active pour 8 heures sur cet appareil.";
+    $("metaLine").innerHTML = `<span>Accès : actif</span><span>•</span><span>Session : 8h</span>`;
+    $("moneyMonth").textContent = "— FCFA";
+    $("txCount").textContent = "— transactions";
+    $("todayHint").textContent = "Aujourd'hui";
+    $("actionDesc").textContent = "Une action utile maintenant.";
+    $("actionHint").textContent = "Tu peux voir les réservations ou ouvrir le planning.";
     $("btnPrimaryAction").textContent = PRIMARY_ACTION_LABEL;
     setNotifs([
-      {level:"ok",  tag:"OK",   title:"Accès confirmé",  text:"Tu es dedans. La vue synthèse tient la route."},
-      {level:"info",tag:"NEXT", title:"Étape suivante",  text:"La navigation te laisse circuler entre l'activité, la gestion, le planning et ton profil."}
+      {level:"ok", tag:"OK", title:"Accès confirmé", text:"Tu es dedans. L'accueil RESA est ouvert."},
+      {level:"info", tag:"NEXT", title:"Étape suivante", text:"Circule entre réservations, planning, notes rapides et plus."}
     ]);
-    setClawLive(slug,phone);
-  }
-
-  async function manualFallbackCheck(){
-    const slug=getFallbackSlug();
-    if(!slug||!window.supabase?.createClient) return{preview:true,access_ok:false,slug,phone:"",reason:"preview_no_identity"};
-    const sb=window.supabase.createClient(window.DIGIY_SUPABASE_URL,window.DIGIY_SUPABASE_ANON_KEY||window.DIGIY_SUPABASE_ANON,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}}});
-    try{
-      const{data,error}=await sb.from("digiy_subscriptions_public").select("phone,module,slug").eq("slug",slug).eq("module",MODULE_CODE).limit(1).maybeSingle();
-      if(error||!data?.phone) return{preview:true,access_ok:false,slug,phone:"",reason:"unknown_identity"};
-      const phone=String(data.phone||"");
-      const{data:access,error:accessError}=await sb.rpc("digiy_has_access",{p_phone:phone,p_module:MODULE_CODE});
-      if(accessError) return{preview:true,access_ok:false,slug,phone,reason:"guard_error"};
-      return{preview:false,access_ok:access===true,slug:String(data.slug||slug),phone,reason:access===true?"access_ok":"no_subscription"};
-    }catch{ return{preview:true,access_ok:false,slug,phone:"",reason:"guard_error"}; }
+    setAssistantLive();
   }
 
   async function getGuardState(){
     if(window.DIGIY_GUARD?.ready){
       try{
-        if(typeof window.DIGIY_GUARD.ready.then==="function") return await window.DIGIY_GUARD.ready;
-        return window.DIGIY_GUARD.state||await manualFallbackCheck();
-      }catch{ return await manualFallbackCheck(); }
+        if(typeof window.DIGIY_GUARD.ready === "function"){
+          return await window.DIGIY_GUARD.ready();
+        }
+        if(typeof window.DIGIY_GUARD.ready.then === "function"){
+          return await window.DIGIY_GUARD.ready;
+        }
+        return window.DIGIY_GUARD.state || {preview:true,access_ok:false,reason:"guard_not_ready"};
+      }catch{
+        return {preview:true,access_ok:false,reason:"guard_error"};
+      }
     }
-    return await manualFallbackCheck();
+
+    return {preview:true,access_ok:false,reason:"guard_absent"};
   }
 
   function parseResaNote(text){
@@ -686,18 +773,11 @@
 
   function buildResaPayDraftUrl(draft){
     const d = draft || parseResaNote(($("resaQuickNote") || {}).value || "");
-    const phone = String(RESOLVED_PHONE || "").replace(/[^\d]/g, "");
-    const u = new URL("https://pro-pay.digiylyfe.com/admin.html");
 
-    if (phone){
-      u.searchParams.set("slug", "pay-" + phone);
-      u.searchParams.set("phone", phone);
-    }
-
+    const u = new URL(PAY_ADMIN_URL);
     u.searchParams.set("fromDraft", "1");
     u.searchParams.set("intent", "quick_note");
     u.searchParams.set("source_module", "RESA");
-    if (RESOLVED_SLUG) u.searchParams.set("source_slug", RESOLVED_SLUG);
     u.searchParams.set("source_id", "resa-note-" + Date.now());
 
     if (d.amount_xof){
@@ -752,55 +832,85 @@
   }
 
   async function boot(){
+    cleanVisibleUrl();
     bindQuickResaNote();
-    $("brandTitle").textContent  = MODULE_LABEL;
-    $("brandSub").textContent    = "Accueil RESA";
+
+    $("brandTitle").textContent = MODULE_LABEL;
+    $("brandSub").textContent = "Accueil RESA";
     $("btnPrimaryAction").textContent = "Chargement…";
-    $("actionHint").textContent  = PRIMARY_ACTION_HINT;
-    setPill("…"); setClawLoading();
+    $("actionHint").textContent = PRIMARY_ACTION_HINT;
+
+    setPill("…");
+    setAssistantLoading();
+    setNavLinks();
 
     CURRENT_STATE = await getGuardState();
-    RESOLVED_SLUG  = normalizeSlug(CURRENT_STATE?.slug||getFallbackSlug());
-    RESOLVED_PHONE = String(CURRENT_STATE?.phone||"").replace(/[^\d]/g,"");
 
-    setNavLinks(RESOLVED_SLUG);
-    setHero(RESOLVED_SLUG,RESOLVED_PHONE,"chargement");
+    const stateModule = String(CURRENT_STATE?.module || CURRENT_STATE?.module_code || MODULE_CODE).toUpperCase();
+    const sessionSlug = normalizeSlug(CURRENT_STATE?.slug || getFallbackSlug() || "");
 
-    if(CURRENT_STATE?.access_ok&&RESOLVED_SLUG){
-      storageSet("digiy_resa_last_slug",RESOLVED_SLUG); storageSet("digiy_resa_slug",RESOLVED_SLUG);
-      storageSet("digiy_last_slug",RESOLVED_SLUG);      storageSet("DIGIY_SLUG",RESOLVED_SLUG);
-      if(RESOLVED_PHONE){ storageSet("digiy_last_phone",RESOLVED_PHONE); storageSet("DIGIY_PHONE",RESOLVED_PHONE); storageSet("DIGIY_RESA_PHONE",RESOLVED_PHONE); }
-      setLiveState(RESOLVED_SLUG,RESOLVED_PHONE); return;
+    if(sessionSlug && stateModule === MODULE_CODE){
+      storageSet("digiy_resa_last_slug", sessionSlug);
+      storageSet("digiy_resa_slug", sessionSlug);
     }
 
-    if(CURRENT_STATE?.preview){
-      /* ━━━ AVANT : "Slug détecté" / "Aucun slug détecté" → bannis ━━━ */
-      setPreviewState(RESOLVED_SLUG?`Identifiant détecté (${RESOLVED_SLUG}) mais accès non confirmé.`:"Aucun identifiant détecté. Entre par ton PIN pour ouvrir l'espace.");
+    if(CURRENT_STATE?.access_ok && stateModule === MODULE_CODE){
+      setLiveState();
       return;
     }
 
-    if(CURRENT_STATE?.reason==="no_subscription"){
-      setBlockedState(`Pas d'accès actif pour ce service.`); return;
+    if(CURRENT_STATE?.preview){
+      setPreviewState("Aucune session RESA active. Entre par ton code PIN pour ouvrir l'accueil.");
+      return;
     }
 
-    if(CURRENT_STATE?.reason==="unknown_identity"){
-      /* ━━━ AVANT : "Slug inconnu." → banni ━━━ */
-      setBlockedState("Identifiant inconnu. Demande un lien valide ou passe par ton PIN."); return;
+    if(CURRENT_STATE?.reason === "no_subscription"){
+      setBlockedState("Pas d'accès actif pour ce service.");
+      return;
+    }
+
+    if(CURRENT_STATE?.reason === "unknown_identity"){
+      setBlockedState("Accès non reconnu. Reviens par ton code PIN.");
+      return;
     }
 
     setBlockedState("Vérification indisponible pour le moment.","error");
   }
 
-  $("btnManageSub").onclick = () => { location.href = CURRENT_STATE?.pay_url||buildPayUrl(MODULE_CODE,RESOLVED_PHONE,RESOLVED_SLUG); };
-  $("btnPrimaryAction").onclick = () => {
-    if(CURRENT_STATE?.access_ok&&RESOLVED_SLUG){ location.href=withSlug("./cockpit.html",RESOLVED_SLUG); return; }
-    location.href = RESOLVED_SLUG ? withSlug("./pin.html",RESOLVED_SLUG) : "./pin.html";
+  $("btnManageSub").onclick = () => {
+    location.href = CURRENT_STATE?.pay_url || buildPayUrl();
   };
-  $("btnBoostInfo").onclick = () => { alert("BOOST : +50% d'apparition pendant 7 jours. On le branche après la stabilité RESA."); };
-  $("btnBoost").onclick = () => { alert("BOOST non branché pour l'instant. On le câble après le rail principal."); };
-  $("linkSupport").onclick = (ev) => { ev.preventDefault(); location.href=SUPPORT_WA; };
-  $("linkPayments").onclick = (ev) => { ev.preventDefault(); location.href=CURRENT_STATE?.pay_url||buildPayUrl(MODULE_CODE,RESOLVED_PHONE,RESOLVED_SLUG); };
-  $("linkClaw").onclick = (ev) => { ev.preventDefault(); location.href=RESOLVED_SLUG?withSlug("./claw.html",RESOLVED_SLUG):"./claw.html"; };
+
+  $("btnPrimaryAction").onclick = () => {
+    if(CURRENT_STATE?.access_ok){
+      location.href = cleanPath("./cockpit.html");
+      return;
+    }
+    location.href = cleanPath("./pin.html");
+  };
+
+  $("btnBoostInfo").onclick = () => {
+    alert("BOOST : +50% d'apparition pendant 7 jours. On le branche après la stabilité RESA.");
+  };
+
+  $("btnBoost").onclick = () => {
+    alert("BOOST non branché pour l'instant. On le câble après le rail principal.");
+  };
+
+  $("linkSupport").onclick = (ev) => {
+    ev.preventDefault();
+    location.href = cleanPath("./pin.html");
+  };
+
+  $("linkPayments").onclick = (ev) => {
+    ev.preventDefault();
+    location.href = buildResaPayDraftUrl(null);
+  };
+
+  $("linkAssistant").onclick = (ev) => {
+    ev.preventDefault();
+    location.href = cleanPath("./claw.html");
+  };
 
   boot();
 })();
