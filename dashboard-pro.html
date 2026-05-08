@@ -294,7 +294,8 @@
         <div class="hr"></div>
         <div class="mini" id="metaLine"><span>Accès : —</span><span>•</span><span>Session : —</span></div>
         <div class="footer">
-          <button class="btn" id="btnManageSub" type="button">Activer ou renouveler</button>
+          <button class="btn primary" id="btnManageSub" type="button">Ouvrir ma session</button>
+          <button class="btn" id="btnActivateModule" type="button" hidden>Activer mon module</button>
         </div>
       </div>
 
@@ -609,11 +610,11 @@
   function setAssistantPreview(message){
     setAssistant(
       "Accès à ouvrir",
-      "Espace visible, mais session non ouverte. Passe par ton code PIN pour accéder proprement.",
-      ["Code PIN conseillé","Session 8h","Aucun numéro en façade"],
+      "Espace visible, mais session non ouverte sur ce téléphone. Aucun paiement n’est demandé.",
+      ["Numéro WhatsApp abonné","Code PIN DIGIY","Session 8h"],
       [
         {title:"État de l'espace", text:message || "L'espace attend simplement une session RESA active."},
-        {title:"Action utile", text:"Entre ton code PIN pour ouvrir l'accueil et retrouver tes outils."},
+        {title:"Action utile", text:"Entre le numéro WhatsApp utilisé pour ton abonnement DIGIY et ton code PIN."},
         {title:"Suite logique", text:"Quand l'accès est bon, tu circules entre réservations, planning, notes et plus."}
       ]
     );
@@ -652,20 +653,41 @@
     });
   }
 
+  function setAccessButtons(mode){
+    const sessionBtn = $("btnManageSub");
+    const activateBtn = $("btnActivateModule");
+
+    if(sessionBtn){
+      if(mode === "live"){
+        sessionBtn.textContent = "Voir les réservations";
+        sessionBtn.classList.add("primary");
+      }else{
+        sessionBtn.textContent = "Ouvrir ma session";
+        sessionBtn.classList.add("primary");
+      }
+    }
+
+    if(activateBtn){
+      activateBtn.hidden = mode !== "subscription";
+      activateBtn.textContent = "Activer mon module";
+    }
+  }
+
   function setPreviewState(message){
     setDot("");
     setPill("Aperçu");
     setHero("aperçu");
-    $("statusLine").textContent = "Mode aperçu";
-    $("expiryLine").textContent = message || "Entre par ton PIN pour ouvrir l'accès.";
-    $("metaLine").innerHTML = `<span>Accès : aperçu</span><span>•</span><span>Session : à ouvrir</span>`;
+    setAccessButtons("session");
+    $("statusLine").textContent = "Session mobile à ouvrir";
+    $("expiryLine").textContent = message || "Déjà abonné ? Ouvre ta session sur ce téléphone avec ton numéro WhatsApp abonné et ton code PIN. Aucun paiement n’est demandé.";
+    $("metaLine").innerHTML = `<span>Accès : déjà abonné</span><span>•</span><span>Session : à ouvrir</span>`;
     $("moneyMonth").textContent = "— FCFA";
     $("txCount").textContent = "— transactions";
     $("todayHint").textContent = "Aujourd'hui";
-    $("actionDesc").textContent = "Cette vue montre l'outil sans ouvrir le coffre.";
-    $("actionHint").textContent = "Entre par ton PIN pour accéder proprement.";
-    $("btnPrimaryAction").textContent = "Entrer par mon PIN";
-    setNotifs([{level:"info",tag:"PIN",title:"Session à ouvrir",text:"L'espace attend ton code PIN pour ouvrir une session de 8 heures."}]);
+    $("actionDesc").textContent = "Ton téléphone ne connaît pas encore ta session RESA.";
+    $("actionHint").textContent = "Ouvre ta session : numéro WhatsApp abonné + code PIN. Aucun paiement ici.";
+    $("btnPrimaryAction").textContent = "Ouvrir ma session";
+    setNotifs([{level:"info",tag:"SESSION",title:"Session à ouvrir",text:"Entre ton numéro WhatsApp abonné et ton code PIN. DIGIY garde l'accès 8 heures sur ce téléphone."}]);
     setAssistantPreview(message);
   }
 
@@ -673,16 +695,18 @@
     setDot("bad");
     setPill(level === "warn" ? "Accès requis" : "Erreur");
     setHero(level === "warn" ? "accès requis" : "erreur");
-    $("statusLine").textContent = level === "warn" ? "Abonnement requis" : "Erreur de vérification";
+    const needsSubscription = String(CURRENT_STATE?.reason || "") === "no_subscription";
+    setAccessButtons(needsSubscription ? "subscription" : "session");
+    $("statusLine").textContent = needsSubscription ? "Module non actif" : (level === "warn" ? "Session à ouvrir" : "Erreur de vérification");
     $("expiryLine").textContent = message;
-    $("metaLine").innerHTML = `<span>Accès : requis</span><span>•</span><span>Session : à ouvrir</span>`;
+    $("metaLine").innerHTML = `<span>Accès : ${needsSubscription ? "module à activer" : "à vérifier"}</span><span>•</span><span>Session : à ouvrir</span>`;
     $("moneyMonth").textContent = "— FCFA";
     $("txCount").textContent = "— transactions";
     $("todayHint").textContent = "Aujourd'hui";
-    $("actionDesc").textContent = "L'action logique ici, c'est activer ou renouveler proprement.";
-    $("actionHint").textContent = "Rejoins DIGIY pour activer ton accès.";
-    $("btnPrimaryAction").textContent = "Activer mon accès";
-    setNotifs([{level:"warn",tag:"ABO",title:"Accès requis",text:message}]);
+    $("actionDesc").textContent = needsSubscription ? "Aucun abonnement RESA actif n’a été trouvé." : "Ton téléphone doit ouvrir une session RESA propre.";
+    $("actionHint").textContent = needsSubscription ? "Active le module seulement si tu n’as pas encore d’accès RESA." : "Ouvre ta session avec ton numéro WhatsApp abonné et ton code PIN.";
+    $("btnPrimaryAction").textContent = needsSubscription ? "Ouvrir ma session" : "Ouvrir ma session";
+    setNotifs([{level:"warn",tag: needsSubscription ? "MODULE" : "SESSION",title: needsSubscription ? "Module à activer" : "Session à ouvrir",text:message}]);
     setAssistantBlocked(message, level);
   }
 
@@ -690,6 +714,7 @@
     setDot("ok");
     setPill("Actif");
     setHero("actif");
+    setAccessButtons("live");
     $("statusLine").textContent = "Accès ouvert";
     $("expiryLine").textContent = "Session RESA active pour 8 heures sur cet appareil.";
     $("metaLine").innerHTML = `<span>Accès : actif</span><span>•</span><span>Session : 8h</span>`;
@@ -860,7 +885,7 @@
     }
 
     if(CURRENT_STATE?.preview){
-      setPreviewState("Aucune session RESA active. Entre par ton code PIN pour ouvrir l'accueil.");
+      setPreviewState("Aucune session RESA active sur ce téléphone. Entre ton numéro WhatsApp abonné et ton code PIN. Aucun paiement n’est demandé.");
       return;
     }
 
@@ -878,8 +903,16 @@
   }
 
   $("btnManageSub").onclick = () => {
-    location.href = CURRENT_STATE?.pay_url || buildPayUrl();
+    if(CURRENT_STATE?.access_ok){
+      location.href = cleanPath("./cockpit.html");
+      return;
+    }
+    location.href = cleanPath("./pin.html");
   };
+
+  $("btnActivateModule")?.addEventListener("click", () => {
+    location.href = CURRENT_STATE?.pay_url || buildPayUrl();
+  });
 
   $("btnPrimaryAction").onclick = () => {
     if(CURRENT_STATE?.access_ok){
