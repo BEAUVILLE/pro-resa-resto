@@ -517,6 +517,18 @@
       .audioBtn{width:100%}
     }
 
+
+
+    /* DIGIY — secours visible : les modules ne doivent jamais disparaître */
+    .fallbackGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;}
+    .fallbackCard{display:flex;gap:12px;align-items:flex-start;min-height:118px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.055);padding:15px;text-decoration:none;color:var(--text);box-shadow:0 12px 28px rgba(0,0,0,.20);transition:transform .16s ease,border-color .16s ease,background .16s ease;}
+    .fallbackCard:hover{transform:translateY(-1px);border-color:rgba(250,204,21,.45);background:rgba(250,204,21,.075);}
+    .fallbackIcon{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;flex:0 0 auto;background:linear-gradient(135deg,rgba(250,204,21,.20),rgba(34,197,94,.16));border:1px solid rgba(250,204,21,.22);font-size:24px;}
+    .fallbackName{display:block;font-size:17px;font-weight:1000;line-height:1.15;color:#fff;}
+    .fallbackText{display:block;margin-top:5px;font-size:12.5px;line-height:1.45;color:var(--muted);font-weight:800;}
+    .fallbackTag{display:inline-flex;margin-top:9px;padding:6px 9px;border-radius:999px;border:1px solid rgba(250,204,21,.25);background:rgba(250,204,21,.08);color:#fef08a;font-size:11px;font-weight:1000;}
+    @media(max-width:760px){.fallbackGrid{grid-template-columns:1fr;}.fallbackCard{min-height:112px;padding:16px;}.fallbackName{font-size:19px;}.fallbackText{font-size:13.5px;}}
+
   </style>
 </head>
 
@@ -590,7 +602,80 @@
       </div>
 
       <div class="grid" id="modulesGrid">
-        <div class="empty">Chargement des activités…</div>
+        <div class="fallbackGrid" data-digiy-fallback-modules="1">
+          <a class="fallbackCard" href="https://commerce-pro.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🧾</span>
+            <span>
+              <span class="fallbackName">Mon commerce</span>
+              <span class="fallbackText">Encaisser, suivre la caisse et garder une trace claire.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-driver.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🚗</span>
+            <span>
+              <span class="fallbackName">Je conduis</span>
+              <span class="fallbackText">Courses, tarifs, profil chauffeur et contact direct.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-loc.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🏠</span>
+            <span>
+              <span class="fallbackName">Je loue</span>
+              <span class="fallbackText">Planning, disponibilités, notes rapides et fiche logement.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-resa-resto.digiylyfe.com/dashboard-pro.html" rel="noopener">
+            <span class="fallbackIcon">📅</span>
+            <span>
+              <span class="fallbackName">Je réserve</span>
+              <span class="fallbackText">Réservations, planning, notes et accueil RESA.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-market.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🛍️</span>
+            <span>
+              <span class="fallbackName">Je vends</span>
+              <span class="fallbackText">Boutique, produits, ventes et MARKET.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-build.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🏗️</span>
+            <span>
+              <span class="fallbackName">Mes services</span>
+              <span class="fallbackText">Services terrain, travaux, dépannage et demandes.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-job.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">💼</span>
+            <span>
+              <span class="fallbackName">JOBS</span>
+              <span class="fallbackText">Missions, candidatures et bureau de tri.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-pay.digiylyfe.com/admin.html" rel="noopener">
+            <span class="fallbackIcon">💳</span>
+            <span>
+              <span class="fallbackName">Mon argent</span>
+              <span class="fallbackText">Entrées, sorties, notes rapides et argent restant.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-explore.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🗺️</span>
+            <span>
+              <span class="fallbackName">EXPLORE</span>
+              <span class="fallbackText">Lieu, territoire, visibilité et découverte.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+        </div>
       </div>
 
       <div class="note">
@@ -714,6 +799,99 @@
     })();
   </script>
 
+
+
+
+  <script>
+    /* DIGIY — anti-page-vide : si hub.js ne rend rien, on remet les modules visibles. */
+    (function(){
+      const fallback = `<div class="fallbackGrid" data-digiy-fallback-modules="1">
+          <a class="fallbackCard" href="https://commerce-pro.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🧾</span>
+            <span>
+              <span class="fallbackName">Mon commerce</span>
+              <span class="fallbackText">Encaisser, suivre la caisse et garder une trace claire.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-driver.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🚗</span>
+            <span>
+              <span class="fallbackName">Je conduis</span>
+              <span class="fallbackText">Courses, tarifs, profil chauffeur et contact direct.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-loc.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🏠</span>
+            <span>
+              <span class="fallbackName">Je loue</span>
+              <span class="fallbackText">Planning, disponibilités, notes rapides et fiche logement.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-resa-resto.digiylyfe.com/dashboard-pro.html" rel="noopener">
+            <span class="fallbackIcon">📅</span>
+            <span>
+              <span class="fallbackName">Je réserve</span>
+              <span class="fallbackText">Réservations, planning, notes et accueil RESA.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-market.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🛍️</span>
+            <span>
+              <span class="fallbackName">Je vends</span>
+              <span class="fallbackText">Boutique, produits, ventes et MARKET.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-build.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🏗️</span>
+            <span>
+              <span class="fallbackName">Mes services</span>
+              <span class="fallbackText">Services terrain, travaux, dépannage et demandes.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-job.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">💼</span>
+            <span>
+              <span class="fallbackName">JOBS</span>
+              <span class="fallbackText">Missions, candidatures et bureau de tri.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-pay.digiylyfe.com/admin.html" rel="noopener">
+            <span class="fallbackIcon">💳</span>
+            <span>
+              <span class="fallbackName">Mon argent</span>
+              <span class="fallbackText">Entrées, sorties, notes rapides et argent restant.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+          <a class="fallbackCard" href="https://pro-explore.digiylyfe.com/" rel="noopener">
+            <span class="fallbackIcon">🗺️</span>
+            <span>
+              <span class="fallbackName">EXPLORE</span>
+              <span class="fallbackText">Lieu, territoire, visibilité et découverte.</span>
+              <span class="fallbackTag">Ouvrir</span>
+            </span>
+          </a>
+        </div>`;
+      function ensureModulesVisible(){
+        const grid = document.getElementById("modulesGrid");
+        if(!grid) return;
+        const hasVisibleCard = grid.querySelector(".cardModule, .fallbackCard, a, button");
+        const txt = (grid.textContent || "").trim().toLowerCase();
+        const onlyEmpty = txt === "" || txt.includes("chargement") || txt.includes("aucune activité");
+        if(!hasVisibleCard || onlyEmpty){ grid.innerHTML = fallback; }
+      }
+      window.addEventListener("load", () => setTimeout(ensureModulesVisible, 600));
+      setTimeout(ensureModulesVisible, 1200);
+      setTimeout(ensureModulesVisible, 2500);
+    })();
+  </script>
 
   <script>
     /*
