@@ -1,97 +1,527 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Je réserve — Accueil RESA · salle, cuisine, client PRO</title>
-  <meta name="theme-color" content="#f4ead2" />
-  <meta name="digiy-build" content="resa-dashboard-20260510-v2-doctrine-click-audio" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Je réserve — Réservations RESA PRO</title>
+  <meta name="theme-color" content="#f4ead2"/>
+  <meta name="digiy-build" content="resa-cockpit-20260510-v1-cache-click-audio"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const BUILD_ID = "resa-cockpit-20260510-v1-cache-click-audio";
+      const BUILD_KEY = "DIGIY_RESA_COCKPIT_BUILD_ID";
+
+      function cleanBuildUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          [
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "slug",
+            "resa_tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      function clearOldCachesOnce(){
+        try{
+          const previous = localStorage.getItem(BUILD_KEY);
+          if(previous === BUILD_ID) return;
+          localStorage.setItem(BUILD_KEY, BUILD_ID);
+
+          [
+            "digiy_resa_cockpit_cache",
+            "digiy_resa_bookings_cache",
+            "digiy_resa_old_ui",
+            "resa_cockpit_old_state"
+          ].forEach((key) => {
+            try{ localStorage.removeItem(key); }catch(_){}
+            try{ sessionStorage.removeItem(key); }catch(_){}
+          });
+
+          if("caches" in window){
+            caches.keys().then((keys) => {
+              keys
+                .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+                .forEach((name) => caches.delete(name));
+            }).catch(() => {});
+          }
+        }catch(_){}
+      }
+
+      cleanBuildUrl();
+      clearOldCachesOnce();
+
+      window.DIGIY_RESA_COCKPIT_BUILD_ID = BUILD_ID;
+    })();
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-dashboard-20260510-v2-doctrine-click-audio"></script>
+  <script src="./guard.js?v=resa-cockpit-20260510-v1-cache-click-audio"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --bg:#0b1020;--card:#121a33;--muted:#a8b1d1;--text:#eef1ff;
-      --ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;--accent:#6366f1;
-      --line:rgba(255,255,255,.09);--shadow:0 12px 30px rgba(0,0,0,.35);
-      --radius:18px;--pad:16px;--fontA:"Outfit",system-ui,-apple-system,sans-serif;
+      --bg:#061b14;
+      --card:#0b2a1f;
+      --card2:#0f3327;
+      --line:rgba(255,255,255,.12);
+      --text:#eafff1;
+      --muted:rgba(234,255,241,.72);
+      --gold:#facc15;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --accent:#38bdf8;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+      --radius:18px;
+      --fontA:"Outfit",system-ui,-apple-system,sans-serif;
     }
+
     *{box-sizing:border-box}
+
+    html,
     body{
       margin:0;
-      font-family:var(--fontA);
-      background:
-        radial-gradient(1200px 700px at 20% -20%, rgba(99,102,241,.25), transparent 70%),
-        radial-gradient(900px 600px at 100% 0%, rgba(34,197,94,.15), transparent 55%),
-        var(--bg);
+      padding:0;
+      background:var(--bg);
       color:var(--text);
+      font-family:var(--fontA);
     }
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:980px;margin:0 auto;padding:18px 14px calc(104px + env(safe-area-inset-bottom,0px))}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 6px;margin-bottom:10px;flex-wrap:wrap}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
-    .brand .badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:rgba(99,102,241,.18);border:1px solid var(--line)}
-    .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);font-weight:600;font-size:13px}
-    .pill b{color:var(--text);font-weight:800}
-    .btn{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fontA)}
-    .btn.primary{background:rgba(99,102,241,.22);border-color:rgba(99,102,241,.35)}
-    .btn:disabled{opacity:.55;cursor:not-allowed}
-    .nav-rail{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);box-shadow:var(--shadow)}
-    .nav-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-weight:900;text-decoration:none}
-    .nav-link.active{background:rgba(99,102,241,.18);border-color:rgba(99,102,241,.35);color:#dfe3ff}
-    .hero{background:linear-gradient(180deg, rgba(99,102,241,.14), rgba(34,197,94,.08));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
-    .hero h2{margin:0 0 8px 0;font-size:1.1rem}
-    .hero p{margin:0;color:var(--muted);font-weight:700;line-height:1.55}
-    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .hero-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:.84rem;font-weight:900}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .assistant-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:12px;margin:0 0 12px}
-    @media(max-width:920px){.assistant-grid{grid-template-columns:1fr}}
-    .assistant-card{background:linear-gradient(180deg, rgba(96,165,250,.09), rgba(34,197,94,.06));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:16px}
-    .assistant-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-    .assistant-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#cfe0ff;font-weight:950;margin-bottom:6px}
-    .assistant-title{margin:0;font-size:18px;font-weight:950;line-height:1.2}
-    .assistant-mode{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(99,102,241,.28);background:rgba(99,102,241,.14);color:#dfe3ff;font-size:12px;font-weight:950}
-    .assistant-text{color:var(--muted);font-size:14px;line-height:1.65;font-weight:750}
-    .assistant-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .assistant-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:900}
-    .assistant-list{display:grid;gap:10px;margin-top:12px}
-    .assistant-item{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
-    .assistant-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:950;color:var(--text)}
-    .assistant-item span{display:block;color:var(--muted);font-size:13px;line-height:1.55;font-weight:750}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:8px}
-    @media(min-width:920px){.grid{grid-template-columns:1.05fr .95fr}}
-    .card{background:rgba(18,26,51,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--pad)}
-    .card h3{margin:0 0 8px 0;font-size:15px;letter-spacing:.2px}
-    .muted{color:var(--muted)}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .statusDot{width:10px;height:10px;border-radius:999px;background:var(--warn)}
-    .statusDot.ok{background:var(--ok)}.statusDot.bad{background:var(--danger)}
-    .bigMoney{font-size:34px;font-weight:900;letter-spacing:-.8px;margin:6px 0 2px 0}
-    .mini{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted);font-weight:650}
-    .hr{height:1px;background:var(--line);margin:12px 0}
-    .boostBox{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px;border-radius:16px;background:rgba(99,102,241,.10);border:1px solid rgba(99,102,241,.25)}
-    .boostBox b{display:block;margin-bottom:4px}
-    .notifList{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-    .notif{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-    .tag{font-size:12px;font-weight:900;padding:6px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-    .tag.warn{color:#ffe2b0;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.10)}
-    .tag.ok{color:#c9ffd9;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08)}
-    .tag.info{color:#cfd6ff;border-color:rgba(99,102,241,.35);background:rgba(99,102,241,.10)}
-    .footer{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .smallLink{color:var(--muted);text-decoration:none;font-weight:750}.smallLink:hover{color:var(--text)}
-    @media(max-width:640px){.right,.nav-rail,.hero-actions{width:100%}.right > *,.nav-rail > *,.hero-actions > *{flex:1 1 auto}}
 
-    #resaNotes, #resaToday{scroll-margin-top:96px}
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .wrap{
+      width:min(1180px,92vw);
+      margin:0 auto;
+      padding:18px 0 calc(104px + env(safe-area-inset-bottom,0px));
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:900;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.5rem,3.4vw,2.3rem);
+      line-height:1.05;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .actions-top{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#103428,#0c271e);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-family:var(--fontA);
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn.secondary{
+      background:#0c241b;
+    }
+
+    .btn.ghost{
+      background:rgba(255,255,255,.04);
+      border-style:dashed;
+      color:var(--muted);
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .nav-link.active{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.34);
+      color:#fff1a8;
+    }
+
+    .hero{
+      background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:16px;
+    }
+
+    .hero h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+
+    .hero p{
+      margin:0 0 8px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .mini-card{
+      background:rgba(0,0,0,.14);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .mini-card strong{
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.10);
+      color:#fff1a8;
+      font-size:.9rem;
+      font-weight:900;
+    }
+
+    .mode.live{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+    }
+
+    .hero-cta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.14);
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:900;
+    }
+
+    .grid-stats{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:.88rem;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:1.8rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .panel-head h3{
+      margin:0;
+      font-size:1.05rem;
+    }
+
+    .filters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      font-family:var(--fontA);
+    }
+
+    .chip.active{
+      background:#11392b;
+      border-color:rgba(250,204,21,.45);
+      color:#fff3b0;
+    }
+
+    .list{
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+
+    .booking{
+      background:var(--card2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      display:grid;
+      gap:14px;
+    }
+
+    .booking-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .booking-main{
+      display:grid;
+      gap:6px;
+    }
+
+    .booking-name{
+      font-weight:900;
+      font-size:1.08rem;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:9px 12px;
+      font-weight:900;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+
+    .badge.pending{
+      background:rgba(245,158,11,.14);
+      color:#ffd38a;
+      border-color:rgba(245,158,11,.25);
+    }
+
+    .badge.confirmed{
+      background:rgba(34,197,94,.14);
+      color:#9ef2ba;
+      border-color:rgba(34,197,94,.25);
+    }
+
+    .badge.cancelled{
+      background:rgba(239,68,68,.14);
+      color:#ffb0b0;
+      border-color:rgba(239,68,68,.25);
+    }
+
+    .badge.done{
+      background:rgba(56,189,248,.14);
+      color:#b7ecff;
+      border-color:rgba(56,189,248,.25);
+    }
+
+    .badge.no_show{
+      background:rgba(250,204,21,.12);
+      color:#fff1a8;
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .note{
+      border-left:3px solid rgba(250,204,21,.4);
+      padding-left:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .service-box{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .service-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:900;
+    }
+
+    .empty{
+      padding:28px 18px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .footer-note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.92rem;
+      text-align:center;
+    }
+
+    #bookingList,
+    #panelTitle{
+      scroll-margin-top:96px;
+    }
 
     .bottomNav{
       position:fixed;
@@ -100,7 +530,7 @@
       bottom:0;
       z-index:99990;
       padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-      background:rgba(11,16,32,.94);
+      background:rgba(6,27,20,.94);
       border-top:1px solid rgba(255,255,255,.10);
       backdrop-filter:blur(16px);
       -webkit-backdrop-filter:blur(16px);
@@ -121,7 +551,7 @@
       place-items:center;
       align-content:center;
       gap:3px;
-      color:rgba(238,241,255,.70);
+      color:rgba(234,255,241,.70);
       font-size:11px;
       font-weight:950;
       text-align:center;
@@ -129,105 +559,104 @@
       text-decoration:none;
     }
 
-    .bottomNav .ico{font-size:18px;line-height:1}
-
-    .bottomNav a.active{
-      color:#fff;
-      background:linear-gradient(135deg,var(--accent),#22c55e);
-      border-color:rgba(99,102,241,.34);
-      box-shadow:0 12px 26px rgba(99,102,241,.22);
+    .bottomNav .ico{
+      font-size:18px;
+      line-height:1;
     }
 
-    .mobileHeroActions{
+    .bottomNav a.active{
+      color:#061b14;
+      background:linear-gradient(135deg,var(--gold),var(--ok));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+
+    .mobileFastRow{
       display:grid;
       grid-template-columns:repeat(4,minmax(0,1fr));
       gap:10px;
       margin-top:14px;
     }
 
-    .quickResa{
-      border-color:rgba(34,197,94,.24);
-      background:
-        radial-gradient(460px 180px at 100% 0%, rgba(34,197,94,.10), transparent 70%),
-        rgba(18,26,51,.92);
-    }
-
-    .quickResa textarea{
-      width:100%;
-      min-height:92px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      padding:12px;
-      font:inherit;
-      font-weight:850;
-      outline:none;
-      resize:vertical;
-      margin-top:10px;
-    }
-
-    .noteChips{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-
-    .noteChip{
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.05);
       color:var(--text);
-      border-radius:999px;
-      padding:8px 10px;
-      font-size:12px;
+      text-decoration:none;
       font-weight:900;
-      cursor:pointer;
-      font-family:inherit;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      box-shadow:var(--shadow);
     }
 
-    .draftBox{
-      display:none;
-      margin-top:10px;
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(34,197,94,.28);
-      background:rgba(34,197,94,.08);
-      color:#d9ffe8;
-      font-size:13px;
-      font-weight:850;
-      line-height:1.55;
+    .mobileFastRow a.primary{
+      background:linear-gradient(90deg,var(--ok),var(--gold));
+      color:#062015;
+      border:none;
+    }
+
+    .loading{
+      opacity:.72;
+      pointer-events:none;
+    }
+
+    @media(max-width:980px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid-stats{grid-template-columns:repeat(3,1fr)}
     }
 
     @media(max-width:640px){
-      .mobileHeroActions{grid-template-columns:1fr 1fr}
+      .wrap{width:min(96vw,96vw)}
+      .grid-stats{grid-template-columns:repeat(2,1fr)}
+      .booking-top{flex-direction:column}
+      .actions-top,
+      .filters,
+      .hero-cta,
+      .nav-rail{
+        width:100%;
+      }
+      .actions-top > *,
+      .hero-cta > *,
+      .nav-rail > *{
+        flex:1 1 auto;
+      }
+      .mobileFastRow{grid-template-columns:1fr 1fr}
       .nav-rail{display:none}
-      .right{display:none}
+      .actions-top{display:none}
+      .hero-cta{display:none}
     }
 
     /* =========================================================
-       DIGIY RESA — DASHBOARD TERRAIN CLAIR
-       Accueil interne : moins d'écriture, plus de clics guidés.
+       DIGIY RESA — COCKPIT TERRAIN CLAIR + ANTI CACHE
+       Liste des réservations : lire vite, agir au clic.
        ========================================================= */
     :root{
       --bg:#f4ead2;
       --card:#fff7e6;
-      --muted:#3d3324;
+      --card2:#fffaf0;
+      --line:rgba(83,58,26,.22);
       --text:#1f2a1f;
+      --muted:#3d3324;
+      --gold:#facc15;
       --ok:#16a34a;
       --warn:#d97706;
       --danger:#dc2626;
       --accent:#4f46e5;
-      --line:rgba(83,58,26,.22);
       --shadow:0 12px 28px rgba(77,52,22,.16);
     }
 
+    html,
     body{
-      color:#1f2a1f !important;
       background:
         radial-gradient(circle at top left,rgba(250,204,21,.20),transparent 34%),
         radial-gradient(circle at bottom right,rgba(22,101,52,.09),transparent 28%),
         linear-gradient(180deg,#f6edd8,#ead9b7 56%,#dfc99c) !important;
+      color:#1f2a1f !important;
       font-size:17px;
       font-weight:850;
     }
@@ -235,10 +664,14 @@
     .topbar,
     .nav-rail,
     .hero,
-    .assistant-card,
-    .card,
-    .quickResa,
-    .bottomNavInner{
+    .mini-card,
+    .stat,
+    .panel,
+    .booking,
+    .bottomNavInner,
+    .draftPanel,
+    .audioPanel,
+    .clickGuide{
       background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
       border:2px solid rgba(83,58,26,.22) !important;
       color:#1f2a1f !important;
@@ -250,231 +683,169 @@
       border-top:1px solid rgba(83,58,26,.18) !important;
     }
 
-    .brand .badge{
-      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
-      border:1px solid rgba(121,83,12,.24) !important;
-      color:#1f2a1f !important;
-    }
-
-    #brandTitle,
-    h2,
-    .assistant-title,
-    .card h3,
-    #statusLine,
-    .bigMoney,
-    .assistant-item strong,
-    .clickCard strong,
-    .taskCard strong{
+    .eyebrow,
+    .panel-head h3,
+    h1,
+    .hero h2,
+    .stat .value,
+    .booking-name,
+    .mini-card strong,
+    .draftTitle,
+    .audioPanel strong,
+    .clickGuide h2{
       color:#241a0d !important;
       font-weight:900 !important;
     }
 
-    .muted,
+    .sub,
     .hero p,
-    .assistant-text,
-    .assistant-item span,
-    #expiryLine,
-    #metaLine,
-    .mini,
-    .boostBox .muted,
-    .actionDesc,
-    .noteHelp,
-    .taskCard span,
-    .clickCard span{
+    .stat .label,
+    .meta,
+    .note,
+    .footer-note,
+    #miniText,
+    .hero-pill,
+    .draftText,
+    .clickGuide p{
       color:#3d3324 !important;
       font-weight:900 !important;
       line-height:1.55 !important;
     }
 
-    .pill,
-    .hero-pill,
-    .assistant-pill,
-    .assistant-mode,
-    .tag,
-    .nav-link,
     .btn,
-    .noteChip,
-    .bottomNav a{
+    .btn.secondary,
+    .btn.ghost,
+    .nav-link,
+    .chip,
+    .service-pill,
+    .bottomNav a,
+    .actionBtn{
       background:rgba(255,255,255,.70) !important;
       color:#1f2a1f !important;
       border:1px solid rgba(83,58,26,.22) !important;
       font-weight:900 !important;
+      box-shadow:0 8px 18px rgba(77,52,22,.08) !important;
     }
 
     .nav-link.active,
-    .btn.primary,
-    .bottomNav a.active{
+    .chip.active,
+    .bottomNav a.active,
+    .mobileFastRow a.primary,
+    .actionBtn.primary{
       background:linear-gradient(135deg,#16a34a,#bbf7d0) !important;
       color:#052215 !important;
       border-color:rgba(22,101,52,.28) !important;
     }
 
-    textarea{
-      background:rgba(255,255,255,.82) !important;
+    .badge.pending{
+      background:rgba(254,243,199,.92) !important;
+      color:#6b4e09 !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .badge.confirmed{
+      background:rgba(220,252,231,.86) !important;
+      color:#14532d !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .badge.cancelled{
+      background:rgba(254,226,226,.90) !important;
+      color:#9f1239 !important;
+      border-color:rgba(159,18,57,.28) !important;
+    }
+
+    .badge.done,
+    .badge.no_show{
+      background:rgba(255,255,255,.70) !important;
       color:#1f2a1f !important;
-      border:2px solid rgba(83,58,26,.24) !important;
-      font-size:17px !important;
-      font-weight:900 !important;
+      border-color:rgba(83,58,26,.22) !important;
     }
 
-    textarea::placeholder{
-      color:rgba(31,42,31,.52) !important;
-    }
-
-    .hr{
-      background:rgba(83,58,26,.22) !important;
-    }
-
-    .statusDot{background:#d97706 !important}
-    .statusDot.ok{background:#16a34a !important}
-    .statusDot.bad{background:#dc2626 !important}
-
-    .boostBox,
-    .notif,
-    .assistant-item,
-    .draftBox{
-      background:rgba(255,255,255,.64) !important;
-      border:1px solid rgba(83,58,26,.20) !important;
+    .mode,
+    .mode.live{
+      background:rgba(255,255,255,.72) !important;
       color:#1f2a1f !important;
+      border-color:rgba(83,58,26,.22) !important;
     }
 
-    .clickPanel{
-      margin:0 0 12px;
-      padding:16px;
-      border:2px solid rgba(83,58,26,.22);
-      border-radius:24px;
-      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
-      box-shadow:0 10px 24px rgba(77,52,22,.12);
+    .grid-stats{
+      gap:10px;
     }
 
-    .clickPanelHead{
+    .stat{
+      min-height:105px;
+    }
+
+    .panel-head{
+      border-bottom:1px solid rgba(83,58,26,.20) !important;
+    }
+
+    .booking-actions{
       display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:12px;
       flex-wrap:wrap;
-      margin-bottom:12px;
+      gap:8px;
+      border-top:1px solid rgba(83,58,26,.16);
+      padding-top:12px;
     }
 
-    .clickPanelHead h2{
-      margin:0;
-      color:#241a0d;
-      font-size:clamp(22px,4vw,34px);
-      line-height:1.08;
-      letter-spacing:-.035em;
-      font-weight:900;
-    }
-
-    .clickPanelHead p{
-      margin:6px 0 0;
-      color:#3d3324;
-      font-size:15px;
-      line-height:1.5;
-      font-weight:900;
-      max-width:62ch;
-    }
-
-    .clickBadge{
+    .actionBtn{
+      min-height:42px;
       border-radius:999px;
-      border:1px solid rgba(22,101,52,.24);
-      background:rgba(220,252,231,.86);
-      color:#14532d;
       padding:9px 12px;
-      font-size:13px;
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .clickGrid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:10px;
-    }
-
-    .clickCard{
-      min-height:132px;
-      border:1px solid rgba(83,58,26,.20);
-      border-radius:22px;
-      background:rgba(255,255,255,.66);
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      gap:10px;
       cursor:pointer;
-      text-align:left;
-      box-shadow:0 8px 18px rgba(77,52,22,.08);
-    }
-
-    .clickCard .ico{
-      width:46px;
-      height:46px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      background:linear-gradient(135deg,#facc15,#fff3c4);
-      color:#241a0d;
-      font-size:22px;
-    }
-
-    .clickCard strong{
-      display:block;
-      font-size:16px;
-      line-height:1.2;
-      margin-top:7px;
-    }
-
-    .clickCard span{
-      display:block;
+      font-family:var(--fontA);
       font-size:13px;
-      line-height:1.42;
-      margin-top:4px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
     }
 
-    .taskRow{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
+    .actionBtn.gold{
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .draftPanel,
+    .audioPanel,
+    .clickGuide{
+      margin-bottom:14px;
+      padding:16px;
+      border-radius:24px;
+    }
+
+    .draftPanel{
+      display:none;
+    }
+
+    .draftPanel.show{
+      display:block;
+    }
+
+    .draftTitle{
+      font-size:18px;
+      margin-bottom:8px;
+    }
+
+    .draftText{
+      white-space:pre-wrap;
+      font-size:15px;
+    }
+
+    .draftActions{
+      display:flex;
+      flex-wrap:wrap;
       gap:10px;
       margin-top:12px;
     }
 
-    .taskCard{
-      border:1px solid rgba(83,58,26,.20);
-      border-radius:20px;
-      background:rgba(255,255,255,.66);
-      padding:13px;
-      display:grid;
-      gap:5px;
-    }
-
-    .taskCard strong{
-      font-size:15px;
-      line-height:1.2;
-    }
-
-    .taskCard span{
-      font-size:13px;
-      line-height:1.4;
-    }
-
     .audioPanel{
-      margin:0 0 12px;
-      padding:16px;
-      border-radius:24px;
-      border:2px solid rgba(22,101,52,.24);
-      background:
-        radial-gradient(circle at right top,rgba(34,197,94,.10),transparent 34%),
-        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
-      box-shadow:0 10px 24px rgba(77,52,22,.12);
       text-align:center;
       display:grid;
       gap:9px;
-    }
-
-    .audioPanel strong{
-      color:#14532d;
-      font-size:17px;
-      font-weight:900;
+      border-color:rgba(22,101,52,.24) !important;
     }
 
     .audioPanel span{
@@ -492,22 +863,62 @@
       border-color:rgba(121,83,12,.28) !important;
     }
 
-    @media(max-width:920px){
-      .clickGrid,
-      .taskRow{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
+    .clickGuide{
+      display:grid;
+      gap:10px;
+    }
+
+    .clickGuide h2{
+      margin:0;
+      font-size:clamp(22px,4vw,34px);
+      line-height:1.08;
+      letter-spacing:-.035em;
+    }
+
+    .clickGuide p{
+      margin:0;
+      font-size:15px;
+    }
+
+    .clickGuideRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .guideMini{
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:18px;
+      background:rgba(255,255,255,.66);
+      padding:13px;
+      display:grid;
+      gap:5px;
+    }
+
+    .guideMini strong{
+      color:#241a0d;
+      font-size:15px;
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .guideMini span{
+      color:#3d3324;
+      font-size:13px;
+      line-height:1.42;
+      font-weight:900;
+    }
+
+    @media(max-width:980px){
+      .clickGuideRow{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
 
     @media(max-width:640px){
       body{font-size:18px}
-      .wrap{padding-left:10px;padding-right:10px}
-      .clickGrid,
-      .taskRow{
-        grid-template-columns:1fr;
-      }
-      .clickBadge{width:100%;text-align:center}
-      .clickCard{min-height:126px}
+      .wrap{width:min(96vw,96vw)}
+      .clickGuideRow{grid-template-columns:1fr}
+      .actionBtn{flex:1 1 46%}
+      .draftActions .btn{flex:1 1 100%}
     }
 
   </style>
@@ -516,986 +927,887 @@
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="badge">🦅</div>
-        <div>
-          <div id="brandTitle">JE RÉSERVE</div>
-          <div class="muted" style="font-size:12px;font-weight:700;margin-top:2px" id="brandSub">Accueil RESA</div>
-        </div>
+        <div class="eyebrow">JE RÉSERVE</div>
+        <h1>Réservations</h1>
+        <div class="sub" id="topSub">Chargement des réservations…</div>
       </div>
-      <div class="right">
-        <div class="pill" id="pillStatus">Statut : <b>…</b></div>
-        <a class="btn" id="btnCockpitTop"  href="./cockpit.html">Réserv.</a>
-        <a class="btn" id="btnAssistantTop" href="./claw.html">Aide</a>
-        <a class="btn" id="btnPinTop" href="./pin.html">Accès</a>
-        <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Plus</a>
+      <div class="actions-top">
+        <button class="btn secondary" id="btnReload" type="button">Recharger</button>
+        <a class="btn" id="btnPlanningTop" href="./planning.html">Planning</a>
       </div>
     </div>
 
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <a class="nav-link" id="navCockpit" href="./cockpit.html">Réserv.</a>
-      <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
+      <a class="nav-link active" id="navCockpit" href="./cockpit.html">Réserv.</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
       <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
-      <a class="nav-link" id="navPin" href="./pin.html">Accès</a>
       <a class="nav-link" id="navHome" href="./index.html">Façade</a>
     </nav>
 
     <section class="hero">
-      <h2 id="heroTitle">Accueil RESA</h2>
-      <p id="heroDesc">Ici tu vois ce qui demande attention : demandes reçues, confirmations, planning, arrivées, paiements à surveiller et notes rapides.</p>
-
-      <div class="hero-meta">
-        <div class="hero-pill" id="heroSession">Session : protégée</div>
-        <div class="hero-pill" id="heroState">État : aperçu</div>
-        <div class="hero-pill" id="heroSecurity">Sécurité : aucun numéro en façade</div>
-      </div>
-
-      <div class="hero-actions">
-        <a class="btn primary" id="heroCockpit"  href="./cockpit.html">Voir les réservations</a>
-        <a class="btn" id="heroPlanning" href="./planning.html">Ouvrir le planning</a>
-        <a class="btn" id="heroAssistant" href="./claw.html">Aide</a>
-        <a class="btn" id="heroSettings" href="./etablissement.html">Plus</a>
-      </div>
-
-      <div class="mobileHeroActions">
-        <a class="btn primary" id="quickReservations" href="./cockpit.html">📋 Réserv.</a>
-        <a class="btn" id="quickPlanning" href="./planning.html">🗓️ Planning</a>
-        <a class="btn" id="quickNotes" href="#resaNotes">✍️ Notes</a>
-        <a class="btn" id="quickPlus" href="./etablissement.html">⚙️ Plus</a>
-      </div>
-    </section>
-
-
-    <section class="audioPanel" aria-label="Guide audio accueil RESA">
-      <strong>🎧 Guide de l’accueil RESA</strong>
-      <span>
-        Écoute DIGIY : l’accueil sert à voir vite ce qui demande attention,
-        puis à agir par clic sans écrire comme un secrétaire.
-      </span>
-      <button class="btn" id="btnResaDashboardAudio" type="button">🎧 Écouter DIGIY</button>
-    </section>
-
-    <section class="assistant-grid">
-      <article class="assistant-card">
-        <div class="assistant-head">
-          <div>
-            <div class="assistant-kicker">Mon assistant DIGIY</div>
-            <h2 class="assistant-title">Ce qui demande attention</h2>
-          </div>
-          <div class="assistant-mode" id="assistantMode">Aide en cours</div>
-        </div>
-        <div class="assistant-text" id="assistantSummary">DIGIY lit l’état de ton accueil : réservations, planning, accès et prochaine action utile.</div>
-        <div class="assistant-pills" id="assistantPills"></div>
-      </article>
-      <article class="assistant-card">
-        <div class="assistant-list" id="assistantList">
-          <div class="assistant-item">
-            <strong>Chargement</strong>
-            <span>En attente de l'état réel pour te pousser la bonne action.</span>
-          </div>
-        </div>
-      </article>
-    </section>
-
-
-    <section class="clickPanel" id="clickActionsPanel" aria-label="Actions guidées RESA">
-      <div class="clickPanelHead">
+      <div class="hero-grid">
         <div>
-          <h2>Actions rapides du service</h2>
-          <p>
-            Pas besoin d’écrire long. Le pro touche une carte, DIGIY prépare la phrase,
-            puis la salle, la cuisine et l’accueil restent alignés.
-          </p>
+          <div class="mode" id="modeBadge">Aperçu</div>
+          <h2 id="heroName">JE RÉSERVE</h2>
+          <p id="heroDesc">Ici tu lis les réservations du jour, les clients, les statuts et les services demandés.</p>
+
+          <div class="hero-meta">
+            <div class="hero-pill" id="heroSession">Session : protégée</div>
+            <div class="hero-pill" id="heroCity">Ville : —</div>
+            <div class="hero-pill" id="heroType">Activité : —</div>
+          </div>
+
+          <div class="hero-cta" id="heroCta">
+            <a class="btn" id="heroPlanning" href="./planning.html">Planning</a>
+            <a class="btn ghost" href="#panelTitle">Voir la liste</a>
+          </div>
+
+          <div class="mobileFastRow">
+            <a class="primary" id="fastReserv" href="#panelTitle">📋 Réserv.</a>
+            <a id="fastPlanning" href="./planning.html">🗓️ Planning</a>
+            <a id="fastNotes" href="./planning.html#quickResaNote">✍️ Notes</a>
+            <a id="fastPlus" href="./etablissement.html">⚙️ Plus</a>
+          </div>
         </div>
-        <div class="clickBadge">Le pro clique · DIGIY prépare</div>
-      </div>
 
-      <div class="clickGrid">
-        <button class="clickCard" type="button" data-resa-note="Nouvelle demande de réservation à traiter">
-          <div>
-            <div class="ico">📥</div>
-            <strong>Demande reçue</strong>
-            <span>Prépare une trace simple pour une nouvelle demande client.</span>
+        <div class="mini-card">
+          <strong id="miniTitle">Ce qui demande attention</strong>
+          <div id="miniText" style="color:var(--muted);line-height:1.55;">
+            Ici tu vois les réservations, les services choisis et les statuts à suivre.
           </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Réservation confirmée au client">
-          <div>
-            <div class="ico">✅</div>
-            <strong>Confirmer</strong>
-            <span>Prépare la note et le message de confirmation.</span>
-          </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Client arrivé pour sa réservation">
-          <div>
-            <div class="ico">🚶</div>
-            <strong>Client arrivé</strong>
-            <span>Marque l’arrivée et garde le service lisible.</span>
-          </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Réservation terminée, service clôturé">
-          <div>
-            <div class="ico">🏁</div>
-            <strong>Terminé</strong>
-            <span>Clôture proprement la réservation du jour.</span>
-          </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Acompte réservation 10000 wave">
-          <div>
-            <div class="ico">💳</div>
-            <strong>Acompte reçu</strong>
-            <span>Prépare une trace vers Mon Argent.</span>
-          </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Client doit encore 5000">
-          <div>
-            <div class="ico">🧾</div>
-            <strong>Reste à payer</strong>
-            <span>Note ce que le client doit encore régler.</span>
-          </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Prévenir la cuisine : réservation à préparer">
-          <div>
-            <div class="ico">🍽️</div>
-            <strong>Cuisine</strong>
-            <span>Prépare une note pour anticiper le service.</span>
-          </div>
-        </button>
-
-        <button class="clickCard" type="button" data-resa-note="Réservation annulée par le client">
-          <div>
-            <div class="ico">⚠️</div>
-            <strong>Annulation</strong>
-            <span>Garde une trace claire sans paniquer le service.</span>
-          </div>
-        </button>
-      </div>
-
-      <div class="taskRow" aria-label="Repères du jour">
-        <div class="taskCard">
-          <strong>📋 Réservations</strong>
-          <span>Ce qui est reçu, confirmé ou à rappeler.</span>
-        </div>
-        <div class="taskCard">
-          <strong>🗓️ Planning</strong>
-          <span>Ce qui arrive aujourd’hui et demain.</span>
-        </div>
-        <div class="taskCard">
-          <strong>✍️ Notes</strong>
-          <span>Acompte, dette, annulation, achat, nettoyage.</span>
-        </div>
-        <div class="taskCard">
-          <strong>🤝 Aide</strong>
-          <span>Messages prêts pour parler proprement au client.</span>
         </div>
       </div>
     </section>
 
 
-    <div class="grid">
-      <div class="card" id="cardStatus">
-        <h3>Mon accès</h3>
-        <div class="row">
-          <div class="statusDot" id="dot"></div>
-          <div style="flex:1">
-            <div style="font-weight:900" id="statusLine">Chargement…</div>
-            <div class="muted" style="font-weight:700;font-size:13px;margin-top:2px" id="expiryLine">—</div>
-          </div>
-        </div>
-        <div class="hr"></div>
-        <div class="mini" id="metaLine"><span>Accès : —</span><span>•</span><span>Session : —</span></div>
-        <div class="footer">
-          <button class="btn primary" id="btnManageSub" type="button">Ouvrir ma session</button>
-          <button class="btn" id="btnActivateModule" type="button" hidden>Activer mon module</button>
+    <section class="audioPanel" aria-label="Guide audio cockpit RESA">
+      <strong>🎧 Guide du cockpit RESA</strong>
+      <span>
+        Écoute DIGIY : cette page sert à lire les réservations, filtrer les statuts,
+        et préparer les actions du service au clic.
+      </span>
+      <button class="btn" id="btnResaCockpitAudio" type="button">🎧 Écouter DIGIY</button>
+    </section>
+
+    <section class="clickGuide" aria-label="Doctrine cockpit RESA">
+      <h2>Piloter le service sans se perdre.</h2>
+      <p>
+        Le cockpit n’est pas fait pour écrire long. Le pro lit la réservation,
+        puis touche : confirmer, arrivé, terminé, cuisine ou note.
+      </p>
+      <div class="clickGuideRow">
+        <div class="guideMini"><strong>📥 Reçu</strong><span>Une demande arrive, elle reste visible.</span></div>
+        <div class="guideMini"><strong>✅ Confirmé</strong><span>Le client reçoit une réponse claire.</span></div>
+        <div class="guideMini"><strong>🍽️ Cuisine</strong><span>Le service sait quoi anticiper.</span></div>
+        <div class="guideMini"><strong>🏁 Terminé</strong><span>La trace reste rangée dans RESA.</span></div>
+      </div>
+    </section>
+
+    <section class="draftPanel" id="resaActionDraft" aria-live="polite">
+      <div class="draftTitle">Action préparée</div>
+      <div class="draftText" id="resaActionText">—</div>
+      <div class="draftActions">
+        <button class="btn primary" id="btnCopyActionDraft" type="button">📋 Copier le message</button>
+        <a class="btn" id="btnDraftPlanning" href="./planning.html">🗓️ Ouvrir planning</a>
+        <a class="btn" id="btnDraftMoney" href="https://pro-pay.digiylyfe.com/admin.html">💳 Note vers Mon Argent</a>
+      </div>
+    </section>
+
+    <section class="grid-stats">
+      <div class="stat"><div class="label">Total</div><div class="value" id="sTotal">0</div></div>
+      <div class="stat"><div class="label">En attente</div><div class="value" id="sPending">0</div></div>
+      <div class="stat"><div class="label">Confirmées</div><div class="value" id="sConfirmed">0</div></div>
+      <div class="stat"><div class="label">Passées</div><div class="value" id="sDone">0</div></div>
+      <div class="stat"><div class="label">Absent</div><div class="value" id="sNoShow">0</div></div>
+      <div class="stat"><div class="label">Annulées</div><div class="value" id="sCancelled">0</div></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3 id="panelTitle">Liste des réservations</h3>
+        <div class="filters" id="filters">
+          <button class="chip active" data-filter="all" type="button">Toutes</button>
+          <button class="chip" data-filter="pending" type="button">En attente</button>
+          <button class="chip" data-filter="confirmed" type="button">Confirmées</button>
+          <button class="chip" data-filter="done" type="button">Passées</button>
+          <button class="chip" data-filter="no_show" type="button">Absent</button>
+          <button class="chip" data-filter="cancelled" type="button">Annulées</button>
         </div>
       </div>
+      <div class="list" id="bookingList"></div>
+      <div class="empty" id="emptyState" style="display:none;">Aucune réservation pour l'instant.</div>
+    </section>
 
-      <div class="card" id="cardMoney">
-        <h3>Argent lié aux réservations</h3>
-        <div class="bigMoney" id="moneyMonth">— FCFA</div>
-        <div class="mini" id="moneyMeta">
-          <span id="txCount">— transactions</span><span>•</span><span id="todayHint">Aujourd'hui</span>
-        </div>
-        <div class="hr"></div>
-        <div class="boostBox">
-          <div>
-            <b>🚀 BOOST visibilité</b>
-            <div class="muted" style="font-weight:750;font-size:13px" id="boostText">+50% d'apparition · 7 jours · 5 000 FCFA</div>
-            <div class="muted" style="font-weight:750;font-size:12px;margin-top:6px" id="boostStatus">Statut boost : non branché pour l'instant</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;min-width:160px">
-            <button class="btn primary" id="btnBoost" type="button">Activer</button>
-            <button class="btn" id="btnBoostInfo" type="button">Détails</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card quickResa" id="resaNotes" style="grid-column:1/-1">
-        <h3>✍️ Notes rapides → Mon argent</h3>
-        <div class="muted" style="font-weight:750;line-height:1.6">
-          Acompte, client qui doit, nettoyage, achat, annulation ou petit paiement : une phrase suffit.
-          DIGIY prépare la trace vers Mon argent.
-        </div>
-
-        <textarea id="resaQuickNote" placeholder="Ex : Acompte réservation 10000 wave"></textarea>
-
-        <div class="noteChips">
-          <button class="noteChip" type="button">Acompte réservation 10000 wave</button>
-          <button class="noteChip" type="button">Client doit 5000</button>
-          <button class="noteChip" type="button">Prévenir cuisine table de 4</button>
-          <button class="noteChip" type="button">Dépense nettoyage 3000 cash</button>
-          <button class="noteChip" type="button">Achat boisson 8000</button>
-          <button class="noteChip" type="button">Paiement table 15000 cash</button>
-          <button class="noteChip" type="button">Annulation client</button>
-          <button class="noteChip" type="button">Client arrivé</button>
-        </div>
-
-        <div class="footer">
-          <button class="btn primary" id="btnPrepareResaNote" type="button">Préparer</button>
-          <a class="btn" id="btnSendResaPay" href="https://pro-pay.digiylyfe.com/admin.html">Envoyer vers Mon argent</a>
-        </div>
-
-        <div class="draftBox" id="resaNoteDraft"></div>
-      </div>
-
-      <div class="card" id="cardAction" style="grid-column:1/-1">
-        <h3>Action du moment</h3>
-        <div class="muted" style="font-weight:750;margin-bottom:10px" id="actionDesc">Une action utile maintenant.</div>
-        <div class="row" style="justify-content:space-between">
-          <div class="muted" style="font-weight:800" id="actionHint">—</div>
-          <button class="btn primary" id="btnPrimaryAction" type="button">…</button>
-        </div>
-        <div class="hr"></div>
-        <h3>Notifications</h3>
-        <div class="notifList" id="notifList"></div>
-        <div class="footer">
-          <a class="smallLink" href="#" id="linkSupport">Accès</a>
-          <a class="smallLink" href="#" id="linkPayments">Mon argent</a>
-          <a class="smallLink" href="#" id="linkAssistant">Aide</a>
-        </div>
-      </div>
-    </div>
+    <div class="footer-note" id="footerNote">DIGIYLYFE · Mes réservations · gestion terrain.</div>
   </div>
 
   <nav class="bottomNav" aria-label="Navigation RESA">
     <div class="bottomNavInner">
-      <a class="active" id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
-      <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
+      <a id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a class="active" id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
       <a id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
-      <a id="bottomNotes" href="#resaNotes"><span class="ico">✍️</span><span>Notes</span></a>
+      <a id="bottomNotes" href="./planning.html#quickResaNote"><span class="ico">✍️</span><span>Notes</span></a>
       <a id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
     </div>
   </nav>
 
-<script>
-(() => {
-  "use strict";
+  <script>
+    (() => {
+      "use strict";
 
-  const MODULE_CODE = "RESA";
-  const MODULE_LABEL = "JE RÉSERVE";
-  const PRIMARY_ACTION_LABEL = "Voir les réservations";
-  const PRIMARY_ACTION_HINT = "Regarde les réservations ou ouvre le planning.";
+      const MODULE = "RESA";
+      const QR_PATH = "./qr.html";
+      const ASSISTANT_PATH = "./claw.html";
 
-  const ABOS_URL = "https://commencer-a-payer.digiylyfe.com/";
-  const PAY_ADMIN_URL = "https://pro-pay.digiylyfe.com/admin.html";
+      const query = new URL(location.href).searchParams;
+      const queryDate = query.get("date") || "";
 
-  const $ = (id) => document.getElementById(id);
-  let CURRENT_STATE = null;
+      const $ = (id) => document.getElementById(id);
 
-  function normalizeSlug(v){
-    return String(v || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g,"-")
-      .replace(/[^a-z0-9-]/g,"")
-      .replace(/-+/g,"-")
-      .replace(/^-|-$/g,"");
-  }
+      let sb = null;
+      let ALL_BOOKINGS = [];
+      let ACTIVE_FILTER = "all";
+      let PROFILE = null;
+      let RESOLVED_SLUG = "";
+      let ACTIVE_DATE = "";
+      let IS_PREVIEW = true;
 
-  function escapeHtml(v){
-    return String(v ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
-  }
-
-  function safeJsonParse(v){
-    try{ return typeof v === "string" ? JSON.parse(v) : v; }catch{ return null; }
-  }
-
-  function storageGet(key){
-    try{ const s = sessionStorage.getItem(key); if(s) return s; }catch{}
-    try{ const l = localStorage.getItem(key); if(l) return l; }catch{}
-    return "";
-  }
-
-  function storageSet(key,value){
-    try{ sessionStorage.setItem(key,String(value ?? "")); }catch{}
-    try{ localStorage.setItem(key,String(value ?? "")); }catch{}
-  }
-
-  function cleanVisibleUrl(){
-    try{
-      const u = new URL(location.href);
-      const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
-
-      if(legacySlug){
-        storageSet("digiy_resa_slug", legacySlug);
-        storageSet("digiy_resa_last_slug", legacySlug);
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
       }
 
-      [
-        "slug",
-        "phone",
-        "tel",
-        "owner_phone",
-        "owner_id",
-        "resa_"+"tel",
-        "resa_phone",
-        "business_phone",
-        "whatsapp",
-        "module",
-        "return",
-        "redirect",
-        "redirect_url",
-        "url",
-        "from",
-        "v"
-      ].forEach(k => u.searchParams.delete(k));
-      history.replaceState({}, document.title, u.pathname + u.search + u.hash);
-    }catch(_){}
-  }
-
-  function getSessionSlug(){
-    const direct = safeJsonParse(storageGet("DIGIY_RESA_SESSION")) ||
-                   safeJsonParse(storageGet("DIGIY_RESA_PIN_SESSION")) ||
-                   safeJsonParse(storageGet("DIGIY_SESSION_RESA")) ||
-                   safeJsonParse(storageGet("digiy_resa_session"));
-
-    if(direct?.module === MODULE_CODE && direct?.slug) return normalizeSlug(direct.slug);
-
-    const generic = safeJsonParse(storageGet("DIGIY_ACCESS"));
-    if(generic?.module === MODULE_CODE && generic?.slug) return normalizeSlug(generic.slug);
-
-    return "";
-  }
-
-  function getFallbackSlug(){
-    return normalizeSlug(
-      storageGet("digiy_resa_slug") ||
-      storageGet("digiy_resa_last_slug") ||
-      getSessionSlug() ||
-      ""
-    );
-  }
-
-  function buildSafeUrl(base, params){
-    const baseStr = (base == null ? "" : String(base)).trim();
-    if(!baseStr) return "./dashboard-pro.html";
-
-    let u;
-    try{
-      if(/^https?:\/\//i.test(baseStr)){
-        u = new URL(baseStr);
-      }else{
-        u = new URL(baseStr, location.href);
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
       }
-    }catch(e){
-      console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
-      return baseStr;
-    }
 
-    [
-      "slug",
-      "phone",
-      "tel",
-      "owner_phone",
-      "owner_id",
-      "resa_"+"tel",
-      "resa_phone",
-      "business_phone",
-      "whatsapp",
-      "return",
-      "redirect",
-      "redirect_url",
-      "url",
-      "from",
-      "v"
-    ].forEach(k => u.searchParams.delete(k));
-
-    try{
-      Object.entries(params || {}).forEach(([k,v]) => {
-        if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
-        if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
-      });
-    }catch(e){}
-
-    if(u.origin === location.origin){
-      const file = u.pathname.split("/").pop() || "dashboard-pro.html";
-      return "./" + file + (u.search || "") + (u.hash || "");
-    }
-
-    return u.toString();
-  }
-
-  function cleanPath(path){
-    return buildSafeUrl(path, {});
-  }
-
-  function setNavLinks(){
-    const cockpitHref = cleanPath("./cockpit.html");
-    const dashboardHref = cleanPath("./dashboard-pro.html");
-    const planningHref = cleanPath("./planning.html");
-    const assistantHref = cleanPath("./claw.html");
-    const settingsHref = cleanPath("./etablissement.html");
-    const pinHref = cleanPath("./pin.html");
-    const homeHref = cleanPath("./index.html");
-
-    const links = {
-      navCockpit: cockpitHref,
-      navDashboard: dashboardHref,
-      navPlanning: planningHref,
-      navAssistant: assistantHref,
-      navSettings: settingsHref,
-      navPin: pinHref,
-      navHome: homeHref,
-      btnCockpitTop: cockpitHref,
-      btnAssistantTop: assistantHref,
-      btnPinTop: pinHref,
-      btnSettingsTop: settingsHref,
-      heroCockpit: cockpitHref,
-      heroPlanning: planningHref,
-      heroAssistant: assistantHref,
-      heroSettings: settingsHref,
-      quickReservations: cockpitHref,
-      quickPlanning: planningHref,
-      quickPlus: settingsHref,
-      bottomHome: dashboardHref,
-      bottomReserv: cockpitHref,
-      bottomPlanning: planningHref,
-      bottomMore: settingsHref
-    };
-
-    Object.entries(links).forEach(([id, href]) => {
-      const el = $(id);
-      if(el) el.href = href;
-    });
-
-    const quickNotes = $("quickNotes");
-    const bottomNotes = $("bottomNotes");
-    if(quickNotes) quickNotes.href = "#resaNotes";
-    if(bottomNotes) bottomNotes.href = "#resaNotes";
-
-    const pay = $("btnSendResaPay");
-    if(pay) pay.href = buildResaPayDraftUrl(null);
-  }
-
-  function setHero(stateLabel){
-    $("heroSession").textContent = "Session : 8h après code PIN";
-    $("heroState").textContent = `État : ${stateLabel || "aperçu"}`;
-    $("heroSecurity").textContent = "Sécurité : aucun numéro en façade";
-  }
-
-  function setDot(mode){
-    const dot = $("dot");
-    dot.className = "statusDot";
-    if(mode === "ok") dot.classList.add("ok");
-    if(mode === "bad") dot.classList.add("bad");
-  }
-
-  function setPill(label){
-    $("pillStatus").innerHTML = `Statut : <b>${escapeHtml(label)}</b>`;
-  }
-
-  function setNotifs(items){
-    const box = $("notifList");
-    box.innerHTML = "";
-
-    if(!items.length){
-      box.innerHTML = `<div class="notif"><div><b>Rien à signaler</b><div class="muted" style="font-weight:750;margin-top:2px">Tout roule.</div></div><div class="tag ok">OK</div></div>`;
-      return;
-    }
-
-    for(const it of items){
-      const tagClass = it.level === "warn" ? "warn" : it.level === "ok" ? "ok" : "info";
-      const div = document.createElement("div");
-      div.className = "notif";
-      div.innerHTML = `<div><b>${escapeHtml(it.title)}</b><div class="muted" style="font-weight:750;margin-top:2px">${escapeHtml(it.text)}</div></div><div class="tag ${tagClass}">${escapeHtml(it.tag)}</div>`;
-      box.appendChild(div);
-    }
-  }
-
-  function setAssistant(mode, summary, pills=[], items=[]){
-    $("assistantMode").textContent = mode || "Aide en cours";
-    $("assistantSummary").textContent = summary || "Ce qui demande attention.";
-    $("assistantPills").innerHTML = (Array.isArray(pills) ? pills : [])
-      .filter(Boolean)
-      .map(p => `<div class="assistant-pill">${escapeHtml(p)}</div>`)
-      .join("");
-
-    $("assistantList").innerHTML = (Array.isArray(items) ? items : [])
-      .filter(Boolean)
-      .map(item => `<div class="assistant-item"><strong>${escapeHtml(item.title || "Point utile")}</strong><span>${escapeHtml(item.text || "—")}</span></div>`)
-      .join("");
-  }
-
-  function setAssistantLoading(){
-    setAssistant(
-      "Chargement",
-      "En attente de l'état réel pour te pousser une action nette.",
-      ["Mes réservations","Accueil","Lecture simple"],
-      [
-        {title:"Lecture du moment", text:"La page charge l'état d'accès et la prochaine étape utile."},
-        {title:"Ce qu'on prépare", text:"Un résumé propre : accès vivant, aperçu, abonnement requis ou erreur."}
-      ]
-    );
-  }
-
-  function setAssistantPreview(message){
-    setAssistant(
-      "Accès à ouvrir",
-      "Espace visible, mais session non ouverte sur ce téléphone. Aucun paiement n’est demandé.",
-      ["Numéro WhatsApp abonné","Code PIN DIGIY","Session 8h"],
-      [
-        {title:"État de l'espace", text:message || "L'espace attend simplement une session RESA active."},
-        {title:"Action utile", text:"Entre le numéro WhatsApp utilisé pour ton abonnement DIGIY et ton code PIN."},
-        {title:"Suite logique", text:"Quand l'accès est bon, tu circules entre réservations, planning, notes et plus."}
-      ]
-    );
-  }
-
-  function setAssistantBlocked(message, level="warn"){
-    setAssistant(
-      level === "warn" ? "Accès requis" : "Erreur de vérification",
-      "Remet l'accès d'équerre avant de vouloir piloter le reste.",
-      [level === "warn" ? "Abonnement requis" : "Erreur", "Code PIN disponible", "Session protégée"],
-      [
-        {title:"Blocage principal", text:message || "L'accès n'est pas actif pour ce service."},
-        {title:"Action utile", text:"Active ou renouvelle l'accès, puis reviens par ton code PIN."},
-        {title:"À retenir", text:"On ne force pas une porte fermée. On remet d'abord l'accès en ordre."}
-      ]
-    );
-  }
-
-  function setAssistantLive(){
-    setAssistant(
-      "Lecture active",
-      "Accès confirmé. L'accueil joue son rôle : lire l'état vite et pousser vers la bonne page.",
-      ["Accès actif","Session 8h","Navigation ouverte"],
-      [
-        {title:"Lecture de l'espace", text:"Ta session RESA est ouverte. L'accueil peut guider sans exposer tes données."},
-        {title:"Action du moment", text:"Les réservations restent la porte centrale pour piloter le flux du jour."},
-        {title:"Navigation utile", text:"Planning pour lire le terrain, Notes pour nourrir Mon argent, Plus pour les réglages."}
-      ]
-    );
-  }
-
-  function buildPayUrl(){
-    return buildSafeUrl(ABOS_URL, {
-      module: MODULE_CODE,
-      return: cleanPath("./dashboard-pro.html")
-    });
-  }
-
-  function setAccessButtons(mode){
-    const sessionBtn = $("btnManageSub");
-    const activateBtn = $("btnActivateModule");
-
-    if(sessionBtn){
-      if(mode === "live"){
-        sessionBtn.textContent = "Voir les réservations";
-        sessionBtn.classList.add("primary");
-      }else{
-        sessionBtn.textContent = "Ouvrir ma session";
-        sessionBtn.classList.add("primary");
+      function safeJsonParse(v){
+        try{ return typeof v === "string" ? JSON.parse(v) : v; }catch{ return null; }
       }
-    }
 
-    if(activateBtn){
-      activateBtn.hidden = mode !== "subscription";
-      activateBtn.textContent = "Activer mon module";
-    }
-  }
+      function storageGet(key){
+        try{ const s = sessionStorage.getItem(key); if(s) return s; }catch{}
+        try{ const l = localStorage.getItem(key); if(l) return l; }catch{}
+        return "";
+      }
 
-  function setPreviewState(message){
-    setDot("");
-    setPill("Aperçu");
-    setHero("aperçu");
-    setAccessButtons("session");
-    $("statusLine").textContent = "Session mobile à ouvrir";
-    $("expiryLine").textContent = message || "Déjà abonné ? Ouvre ta session sur ce téléphone avec ton numéro WhatsApp abonné et ton code PIN. Aucun paiement n’est demandé.";
-    $("metaLine").innerHTML = `<span>Accès : déjà abonné</span><span>•</span><span>Session : à ouvrir</span>`;
-    $("moneyMonth").textContent = "— FCFA";
-    $("txCount").textContent = "— transactions";
-    $("todayHint").textContent = "Aujourd'hui";
-    $("actionDesc").textContent = "Ton téléphone ne connaît pas encore ta session RESA.";
-    $("actionHint").textContent = "Ouvre ta session : numéro WhatsApp abonné + code PIN. Aucun paiement ici.";
-    $("btnPrimaryAction").textContent = "Ouvrir ma session";
-    setNotifs([{level:"info",tag:"SESSION",title:"Session à ouvrir",text:"Entre ton numéro WhatsApp abonné et ton code PIN. DIGIY garde l'accès 8 heures sur ce téléphone."}]);
-    setAssistantPreview(message);
-  }
+      function storageSet(key,value){
+        try{ sessionStorage.setItem(key,String(value ?? "")); }catch{}
+        try{ localStorage.setItem(key,String(value ?? "")); }catch{}
+      }
 
-  function setBlockedState(message, level="warn"){
-    setDot("bad");
-    setPill(level === "warn" ? "Accès requis" : "Erreur");
-    setHero(level === "warn" ? "accès requis" : "erreur");
-    const needsSubscription = String(CURRENT_STATE?.reason || "") === "no_subscription";
-    setAccessButtons(needsSubscription ? "subscription" : "session");
-    $("statusLine").textContent = needsSubscription ? "Module non actif" : (level === "warn" ? "Session à ouvrir" : "Erreur de vérification");
-    $("expiryLine").textContent = message;
-    $("metaLine").innerHTML = `<span>Accès : ${needsSubscription ? "module à activer" : "à vérifier"}</span><span>•</span><span>Session : à ouvrir</span>`;
-    $("moneyMonth").textContent = "— FCFA";
-    $("txCount").textContent = "— transactions";
-    $("todayHint").textContent = "Aujourd'hui";
-    $("actionDesc").textContent = needsSubscription ? "Aucun abonnement RESA actif n’a été trouvé." : "Ton téléphone doit ouvrir une session RESA propre.";
-    $("actionHint").textContent = needsSubscription ? "Active le module seulement si tu n’as pas encore d’accès RESA." : "Ouvre ta session avec ton numéro WhatsApp abonné et ton code PIN.";
-    $("btnPrimaryAction").textContent = needsSubscription ? "Ouvrir ma session" : "Ouvrir ma session";
-    setNotifs([{level:"warn",tag: needsSubscription ? "MODULE" : "SESSION",title: needsSubscription ? "Module à activer" : "Session à ouvrir",text:message}]);
-    setAssistantBlocked(message, level);
-  }
+      function cleanVisibleUrl(){
+        try{
+          const u = new URL(location.href);
+          const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
+          if(legacySlug){
+            storageSet("digiy_resa_slug", legacySlug);
+            storageSet("digiy_resa_last_slug", legacySlug);
+          }
+          [
+            "slug",
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "resa_"+"tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach(k => u.searchParams.delete(k));
+          history.replaceState({}, document.title, u.pathname + u.search + u.hash);
+        }catch(_){}
+      }
 
-  function setLiveState(){
-    setDot("ok");
-    setPill("Actif");
-    setHero("actif");
-    setAccessButtons("live");
-    $("statusLine").textContent = "Accès ouvert";
-    $("expiryLine").textContent = "Session RESA active pour 8 heures sur cet appareil.";
-    $("metaLine").innerHTML = `<span>Accès : actif</span><span>•</span><span>Session : 8h</span>`;
-    $("moneyMonth").textContent = "— FCFA";
-    $("txCount").textContent = "— transactions";
-    $("todayHint").textContent = "Aujourd'hui";
-    $("actionDesc").textContent = "Une action utile maintenant.";
-    $("actionHint").textContent = "Tu peux voir les réservations ou ouvrir le planning.";
-    $("btnPrimaryAction").textContent = PRIMARY_ACTION_LABEL;
-    setNotifs([
-      {level:"ok", tag:"OK", title:"Accès confirmé", text:"Tu es dedans. L'accueil RESA est ouvert."},
-      {level:"info", tag:"NEXT", title:"Étape suivante", text:"Circule entre réservations, planning, notes rapides et plus."}
-    ]);
-    setAssistantLive();
-  }
+      function getSessionSlug(){
+        const direct =
+          safeJsonParse(storageGet("DIGIY_RESA_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_RESA_PIN_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_SESSION_RESA")) ||
+          safeJsonParse(storageGet("digiy_resa_session"));
 
-  async function getGuardState(){
-    if(window.DIGIY_GUARD?.ready){
-      try{
-        if(typeof window.DIGIY_GUARD.ready === "function"){
-          return await window.DIGIY_GUARD.ready();
+        if(direct?.module === MODULE && direct?.slug) return normalizeSlug(direct.slug);
+
+        const generic = safeJsonParse(storageGet("DIGIY_ACCESS"));
+        if(generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+
+        return "";
+      }
+
+      function getFallbackSlug(){
+        return normalizeSlug(
+          storageGet("digiy_resa_slug") ||
+          storageGet("digiy_resa_last_slug") ||
+          getSessionSlug() ||
+          ""
+        );
+      }
+
+      function fmtDate(v){
+        if(!v) return "—";
+        try{
+          const d = new Date(v);
+          if(Number.isNaN(d.getTime())) return String(v);
+          return d.toLocaleDateString("fr-FR",{year:"numeric",month:"2-digit",day:"2-digit"});
+        }catch{
+          return String(v);
         }
-        if(typeof window.DIGIY_GUARD.ready.then === "function"){
-          return await window.DIGIY_GUARD.ready;
+      }
+
+      function fmtDateTime(v){
+        if(!v) return "—";
+        try{
+          return new Date(v).toLocaleString("fr-FR",{
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+            hour:"2-digit",
+            minute:"2-digit"
+          });
+        }catch{
+          return String(v);
         }
-        return window.DIGIY_GUARD.state || {preview:true,access_ok:false,reason:"guard_not_ready"};
-      }catch{
-        return {preview:true,access_ok:false,reason:"guard_error"};
-      }
-    }
-
-    return {preview:true,access_ok:false,reason:"guard_absent"};
-  }
-
-  function parseResaNote(text){
-    const sentence = String(text || "").trim().replace(/\s+/g, " ");
-    const lower = sentence.toLowerCase();
-    const amountMatch = sentence.match(/(\d[\d\s.,]*)\s*(f|fcfa|xof)?/i);
-    const amount = amountMatch ? Number(String(amountMatch[1]).replace(/[^\d]/g, "")) || 0 : 0;
-
-    let channel = "other";
-    if (/\bwave\b/.test(lower)) channel = "wave";
-    else if (/\b(cash|espèces|especes|liquide)\b/.test(lower)) channel = "cash";
-    else if (/\b(orange money|om)\b/.test(lower)) channel = "orange_money";
-    else if (/\b(banque|virement)\b/.test(lower)) channel = "bank";
-
-    let direction = "out";
-    let kind = "expense";
-    let category = "other";
-    let label = "Note réservation";
-
-    if (/\b(acompte|paiement|réservation payée|reservation payee|table|client payé|client paye)\b/.test(lower)){
-      direction = "in";
-      kind = "sale";
-      category = "booking_income";
-      label = "Paiement réservation";
-    } else if (/\b(client)\b.*\b(doit|reste)\b|\b(doit|reste)\b/.test(lower)){
-      direction = "out";
-      kind = "other";
-      category = "client_debt";
-      label = "Client doit";
-    } else if (/\b(nettoyage|ménage|menage)\b/.test(lower)){
-      direction = "out";
-      kind = "expense";
-      category = "cleaning";
-      label = "Nettoyage";
-    } else if (/\b(achat|boisson|stock|préparation|preparation)\b/.test(lower)){
-      direction = "out";
-      kind = "expense";
-      category = "supplies";
-      label = "Achat réservation";
-    } else if (/\b(annulation|annulé|annule)\b/.test(lower)){
-      direction = "out";
-      kind = "other";
-      category = "cancellation";
-      label = "Annulation client";
-    }
-
-    return { sentence, amount_xof: amount, channel, direction, kind, category, label };
-  }
-
-  function buildResaPayDraftUrl(draft){
-    const d = draft || parseResaNote(($("resaQuickNote") || {}).value || "");
-
-    const u = new URL(PAY_ADMIN_URL);
-    u.searchParams.set("fromDraft", "1");
-    u.searchParams.set("intent", "quick_note");
-    u.searchParams.set("source_module", "RESA");
-    u.searchParams.set("source_id", "resa-note-" + Date.now());
-
-    if (d.amount_xof){
-      u.searchParams.set("amount", String(d.amount_xof));
-      u.searchParams.set("amount_xof", String(d.amount_xof));
-    }
-
-    u.searchParams.set("channel", d.channel || "other");
-    u.searchParams.set("scope", "pro");
-    u.searchParams.set("movement_date", new Date().toISOString().slice(0,10));
-    u.searchParams.set("direction", d.direction || "out");
-    u.searchParams.set("kind", d.kind || "expense");
-    u.searchParams.set("category", d.category || "other");
-    u.searchParams.set("label", d.label || "Note réservation");
-    u.searchParams.set("note", d.sentence || "");
-
-    return u.toString();
-  }
-
-  function bindQuickResaNote(){
-    document.querySelectorAll(".noteChip").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const input = $("resaQuickNote");
-        if (input) input.value = btn.textContent.trim();
-        const draftBox = $("resaNoteDraft");
-        if (draftBox) draftBox.style.display = "none";
-      });
-    });
-
-    $("btnPrepareResaNote")?.addEventListener("click", () => {
-      const input = $("resaQuickNote");
-      const draftBox = $("resaNoteDraft");
-      if (!input || !draftBox) return;
-
-      const draft = parseResaNote(input.value);
-      if (!draft.sentence){
-        draftBox.style.display = "block";
-        draftBox.textContent = "Écris une phrase simple : acompte, client qui doit, nettoyage, achat ou paiement.";
-        return;
       }
 
-      draftBox.style.display = "block";
-      draftBox.innerHTML =
-        "<b>" + escapeHtml(draft.label) + "</b><br>" +
-        escapeHtml(draft.direction) + " · " + escapeHtml(draft.kind) + " · " + escapeHtml(draft.channel) + " · " + escapeHtml(draft.category) + "<br>" +
-        (draft.amount_xof ? draft.amount_xof.toLocaleString("fr-FR") + " FCFA" : "Montant à préciser") + "<br>" +
-        escapeHtml(draft.sentence);
+      function normStatus(v){
+        const s = String(v || "pending").toLowerCase().trim();
+        if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
+        return "pending";
+      }
 
-      const pay = $("btnSendResaPay");
-      if (pay) pay.href = buildResaPayDraftUrl(draft);
-    });
-  }
+      function statusLabel(v){
+        const s = normStatus(v);
+        if(s === "pending") return "En attente";
+        if(s === "confirmed") return "Confirmée";
+        if(s === "cancelled") return "Annulée";
+        if(s === "done") return "Passée";
+        if(s === "no_show") return "Absent";
+        return s;
+      }
 
+      function bookingIdOf(row){
+        return String(row?.id ?? row?.booking_id ?? row?.reservation_id ?? "");
+      }
 
-  function bindClickActionCards(){
-    document.querySelectorAll("[data-resa-note]").forEach((card) => {
-      card.addEventListener("click", () => {
-        const note = card.getAttribute("data-resa-note") || "";
-        const input = $("resaQuickNote");
-        const draftBox = $("resaNoteDraft");
+      function money(v){
+        const n = Number(v);
+        if(!Number.isFinite(n)) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
 
-        if(input){
-          input.value = note;
-          input.scrollIntoView({ behavior:"smooth", block:"center" });
+      function todayISO(){
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      }
+
+      function normalizeRows(payload){
+        let rows = [];
+        if(Array.isArray(payload)) rows = payload;
+        else if(Array.isArray(payload?.rows)) rows = payload.rows;
+        else if(Array.isArray(payload?.bookings)) rows = payload.bookings;
+        else if(Array.isArray(payload?.data)) rows = payload.data;
+
+        return rows.map(r => ({
+          id: bookingIdOf(r),
+          status: normStatus(r.status),
+          status_note: r.status_note || "",
+          created_at: r.created_at || r.inserted_at || r.requested_at || null,
+          customer_name: r.customer_name || r.client_name || r.full_name || r.name || "Sans nom",
+          booking_date: r.booking_date || r.reservation_date || r.date || "",
+          booking_time: r.booking_time || r.reservation_time || r.time || "",
+          guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
+          service_id: r.service_id || "",
+          service_name: r.service_name || "",
+          duration_minutes: r.duration_minutes ?? "",
+          price_fcfa: r.price_fcfa ?? "",
+          note: r.note || r.note_text || r.message || r.special_request || ""
+        }));
+      }
+
+      function initClient(){
+        if(window.DIGIY_SB){
+          sb = window.DIGIY_SB;
+          return;
         }
 
-        if(draftBox) draftBox.style.display = "none";
+        if(!window.supabase?.createClient) throw new Error("Supabase JS non chargé.");
+
+        sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+          {
+            auth:{
+              storageKey:"digiy-resa-cockpit-auth-token",
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false,
+              storage:{
+                getItem:()=>null,
+                setItem:()=>{},
+                removeItem:()=>{}
+              }
+            }
+          }
+        );
+
+        window.DIGIY_SB = sb;
+      }
+
+      function buildSafeUrl(base, params){
+        const baseStr = (base == null ? "" : String(base)).trim();
+        if(!baseStr) return "./dashboard-pro.html";
+
+        let u;
+        try{
+          if(/^https?:\/\//i.test(baseStr)){
+            u = new URL(baseStr);
+          }else{
+            u = new URL(baseStr, location.href);
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
+          return baseStr;
+        }
+
+        [
+          "slug",
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "resa_"+"tel",
+          "resa_phone",
+          "business_phone",
+          "whatsapp",
+          "module",
+          "return",
+          "redirect",
+          "redirect_url",
+          "url",
+          "from",
+          "v"
+        ].forEach(k => u.searchParams.delete(k));
 
         try{
-          const draft = parseResaNote(note);
-          const pay = $("btnSendResaPay");
-          if(pay) pay.href = buildResaPayDraftUrl(draft);
+          Object.entries(params || {}).forEach(([k,v]) => {
+            if(["slug","phone","tel","owner_phone","owner_id","resa_"+"tel","resa_phone","business_phone","whatsapp","return","redirect","redirect_url","url","from","v"].includes(k)) return;
+            if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+          });
+        }catch(e){}
+
+        if(u.origin === location.origin){
+          const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+          return "./" + file + (u.search || "") + (u.hash || "");
+        }
+
+        return u.toString();
+      }
+
+      function cleanPath(path, extra = {}){
+        return buildSafeUrl(path, extra);
+      }
+
+      function setLinks(){
+        const dateParam = ACTIVE_DATE ? {date: ACTIVE_DATE} : {};
+
+        const cockpitHref = cleanPath("./cockpit.html", dateParam);
+        const notesHref = cleanPath("./planning.html", dateParam) + "#quickResaNote";
+        const dashboardHref = cleanPath("./dashboard-pro.html");
+        const planningHref = cleanPath("./planning.html", dateParam);
+        const qrHref = cleanPath(QR_PATH);
+        const assistantHref = cleanPath(ASSISTANT_PATH);
+        const settingsHref = cleanPath("./etablissement.html");
+        const homeHref = cleanPath("./index.html");
+
+        const links = {
+          navCockpit: cockpitHref,
+          navDashboard: dashboardHref,
+          navPlanning: planningHref,
+          navQr: qrHref,
+          navAssistant: assistantHref,
+          navSettings: settingsHref,
+          navHome: homeHref,
+          btnPlanningTop: planningHref,
+          heroPlanning: planningHref,
+          fastPlanning: planningHref,
+          fastNotes: notesHref,
+          fastPlus: settingsHref,
+          bottomHome: dashboardHref,
+          bottomReserv: cockpitHref,
+          bottomPlanning: planningHref,
+          bottomNotes: notesHref,
+          bottomMore: settingsHref
+        };
+
+        Object.entries(links).forEach(([id, href]) => {
+          const el = $(id);
+          if(el) el.href = href;
+        });
+
+        const fastReserv = $("fastReserv");
+        if(fastReserv) fastReserv.href = "#panelTitle";
+      }
+
+      async function rpc(name,args){
+        if(!sb) throw new Error("supabase_unavailable");
+        const {data,error} = await sb.rpc(name,args);
+        if(error) throw error;
+        return data;
+      }
+
+      function resetStats(){
+        $("sTotal").textContent = "0";
+        $("sPending").textContent = "0";
+        $("sConfirmed").textContent = "0";
+        $("sDone").textContent = "0";
+        $("sNoShow").textContent = "0";
+        $("sCancelled").textContent = "0";
+      }
+
+      function resetView(){
+        $("emptyState").style.display = "none";
+        $("bookingList").innerHTML = "";
+        ALL_BOOKINGS = [];
+        PROFILE = null;
+      }
+
+      async function resolveGuardState(){
+        const fallbackSlug = getFallbackSlug();
+
+        if(!window.DIGIY_GUARD){
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_missing"};
+        }
+
+        try{
+          if(typeof window.DIGIY_GUARD.ready === "function"){
+            const st = await window.DIGIY_GUARD.ready();
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          if(window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function"){
+            const st = await window.DIGIY_GUARD.ready;
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          const st = window.DIGIY_GUARD.state || null;
+          if(!st) return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_empty"};
+
+          return {...st, slug:normalizeSlug(st.slug || fallbackSlug || "")};
+        }catch{
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_error"};
+        }
+      }
+
+      function setHeroPills(city,type){
+        $("heroSession").textContent = "Session : 8h après code PIN";
+        $("heroCity").textContent = "Ville : " + (city || "—");
+        $("heroType").textContent = "Activité : " + (type || "—");
+      }
+
+      function setPreviewHero(message = ""){
+        $("modeBadge").className = "mode";
+        $("modeBadge").textContent = "Aperçu";
+        $("heroName").textContent = "JE RÉSERVE";
+        $("heroDesc").textContent = "Espace visible, mais session non ouverte. Aucune fausse réservation affichée.";
+        setHeroPills("—","Multi business");
+        $("topSub").textContent = message || "Aperçu sans données.";
+        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("footerNote").textContent = "Aperçu actif — aucune donnée de démonstration.";
+        $("miniTitle").textContent = "Espace vierge DIGIY";
+        $("miniText").textContent = "Ici, on garde une coquille propre : pas de fausses réservations, pas de brouillage. Les vraies données n'entrent que si l'accès est confirmé.";
+        setLinks();
+      }
+
+      function setLiveHero(){
+        $("modeBadge").className = "mode live";
+        $("modeBadge").textContent = "En direct";
+        $("topSub").textContent = "Espace chargé.";
+        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("footerNote").textContent = "Espace vivant branché sur les réservations réelles.";
+        $("miniTitle").textContent = "Ce qui demande attention";
+        $("miniText").textContent = "Ici tu vois les réservations, les services choisis et les statuts à suivre.";
+        setLinks();
+      }
+
+      async function loadProfile(){
+        const data = await rpc("resa_public_profile_by_slug",{p_slug:RESOLVED_SLUG});
+        if(!data?.ok) throw new Error(data?.error || "profile_not_found");
+
+        PROFILE = data.profile || {};
+        const title = PROFILE?.display_name || "Mon activité";
+        const city = PROFILE?.city || "—";
+        const type = PROFILE?.business_type || PROFILE?.category || "Multi business";
+
+        $("heroName").textContent = title;
+        $("heroDesc").textContent = PROFILE?.bio || "Lecture des réservations, suivi terrain, actions rapides.";
+        setHeroPills(city,type);
+      }
+
+      async function loadBookings(){
+        const payload = await rpc("digiy_resa_get_bookings_by_day",{
+          p_slug:RESOLVED_SLUG,
+          p_date:ACTIVE_DATE
+        });
+
+        if(!payload?.ok) throw new Error(payload?.error || "bookings_not_found");
+
+        ALL_BOOKINGS = normalizeRows(payload.bookings || []);
+        renderStatsFromRows();
+        renderBookings();
+      }
+
+      function renderStatsFromRows(){
+        const rows = ALL_BOOKINGS || [];
+        $("sTotal").textContent = String(rows.length);
+        $("sPending").textContent = String(rows.filter(r => normStatus(r.status) === "pending").length);
+        $("sConfirmed").textContent = String(rows.filter(r => normStatus(r.status) === "confirmed").length);
+        $("sDone").textContent = String(rows.filter(r => normStatus(r.status) === "done").length);
+        $("sNoShow").textContent = String(rows.filter(r => normStatus(r.status) === "no_show").length);
+        $("sCancelled").textContent = String(rows.filter(r => normStatus(r.status) === "cancelled").length);
+      }
+
+      function filterRows(rows){
+        if(ACTIVE_FILTER === "all") return rows;
+        return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+      }
+
+      function serviceHtml(row){
+        const bits = [];
+
+        if(row.service_name) bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
+        if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
+        if(money(row.price_fcfa)) bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
+
+        if(!bits.length) return "";
+
+        return `<div class="service-box">${bits.join("")}</div>`;
+      }
+
+      function renderBookings(){
+        const list = $("bookingList");
+        const empty = $("emptyState");
+        const rows = filterRows(ALL_BOOKINGS);
+
+        if(!rows.length){
+          list.innerHTML = "";
+          empty.style.display = "block";
+          empty.textContent = IS_PREVIEW
+            ? "Aucune donnée affichée en aperçu. Entre avec une session valide pour lire les vraies réservations."
+            : "Aucune réservation pour cette date.";
+          return;
+        }
+
+        empty.style.display = "none";
+
+        list.innerHTML = rows.map(row => {
+          const status = normStatus(row.status);
+
+          return `
+            <article class="booking">
+              <div class="booking-top">
+                <div class="booking-main">
+                  <div class="booking-name">${escapeHtml(row.customer_name)}</div>
+                  <div class="meta">
+                    <span>📅 ${escapeHtml(row.booking_date ? fmtDate(row.booking_date) : "—")}</span>
+                    <span>🕒 ${escapeHtml(row.booking_time || "—")}</span>
+                    <span>👥 ${escapeHtml(row.guests_count || "—")}</span>
+                    <span>🧾 ${escapeHtml(fmtDateTime(row.created_at))}</span>
+                  </div>
+                </div>
+                <div class="badge ${status}">${escapeHtml(statusLabel(status))}</div>
+              </div>
+              ${serviceHtml(row)}
+              ${row.note ? `<div class="note">"${escapeHtml(row.note)}"</div>` : ""}
+              <div class="booking-actions">
+                <button class="actionBtn primary" type="button" data-resa-action="confirm" data-booking-id="${escapeHtml(row.id)}">✅ Confirmer</button>
+                <button class="actionBtn" type="button" data-resa-action="arrived" data-booking-id="${escapeHtml(row.id)}">🚶 Arrivé</button>
+                <button class="actionBtn" type="button" data-resa-action="done" data-booking-id="${escapeHtml(row.id)}">🏁 Terminé</button>
+                <button class="actionBtn gold" type="button" data-resa-action="kitchen" data-booking-id="${escapeHtml(row.id)}">🍽️ Cuisine</button>
+                <button class="actionBtn" type="button" data-resa-action="note" data-booking-id="${escapeHtml(row.id)}">✍️ Note</button>
+              </div>
+            </article>`;
+        }).join("");
+      }
+
+      function initFilters(){
+        $("filters").querySelectorAll(".chip").forEach(chip => {
+          chip.addEventListener("click", () => {
+            $("filters").querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            ACTIVE_FILTER = chip.dataset.filter || "all";
+            renderBookings();
+          });
+        });
+      }
+
+
+      function findBookingById(id){
+        const clean = String(id || "");
+        return (ALL_BOOKINGS || []).find(row => String(row.id || "") === clean) || null;
+      }
+
+      function buildActionMessage(row, action){
+        const name = row?.customer_name || "Client";
+        const date = row?.booking_date ? fmtDate(row.booking_date) : "date à confirmer";
+        const time = row?.booking_time || "heure à confirmer";
+        const guests = row?.guests_count || "nombre à préciser";
+        const service = row?.service_name ? " · " + row.service_name : "";
+
+        const base =
+          "RESA DIGIY\\n" +
+          "Client : " + name + "\\n" +
+          "Date : " + date + "\\n" +
+          "Heure : " + time + "\\n" +
+          "Personnes : " + guests + service + "\\n\\n";
+
+        if(action === "confirm"){
+          return base + "Message prêt : Bonjour, votre réservation est bien confirmée. Merci de venir à l’heure indiquée. À bientôt.";
+        }
+
+        if(action === "arrived"){
+          return base + "Action service : le client est arrivé. La salle peut installer et la cuisine peut suivre le service.";
+        }
+
+        if(action === "done"){
+          return base + "Action service : réservation terminée. Le service peut être clôturé proprement.";
+        }
+
+        if(action === "kitchen"){
+          return base + "Message cuisine : réservation à préparer. Merci d’anticiper le service selon le nombre de personnes et la demande client.";
+        }
+
+        return base + "Note rapide : point à compléter par le responsable.";
+      }
+
+      function showActionDraft(row, action){
+        const panel = $("resaActionDraft");
+        const text = $("resaActionText");
+        const planning = $("btnDraftPlanning");
+        const money = $("btnDraftMoney");
+
+        if(!panel || !text) return;
+
+        const message = buildActionMessage(row, action);
+        text.textContent = message;
+        panel.classList.add("show");
+        panel.scrollIntoView({behavior:"smooth", block:"center"});
+
+        if(planning) planning.href = cleanPath("./planning.html", ACTIVE_DATE ? {date:ACTIVE_DATE} : {});
+
+        if(money){
+          const u = new URL("https://pro-pay.digiylyfe.com/admin.html");
+          u.searchParams.set("fromDraft", "1");
+          u.searchParams.set("intent", "quick_note");
+          u.searchParams.set("source_module", "RESA");
+          u.searchParams.set("source_id", "resa-cockpit-" + Date.now());
+          u.searchParams.set("scope", "pro");
+          u.searchParams.set("movement_date", new Date().toISOString().slice(0,10));
+          u.searchParams.set("direction", action === "done" || action === "confirm" ? "in" : "out");
+          u.searchParams.set("kind", action === "done" || action === "confirm" ? "sale" : "other");
+          u.searchParams.set("category", "booking");
+          u.searchParams.set("label", action === "kitchen" ? "Note cuisine réservation" : "Note réservation");
+          u.searchParams.set("note", message);
+          money.href = u.toString();
+        }
+
+        try{
+          sessionStorage.setItem("DIGIY_RESA_ACTION_DRAFT", JSON.stringify({
+            action,
+            booking_id: row?.id || "",
+            message,
+            created_at: new Date().toISOString()
+          }));
         }catch(_){}
-      });
-    });
-  }
-
-  function bindDashboardAudio(){
-    const btn = $("btnResaDashboardAudio");
-    if(!btn) return;
-
-    function canSpeak(){
-      return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
-    }
-
-    function getFrenchVoice(){
-      try{
-        const voices = speechSynthesis.getVoices() || [];
-        return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
-               voices.find(v => /^fr/i.test(v.lang || "")) ||
-               voices[0] ||
-               null;
-      }catch(_){
-        return null;
       }
-    }
 
-    function stop(){
-      try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
-      btn.textContent = "🎧 Écouter DIGIY";
-    }
+      async function copyActionDraft(){
+        const text = $("resaActionText")?.textContent || "";
+        if(!text || text === "—") return;
 
-    function speak(){
-      if(!canSpeak()) return;
-
-      stop();
-
-      const text =
-        "Bienvenue dans l’accueil RESA by DIGIY. Cette page sert à voir vite ce qui demande attention : les réservations, le planning, les notes rapides et les actions utiles du moment. Le professionnel ne doit pas écrire comme un secrétaire. Il peut cliquer sur demande reçue, confirmer, client arrivé, terminé, acompte reçu, reste à payer, cuisine ou annulation. DIGIY prépare la trace. La salle comprend qui arrive. La cuisine sait quoi anticiper. Le responsable garde la mémoire. Pour les paiements et acomptes, la note peut partir vers Mon Argent. Règle simple : le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité.";
-
-      const run = () => {
-        const u = new SpeechSynthesisUtterance(text);
-        const voice = getFrenchVoice();
-        if(voice) u.voice = voice;
-        u.lang = voice?.lang || "fr-FR";
-        u.rate = 0.86;
-        u.pitch = 1.04;
-        u.volume = 1;
-
-        btn.textContent = "⏹ Stop";
-
-        u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
-        u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
-
-        speechSynthesis.speak(u);
-      };
-
-      const voices = speechSynthesis.getVoices();
-      if(voices && voices.length) run();
-      else{
-        speechSynthesis.onvoiceschanged = run;
-        setTimeout(run, 650);
+        try{
+          if(navigator.clipboard?.writeText){
+            await navigator.clipboard.writeText(text);
+          }else{
+            const input = document.createElement("textarea");
+            input.value = text;
+            input.style.position = "fixed";
+            input.style.left = "-9999px";
+            document.body.appendChild(input);
+            input.focus();
+            input.select();
+            document.execCommand("copy");
+            input.remove();
+          }
+          const btn = $("btnCopyActionDraft");
+          if(btn){
+            btn.textContent = "✅ Message copié";
+            setTimeout(() => btn.textContent = "📋 Copier le message", 1400);
+          }
+        }catch(_){}
       }
-    }
 
-    btn.addEventListener("click", () => {
-      if(canSpeak() && speechSynthesis.speaking) stop();
-      else speak();
-    });
+      function bindReservationActions(){
+        document.addEventListener("click", (ev) => {
+          const btn = ev.target.closest("[data-resa-action]");
+          if(!btn) return;
 
-    window.addEventListener("pagehide", stop);
-    document.addEventListener("visibilitychange", () => {
-      if(document.hidden) stop();
-    });
-  }
+          const action = btn.getAttribute("data-resa-action") || "note";
+          const id = btn.getAttribute("data-booking-id") || "";
+          const row = findBookingById(id);
+
+          if(!row) return;
+
+          showActionDraft(row, action);
+        });
+
+        $("btnCopyActionDraft")?.addEventListener("click", copyActionDraft);
+      }
+
+      function bindCockpitAudio(){
+        const btn = $("btnResaCockpitAudio");
+        if(!btn) return;
+
+        function canSpeak(){
+          return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+        }
+
+        function getFrenchVoice(){
+          try{
+            const voices = speechSynthesis.getVoices() || [];
+            return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+                   voices.find(v => /^fr/i.test(v.lang || "")) ||
+                   voices[0] ||
+                   null;
+          }catch(_){
+            return null;
+          }
+        }
+
+        function stop(){
+          try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
+          btn.textContent = "🎧 Écouter DIGIY";
+        }
+
+        function speak(){
+          if(!canSpeak()) return;
+
+          stop();
+
+          const audioText =
+            "Bienvenue dans le cockpit RESA by DIGIY. Ici, tu lis les réservations et tu agis vite. Les filtres montrent les demandes en attente, confirmées, passées, absentes ou annulées. Sur chaque réservation, tu peux préparer une action au clic : confirmer, client arrivé, terminé, cuisine ou note. DIGIY prépare le message pour le client, la salle ou la cuisine. Le professionnel ne doit pas écrire comme un secrétaire. Il lit, il clique, il valide. La réservation reste claire, le service reste organisé, et le terrain garde la main.";
+
+          const run = () => {
+            const u = new SpeechSynthesisUtterance(audioText);
+            const voice = getFrenchVoice();
+            if(voice) u.voice = voice;
+            u.lang = voice?.lang || "fr-FR";
+            u.rate = 0.86;
+            u.pitch = 1.04;
+            u.volume = 1;
+
+            btn.textContent = "⏹ Stop";
+
+            u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+            u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+
+            speechSynthesis.speak(u);
+          };
+
+          const voices = speechSynthesis.getVoices();
+          if(voices && voices.length) run();
+          else{
+            speechSynthesis.onvoiceschanged = run;
+            setTimeout(run, 650);
+          }
+        }
+
+        btn.addEventListener("click", () => {
+          if(canSpeak() && speechSynthesis.speaking) stop();
+          else speak();
+        });
+
+        window.addEventListener("pagehide", stop);
+        document.addEventListener("visibilitychange", () => {
+          if(document.hidden) stop();
+        });
+      }
 
 
-  async function boot(){
-    cleanVisibleUrl();
-    bindQuickResaNote();
-    bindClickActionCards();
-    bindDashboardAudio();
+      async function boot(){
+        cleanVisibleUrl();
+        document.body.classList.add("loading");
+        resetView();
+        resetStats();
+        ACTIVE_DATE = queryDate || todayISO();
 
-    $("brandTitle").textContent = MODULE_LABEL;
-    $("brandSub").textContent = "Accueil RESA";
-    $("btnPrimaryAction").textContent = "Chargement…";
-    $("actionHint").textContent = PRIMARY_ACTION_HINT;
+        try{
+          initClient();
 
-    setPill("…");
-    setAssistantLoading();
-    setNavLinks();
+          const st = await resolveGuardState();
+          const stateModule = String(st?.module || st?.module_code || MODULE).toUpperCase();
 
-    CURRENT_STATE = await getGuardState();
+          if(st?.preview || !st?.access_ok || stateModule !== MODULE){
+            IS_PREVIEW = true;
+            RESOLVED_SLUG = normalizeSlug(st?.slug || getFallbackSlug() || "");
+            setPreviewHero("Session RESA non ouverte. Entre par ton code PIN pour lire les vraies réservations.");
+            renderBookings();
+            return;
+          }
 
-    const stateModule = String(CURRENT_STATE?.module || CURRENT_STATE?.module_code || MODULE_CODE).toUpperCase();
-    const sessionSlug = normalizeSlug(CURRENT_STATE?.slug || getFallbackSlug() || "");
+          IS_PREVIEW = false;
+          RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
 
-    if(sessionSlug && stateModule === MODULE_CODE){
-      storageSet("digiy_resa_last_slug", sessionSlug);
-      storageSet("digiy_resa_slug", sessionSlug);
-    }
+          if(!RESOLVED_SLUG){
+            IS_PREVIEW = true;
+            setPreviewHero("Session ouverte, mais contexte RESA absent. Reviens par ton accès.");
+            renderBookings();
+            return;
+          }
 
-    if(CURRENT_STATE?.access_ok && stateModule === MODULE_CODE){
-      setLiveState();
-      return;
-    }
+          storageSet("digiy_resa_last_slug",RESOLVED_SLUG);
+          storageSet("digiy_resa_slug",RESOLVED_SLUG);
 
-    if(CURRENT_STATE?.preview){
-      setPreviewState("Aucune session RESA active sur ce téléphone. Entre ton numéro WhatsApp abonné et ton code PIN. Aucun paiement n’est demandé.");
-      return;
-    }
+          setLiveHero();
+          await loadProfile();
+          await loadBookings();
+        }catch(err){
+          console.error(err);
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = getFallbackSlug();
+          setPreviewHero("Erreur de chargement. Aperçu affiché.");
+          renderBookings();
+        }finally{
+          document.body.classList.remove("loading");
+        }
+      }
 
-    if(CURRENT_STATE?.reason === "no_subscription"){
-      setBlockedState("Pas d'accès actif pour ce service.");
-      return;
-    }
-
-    if(CURRENT_STATE?.reason === "unknown_identity"){
-      setBlockedState("Accès non reconnu. Reviens par ton code PIN.");
-      return;
-    }
-
-    setBlockedState("Vérification indisponible pour le moment.","error");
-  }
-
-  $("btnManageSub").onclick = () => {
-    if(CURRENT_STATE?.access_ok){
-      location.href = cleanPath("./cockpit.html");
-      return;
-    }
-    location.href = cleanPath("./pin.html");
-  };
-
-  $("btnActivateModule")?.addEventListener("click", () => {
-    location.href = CURRENT_STATE?.pay_url || buildPayUrl();
-  });
-
-  $("btnPrimaryAction").onclick = () => {
-    if(CURRENT_STATE?.access_ok){
-      location.href = cleanPath("./cockpit.html");
-      return;
-    }
-    location.href = cleanPath("./pin.html");
-  };
-
-  $("btnBoostInfo").onclick = () => {
-    alert("BOOST : +50% d'apparition pendant 7 jours. On le branche après la stabilité RESA.");
-  };
-
-  $("btnBoost").onclick = () => {
-    alert("BOOST non branché pour l'instant. On le câble après le rail principal.");
-  };
-
-  $("linkSupport").onclick = (ev) => {
-    ev.preventDefault();
-    location.href = cleanPath("./pin.html");
-  };
-
-  $("linkPayments").onclick = (ev) => {
-    ev.preventDefault();
-    location.href = buildResaPayDraftUrl(null);
-  };
-
-  $("linkAssistant").onclick = (ev) => {
-    ev.preventDefault();
-    location.href = cleanPath("./claw.html");
-  };
-
-  boot();
-})();
-</script>
+      $("btnReload").addEventListener("click",boot);
+      bindReservationActions();
+      bindCockpitAudio();
+      initFilters();
+      boot();
+    })();
+  </script>
 </body>
 </html>
 
