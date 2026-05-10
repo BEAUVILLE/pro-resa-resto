@@ -6,6 +6,9 @@
 (() => {
   "use strict";
 
+  const BUILD_ID = "resa-guard-20260510-v2-url-clean-session8h";
+  const BUILD_KEY = "DIGIY_RESA_GUARD_BUILD_ID";
+
   const CFG = {
     SUPABASE_URL:
       window.DIGIY_SUPABASE_URL ||
@@ -125,6 +128,61 @@
     };
   }
 
+  function clearGuardCacheOnce() {
+    try {
+      const previous = localStorage.getItem(BUILD_KEY);
+      if (previous === BUILD_ID) return;
+
+      localStorage.setItem(BUILD_KEY, BUILD_ID);
+
+      [
+        "digiy_resa_guard_cache",
+        "digiy_resa_old_guard",
+        "resa_guard_old_state"
+      ].forEach((key) => {
+        try { localStorage.removeItem(key); } catch (_) {}
+        try { sessionStorage.removeItem(key); } catch (_) {}
+      });
+
+      if ("caches" in window) {
+        caches.keys().then((keys) => {
+          keys
+            .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+            .forEach((name) => caches.delete(name));
+        }).catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  const SENSITIVE_URL_KEYS = [
+    "slug",
+    "phone",
+    "tel",
+    "owner_phone",
+    "owner_id",
+    "resa_" + "tel",
+    "resa_phone",
+    "business_phone",
+    "whatsapp",
+    "module",
+    "return",
+    "redirect",
+    "redirect_url",
+    "url",
+    "from",
+    "v",
+    "keybox_code",
+    "keybox_location",
+    "access_note"
+  ];
+
+  function removeSensitiveParams(url) {
+    try {
+      SENSITIVE_URL_KEYS.forEach((key) => url.searchParams.delete(key));
+    } catch (_) {}
+    return url;
+  }
+
   function getHeaders() {
     return {
       apikey: CFG.SUPABASE_ANON_KEY,
@@ -164,20 +222,15 @@
         url.searchParams.get("phone") ||
         url.searchParams.get("tel") ||
         url.searchParams.get("resa_" + "tel") ||
+        url.searchParams.get("resa_phone") ||
+        url.searchParams.get("business_phone") ||
         ""
       );
 
       if (slugFromUrl) saveSlugOnly(slugFromUrl);
       if (phoneFromUrl) savePhoneOnly(phoneFromUrl);
 
-      [
-        "slug",
-        "phone",
-        "tel",
-        "resa_" + "tel",
-        "module",
-        "from"
-      ].forEach((key) => url.searchParams.delete(key));
+      removeSensitiveParams(url);
 
       history.replaceState({}, document.title, url.pathname + url.search + url.hash);
     } catch (_) {}
@@ -265,7 +318,6 @@
       if (!parsed || typeof parsed !== "object") continue;
 
       const moduleName = upper(parsed.module || parsed.module_code || "");
-
       if (moduleName !== MODULE) continue;
 
       const slug = normSlug(parsed.slug || "");
@@ -285,7 +337,6 @@
       const validatedAtIso = parsed.validated_at || null;
 
       let ageOk = false;
-
       if (verifiedAt && isRecent(verifiedAt)) ageOk = true;
 
       if (!ageOk && validatedAtIso) {
@@ -364,14 +415,7 @@
         ? new URL(baseStr)
         : new URL(baseStr, location.href);
 
-      [
-        "slug",
-        "phone",
-        "tel",
-        "resa_" + "tel",
-        "module",
-        "from"
-      ].forEach((key) => url.searchParams.delete(key));
+      removeSensitiveParams(url);
 
       if (url.origin === location.origin) {
         const file = url.pathname.split("/").pop() || "dashboard-pro.html";
@@ -398,21 +442,16 @@
 
   function buildPinUrl() {
     const target = currentTargetName();
+
+    try {
+      sessionStorage.setItem("digiy_resa_return_target", target);
+    } catch (_) {}
+
     const url = new URL(CFG.PIN_PATH, location.href);
-
-    [
-      "slug",
-      "phone",
-      "tel",
-      "resa_" + "tel",
-      "module",
-      "from"
-    ].forEach((key) => url.searchParams.delete(key));
-
-    url.searchParams.set("target", target);
+    removeSensitiveParams(url);
 
     if (url.origin === location.origin) {
-      return "./" + (url.pathname.split("/").pop() || "pin.html") + url.search;
+      return "./" + (url.pathname.split("/").pop() || "pin.html");
     }
 
     return url.toString();
@@ -445,11 +484,9 @@
 
     for (const params of tries) {
       const res = await tableGet(CFG.TABLES.SUBSCRIPTIONS_PUBLIC, params);
-
       if (!res.ok || !Array.isArray(res.data) || !res.data[0]) continue;
 
       const moduleName = upper(res.data[0].module || MODULE);
-
       if (moduleName && moduleName !== MODULE) continue;
 
       return {
@@ -474,11 +511,9 @@
 
     for (const params of tries) {
       const res = await tableGet(CFG.TABLES.SUBSCRIPTIONS_PUBLIC, params);
-
       if (!res.ok || !Array.isArray(res.data) || !res.data[0]) continue;
 
       const moduleName = upper(res.data[0].module || MODULE);
-
       if (moduleName && moduleName !== MODULE) continue;
 
       return {
@@ -518,7 +553,6 @@
 
   function parseVerifyPinPayload(data, fallbackPhone = "") {
     const raw = Array.isArray(data) ? data[0] : data;
-
     if (!raw) return null;
 
     if (typeof raw === "object" && !Array.isArray(raw)) {
@@ -602,11 +636,9 @@
 
     for (const body of tries) {
       const res = await rpc(CFG.RPC.VERIFY_PIN, body);
-
       if (!res.ok) continue;
 
       const parsed = parseVerifyPinPayload(res.data, ph);
-
       if (!parsed?.ok) continue;
 
       return {
@@ -645,7 +677,8 @@
     verified_at: stored?.verified_at || null,
     validated_at: stored?.validated_at || null,
     pin_url: "",
-    pay_url: ""
+    pay_url: "",
+    build_id: BUILD_ID
   };
 
   let pendingPromise = null;
@@ -869,6 +902,7 @@
   }
 
   function ready() {
+    clearGuardCacheOnce();
     hidePage();
 
     if (state.ready_flag) {
@@ -914,6 +948,10 @@
 
     getModule() {
       return MODULE;
+    },
+
+    getBuildId() {
+      return BUILD_ID;
     },
 
     isAuthenticated() {
@@ -968,6 +1006,11 @@
 
     loginWithPin,
     logout,
+
+    cleanUrl() {
+      cleanVisibleUrl();
+      return true;
+    },
 
     buildPinUrl() {
       return buildPinUrl();
