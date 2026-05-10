@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1220" />
+  <meta name="theme-color" content="#f4ead2" />
+  <meta name="digiy-build" content="resa-pin-20260510-v1-cache-audio-lisibilite" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Je réserve — Accès</title>
   <meta name="description" content="Je réserve — entrer avec son code PIN et ouvrir une session sécurisée de 8 heures." />
   <script>
@@ -14,6 +18,97 @@
     window.DIGIY_LOGIN_URL = "./pin.html";
     window.DIGIY_PAY_URL = "https://commencer-a-payer.digiylyfe.com/";
   </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const BUILD_ID = "resa-pin-20260510-v1-cache-audio-lisibilite";
+      const BUILD_KEY = "DIGIY_RESA_PIN_BUILD_ID";
+
+      function cleanBuildUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          [
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "slug",
+            "resa_tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach((key) => {
+            if(url.searchParams.has(key)){
+              if(key === "slug"){
+                const hidden = String(url.searchParams.get(key) || "")
+                  .trim()
+                  .toLowerCase()
+                  .replace(/\s+/g,"-")
+                  .replace(/[^a-z0-9-]/g,"")
+                  .replace(/-+/g,"-")
+                  .replace(/^-|-$/g,"");
+                if(hidden){
+                  try{ sessionStorage.setItem("digiy_resa_slug", hidden); }catch(_){}
+                  try{ localStorage.setItem("digiy_resa_slug", hidden); }catch(_){}
+                  try{ localStorage.setItem("digiy_resa_last_slug", hidden); }catch(_){}
+                }
+              }
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      function clearOldCachesOnce(){
+        try{
+          const previous = localStorage.getItem(BUILD_KEY);
+          if(previous === BUILD_ID) return;
+
+          localStorage.setItem(BUILD_KEY, BUILD_ID);
+
+          [
+            "digiy_resa_pin_cache",
+            "digiy_resa_pin_old_state",
+            "resa_pin_old_ui",
+            "digiy_resa_old_pin"
+          ].forEach((key) => {
+            try{ localStorage.removeItem(key); }catch(_){}
+            try{ sessionStorage.removeItem(key); }catch(_){}
+          });
+
+          if("caches" in window){
+            caches.keys().then((keys) => {
+              keys
+                .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+                .forEach((name) => caches.delete(name));
+            }).catch(() => {});
+          }
+        }catch(_){}
+      }
+
+      cleanBuildUrl();
+      clearOldCachesOnce();
+
+      window.DIGIY_RESA_PIN_BUILD_ID = BUILD_ID;
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -155,6 +250,254 @@
       .grid{grid-template-columns:1fr}
       .fastLinks{grid-template-columns:1fr 1fr}
     }
+
+    /* =========================================================
+       DIGIY RESA — PIN TERRAIN CLAIR
+       Porte sécurisée, grande écriture, fond beige, audio.
+       ========================================================= */
+    :root{
+      --bg:#f4ead2;
+      --bg2:#ead9b7;
+      --card:#fff7e6;
+      --line:rgba(83,58,26,.22);
+      --text:#1f2a1f;
+      --muted:#3d3324;
+      --cyan:#facc15;
+      --cyan2:#fff3c4;
+      --green:#16a34a;
+      --red:#dc2626;
+      --shadow:0 12px 28px rgba(77,52,22,.16);
+    }
+
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      background:
+        radial-gradient(circle at top left,rgba(250,204,21,.22),transparent 34%),
+        radial-gradient(circle at bottom right,rgba(22,101,52,.10),transparent 28%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 56%,#dfc99c) !important;
+      color:#1f2a1f !important;
+      font-size:19px !important;
+      font-weight:900 !important;
+      line-height:1.5 !important;
+    }
+
+    .card,
+    .hero,
+    .notice,
+    .status,
+    .meta,
+    .audioPanel,
+    .accessGuide,
+    .bottomNavInner{
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.22) !important;
+      color:#1f2a1f !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+    }
+
+    .bottomNav{
+      background:rgba(244,234,210,.92) !important;
+      border-top:1px solid rgba(83,58,26,.18) !important;
+    }
+
+    .logo{
+      background:linear-gradient(135deg,#facc15,#bbf7d0) !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      color:#241a0d !important;
+      width:64px !important;
+      height:64px !important;
+      font-size:2rem !important;
+    }
+
+    h1{
+      color:#241a0d !important;
+      font-size:clamp(2.15rem,7vw,4.2rem) !important;
+      line-height:1.02 !important;
+      font-weight:900 !important;
+      letter-spacing:-.045em !important;
+    }
+
+    .sub,
+    .intro,
+    .notice,
+    .status,
+    .foot,
+    .k,
+    .v,
+    .accessGuide p,
+    .guideMini span,
+    .audioPanel span{
+      color:#3d3324 !important;
+      font-size:1.05rem !important;
+      line-height:1.62 !important;
+      font-weight:900 !important;
+    }
+
+    .intro strong,
+    label,
+    .accessGuide h2,
+    .guideMini strong,
+    .audioPanel strong{
+      color:#241a0d !important;
+      font-size:1.25rem !important;
+      line-height:1.2 !important;
+      font-weight:900 !important;
+    }
+
+    input{
+      background:rgba(255,255,255,.86) !important;
+      color:#1f2a1f !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      min-height:68px !important;
+      font-size:1.45rem !important;
+      font-weight:900 !important;
+      letter-spacing:.22em !important;
+    }
+
+    input::placeholder{
+      color:rgba(31,42,31,.48) !important;
+    }
+
+    .mini,
+    .btn,
+    .fastLinks a,
+    .bottomNav a{
+      background:rgba(255,255,255,.72) !important;
+      color:#1f2a1f !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      min-height:62px !important;
+      font-size:1.05rem !important;
+      line-height:1.22 !important;
+      font-weight:900 !important;
+      box-shadow:0 8px 18px rgba(77,52,22,.08) !important;
+    }
+
+    .btn.primary,
+    .bottomNav a.active{
+      background:linear-gradient(135deg,#16a34a,#bbf7d0) !important;
+      color:#052215 !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .btn.ghost{
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .status.ok{
+      background:rgba(220,252,231,.88) !important;
+      color:#14532d !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .status.err{
+      background:rgba(254,226,226,.92) !important;
+      color:#9f1239 !important;
+      border-color:rgba(159,18,57,.28) !important;
+    }
+
+    .audioPanel,
+    .accessGuide{
+      margin:14px 0;
+      padding:16px;
+      border-radius:22px;
+      display:grid;
+      gap:10px;
+    }
+
+    .audioPanel{
+      text-align:center;
+      border-color:rgba(22,101,52,.24) !important;
+    }
+
+    .audioPanel .btn{
+      width:min(100%,380px);
+      margin:0 auto;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .accessGuide h2,
+    .accessGuide p{
+      margin:0;
+    }
+
+    .guideGrid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .guideMini{
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:20px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+      display:grid;
+      gap:6px;
+    }
+
+    .guideIcon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      font-size:1.4rem;
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .bottomNav a{
+      min-height:70px !important;
+      font-size:.92rem !important;
+    }
+
+    .bottomNav .ico{
+      font-size:1.35rem !important;
+    }
+
+    @media(max-width:560px){
+      body{
+        font-size:20px !important;
+        padding-left:10px !important;
+        padding-right:10px !important;
+      }
+
+      h1{
+        font-size:clamp(2.25rem,12vw,3.4rem) !important;
+      }
+
+      .guideGrid{
+        grid-template-columns:1fr !important;
+      }
+
+      .btn,
+      .fastLinks a,
+      .bottomNav a,
+      .mini{
+        min-height:68px !important;
+        font-size:1.08rem !important;
+      }
+
+      .bottomNav a{
+        min-height:72px !important;
+        font-size:.92rem !important;
+      }
+
+      .hero,
+      .body{
+        padding:18px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -179,6 +522,29 @@
         <p class="notice">
           Ton espace RESA reste protégé. Aucun numéro ne s’affiche ici et aucun numéro n’est ajouté aux liens visibles.
         </p>
+
+
+        <section class="audioPanel" aria-label="Guide audio accès RESA">
+          <strong>🎧 Guide de l’accès RESA</strong>
+          <span>
+            Écoute DIGIY : entre ton code PIN, ouvre une session de 8 heures,
+            puis retourne à l’accueil, au planning ou aux réservations.
+          </span>
+          <button class="btn" id="btnResaPinAudio" type="button">🎧 Écouter DIGIY</button>
+        </section>
+
+        <section class="accessGuide" aria-label="Repères accès RESA">
+          <h2>Une porte simple, pas une façade technique.</h2>
+          <p>
+            Le professionnel entre son PIN. Le téléphone et le slug restent cachés.
+            La session s’ouvre pour travailler sans ressaisir toutes les minutes.
+          </p>
+          <div class="guideGrid">
+            <div class="guideMini"><div class="guideIcon">🔐</div><strong>PIN</strong><span>Tu entres seulement le code.</span></div>
+            <div class="guideMini"><div class="guideIcon">⏱️</div><strong>8 heures</strong><span>Session ouverte sur cet appareil.</span></div>
+            <div class="guideMini"><div class="guideIcon">🧭</div><strong>Retour</strong><span>Accueil, planning ou réservations.</span></div>
+          </div>
+        </section>
 
         <div class="field">
           <label for="pin">Code PIN</label>
@@ -266,6 +632,7 @@
 
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
         auth:{
+          storageKey:"digiy-resa-pin-auth-token",
           persistSession:false,
           autoRefreshToken:false,
           detectSessionInUrl:false,
@@ -300,7 +667,23 @@
       function cleanVisibleUrl(){
         try{
           const u = new URL(location.href);
-          ["phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          [
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "resa_"+"tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach(k => u.searchParams.delete(k));
           if(u.searchParams.has("slug")){
             const s = normSlug(u.searchParams.get("slug"));
             if(s){
@@ -326,11 +709,11 @@
         try{
           if(/^https?:\/\//i.test(baseStr)){
             const u = new URL(baseStr);
-            ["phone","tel","resa_"+"tel","slug"].forEach(k => u.searchParams.delete(k));
+            ["phone","tel","owner_phone","owner_id","resa_"+"tel","resa_phone","business_phone","whatsapp","slug","module","return","redirect","redirect_url","url","from","v"].forEach(k => u.searchParams.delete(k));
             return u.toString();
           }
           const u = new URL(baseStr, location.href);
-          ["phone","tel","resa_"+"tel","slug"].forEach(k => u.searchParams.delete(k));
+          ["phone","tel","owner_phone","owner_id","resa_"+"tel","resa_phone","business_phone","whatsapp","slug","module","return","redirect","redirect_url","url","from","v"].forEach(k => u.searchParams.delete(k));
           return u.pathname.split("/").pop() ? ("./" + u.pathname.split("/").pop() + (u.hash || "")) : "./dashboard-pro.html";
         }catch(_){
           return baseStr;
@@ -344,7 +727,7 @@
           const u = new URL(raw, location.href);
           if(u.origin !== location.origin) return CFG.DEFAULT_NEXT;
           if(!CFG.SAME_ORIGIN_ALLOWED_PATHS.includes(u.pathname)) return CFG.DEFAULT_NEXT;
-          ["phone","tel","resa_"+"tel","slug","module","from"].forEach(k => u.searchParams.delete(k));
+          ["phone","tel","owner_phone","owner_id","resa_"+"tel","resa_phone","business_phone","whatsapp","slug","module","from","v"].forEach(k => u.searchParams.delete(k));
           return "." + u.pathname.slice(u.pathname.lastIndexOf("/"));
         }catch(_){
           return CFG.DEFAULT_NEXT;
@@ -588,6 +971,77 @@
         el.returnInfo.textContent = describeReturnUrl(ret);
       }
 
+
+      function bindPinAudio(){
+        const btn = document.getElementById("btnResaPinAudio");
+        if(!btn) return;
+
+        function canSpeak(){
+          return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+        }
+
+        function getFrenchVoice(){
+          try{
+            const voices = speechSynthesis.getVoices() || [];
+            return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+                   voices.find(v => /^fr/i.test(v.lang || "")) ||
+                   voices[0] ||
+                   null;
+          }catch(_){
+            return null;
+          }
+        }
+
+        function stop(){
+          try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
+          btn.textContent = "🎧 Écouter DIGIY";
+        }
+
+        function speak(){
+          if(!canSpeak()) return;
+
+          stop();
+
+          const audioText =
+            "Bienvenue dans l’accès RESA by DIGIY. Ici, tu entres seulement ton code PIN. Si ton accès est reconnu, la session s’ouvre pour huit heures sur cet appareil. Tu peux ensuite retourner à l’accueil, aux réservations ou au planning sans remettre le code à chaque page. Aucun numéro ne doit s’afficher dans la façade et aucun identifiant sensible ne doit rester dans l’adresse. Le coffre reste protégé, le terrain travaille simplement.";
+
+          const run = () => {
+            const u = new SpeechSynthesisUtterance(audioText);
+            const voice = getFrenchVoice();
+            if(voice) u.voice = voice;
+            u.lang = voice?.lang || "fr-FR";
+            u.rate = 0.86;
+            u.pitch = 1.04;
+            u.volume = 1;
+
+            btn.textContent = "⏹ Stop";
+
+            u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+            u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+
+            speechSynthesis.speak(u);
+          };
+
+          const voices = speechSynthesis.getVoices();
+          if(voices && voices.length) run();
+          else{
+            speechSynthesis.onvoiceschanged = run;
+            setTimeout(run, 650);
+          }
+        }
+
+        btn.addEventListener("click", () => {
+          if(canSpeak() && speechSynthesis.speaking) stop();
+          else speak();
+        });
+
+        window.addEventListener("pagehide", stop);
+        document.addEventListener("visibilitychange", () => {
+          if(document.hidden) stop();
+        });
+      }
+
+
       function hydrate(){
         const saved = readStoredSession();
         refreshLinks();
@@ -666,6 +1120,7 @@
       el.btnOpen.addEventListener("click", login);
       el.pin.addEventListener("keydown", e => { if(e.key === "Enter") login(); });
 
+      bindPinAudio();
       hydrate();
     })();
   </script>
