@@ -3,8 +3,12 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Je réserve — Plus</title>
-  <meta name="theme-color" content="#07140f"/>
+  <title>Je réserve — Plus RESA PRO</title>
+  <meta name="theme-color" content="#f4ead2"/>
+  <meta name="digiy-build" content="resa-etablissement-20260510-v1-cache-audio-lisibilite"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <meta name="description" content="Je réserve — Plus : fiche publique, établissement, services, QR et accès utiles." />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -12,8 +16,85 @@
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const BUILD_ID = "resa-etablissement-20260510-v1-cache-audio-lisibilite";
+      const BUILD_KEY = "DIGIY_RESA_ETABLISSEMENT_BUILD_ID";
+
+      function cleanBuildUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          [
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "slug",
+            "resa_tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      function clearOldCachesOnce(){
+        try{
+          const previous = localStorage.getItem(BUILD_KEY);
+          if(previous === BUILD_ID) return;
+
+          localStorage.setItem(BUILD_KEY, BUILD_ID);
+
+          [
+            "digiy_resa_etablissement_cache",
+            "digiy_resa_profile_old",
+            "resa_etablissement_old_ui",
+            "digiy_resa_old_profile"
+          ].forEach((key) => {
+            try{ localStorage.removeItem(key); }catch(_){}
+            try{ sessionStorage.removeItem(key); }catch(_){}
+          });
+
+          if("caches" in window){
+            caches.keys().then((keys) => {
+              keys
+                .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+                .forEach((name) => caches.delete(name));
+            }).catch(() => {});
+          }
+        }catch(_){}
+      }
+
+      cleanBuildUrl();
+      clearOldCachesOnce();
+
+      window.DIGIY_RESA_ETABLISSEMENT_BUILD_ID = BUILD_ID;
+    })();
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-etablissement-secure-pin8h"></script>
+  <script src="./guard.js?v=resa-etablissement-20260510-v1-cache-audio-lisibilite"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -123,6 +204,313 @@
       .top-actions{display:none}
       .hero-actions{display:none}
     }
+
+    /* =========================================================
+       DIGIY RESA — PLUS / ÉTABLISSEMENT TERRAIN
+       Grande écriture, fond beige, audio, cartes guidées.
+       ========================================================= */
+    :root{
+      --bg:#f4ead2;
+      --bg2:#ead9b7;
+      --card:#fff7e6;
+      --line:rgba(83,58,26,.22);
+      --text:#1f2a1f;
+      --muted:#3d3324;
+      --primary:#16a34a;
+      --primary-2:#bbf7d0;
+      --gold:#facc15;
+      --gold-soft:rgba(254,243,199,.86);
+      --blue:#4f46e5;
+      --shadow:0 12px 28px rgba(77,52,22,.16);
+    }
+
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      background:
+        radial-gradient(circle at top left,rgba(250,204,21,.22),transparent 34%),
+        radial-gradient(circle at bottom right,rgba(22,101,52,.10),transparent 28%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 56%,#dfc99c) !important;
+      color:#1f2a1f !important;
+      font-size:19px !important;
+      font-weight:900 !important;
+      line-height:1.5 !important;
+    }
+
+    .topbar,
+    .nav-rail,
+    .hero,
+    .card,
+    .assistant-card,
+    .service,
+    .fact,
+    .assistant-item,
+    .audioPanel,
+    .guidedPanel,
+    .bottomNavInner{
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.22) !important;
+      color:#1f2a1f !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+    }
+
+    .bottomNav{
+      background:rgba(244,234,210,.92) !important;
+      border-top:1px solid rgba(83,58,26,.18) !important;
+    }
+
+    .hero-media{
+      background:#ead9b7 !important;
+    }
+
+    .hero-media-fallback{
+      background:
+        radial-gradient(circle at 30% 20%,rgba(250,204,21,.26),transparent 32%),
+        radial-gradient(circle at 75% 15%,rgba(34,197,94,.18),transparent 30%),
+        linear-gradient(180deg,#fff7e6,#ead9b7) !important;
+      color:#241a0d !important;
+      font-size:4rem !important;
+    }
+
+    .hero-badge,
+    .badge,
+    .pill,
+    .chip,
+    .service-pill,
+    .assistant-mode,
+    .assistant-pill,
+    .nav-link,
+    .btn,
+    .guidedAction,
+    .bottomNav a{
+      background:rgba(255,255,255,.72) !important;
+      color:#1f2a1f !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      font-weight:900 !important;
+    }
+
+    .nav-link.active,
+    .btn.primary,
+    .mobileFastRow a.primary,
+    .bottomNav a.active,
+    .guidedAction.primary{
+      background:linear-gradient(135deg,#16a34a,#bbf7d0) !important;
+      color:#052215 !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .btn.gold,
+    .guidedAction.gold{
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .eyebrow,
+    .assistant-kicker,
+    .fact .k{
+      color:#6b4e09 !important;
+      font-size:.98rem !important;
+      font-weight:900 !important;
+      letter-spacing:.08em !important;
+    }
+
+    .brand-title,
+    h1{
+      color:#241a0d !important;
+      font-size:clamp(2.2rem,7vw,4.5rem) !important;
+      line-height:1.02 !important;
+      font-weight:900 !important;
+      letter-spacing:-.045em !important;
+    }
+
+    h2,
+    .assistant-title,
+    .guidedPanel h2{
+      color:#241a0d !important;
+      font-size:clamp(1.6rem,5vw,2.7rem) !important;
+      line-height:1.12 !important;
+      font-weight:900 !important;
+    }
+
+    .service-name,
+    .fact .v,
+    .assistant-item strong,
+    .audioPanel strong,
+    .guidedCard strong{
+      color:#241a0d !important;
+      font-size:1.28rem !important;
+      line-height:1.2 !important;
+      font-weight:900 !important;
+    }
+
+    .brand-sub,
+    .subtitle,
+    .muted,
+    .assistant-text,
+    .assistant-item span,
+    .footer,
+    .guidedPanel p,
+    .guidedCard span{
+      color:#3d3324 !important;
+      font-size:1.05rem !important;
+      line-height:1.62 !important;
+      font-weight:900 !important;
+    }
+
+    .btn,
+    .nav-link,
+    .bottomNav a,
+    .mobileFastRow a,
+    .guidedAction{
+      min-height:60px !important;
+      font-size:1.05rem !important;
+      line-height:1.22 !important;
+      font-weight:900 !important;
+      box-shadow:0 8px 18px rgba(77,52,22,.08) !important;
+    }
+
+    .avatar{
+      background:linear-gradient(135deg,#facc15,#bbf7d0) !important;
+      color:#241a0d !important;
+      font-size:1.6rem !important;
+      font-weight:900 !important;
+    }
+
+    .audioPanel,
+    .guidedPanel{
+      margin-top:14px;
+      padding:18px;
+      border-radius:24px;
+      display:grid;
+      gap:12px;
+    }
+
+    .audioPanel{
+      text-align:center;
+      border-color:rgba(22,101,52,.24) !important;
+    }
+
+    .audioPanel span{
+      color:#3d3324;
+      font-size:1.05rem;
+      line-height:1.55;
+      font-weight:900;
+    }
+
+    .audioPanel .btn{
+      width:min(100%,380px);
+      margin:0 auto;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .guidedPanel h2,
+    .guidedPanel p{
+      margin:0;
+    }
+
+    .guidedGrid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:4px;
+    }
+
+    .guidedCard{
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:22px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+      display:grid;
+      gap:8px;
+      min-height:146px;
+    }
+
+    .guidedIcon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      font-size:1.4rem;
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .guidedActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:6px;
+    }
+
+    .guidedAction{
+      border-radius:999px;
+      padding:12px 15px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+    }
+
+    @media(max-width:980px){
+      .guidedGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:720px){
+      body{
+        font-size:20px !important;
+        padding-left:10px;
+        padding-right:10px;
+      }
+
+      .brand-title,
+      h1{
+        font-size:clamp(2.35rem,12vw,3.55rem) !important;
+      }
+
+      h2,
+      .assistant-title,
+      .guidedPanel h2{
+        font-size:1.8rem !important;
+      }
+
+      .guidedGrid{grid-template-columns:1fr}
+
+      .btn,
+      .nav-link,
+      .mobileFastRow a,
+      .bottomNav a,
+      .guidedAction{
+        min-height:66px !important;
+        font-size:1.08rem !important;
+      }
+
+      .bottomNav a{
+        min-height:72px !important;
+        font-size:.92rem !important;
+      }
+
+      .bottomNav .ico{
+        font-size:1.35rem !important;
+      }
+
+      .hero-content,
+      .card,
+      .assistant-card,
+      .guidedPanel,
+      .audioPanel{
+        padding:18px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -200,6 +588,54 @@
             <div class="fact"><div class="k">Capacité / accueil</div><div class="v" id="capacity">—</div></div>
           </div>
         </div>
+      </div>
+    </section>
+
+
+    <section class="audioPanel" aria-label="Guide audio Plus RESA">
+      <strong>🎧 Guide Plus / Établissement</strong>
+      <span>
+        Écoute DIGIY : cette page sert à comprendre la fiche publique,
+        les services, les repères terrain, le QR et les liens utiles.
+      </span>
+      <button class="btn" id="btnResaPlusAudio" type="button">🎧 Écouter DIGIY</button>
+    </section>
+
+    <section class="guidedPanel" aria-label="Réglages guidés RESA">
+      <h2>Régler l’établissement sans se perdre.</h2>
+      <p>
+        Plus n’est pas une page froide. C’est le tableau des repères :
+        ce que le client voit, ce qu’il peut réserver, et ce que le pro doit vérifier.
+      </p>
+
+      <div class="guidedGrid">
+        <div class="guidedCard">
+          <div class="guidedIcon">🌍</div>
+          <strong>Vitrine client</strong>
+          <span>Vérifier ce que le public voit avant de partager.</span>
+        </div>
+        <div class="guidedCard">
+          <div class="guidedIcon">🧾</div>
+          <strong>Services</strong>
+          <span>Rendre les prestations claires pour faciliter la réservation.</span>
+        </div>
+        <div class="guidedCard">
+          <div class="guidedIcon">📎</div>
+          <strong>QR</strong>
+          <span>Partager l’accès client sans recopier des liens partout.</span>
+        </div>
+        <div class="guidedCard">
+          <div class="guidedIcon">🧭</div>
+          <strong>Repères</strong>
+          <span>Ville, zone, adresse, horaires et capacité pour guider le terrain.</span>
+        </div>
+      </div>
+
+      <div class="guidedActions">
+        <a class="guidedAction primary" id="guidedReservations" href="./cockpit.html">📋 Réservations</a>
+        <a class="guidedAction" id="guidedPlanning" href="./planning.html">🗓️ Planning</a>
+        <a class="guidedAction gold" id="guidedQr" href="./qr.html">📎 QR</a>
+        <a class="guidedAction" id="guidedVitrine" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">🌍 Vitrine</a>
       </div>
     </section>
 
@@ -305,7 +741,24 @@
             storageSet("digiy_resa_slug", legacySlug);
             storageSet("digiy_resa_last_slug", legacySlug);
           }
-          ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          [
+            "slug",
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "resa_"+"tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach(k => u.searchParams.delete(k));
           history.replaceState({}, document.title, u.pathname + u.search + u.hash);
         }catch(_){}
       }
@@ -322,11 +775,28 @@
           return baseStr;
         }
 
-        ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+        [
+          "slug",
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "resa_"+"tel",
+          "resa_phone",
+          "business_phone",
+          "whatsapp",
+          "module",
+          "return",
+          "redirect",
+          "redirect_url",
+          "url",
+          "from",
+          "v"
+        ].forEach(k => u.searchParams.delete(k));
 
         try{
           Object.entries(params || {}).forEach(([k,v]) => {
-            if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
+            if(["slug","phone","tel","owner_phone","owner_id","resa_"+"tel","resa_phone","business_phone","whatsapp","return","redirect","redirect_url","url","from","v"].includes(k)) return;
             if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
           });
         }catch(e){}
@@ -419,7 +889,10 @@
           bottomReserv: cockpitHref,
           bottomPlanning: planningHref,
           bottomNotes: notesHref,
-          bottomMore: settingsHref
+          bottomMore: settingsHref,
+          guidedReservations: cockpitHref,
+          guidedPlanning: planningHref,
+          guidedQr: qrHref
         };
 
         Object.entries(links).forEach(([id, href]) => {
@@ -625,6 +1098,77 @@
         `).join("");
       }
 
+
+      function bindPlusAudio(){
+        const btn = $("btnResaPlusAudio");
+        if(!btn) return;
+
+        function canSpeak(){
+          return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+        }
+
+        function getFrenchVoice(){
+          try{
+            const voices = speechSynthesis.getVoices() || [];
+            return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+                   voices.find(v => /^fr/i.test(v.lang || "")) ||
+                   voices[0] ||
+                   null;
+          }catch(_){
+            return null;
+          }
+        }
+
+        function stop(){
+          try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
+          btn.textContent = "🎧 Écouter DIGIY";
+        }
+
+        function speak(){
+          if(!canSpeak()) return;
+
+          stop();
+
+          const audioText =
+            "Bienvenue dans Plus, la page établissement de Je réserve by DIGIY. Ici, le professionnel vérifie les repères qui aident le client : le nom de l’activité, la ville, l’adresse, les horaires, la capacité, les services proposés, le QR et la vitrine publique. Cette page n’est pas faite pour perdre le pro dans des réglages compliqués. Elle sert à lire vite : est-ce que la fiche donne confiance ? Est-ce que le client comprend quoi réserver ? Est-ce que les services sont clairs ? Est-ce que la vitrine peut être partagée ? Règle DIGIY : le pro clique plus qu’il n’écrit. DIGIY montre les repères, le terrain valide avec sa vérité.";
+
+          const run = () => {
+            const u = new SpeechSynthesisUtterance(audioText);
+            const voice = getFrenchVoice();
+            if(voice) u.voice = voice;
+            u.lang = voice?.lang || "fr-FR";
+            u.rate = 0.86;
+            u.pitch = 1.04;
+            u.volume = 1;
+
+            btn.textContent = "⏹ Stop";
+
+            u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+            u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+
+            speechSynthesis.speak(u);
+          };
+
+          const voices = speechSynthesis.getVoices();
+          if(voices && voices.length) run();
+          else{
+            speechSynthesis.onvoiceschanged = run;
+            setTimeout(run, 650);
+          }
+        }
+
+        btn.addEventListener("click", () => {
+          if(canSpeak() && speechSynthesis.speaking) stop();
+          else speak();
+        });
+
+        window.addEventListener("pagehide", stop);
+        document.addEventListener("visibilitychange", () => {
+          if(document.hidden) stop();
+        });
+      }
+
+
       async function boot(){
         cleanVisibleUrl();
         setNavLinks();
@@ -657,6 +1201,7 @@
 
           const sb = supabaseLib.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
             auth:{
+              storageKey:"digiy-resa-etablissement-auth-token",
               persistSession:false,
               autoRefreshToken:false,
               detectSessionInUrl:false,
@@ -699,6 +1244,7 @@
           $("navPublic").href = publicUrl;
           $("btnPublicHero").href = publicUrl;
           $("btnReserve").href = reserveUrl;
+          if($("guidedVitrine")) $("guidedVitrine").href = publicUrl;
 
           renderZones(zones);
 
@@ -711,6 +1257,7 @@
         }
       }
 
+      bindPlusAudio();
       boot();
     })();
   </script>
