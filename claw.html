@@ -4,7 +4,11 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Mon assistant DIGIY · RESA</title>
-  <meta name="theme-color" content="#061b14"/>
+  <meta name="theme-color" content="#f4ead2"/>
+  <meta name="digiy-build" content="resa-claw-20260510-v1-cache-audio-lisibilite"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <meta name="description" content="Mon assistant DIGIY pour RESA : préparer une réponse client, organiser une réservation, relancer proprement et garder une parole claire."/>
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -12,8 +16,85 @@
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
   </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const BUILD_ID = "resa-claw-20260510-v1-cache-audio-lisibilite";
+      const BUILD_KEY = "DIGIY_RESA_CLAW_BUILD_ID";
+
+      function cleanBuildUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          [
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "slug",
+            "resa_tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      function clearOldCachesOnce(){
+        try{
+          const previous = localStorage.getItem(BUILD_KEY);
+          if(previous === BUILD_ID) return;
+
+          localStorage.setItem(BUILD_KEY, BUILD_ID);
+
+          [
+            "digiy_resa_claw_cache",
+            "digiy_resa_assistant_old",
+            "resa_claw_old_ui",
+            "digiy_resa_old_assistant"
+          ].forEach((key) => {
+            try{ localStorage.removeItem(key); }catch(_){}
+            try{ sessionStorage.removeItem(key); }catch(_){}
+          });
+
+          if("caches" in window){
+            caches.keys().then((keys) => {
+              keys
+                .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+                .forEach((name) => caches.delete(name));
+            }).catch(() => {});
+          }
+        }catch(_){}
+      }
+
+      cleanBuildUrl();
+      clearOldCachesOnce();
+
+      window.DIGIY_RESA_CLAW_BUILD_ID = BUILD_ID;
+    })();
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-assistant-secure-pin8h"></script>
+  <script src="./guard.js?v=resa-claw-20260510-v1-cache-audio-lisibilite"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -98,6 +179,324 @@
       .actions-top,.hero-cta,.actions-row{width:100%}
       .nav-rail,.actions-top{display:none}
     }
+
+    /* =========================================================
+       DIGIY RESA — ASSISTANT / CLAW TERRAIN
+       Grande écriture, fond beige, clics guidés, audio.
+       ========================================================= */
+    :root{
+      --bg:#f4ead2;
+      --card:#fff7e6;
+      --line:rgba(83,58,26,.22);
+      --text:#1f2a1f;
+      --muted:#3d3324;
+      --gold:#facc15;
+      --ok:#16a34a;
+      --warn:#d97706;
+      --danger:#dc2626;
+      --accent:#4f46e5;
+      --shadow:0 12px 28px rgba(77,52,22,.16);
+    }
+
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    html,body{
+      background:
+        radial-gradient(circle at top left,rgba(250,204,21,.22),transparent 34%),
+        radial-gradient(circle at bottom right,rgba(22,101,52,.10),transparent 28%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 56%,#dfc99c) !important;
+      color:#1f2a1f !important;
+      font-size:19px !important;
+      font-weight:900 !important;
+      line-height:1.5 !important;
+    }
+
+    .topbar,
+    .nav-rail,
+    .hero,
+    .mini-card,
+    .panel,
+    .intent,
+    .kpi,
+    .helper,
+    .output,
+    .audioPanel,
+    .guidedPanel,
+    .bottomNavInner{
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.22) !important;
+      color:#1f2a1f !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+    }
+
+    .bottomNav{
+      background:rgba(244,234,210,.92) !important;
+      border-top:1px solid rgba(83,58,26,.18) !important;
+    }
+
+    .eyebrow,
+    .kpi .label,
+    .field label{
+      color:#6b4e09 !important;
+      font-size:.98rem !important;
+      font-weight:900 !important;
+      letter-spacing:.08em !important;
+    }
+
+    h1{
+      color:#241a0d !important;
+      font-size:clamp(2.25rem,7.2vw,4.6rem) !important;
+      line-height:1.02 !important;
+      font-weight:900 !important;
+      letter-spacing:-.045em !important;
+    }
+
+    h2,
+    .hero h2,
+    .guidedPanel h2{
+      color:#241a0d !important;
+      font-size:clamp(1.65rem,5vw,2.8rem) !important;
+      line-height:1.12 !important;
+      font-weight:900 !important;
+    }
+
+    h3,
+    .panel h3,
+    .intent strong,
+    .helper strong,
+    .kpi .value,
+    .audioPanel strong,
+    .guidedCard strong{
+      color:#241a0d !important;
+      font-size:1.35rem !important;
+      line-height:1.18 !important;
+      font-weight:900 !important;
+    }
+
+    .sub,
+    .hero p,
+    .mini-card div,
+    .panel p.lead,
+    .intent span,
+    .helper,
+    .footer-note,
+    .hero-pill,
+    .output,
+    .guidedPanel p,
+    .guidedCard span,
+    .audioPanel span{
+      color:#3d3324 !important;
+      font-size:1.05rem !important;
+      line-height:1.62 !important;
+      font-weight:900 !important;
+    }
+
+    .btn,
+    .btn.secondary,
+    .btn.ghost,
+    .btn.gold,
+    .btn.warn,
+    .nav-link,
+    .bottomNav a,
+    .guidedAction,
+    button{
+      background:rgba(255,255,255,.72) !important;
+      color:#1f2a1f !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      min-height:60px !important;
+      font-size:1.05rem !important;
+      line-height:1.22 !important;
+      font-weight:900 !important;
+      box-shadow:0 8px 18px rgba(77,52,22,.08) !important;
+    }
+
+    .btn.gold,
+    .btn.primary,
+    .guidedAction.gold{
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .btn.warn,
+    .nav-link.active,
+    .intent.active,
+    .mode.live,
+    .bottomNav a.active,
+    .guidedAction.primary{
+      background:linear-gradient(135deg,#16a34a,#bbf7d0) !important;
+      color:#052215 !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .mode,
+    .hero-pill{
+      background:rgba(255,255,255,.72) !important;
+      color:#1f2a1f !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      font-weight:900 !important;
+    }
+
+    .input,
+    .textarea{
+      background:rgba(255,255,255,.84) !important;
+      color:#1f2a1f !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      font-size:1.12rem !important;
+      font-weight:900 !important;
+      line-height:1.55 !important;
+    }
+
+    .input::placeholder,
+    .textarea::placeholder{
+      color:rgba(31,42,31,.52) !important;
+    }
+
+    .output.empty{
+      color:#3d3324 !important;
+      font-style:normal !important;
+    }
+
+    .intent-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .intent{
+      min-height:128px !important;
+      padding:16px !important;
+    }
+
+    .audioPanel,
+    .guidedPanel{
+      margin-bottom:18px;
+      padding:18px;
+      border-radius:24px;
+      display:grid;
+      gap:12px;
+    }
+
+    .audioPanel{
+      text-align:center;
+      border-color:rgba(22,101,52,.24) !important;
+    }
+
+    .audioPanel .btn{
+      width:min(100%,380px);
+      margin:0 auto;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .guidedPanel h2,
+    .guidedPanel p{
+      margin:0;
+    }
+
+    .guidedGrid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .guidedCard{
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:22px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+      display:grid;
+      gap:8px;
+      min-height:150px;
+    }
+
+    .guidedIcon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      font-size:1.4rem;
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .guidedActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .guidedAction{
+      border-radius:999px;
+      padding:12px 15px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+      cursor:pointer;
+    }
+
+    .bottomNav a{
+      min-height:70px !important;
+      font-size:.92rem !important;
+    }
+
+    .bottomNav .ico{
+      font-size:1.35rem !important;
+    }
+
+    @media(max-width:960px){
+      .guidedGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:720px){
+      html,body{
+        font-size:20px !important;
+      }
+
+      .wrap{
+        width:min(96vw,1180px) !important;
+      }
+
+      h1{
+        font-size:clamp(2.35rem,12vw,3.55rem) !important;
+      }
+
+      h2,
+      .hero h2,
+      .guidedPanel h2{
+        font-size:1.8rem !important;
+      }
+
+      .intent-grid,
+      .guidedGrid{
+        grid-template-columns:1fr !important;
+      }
+
+      .btn,
+      .nav-link,
+      .guidedAction{
+        min-height:66px !important;
+        font-size:1.08rem !important;
+      }
+
+      .bottomNav a{
+        min-height:72px !important;
+      }
+
+      .panel,
+      .hero,
+      .audioPanel,
+      .guidedPanel{
+        padding:18px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -149,6 +548,51 @@
           <strong id="miniTitle">Aide maison</strong>
           <div id="miniText" style="color:var(--muted);line-height:1.55;">L’assistant ne remplace pas ton métier. Il t’aide à formuler, organiser, relancer et décider sans te disperser.</div>
         </div>
+      </div>
+    </section>
+
+
+    <section class="audioPanel" aria-label="Guide audio assistant RESA">
+      <strong>🎧 Guide de l’assistant RESA</strong>
+      <span>
+        Écoute DIGIY : choisis le cas, écris peu, puis laisse l’assistant préparer
+        une réponse client, un plan interne et les points à vérifier.
+      </span>
+      <button class="btn" id="btnResaClawAudio" type="button">🎧 Écouter DIGIY</button>
+    </section>
+
+    <section class="guidedPanel" aria-label="Actions guidées assistant RESA">
+      <h2>Le pro clique, DIGIY formule.</h2>
+      <p>
+        Choisis une situation du terrain. L’assistant remplit le cas,
+        prépare le message, puis tu ajustes avec ta vérité.
+      </p>
+      <div class="guidedGrid">
+        <button class="guidedCard" type="button" data-quick-intent="confirm" data-quick-title="Réservation à confirmer" data-quick-context="Le client a demandé une réservation. Je veux confirmer proprement la date, l’heure et le service.">
+          <div class="guidedIcon">✅</div>
+          <strong>Confirmer</strong>
+          <span>Préparer une réponse claire au client.</span>
+        </button>
+        <button class="guidedCard" type="button" data-quick-intent="relance" data-quick-title="Client à relancer" data-quick-context="Le client n’a pas encore confirmé. Je veux relancer simplement, sans pression.">
+          <div class="guidedIcon">📞</div>
+          <strong>Relancer</strong>
+          <span>Rappeler sans être lourd.</span>
+        </button>
+        <button class="guidedCard" type="button" data-quick-intent="retard" data-quick-title="Client en retard ou absent" data-quick-context="Le client est en retard ou n’est pas venu. Je veux garder un ton calme, clair et professionnel.">
+          <div class="guidedIcon">⚠️</div>
+          <strong>Retard</strong>
+          <span>Recadrer sans casser la relation.</span>
+        </button>
+        <button class="guidedCard" type="button" data-quick-intent="journee" data-quick-title="Organisation du service" data-quick-context="Je veux organiser la journée : réservations confirmées, créneaux à surveiller, salle, cuisine et notes rapides.">
+          <div class="guidedIcon">🍽️</div>
+          <strong>Service</strong>
+          <span>Aligner accueil, salle et cuisine.</span>
+        </button>
+      </div>
+      <div class="guidedActions">
+        <button class="guidedAction primary" id="btnGuidedGenerate" type="button">✨ Générer maintenant</button>
+        <a class="guidedAction" id="guidedPlanning" href="./planning.html">🗓️ Planning</a>
+        <a class="guidedAction gold" id="guidedCockpit" href="./cockpit.html">📋 Réservations</a>
       </div>
     </section>
 
@@ -306,7 +750,24 @@
             try{ localStorage.setItem("digiy_resa_slug", hiddenContext); }catch(_){}
             try{ localStorage.setItem("digiy_resa_last_slug", hiddenContext); }catch(_){}
           }
-          ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+          [
+            "slug",
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "resa_"+"tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach(k => u.searchParams.delete(k));
           history.replaceState({}, document.title, u.pathname + u.search + u.hash);
         }catch(_){}
       }
@@ -319,6 +780,7 @@
 
         state.sb = window.supabase.createClient(url,key,{
           auth:{
+            storageKey:"digiy-resa-claw-auth-token",
             persistSession:false,
             autoRefreshToken:false,
             detectSessionInUrl:false,
@@ -367,7 +829,24 @@
           return baseStr;
         }
 
-        ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+        [
+          "slug",
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "resa_"+"tel",
+          "resa_phone",
+          "business_phone",
+          "whatsapp",
+          "module",
+          "return",
+          "redirect",
+          "redirect_url",
+          "url",
+          "from",
+          "v"
+        ].forEach(k => u.searchParams.delete(k));
 
         if(u.origin === location.origin){
           const file = u.pathname.split("/").pop() || "dashboard-pro.html";
@@ -390,7 +869,8 @@
         const links = {
           navCockpit:cockpit, navDashboard:dashboard, navPlanning:planning, navQr:qr, navAssistant:assistant, navSettings:settings, navHome:home,
           btnCockpitTop:cockpit, btnPlanningTop:planning, btnQrTop:qr, btnSettingsTop:settings, heroCockpit:cockpit,
-          bottomHome:dashboard, bottomReserv:cockpit, bottomPlanning:planning, bottomNotes:notes, bottomMore:settings
+          bottomHome:dashboard, bottomReserv:cockpit, bottomPlanning:planning, bottomNotes:notes, bottomMore:settings,
+          guidedPlanning:planning, guidedCockpit:cockpit
         };
 
         Object.entries(links).forEach(([id, href]) => {
@@ -711,6 +1191,96 @@
         }
       }
 
+
+      function bindClawAudio(){
+        const btn = document.getElementById("btnResaClawAudio");
+        if(!btn) return;
+
+        function canSpeak(){
+          return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+        }
+
+        function getFrenchVoice(){
+          try{
+            const voices = speechSynthesis.getVoices() || [];
+            return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+                   voices.find(v => /^fr/i.test(v.lang || "")) ||
+                   voices[0] ||
+                   null;
+          }catch(_){
+            return null;
+          }
+        }
+
+        function stop(){
+          try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
+          btn.textContent = "🎧 Écouter DIGIY";
+        }
+
+        function speak(){
+          if(!canSpeak()) return;
+
+          stop();
+
+          const audioText =
+            "Bienvenue dans l’assistant RESA by DIGIY. Cette page aide le professionnel à parler proprement sans écrire trop. Choisis un besoin : disponibilité, confirmation, relance, retard, service ou organisation de la journée. Tu peux aussi toucher les cartes rapides : confirmer, relancer, retard ou service. DIGIY prépare un message client, un plan interne et les points à vérifier. Le professionnel ajuste avec sa vérité. Règle simple : le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide.";
+
+          const run = () => {
+            const u = new SpeechSynthesisUtterance(audioText);
+            const voice = getFrenchVoice();
+            if(voice) u.voice = voice;
+            u.lang = voice?.lang || "fr-FR";
+            u.rate = 0.86;
+            u.pitch = 1.04;
+            u.volume = 1;
+
+            btn.textContent = "⏹ Stop";
+
+            u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+            u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+
+            speechSynthesis.speak(u);
+          };
+
+          const voices = speechSynthesis.getVoices();
+          if(voices && voices.length) run();
+          else{
+            speechSynthesis.onvoiceschanged = run;
+            setTimeout(run, 650);
+          }
+        }
+
+        btn.addEventListener("click", () => {
+          if(canSpeak() && speechSynthesis.speaking) stop();
+          else speak();
+        });
+
+        window.addEventListener("pagehide", stop);
+        document.addEventListener("visibilitychange", () => {
+          if(document.hidden) stop();
+        });
+      }
+
+      function bindGuidedCards(){
+        document.querySelectorAll("[data-quick-intent]").forEach((card) => {
+          card.addEventListener("click", () => {
+            const intent = card.getAttribute("data-quick-intent") || "dispo";
+            const title = card.getAttribute("data-quick-title") || "";
+            const context = card.getAttribute("data-quick-context") || "";
+
+            setIntent(intent);
+            els.inputTitle.value = title;
+            els.inputContext.value = context;
+            saveDraft();
+
+            els.inputContext.scrollIntoView({behavior:"smooth", block:"center"});
+          });
+        });
+
+        document.getElementById("btnGuidedGenerate")?.addEventListener("click", generate);
+      }
+
+
       function bindEvents(){
         intentButtons.forEach(btn => {
           btn.addEventListener("click",() => {
@@ -815,6 +1385,8 @@
       }
 
       bindEvents();
+      bindClawAudio();
+      bindGuidedCards();
       boot();
     })();
   </script>
