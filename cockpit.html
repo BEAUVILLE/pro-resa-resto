@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Je réserve — Réservations RESA PRO</title>
   <meta name="theme-color" content="#f4ead2"/>
-  <meta name="digiy-build" content="resa-cockpit-20260510-v1-cache-click-audio"/>
+  <meta name="digiy-build" content="resa-cockpit-20260510-v2-lisibilite-anciens"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta http-equiv="Pragma" content="no-cache"/>
   <meta http-equiv="Expires" content="0"/>
@@ -20,7 +20,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "resa-cockpit-20260510-v1-cache-click-audio";
+      const BUILD_ID = "resa-cockpit-20260510-v2-lisibilite-anciens";
       const BUILD_KEY = "DIGIY_RESA_COCKPIT_BUILD_ID";
 
       function cleanBuildUrl(){
@@ -92,7 +92,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-cockpit-20260510-v1-cache-click-audio"></script>
+  <script src="./guard.js?v=resa-cockpit-20260510-v2-lisibilite-anciens"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -919,6 +919,194 @@
       .clickGuideRow{grid-template-columns:1fr}
       .actionBtn{flex:1 1 46%}
       .draftActions .btn{flex:1 1 100%}
+    }
+
+
+    /* =========================================================
+       DIGIY RESA — LISIBILITÉ ANCIENS / TERRAIN EXTÉRIEUR
+       Écriture plus grande, plus grasse, mieux respirée.
+       ========================================================= */
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      font-size:19px !important;
+      font-weight:900 !important;
+      line-height:1.5 !important;
+    }
+
+    h1{
+      font-size:clamp(2.15rem,7.2vw,4.6rem) !important;
+      line-height:1.02 !important;
+      font-weight:900 !important;
+      letter-spacing:-.045em !important;
+    }
+
+    h2{
+      font-size:clamp(1.55rem,4.8vw,2.55rem) !important;
+      line-height:1.12 !important;
+      font-weight:900 !important;
+    }
+
+    h3,
+    .panelTitle,
+    .assistant-title,
+    .draftTitle,
+    .audioPanel strong,
+    .clickGuide h2,
+    .clickPanelHead h2,
+    .booking-name{
+      font-size:1.28rem !important;
+      line-height:1.18 !important;
+      font-weight:900 !important;
+    }
+
+    p,
+    .lead,
+    .sub,
+    .hero p,
+    .panelText,
+    .assistant-text,
+    .assistant-item span,
+    .muted,
+    .note,
+    .draftText,
+    .clickGuide p,
+    .clickPanelHead p,
+    .mini,
+    .meta,
+    .footer-note,
+    .foot,
+    .noteHelp,
+    .taskCard span,
+    .clickCard span,
+    .guideMini span,
+    .service-pill{
+      font-size:1rem !important;
+      line-height:1.62 !important;
+      font-weight:900 !important;
+    }
+
+    .btn,
+    .nav-link,
+    .chip,
+    .pill,
+    .hero-pill,
+    .assistant-pill,
+    .assistant-mode,
+    .noteChip,
+    .bottomNav a,
+    .actionBtn,
+    .resaCardAction,
+    .clickBadge,
+    .tag,
+    button,
+    a.btn{
+      font-size:1rem !important;
+      font-weight:900 !important;
+      line-height:1.22 !important;
+    }
+
+    .btn,
+    .nav-link,
+    .chip,
+    .noteChip,
+    .actionBtn,
+    .clickCard,
+    .quickCard{
+      min-height:54px !important;
+    }
+
+    .bottomNav a{
+      font-size:.88rem !important;
+      min-height:64px !important;
+    }
+
+    .bottomNav .ico{
+      font-size:1.35rem !important;
+    }
+
+    .stat .label,
+    .label,
+    .kicker,
+    .eyebrow,
+    .assistant-kicker{
+      font-size:.95rem !important;
+      font-weight:900 !important;
+      letter-spacing:.08em !important;
+    }
+
+    .stat .value,
+    .bigMoney,
+    .value{
+      font-size:clamp(2.05rem,7vw,3.5rem) !important;
+      font-weight:900 !important;
+      line-height:1 !important;
+    }
+
+    .booking,
+    .card,
+    .assistant-card,
+    .hero,
+    .panel,
+    .clickPanel,
+    .clickGuide,
+    .audioPanel,
+    .draftPanel{
+      padding:18px !important;
+    }
+
+    textarea,
+    input,
+    select{
+      font-size:1.08rem !important;
+      font-weight:900 !important;
+      line-height:1.55 !important;
+    }
+
+    @media(max-width:640px){
+      body{
+        font-size:20px !important;
+      }
+
+      h1{
+        font-size:clamp(2.35rem,12vw,3.55rem) !important;
+      }
+
+      h2{
+        font-size:1.75rem !important;
+      }
+
+      h3,
+      .panelTitle,
+      .assistant-title,
+      .booking-name{
+        font-size:1.35rem !important;
+      }
+
+      .btn,
+      .nav-link,
+      .chip,
+      .noteChip,
+      .actionBtn{
+        min-height:60px !important;
+        font-size:1.05rem !important;
+      }
+
+      .bottomNav a{
+        min-height:68px !important;
+        font-size:.92rem !important;
+      }
+
+      .booking-actions{
+        gap:10px !important;
+      }
+
+      .actionBtn{
+        flex:1 1 100% !important;
+      }
     }
 
   </style>
