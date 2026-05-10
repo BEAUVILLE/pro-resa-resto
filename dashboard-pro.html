@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Je réserve — Accueil</title>
-  <meta name="theme-color" content="#0b1020" />
+  <title>Je réserve — Accueil RESA · salle, cuisine, client PRO</title>
+  <meta name="theme-color" content="#f4ead2" />
+  <meta name="digiy-build" content="resa-dashboard-20260510-v2-doctrine-click-audio" />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -12,7 +13,7 @@
     window.DIGIY_MODULE = "RESA";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-dashboard-secure-pin8h"></script>
+  <script src="./guard.js?v=resa-dashboard-20260510-v2-doctrine-click-audio"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -203,6 +204,312 @@
       .nav-rail{display:none}
       .right{display:none}
     }
+
+    /* =========================================================
+       DIGIY RESA — DASHBOARD TERRAIN CLAIR
+       Accueil interne : moins d'écriture, plus de clics guidés.
+       ========================================================= */
+    :root{
+      --bg:#f4ead2;
+      --card:#fff7e6;
+      --muted:#3d3324;
+      --text:#1f2a1f;
+      --ok:#16a34a;
+      --warn:#d97706;
+      --danger:#dc2626;
+      --accent:#4f46e5;
+      --line:rgba(83,58,26,.22);
+      --shadow:0 12px 28px rgba(77,52,22,.16);
+    }
+
+    body{
+      color:#1f2a1f !important;
+      background:
+        radial-gradient(circle at top left,rgba(250,204,21,.20),transparent 34%),
+        radial-gradient(circle at bottom right,rgba(22,101,52,.09),transparent 28%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 56%,#dfc99c) !important;
+      font-size:17px;
+      font-weight:850;
+    }
+
+    .topbar,
+    .nav-rail,
+    .hero,
+    .assistant-card,
+    .card,
+    .quickResa,
+    .bottomNavInner{
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.22) !important;
+      color:#1f2a1f !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+    }
+
+    .bottomNav{
+      background:rgba(244,234,210,.92) !important;
+      border-top:1px solid rgba(83,58,26,.18) !important;
+    }
+
+    .brand .badge{
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      border:1px solid rgba(121,83,12,.24) !important;
+      color:#1f2a1f !important;
+    }
+
+    #brandTitle,
+    h2,
+    .assistant-title,
+    .card h3,
+    #statusLine,
+    .bigMoney,
+    .assistant-item strong,
+    .clickCard strong,
+    .taskCard strong{
+      color:#241a0d !important;
+      font-weight:900 !important;
+    }
+
+    .muted,
+    .hero p,
+    .assistant-text,
+    .assistant-item span,
+    #expiryLine,
+    #metaLine,
+    .mini,
+    .boostBox .muted,
+    .actionDesc,
+    .noteHelp,
+    .taskCard span,
+    .clickCard span{
+      color:#3d3324 !important;
+      font-weight:900 !important;
+      line-height:1.55 !important;
+    }
+
+    .pill,
+    .hero-pill,
+    .assistant-pill,
+    .assistant-mode,
+    .tag,
+    .nav-link,
+    .btn,
+    .noteChip,
+    .bottomNav a{
+      background:rgba(255,255,255,.70) !important;
+      color:#1f2a1f !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      font-weight:900 !important;
+    }
+
+    .nav-link.active,
+    .btn.primary,
+    .bottomNav a.active{
+      background:linear-gradient(135deg,#16a34a,#bbf7d0) !important;
+      color:#052215 !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    textarea{
+      background:rgba(255,255,255,.82) !important;
+      color:#1f2a1f !important;
+      border:2px solid rgba(83,58,26,.24) !important;
+      font-size:17px !important;
+      font-weight:900 !important;
+    }
+
+    textarea::placeholder{
+      color:rgba(31,42,31,.52) !important;
+    }
+
+    .hr{
+      background:rgba(83,58,26,.22) !important;
+    }
+
+    .statusDot{background:#d97706 !important}
+    .statusDot.ok{background:#16a34a !important}
+    .statusDot.bad{background:#dc2626 !important}
+
+    .boostBox,
+    .notif,
+    .assistant-item,
+    .draftBox{
+      background:rgba(255,255,255,.64) !important;
+      border:1px solid rgba(83,58,26,.20) !important;
+      color:#1f2a1f !important;
+    }
+
+    .clickPanel{
+      margin:0 0 12px;
+      padding:16px;
+      border:2px solid rgba(83,58,26,.22);
+      border-radius:24px;
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 10px 24px rgba(77,52,22,.12);
+    }
+
+    .clickPanelHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .clickPanelHead h2{
+      margin:0;
+      color:#241a0d;
+      font-size:clamp(22px,4vw,34px);
+      line-height:1.08;
+      letter-spacing:-.035em;
+      font-weight:900;
+    }
+
+    .clickPanelHead p{
+      margin:6px 0 0;
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:900;
+      max-width:62ch;
+    }
+
+    .clickBadge{
+      border-radius:999px;
+      border:1px solid rgba(22,101,52,.24);
+      background:rgba(220,252,231,.86);
+      color:#14532d;
+      padding:9px 12px;
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .clickGrid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .clickCard{
+      min-height:132px;
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:22px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      text-align:left;
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .clickCard .ico{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      font-size:22px;
+    }
+
+    .clickCard strong{
+      display:block;
+      font-size:16px;
+      line-height:1.2;
+      margin-top:7px;
+    }
+
+    .clickCard span{
+      display:block;
+      font-size:13px;
+      line-height:1.42;
+      margin-top:4px;
+    }
+
+    .taskRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .taskCard{
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:20px;
+      background:rgba(255,255,255,.66);
+      padding:13px;
+      display:grid;
+      gap:5px;
+    }
+
+    .taskCard strong{
+      font-size:15px;
+      line-height:1.2;
+    }
+
+    .taskCard span{
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .audioPanel{
+      margin:0 0 12px;
+      padding:16px;
+      border-radius:24px;
+      border:2px solid rgba(22,101,52,.24);
+      background:
+        radial-gradient(circle at right top,rgba(34,197,94,.10),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 10px 24px rgba(77,52,22,.12);
+      text-align:center;
+      display:grid;
+      gap:9px;
+    }
+
+    .audioPanel strong{
+      color:#14532d;
+      font-size:17px;
+      font-weight:900;
+    }
+
+    .audioPanel span{
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:900;
+    }
+
+    .audioPanel .btn{
+      width:min(100%,360px);
+      margin:0 auto;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    @media(max-width:920px){
+      .clickGrid,
+      .taskRow{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+
+    @media(max-width:640px){
+      body{font-size:18px}
+      .wrap{padding-left:10px;padding-right:10px}
+      .clickGrid,
+      .taskRow{
+        grid-template-columns:1fr;
+      }
+      .clickBadge{width:100%;text-align:center}
+      .clickCard{min-height:126px}
+    }
+
   </style>
 </head>
 <body>
@@ -236,7 +543,7 @@
 
     <section class="hero">
       <h2 id="heroTitle">Accueil RESA</h2>
-      <p id="heroDesc">Ici tu vois ce qui demande attention : réservations, planning, paiements à surveiller et notes rapides.</p>
+      <p id="heroDesc">Ici tu vois ce qui demande attention : demandes reçues, confirmations, planning, arrivées, paiements à surveiller et notes rapides.</p>
 
       <div class="hero-meta">
         <div class="hero-pill" id="heroSession">Session : protégée</div>
@@ -257,6 +564,16 @@
         <a class="btn" id="quickNotes" href="#resaNotes">✍️ Notes</a>
         <a class="btn" id="quickPlus" href="./etablissement.html">⚙️ Plus</a>
       </div>
+    </section>
+
+
+    <section class="audioPanel" aria-label="Guide audio accueil RESA">
+      <strong>🎧 Guide de l’accueil RESA</strong>
+      <span>
+        Écoute DIGIY : l’accueil sert à voir vite ce qui demande attention,
+        puis à agir par clic sans écrire comme un secrétaire.
+      </span>
+      <button class="btn" id="btnResaDashboardAudio" type="button">🎧 Écouter DIGIY</button>
     </section>
 
     <section class="assistant-grid">
@@ -280,6 +597,106 @@
         </div>
       </article>
     </section>
+
+
+    <section class="clickPanel" id="clickActionsPanel" aria-label="Actions guidées RESA">
+      <div class="clickPanelHead">
+        <div>
+          <h2>Actions rapides du service</h2>
+          <p>
+            Pas besoin d’écrire long. Le pro touche une carte, DIGIY prépare la phrase,
+            puis la salle, la cuisine et l’accueil restent alignés.
+          </p>
+        </div>
+        <div class="clickBadge">Le pro clique · DIGIY prépare</div>
+      </div>
+
+      <div class="clickGrid">
+        <button class="clickCard" type="button" data-resa-note="Nouvelle demande de réservation à traiter">
+          <div>
+            <div class="ico">📥</div>
+            <strong>Demande reçue</strong>
+            <span>Prépare une trace simple pour une nouvelle demande client.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Réservation confirmée au client">
+          <div>
+            <div class="ico">✅</div>
+            <strong>Confirmer</strong>
+            <span>Prépare la note et le message de confirmation.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Client arrivé pour sa réservation">
+          <div>
+            <div class="ico">🚶</div>
+            <strong>Client arrivé</strong>
+            <span>Marque l’arrivée et garde le service lisible.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Réservation terminée, service clôturé">
+          <div>
+            <div class="ico">🏁</div>
+            <strong>Terminé</strong>
+            <span>Clôture proprement la réservation du jour.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Acompte réservation 10000 wave">
+          <div>
+            <div class="ico">💳</div>
+            <strong>Acompte reçu</strong>
+            <span>Prépare une trace vers Mon Argent.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Client doit encore 5000">
+          <div>
+            <div class="ico">🧾</div>
+            <strong>Reste à payer</strong>
+            <span>Note ce que le client doit encore régler.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Prévenir la cuisine : réservation à préparer">
+          <div>
+            <div class="ico">🍽️</div>
+            <strong>Cuisine</strong>
+            <span>Prépare une note pour anticiper le service.</span>
+          </div>
+        </button>
+
+        <button class="clickCard" type="button" data-resa-note="Réservation annulée par le client">
+          <div>
+            <div class="ico">⚠️</div>
+            <strong>Annulation</strong>
+            <span>Garde une trace claire sans paniquer le service.</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="taskRow" aria-label="Repères du jour">
+        <div class="taskCard">
+          <strong>📋 Réservations</strong>
+          <span>Ce qui est reçu, confirmé ou à rappeler.</span>
+        </div>
+        <div class="taskCard">
+          <strong>🗓️ Planning</strong>
+          <span>Ce qui arrive aujourd’hui et demain.</span>
+        </div>
+        <div class="taskCard">
+          <strong>✍️ Notes</strong>
+          <span>Acompte, dette, annulation, achat, nettoyage.</span>
+        </div>
+        <div class="taskCard">
+          <strong>🤝 Aide</strong>
+          <span>Messages prêts pour parler proprement au client.</span>
+        </div>
+      </div>
+    </section>
+
 
     <div class="grid">
       <div class="card" id="cardStatus">
@@ -331,10 +748,12 @@
         <div class="noteChips">
           <button class="noteChip" type="button">Acompte réservation 10000 wave</button>
           <button class="noteChip" type="button">Client doit 5000</button>
+          <button class="noteChip" type="button">Prévenir cuisine table de 4</button>
           <button class="noteChip" type="button">Dépense nettoyage 3000 cash</button>
           <button class="noteChip" type="button">Achat boisson 8000</button>
           <button class="noteChip" type="button">Paiement table 15000 cash</button>
           <button class="noteChip" type="button">Annulation client</button>
+          <button class="noteChip" type="button">Client arrivé</button>
         </div>
 
         <div class="footer">
@@ -433,7 +852,24 @@
         storageSet("digiy_resa_last_slug", legacySlug);
       }
 
-      ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+      [
+        "slug",
+        "phone",
+        "tel",
+        "owner_phone",
+        "owner_id",
+        "resa_"+"tel",
+        "resa_phone",
+        "business_phone",
+        "whatsapp",
+        "module",
+        "return",
+        "redirect",
+        "redirect_url",
+        "url",
+        "from",
+        "v"
+      ].forEach(k => u.searchParams.delete(k));
       history.replaceState({}, document.title, u.pathname + u.search + u.hash);
     }catch(_){}
   }
@@ -477,7 +913,23 @@
       return baseStr;
     }
 
-    ["slug","phone","tel","resa_"+"tel"].forEach(k => u.searchParams.delete(k));
+    [
+      "slug",
+      "phone",
+      "tel",
+      "owner_phone",
+      "owner_id",
+      "resa_"+"tel",
+      "resa_phone",
+      "business_phone",
+      "whatsapp",
+      "return",
+      "redirect",
+      "redirect_url",
+      "url",
+      "from",
+      "v"
+    ].forEach(k => u.searchParams.delete(k));
 
     try{
       Object.entries(params || {}).forEach(([k,v]) => {
@@ -856,9 +1308,105 @@
     });
   }
 
+
+  function bindClickActionCards(){
+    document.querySelectorAll("[data-resa-note]").forEach((card) => {
+      card.addEventListener("click", () => {
+        const note = card.getAttribute("data-resa-note") || "";
+        const input = $("resaQuickNote");
+        const draftBox = $("resaNoteDraft");
+
+        if(input){
+          input.value = note;
+          input.scrollIntoView({ behavior:"smooth", block:"center" });
+        }
+
+        if(draftBox) draftBox.style.display = "none";
+
+        try{
+          const draft = parseResaNote(note);
+          const pay = $("btnSendResaPay");
+          if(pay) pay.href = buildResaPayDraftUrl(draft);
+        }catch(_){}
+      });
+    });
+  }
+
+  function bindDashboardAudio(){
+    const btn = $("btnResaDashboardAudio");
+    if(!btn) return;
+
+    function canSpeak(){
+      return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    }
+
+    function getFrenchVoice(){
+      try{
+        const voices = speechSynthesis.getVoices() || [];
+        return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+               voices.find(v => /^fr/i.test(v.lang || "")) ||
+               voices[0] ||
+               null;
+      }catch(_){
+        return null;
+      }
+    }
+
+    function stop(){
+      try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
+      btn.textContent = "🎧 Écouter DIGIY";
+    }
+
+    function speak(){
+      if(!canSpeak()) return;
+
+      stop();
+
+      const text =
+        "Bienvenue dans l’accueil RESA by DIGIY. Cette page sert à voir vite ce qui demande attention : les réservations, le planning, les notes rapides et les actions utiles du moment. Le professionnel ne doit pas écrire comme un secrétaire. Il peut cliquer sur demande reçue, confirmer, client arrivé, terminé, acompte reçu, reste à payer, cuisine ou annulation. DIGIY prépare la trace. La salle comprend qui arrive. La cuisine sait quoi anticiper. Le responsable garde la mémoire. Pour les paiements et acomptes, la note peut partir vers Mon Argent. Règle simple : le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité.";
+
+      const run = () => {
+        const u = new SpeechSynthesisUtterance(text);
+        const voice = getFrenchVoice();
+        if(voice) u.voice = voice;
+        u.lang = voice?.lang || "fr-FR";
+        u.rate = 0.86;
+        u.pitch = 1.04;
+        u.volume = 1;
+
+        btn.textContent = "⏹ Stop";
+
+        u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+        u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+
+        speechSynthesis.speak(u);
+      };
+
+      const voices = speechSynthesis.getVoices();
+      if(voices && voices.length) run();
+      else{
+        speechSynthesis.onvoiceschanged = run;
+        setTimeout(run, 650);
+      }
+    }
+
+    btn.addEventListener("click", () => {
+      if(canSpeak() && speechSynthesis.speaking) stop();
+      else speak();
+    });
+
+    window.addEventListener("pagehide", stop);
+    document.addEventListener("visibilitychange", () => {
+      if(document.hidden) stop();
+    });
+  }
+
+
   async function boot(){
     cleanVisibleUrl();
     bindQuickResaNote();
+    bindClickActionCards();
+    bindDashboardAudio();
 
     $("brandTitle").textContent = MODULE_LABEL;
     $("brandSub").textContent = "Accueil RESA";
