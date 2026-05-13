@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Je réserve — Plus RESA PRO</title>
   <meta name="theme-color" content="#f4ead2"/>
-  <meta name="digiy-build" content="resa-etablissement-20260510-v1-cache-audio-lisibilite"/>
+  <meta name="digiy-build" content="resa-etablissement-20260513-v2-atelier-fiche"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta http-equiv="Pragma" content="no-cache"/>
   <meta http-equiv="Expires" content="0"/>
@@ -21,7 +21,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "resa-etablissement-20260510-v1-cache-audio-lisibilite";
+      const BUILD_ID = "resa-etablissement-20260513-v2-atelier-fiche";
       const BUILD_KEY = "DIGIY_RESA_ETABLISSEMENT_BUILD_ID";
 
       function cleanBuildUrl(){
@@ -94,7 +94,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-etablissement-20260510-v1-cache-audio-lisibilite"></script>
+  <script src="./guard.js?v=resa-etablissement-20260513-v2-atelier-fiche"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -460,6 +460,38 @@
       text-decoration:none;
     }
 
+
+
+    .atelierPanel{
+      border-color:rgba(79,70,229,.24) !important;
+      background:
+        radial-gradient(circle at right top,rgba(79,70,229,.10),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+    }
+
+    .atelierNotice{
+      display:none;
+      margin-top:10px;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid rgba(22,101,52,.28);
+      background:rgba(22,163,74,.10);
+      color:#14532d;
+      font-size:1rem;
+      font-weight:900;
+      line-height:1.55;
+      white-space:pre-wrap;
+    }
+
+    .atelierNotice.show{
+      display:block;
+    }
+
+    button.guidedAction{
+      cursor:pointer;
+      font-family:var(--fontA);
+    }
+
     @media(max-width:980px){
       .guidedGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
@@ -639,6 +671,49 @@
       </div>
     </section>
 
+
+
+    <section class="guidedPanel atelierPanel" id="atelierFiche" aria-label="Atelier fiche publique RESA">
+      <h2>📝 Construire ma fiche publique</h2>
+      <p>
+        C’est ici que le pro prépare ce que le client va comprendre : le nom du lieu,
+        l’activité, la ville, l’adresse, les horaires, la capacité, les services et les repères.
+        Le QR vient après : il sert à faire circuler cette fiche.
+      </p>
+
+      <div class="guidedGrid">
+        <div class="guidedCard">
+          <div class="guidedIcon">📝</div>
+          <strong>Ma fiche</strong>
+          <span>Vérifier le nom, la présentation, la ville, l’adresse, les horaires et la capacité.</span>
+        </div>
+        <div class="guidedCard">
+          <div class="guidedIcon">➕</div>
+          <strong>Mes services</strong>
+          <span>Ajouter des prestations simples pour que le client sache quoi réserver.</span>
+        </div>
+        <div class="guidedCard">
+          <div class="guidedIcon">🌍</div>
+          <strong>Côté client</strong>
+          <span>Contrôler la fiche publique avant de la partager au téléphone ou au comptoir.</span>
+        </div>
+        <div class="guidedCard">
+          <div class="guidedIcon">📲</div>
+          <strong>QR client</strong>
+          <span>Quand la fiche est prête, le QR devient la porte à scanner et à partager.</span>
+        </div>
+      </div>
+
+      <div class="guidedActions">
+        <a class="guidedAction primary" id="atelierModifier" href="./claw.html">📝 Préparer / corriger ma fiche</a>
+        <a class="guidedAction gold" id="atelierService" href="./claw.html">➕ Préparer un service</a>
+        <a class="guidedAction" id="atelierVitrine" href="https://resa-table-resto.digiylyfe.com/" target="_blank" rel="noopener">🌍 Voir côté client</a>
+        <a class="guidedAction" id="atelierQr" href="./qr.html">📲 Mon QR client</a>
+        <button class="guidedAction" id="atelierCopyDraft" type="button">📋 Copier résumé fiche</button>
+      </div>
+      <div class="atelierNotice" id="atelierNotice"></div>
+    </section>
+
     <section class="grid">
       <div class="card">
         <h2>Repères terrain</h2>
@@ -676,9 +751,13 @@
       </article>
     </section>
 
-    <section class="card" style="margin-top:14px">
+    <section class="card" style="margin-top:14px" id="servicesSection">
       <h2>Services proposés</h2>
       <div class="muted">Les services proposés par ton activité côté client.</div>
+      <div class="guidedActions" style="margin-top:10px">
+        <a class="guidedAction gold" id="btnPrepareService" href="./claw.html">➕ Préparer un service</a>
+        <a class="guidedAction" id="btnGoQrFromServices" href="./qr.html">📲 QR après services</a>
+      </div>
       <div class="services" id="servicesBox">
         <div class="service"><div class="muted">Chargement des services…</div></div>
       </div>
@@ -892,7 +971,12 @@
           bottomMore: settingsHref,
           guidedReservations: cockpitHref,
           guidedPlanning: planningHref,
-          guidedQr: qrHref
+          guidedQr: qrHref,
+          atelierModifier: assistantHref,
+          atelierService: assistantHref,
+          atelierQr: qrHref,
+          btnPrepareService: assistantHref,
+          btnGoQrFromServices: qrHref
         };
 
         Object.entries(links).forEach(([id, href]) => {
@@ -1099,6 +1183,64 @@
       }
 
 
+
+      function buildFicheDraft(profile,services){
+        const p = profile || {};
+        const list = Array.isArray(services) ? services : [];
+        const zones = Array.isArray(p.zones)
+          ? p.zones
+          : String(p.zones_text || p.zones || "").split(",").map(s => s.trim()).filter(Boolean);
+
+        const lines = [
+          "DIGIY RESA · Brouillon fiche publique",
+          "Nom : " + safe(p.display_name || p.business_name || p.name,"à préciser"),
+          "Activité : " + safe(p.business_type || p.category,"à préciser"),
+          "Ville : " + safe(p.city,"à préciser"),
+          "Adresse : " + safe(p.address_text || p.address,"à préciser"),
+          "Horaires : " + safe(p.opening_hours_text || p.hours_text,"à préciser"),
+          "Capacité : " + (p.capacity ? String(p.capacity) + " places / accueil" : "à préciser"),
+          "Zones : " + (zones.length ? zones.join(", ") : "à préciser"),
+          "Présentation : " + safe(p.bio,"à écrire clairement"),
+          "Services : " + (list.length ? list.map(s => safe(s.service_name,"Service") + (s.duration_minutes ? " · " + s.duration_minutes + " min" : "") + (s.price_fcfa ? " · " + money(s.price_fcfa) : "")).join(" | ") : "aucun service détaillé pour l'instant"),
+          "Action demandée : compléter / corriger la fiche publique et ajouter les services manquants."
+        ];
+
+        return lines.join("\n");
+      }
+
+      async function copyText(text){
+        if(navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly","");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        let ok = false;
+        try{ ok = document.execCommand("copy"); }catch(_){}
+        ta.remove();
+        if(!ok) throw new Error("copy_failed");
+      }
+
+      function bindAtelierFiche(){
+        const btn = $("atelierCopyDraft");
+        const notice = $("atelierNotice");
+        if(!btn || !notice) return;
+
+        btn.addEventListener("click", async () => {
+          const draft = buildFicheDraft(window.__DIGIY_RESA_CURRENT_PROFILE || {}, window.__DIGIY_RESA_CURRENT_SERVICES || []);
+          try{
+            await copyText(draft);
+            notice.className = "atelierNotice show";
+            notice.textContent = "✅ Résumé de fiche copié. Tu peux le coller dans Aide, WhatsApp ou ton tableau de suivi pour compléter la fiche sans perdre les informations.";
+          }catch(e){
+            notice.className = "atelierNotice show";
+            notice.textContent = draft;
+          }
+        });
+      }
+
       function bindPlusAudio(){
         const btn = $("btnResaPlusAudio");
         if(!btn) return;
@@ -1130,7 +1272,7 @@
           stop();
 
           const audioText =
-            "Bienvenue dans Plus, la page établissement de Je réserve by DIGIY. Ici, le professionnel vérifie les repères qui aident le client : le nom de l’activité, la ville, l’adresse, les horaires, la capacité, les services proposés, le QR et la vitrine publique. Cette page n’est pas faite pour perdre le pro dans des réglages compliqués. Elle sert à lire vite : est-ce que la fiche donne confiance ? Est-ce que le client comprend quoi réserver ? Est-ce que les services sont clairs ? Est-ce que la vitrine peut être partagée ? Règle DIGIY : le pro clique plus qu’il n’écrit. DIGIY montre les repères, le terrain valide avec sa vérité.";
+            "Bienvenue dans Plus, la page établissement de Je réserve by DIGIY. Ici, le professionnel vérifie les repères qui aident le client : le nom de l’activité, la ville, l’adresse, les horaires, la capacité, les services proposés, le QR, la vitrine publique et l’atelier fiche. Cette page n’est pas faite pour perdre le pro dans des réglages compliqués. Elle sert à lire vite : est-ce que la fiche donne confiance ? Est-ce que le client comprend quoi réserver ? Est-ce que les services sont clairs ? Est-ce que la vitrine peut être partagée ? Règle DIGIY : le pro clique plus qu’il n’écrit. DIGIY montre les repères, le terrain valide avec sa vérité.";
 
           const run = () => {
             const u = new SpeechSynthesisUtterance(audioText);
@@ -1172,6 +1314,7 @@
       async function boot(){
         cleanVisibleUrl();
         setNavLinks();
+        bindAtelierFiche();
         setAssistantLoading();
 
         if(!supabaseLib || typeof supabaseLib.createClient !== "function"){
@@ -1245,10 +1388,14 @@
           $("btnPublicHero").href = publicUrl;
           $("btnReserve").href = reserveUrl;
           if($("guidedVitrine")) $("guidedVitrine").href = publicUrl;
+          if($("atelierVitrine")) $("atelierVitrine").href = publicUrl;
+
+          window.__DIGIY_RESA_CURRENT_PROFILE = p;
 
           renderZones(zones);
 
           const services = await loadServices(sb,RESOLVED_SLUG);
+          window.__DIGIY_RESA_CURRENT_SERVICES = services;
           renderServices(services,businessType);
           buildAssistantFromProfile(p,services);
         }catch(e){
