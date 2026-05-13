@@ -1085,7 +1085,7 @@
           },
           {
             title:"Accueil client",
-            text:`${hasAddress ? "Adresse visible côté fiche." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : (p.booking_message ? "Accueil personnalisé indiqué." : "Accueil personnalisé à préciser.")}`
+            text:`${hasAddress ? "Adresse visible côté fiche." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : "Capacité encore floue."}`
           },
           {
             title:"Réservation",
@@ -1108,8 +1108,11 @@
       }
 
       function money(v){
-        const n = Number(v);
-        if(!Number.isFinite(n)) return "";
+        if(v === null || v === undefined) return "sur demande";
+        const raw = String(v).trim();
+        if(raw === "") return "sur demande";
+        const n = Number(raw);
+        if(!Number.isFinite(n) || n <= 0) return "sur demande";
         return n.toLocaleString("fr-FR") + " FCFA";
       }
 
@@ -1377,7 +1380,7 @@
           $("bio").textContent = safe(p.bio,"Présentation à découvrir.");
           $("address").textContent = safe(p.address_text || p.address,"Adresse à préciser");
           $("hours").textContent = safe(p.opening_hours_text || p.hours_text,"Horaires à préciser");
-          $("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : (p.booking_message || "Accueil personnalisé");
+          $("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : "Capacité à préciser";
           $("contactPublic").textContent = "Visible uniquement côté vitrine client contrôlée";
           $("bookingHelp").textContent = `Réservation simple pour ${businessType.toLowerCase()}`;
 
