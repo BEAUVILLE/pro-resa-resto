@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#0b1020" />
-  <title>Mon QR client · DIGIY RESA</title>
+  <title>Mon QR réservation · DIGIY RESA</title>
+
   <script>
     window.DIGIY_MODULE = "RESA";
     window.DIGIY_LOGIN_URL = "./pin.html";
@@ -13,116 +14,143 @@
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-qr-secure-pin8h-no-qrcode-lib"></script>
+  <script src="./guard.js?v=resa-qr-direct-reservation-v2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+
   <style>
     :root{
-      --bg:#020617;--card:#0f172a;--accent:#facc15;--muted:#9ca3af;--text:#e5e7eb;
-      --line:rgba(148,163,184,.18);--danger:#ef4444;--ok:#22c55e;--info:#38bdf8;
+      --bg:#020617;--card:#0f172a;--accent:#facc15;--muted:#cbd5e1;--text:#f8fafc;
+      --line:rgba(255,255,255,.16);--danger:#ef4444;--ok:#22c55e;--info:#38bdf8;
       --shadow:0 18px 60px rgba(0,0,0,.45);--fontA:"Outfit",system-ui,-apple-system,sans-serif;
     }
     *{box-sizing:border-box;margin:0;padding:0}
     body{
       font-family:var(--fontA);
       background:
-        radial-gradient(circle at 10% 10%, rgba(250,204,21,.09), transparent 40%),
-        radial-gradient(circle at 90% 100%, rgba(34,197,94,.10), transparent 45%),
+        radial-gradient(circle at 10% 10%, rgba(250,204,21,.12), transparent 42%),
+        radial-gradient(circle at 90% 100%, rgba(34,197,94,.13), transparent 45%),
         linear-gradient(135deg,#020617,#0f172a);
       color:var(--text);
       min-height:100vh;
-      padding-bottom:calc(104px + env(safe-area-inset-bottom,0px));
+      padding-bottom:calc(110px + env(safe-area-inset-bottom,0px));
+      font-size:18px;
     }
     a{color:inherit;text-decoration:none}
-    .wrap{max-width:860px;margin:auto;padding:18px}
-    h1{font-size:clamp(1.6rem,4.5vw,2.2rem);margin-bottom:6px;font-weight:1000;letter-spacing:-.02em}
-    p{color:var(--muted);margin-bottom:14px;line-height:1.5;font-weight:800}
-    .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:var(--shadow)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .wrap{max-width:900px;margin:auto;padding:18px}
+    .hero{display:grid;gap:12px;margin-bottom:14px}
+    h1{font-size:clamp(2.2rem,8vw,3.4rem);line-height:1.02;font-weight:1000;letter-spacing:-.04em}
+    p{color:var(--muted);line-height:1.58;font-weight:850;font-size:18px}
+    .card{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:26px;padding:18px;margin-top:14px;box-shadow:var(--shadow)}
+    .pillRow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .pill{padding:11px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#e2e8f0;font-weight:950;font-size:15px}
+    .pill.ok{border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.10);color:#bbf7d0}
+    .pill.warn{border-color:rgba(250,204,21,.32);background:rgba(250,204,21,.10);color:#fde68a}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
     .btn{
-      width:100%;padding:12px;border-radius:12px;font-weight:900;border:none;cursor:pointer;margin-top:10px;min-height:52px;
-      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s ease,filter .12s ease,opacity .12s ease;
-      font-family:var(--fontA);font-size:15px;
+      flex:1 1 240px;
+      width:100%;
+      padding:17px 18px;
+      border-radius:18px;
+      font-weight:1000;
+      border:none;
+      cursor:pointer;
+      margin-top:10px;
+      min-height:62px;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:10px;
+      transition:transform .12s ease,filter .12s ease,opacity .12s ease;
+      font-family:var(--fontA);
+      font-size:18px;
+      line-height:1.12;
     }
     .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.05)}
     .btn:disabled{opacity:.55;cursor:not-allowed}
-    .btn.primary{background:var(--accent);color:#111827}
-    .btn.ghost{background:transparent;border:1px solid rgba(250,204,21,.35);color:#fff}
-    .btn.good{background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.35);color:#bbf7d0}
-    .btn.info{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.32);color:#d8f2ff}
-    .mini{margin-top:10px;color:var(--muted);font-size:.9rem;font-weight:800;line-height:1.5;word-break:break-word}
-    .note{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);display:none;white-space:pre-wrap;line-height:1.45;font-weight:850}
-    .note.ok{display:block;border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.08)}
-    .note.bad{display:block;border-color:rgba(239,68,68,.35);color:#fecaca;background:rgba(239,68,68,.08)}
-    .note.warn{display:block;border-color:rgba(250,204,21,.35);color:#fde68a;background:rgba(250,204,21,.08)}
-    .qrbox{display:flex;justify-content:center;align-items:center;padding:16px;border-radius:16px;border:1px dashed rgba(250,204,21,.35);background:rgba(0,0,0,.12);margin-top:12px;min-height:220px}
-    .qrImg{max-width:100%;width:320px;height:auto;border-radius:12px;background:#fff;padding:10px;display:block;border:1px solid rgba(148,163,184,.22)}
-    .hr{height:1px;background:rgba(148,163,184,.18);margin-top:12px}
-    .pillRow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-    .pill{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#cbd5e1;font-weight:900;font-size:.9rem}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),#f97316);color:#111827;box-shadow:0 14px 34px rgba(250,204,21,.25)}
+    .btn.good{background:linear-gradient(135deg,var(--ok),#16a34a);color:#04110d;box-shadow:0 14px 34px rgba(34,197,94,.20)}
+    .btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(250,204,21,.35);color:#fff}
+    .btn.info{background:rgba(56,189,248,.13);border:1px solid rgba(56,189,248,.34);color:#d8f2ff}
+    .mini{margin-top:14px;color:var(--muted);font-size:16px;font-weight:850;line-height:1.55;word-break:break-word}
+    .note{margin-top:12px;padding:14px;border-radius:16px;border:1px solid var(--line);display:none;white-space:pre-wrap;line-height:1.45;font-weight:900;font-size:16px}
+    .note.ok{display:block;border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.09)}
+    .note.bad{display:block;border-color:rgba(239,68,68,.35);color:#fecaca;background:rgba(239,68,68,.09)}
+    .note.warn{display:block;border-color:rgba(250,204,21,.35);color:#fde68a;background:rgba(250,204,21,.09)}
+    .qrbox{display:flex;justify-content:center;align-items:center;padding:18px;border-radius:22px;border:2px dashed rgba(250,204,21,.42);background:rgba(0,0,0,.16);margin-top:14px;min-height:260px}
+    .qrImg{max-width:100%;width:340px;height:auto;border-radius:16px;background:#fff;padding:12px;display:block;border:1px solid rgba(148,163,184,.22)}
     .assistant-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:14px;margin-top:14px}
     @media(max-width:860px){.assistant-grid{grid-template-columns:1fr}}
-    .assistant-card{background:linear-gradient(180deg, rgba(56,189,248,.09), rgba(34,197,94,.06));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:16px}
-    .assistant-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-    .assistant-kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#cfe8ff;font-weight:950;margin-bottom:6px}
-    .assistant-title{margin:0;font-size:18px;font-weight:950;line-height:1.2}
-    .assistant-mode{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(56,189,248,.24);background:rgba(56,189,248,.10);color:#d8f2ff;font-size:12px;font-weight:950}
-    .assistant-text{color:var(--muted);font-size:14px;line-height:1.65;font-weight:750}
+    .assistant-card{background:linear-gradient(180deg, rgba(56,189,248,.09), rgba(34,197,94,.06));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px}
+    .assistant-kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#cfe8ff;font-weight:1000;margin-bottom:8px}
+    .assistant-title{margin:0;font-size:24px;font-weight:1000;line-height:1.12}
+    .assistant-mode{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:10px 13px;border-radius:999px;border:1px solid rgba(56,189,248,.24);background:rgba(56,189,248,.10);color:#d8f2ff;font-size:14px;font-weight:1000}
+    .assistant-text{color:var(--muted);font-size:17px;line-height:1.65;font-weight:850;margin-top:10px}
     .assistant-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .assistant-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:900}
-    .assistant-list{display:grid;gap:10px;margin-top:12px}
-    .assistant-item{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
-    .assistant-item strong{display:block;margin-bottom:6px;font-size:14px;font-weight:950;color:var(--text)}
-    .assistant-item span{display:block;color:var(--muted);font-size:13px;line-height:1.55;font-weight:750}
+    .assistant-pill{display:inline-flex;align-items:center;gap:6px;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);font-size:14px;font-weight:950}
+    .assistant-list{display:grid;gap:10px}
+    .assistant-item{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+    .assistant-item strong{display:block;margin-bottom:6px;font-size:17px;font-weight:1000;color:var(--text)}
+    .assistant-item span{display:block;color:var(--muted);font-size:16px;line-height:1.55;font-weight:850}
     .bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:99990;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(2,6,23,.94);border-top:1px solid rgba(255,255,255,.10);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
     .bottomNavInner{width:min(100%,760px);margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-    .bottomNav a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(229,231,235,.72);font-size:11px;font-weight:950;text-align:center;border:1px solid transparent;text-decoration:none}
-    .bottomNav .ico{font-size:18px;line-height:1}
+    .bottomNav a{min-height:62px;border-radius:17px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(229,231,235,.78);font-size:12px;font-weight:1000;text-align:center;border:1px solid transparent;text-decoration:none}
+    .bottomNav .ico{font-size:21px;line-height:1}
     .bottomNav a.active{color:#111827;background:linear-gradient(135deg,var(--accent),var(--ok));border-color:rgba(250,204,21,.28);box-shadow:0 12px 26px rgba(34,197,94,.18)}
-    @media(max-width:680px){.wrap{padding:14px}.qrImg{width:260px}.row .btn{flex:1 1 100%}}
+    @media(max-width:680px){
+      .wrap{padding:14px}
+      .qrImg{width:280px}
+      .btn{flex:1 1 100%;font-size:18px;min-height:64px}
+      .pill{font-size:14px}
+      p{font-size:18px}
+    }
   </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>📎 Mon QR client</h1>
-  <p>Un QR propre pour envoyer le client vers ta vitrine ou ta page de réservation. Le coffre professionnel reste derrière le code PIN.</p>
+  <section class="hero">
+    <h1>📎 QR réservation</h1>
+    <p>Ce QR envoie le client directement vers la demande de réservation. La fiche et le clip restent visibles, mais la réservation sort devant.</p>
+  </section>
 
   <div class="card">
     <div class="pillRow">
-      <div class="pill" id="pillTarget">Destination : côté client</div>
-      <div class="pill" id="pillState">Session : vérification…</div>
+      <div class="pill ok" id="pillTarget">Destination : réservation directe</div>
+      <div class="pill warn" id="pillState">Session : vérification…</div>
     </div>
 
     <div class="row">
       <button class="btn ghost" id="btnBack" type="button">⬅️ Retour à mon activité</button>
-      <button class="btn primary" id="btnCopy" type="button">📋 Copier le lien client</button>
+      <button class="btn primary" id="btnCopy" type="button">📋 Copier le lien réservation</button>
     </div>
     <div class="row">
-      <button class="btn good" id="btnOpen" type="button">↗️ Ouvrir côté client</button>
+      <button class="btn good" id="btnOpen" type="button">📅 Ouvrir la réservation</button>
+      <button class="btn info" id="btnFiche" type="button">🎬 Voir la fiche / clip</button>
+    </div>
+    <div class="row">
       <a class="btn primary" id="btnDownload" href="#" target="_blank" rel="noopener noreferrer">⬇️ Ouvrir / télécharger QR</a>
       <a class="btn ghost" id="btnSticker" href="#" target="_blank" rel="noopener noreferrer">🟩 Ouvrir Sticker XL</a>
     </div>
 
     <div class="qrbox">
       <a id="qrAnchor" href="#" target="_blank" rel="noopener noreferrer">
-        <img id="qrImg" class="qrImg" alt="QR client DIGIY RESA" />
+        <img id="qrImg" class="qrImg" alt="QR réservation DIGIY RESA" />
       </a>
     </div>
 
-    <div class="mini" id="clientUrlText">Lien client : préparation…</div>
+    <div class="mini" id="clientUrlText">Lien réservation : préparation…</div>
+    <div class="mini" id="ficheUrlText">Lien fiche / clip : préparation…</div>
     <div class="note warn" id="note"></div>
 
     <section class="assistant-grid">
       <article class="assistant-card">
-        <div class="assistant-head">
-          <div>
-            <div class="assistant-kicker">Mon assistant DIGIY</div>
-            <h2 class="assistant-title">Lecture de ton QR</h2>
-          </div>
-          <div class="assistant-mode" id="assistantMode">Analyse en cours</div>
-        </div>
-        <div class="assistant-text" id="assistantSummary">On lit ton QR : destination client, vitrine et réservation.</div>
+        <div class="assistant-kicker">Mon assistant DIGIY</div>
+        <h2 class="assistant-title">Lecture de ton QR</h2>
+        <div class="assistant-mode" id="assistantMode">Analyse en cours</div>
+        <div class="assistant-text" id="assistantSummary">On prépare un QR qui ouvre directement la réservation.</div>
         <div class="assistant-pills" id="assistantPills"></div>
       </article>
 
@@ -135,8 +163,6 @@
         </div>
       </article>
     </section>
-
-    <div class="hr"></div>
   </div>
 </div>
 
@@ -156,24 +182,22 @@
 
   const PUBLIC_BASE_URL = "https://resa-table-resto.digiylyfe.com/";
   const DASHBOARD_PATH = "./dashboard-pro.html";
-  const PAYLESS_FALLBACK = PUBLIC_BASE_URL;
 
   const qrImg = document.getElementById("qrImg");
   const qrAnchor = document.getElementById("qrAnchor");
   const noteEl = document.getElementById("note");
-  const pillTarget = document.getElementById("pillTarget");
   const pillState = document.getElementById("pillState");
   const btnDownload = document.getElementById("btnDownload");
   const btnSticker = document.getElementById("btnSticker");
   const btnBack = document.getElementById("btnBack");
   const btnCopy = document.getElementById("btnCopy");
   const btnOpen = document.getElementById("btnOpen");
+  const btnFiche = document.getElementById("btnFiche");
   const clientUrlText = document.getElementById("clientUrlText");
+  const ficheUrlText = document.getElementById("ficheUrlText");
 
-  let clientUrl = "";
-  let qrNormalUrl = "";
-  let qrXLUrl = "";
-  let profile = null;
+  let reservationUrl = "";
+  let ficheUrl = "";
 
   function note(msg,type){
     noteEl.className = "note " + (type || "warn");
@@ -182,7 +206,7 @@
   }
 
   function setBusy(on){
-    [btnCopy,btnOpen,btnBack].forEach((b) => { if(b) b.disabled = !!on; });
+    [btnCopy,btnOpen,btnBack,btnFiche].forEach((b) => { if(b) b.disabled = !!on; });
     [btnDownload,btnSticker].forEach((a) => {
       if(!a) return;
       if(on){
@@ -232,57 +256,25 @@
 
   function buildSafeUrl(base){
     const baseStr = String(base || "").trim();
-    if(!baseStr) return PUBLIC_BASE_URL;
-
+    if(!baseStr) return "./dashboard-pro.html";
     try{
       const u = /^https?:\/\//i.test(baseStr) ? new URL(baseStr) : new URL(baseStr, location.href);
       ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
-
       if(u.origin === location.origin){
         const file = u.pathname.split("/").pop() || "dashboard-pro.html";
         return "./" + file + (u.search || "") + (u.hash || "");
       }
-
       return u.toString();
     }catch(_){
       return baseStr;
     }
   }
 
-  function sanitizeClientUrl(raw){
-    const input = String(raw || "").trim();
-    if(!/^https:\/\/[a-z0-9.-]+/i.test(input)) return PAYLESS_FALLBACK;
-
-    try{
-      const u = new URL(input);
-      ["phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
-      return u.toString();
-    }catch(_){
-      return PAYLESS_FALLBACK;
-    }
-  }
-
-  function publicUrlFromProfile(p, slug){
-    const urls = [
-      p?.public_url,
-      p?.profile_url,
-      p?.fiche_url,
-      p?.page_url,
-      p?.reservation_url,
-      p?.booking_url
-    ].map(v => String(v || "").trim()).filter(Boolean);
-
-    const found = urls.find(v => /^https:\/\/[a-z0-9.-]+/i.test(v));
-    if(found) return sanitizeClientUrl(found);
-
-    const cleanSlug = normalizeSlug(slug || p?.slug || "");
-    if(cleanSlug){
-      const u = new URL("./fiche.html", PUBLIC_BASE_URL);
-      u.searchParams.set("slug", cleanSlug);
-      return sanitizeClientUrl(u.toString());
-    }
-
-    return PAYLESS_FALLBACK;
+  function publicPageUrl(page, slug){
+    const cleanSlug = normalizeSlug(slug || "");
+    const u = new URL(page, PUBLIC_BASE_URL);
+    if(cleanSlug) u.searchParams.set("slug", cleanSlug);
+    return u.toString();
   }
 
   function qrServerUrl(text, size){
@@ -296,18 +288,18 @@
   }
 
   function configureQrImages(text){
-    qrNormalUrl = qrServerUrl(text, 520);
-    qrXLUrl = qrServerUrl(text, 900);
+    const qrNormalUrl = qrServerUrl(text, 520);
+    const qrXLUrl = qrServerUrl(text, 900);
 
     qrAnchor.href = text;
     btnDownload.href = qrNormalUrl;
     btnSticker.href = qrXLUrl;
 
-    btnDownload.setAttribute("download", "DIGIY_QR_RESA_CLIENT.png");
-    btnSticker.setAttribute("download", "DIGIY_STICKER_XL_RESA_CLIENT.png");
+    btnDownload.setAttribute("download", "DIGIY_QR_RESA_RESERVATION.png");
+    btnSticker.setAttribute("download", "DIGIY_STICKER_XL_RESA_RESERVATION.png");
 
     qrImg.onload = () => {
-      note("✅ QR client prêt. Teste-le sur téléphone avant impression.", "ok");
+      note("✅ QR réservation prêt. Teste-le sur téléphone avant impression.", "ok");
       setAssistantReady(true);
     };
 
@@ -317,12 +309,12 @@
         qrImg.src = fallback;
         btnDownload.href = fallback;
         btnSticker.href = quickChartQrUrl(text, 900);
-        note("✅ QR client prêt avec le générateur de secours.", "ok");
+        note("✅ QR réservation prêt avec le générateur de secours.", "ok");
         setAssistantReady(true);
         return;
       }
-      note("❌ Impossible d'afficher le QR. Copie le lien client puis teste-le directement.", "bad");
-      setAssistantError("Image QR indisponible, mais le lien client reste copiable.");
+      note("❌ Impossible d'afficher le QR. Copie le lien réservation puis teste-le directement.", "bad");
+      setAssistantError("Image QR indisponible, mais le lien réservation reste copiable.");
     };
 
     qrImg.src = qrNormalUrl;
@@ -344,10 +336,10 @@
   function setAssistantLoading(){
     setAssistant(
       "Chargement",
-      "En attente de la session pour préparer le QR côté client.",
-      ["QR client","Vitrine","Session protégée"],
+      "En attente de la session pour préparer un QR qui ouvre directement la réservation.",
+      ["QR réservation","Bouton direct","Session protégée"],
       [
-        {title:"Lecture du QR",text:"Le QR doit envoyer le client dehors, vers la vitrine ou la réservation."},
+        {title:"Destination",text:"Le QR doit ouvrir la page de réservation, pas la fiche/clip."},
         {title:"Coffre PRO",text:"Ton espace professionnel reste protégé par le code PIN."}
       ]
     );
@@ -355,18 +347,13 @@
 
   function setAssistantReady(sessionOk){
     setAssistant(
-      sessionOk ? "QR prêt · session ouverte" : "QR prêt",
-      "Ton QR est propre : il ouvre côté client sans exposer les données du coffre.",
+      sessionOk ? "QR réservation prêt" : "QR prêt",
+      "Ton QR ouvre directement la demande de réservation. La fiche/clip reste disponible par bouton séparé.",
+      ["Réservation directe","Aucun numéro dans le lien","Aucun identifiant privé","Session 8h"],
       [
-        "Destination client",
-        "Aucun numéro dans le lien",
-        "Aucun identifiant visible",
-        sessionOk ? "Session 8h" : "Accès à vérifier"
-      ],
-      [
-        {title:"Usage terrain",text:"Tu peux imprimer ce QR ou l’envoyer à un client pour lui faire découvrir ton activité."},
-        {title:"Sécurité",text:"Le lien client ne transporte ni numéro, ni accès privé, ni donnée interne."},
-        {title:"Retour professionnel",text:"Pour gérer ton activité, tu reviens par l’espace RESA et ton code PIN."}
+        {title:"Usage terrain",text:"Tu peux imprimer ce QR ou l’envoyer à un client. Le client tombe directement sur la demande."},
+        {title:"Fiche / clip",text:"La fiche reste accessible avec le bouton dédié, mais elle ne bloque plus la réservation."},
+        {title:"Sécurité",text:"Le lien ne transporte ni numéro, ni accès privé, ni donnée interne."}
       ]
     );
   }
@@ -378,7 +365,7 @@
       ["QR image","Lien copiable"],
       [
         {title:"Blocage",text:message || "Le QR n'a pas pu être affiché."},
-        {title:"Action utile",text:"Copie le lien client ou ouvre-le directement côté client."}
+        {title:"Action utile",text:"Copie le lien réservation ou ouvre-le directement côté client."}
       ]
     );
   }
@@ -403,34 +390,6 @@
       module: String(st.module || raw.module || "").toUpperCase(),
       slug: normalizeSlug(st.slug || raw.slug || "")
     };
-  }
-
-  async function loadProfileBySlug(slug){
-    if(!slug || !window.supabase?.createClient) return null;
-
-    const sb = window.supabase.createClient(
-      window.DIGIY_SUPABASE_URL,
-      window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
-      {
-        auth:{
-          persistSession:false,
-          autoRefreshToken:false,
-          detectSessionInUrl:false,
-          storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}
-        }
-      }
-    );
-
-    try{
-      const {data,error} = await sb.rpc("resa_public_profile_by_slug",{p_slug:slug});
-      if(error) throw error;
-      const parsed = typeof data === "string" ? JSON.parse(data) : data;
-      if(!parsed?.ok) return null;
-      return parsed.profile || null;
-    }catch(e){
-      console.warn("profile load failed",e);
-      return null;
-    }
   }
 
   async function copyText(text){
@@ -459,12 +418,12 @@
   pillState.textContent = hasResaSession ? "Session : ouverte 8h" : "Session : à ouvrir par PIN";
 
   if(!hasResaSession){
-    pillTarget.textContent = "Destination : protégée";
-    clientUrlText.textContent = "Lien client : ouvre d’abord ta session RESA.";
-    note("🔐 Entre par ton code PIN pour préparer ton QR client.","warn");
+    clientUrlText.textContent = "Lien réservation : ouvre d’abord ta session RESA.";
+    ficheUrlText.textContent = "Lien fiche / clip : ouvre d’abord ta session RESA.";
+    note("🔐 Entre par ton code PIN pour préparer ton QR réservation.","warn");
     setAssistant(
       "Accès requis",
-      "Le QR client se prépare depuis une session RESA ouverte.",
+      "Le QR réservation se prépare depuis une session RESA ouverte.",
       ["Code PIN","Session 8h","Coffre protégé"],
       [
         {title:"Action utile",text:"Retourne à l’accès et entre ton code PIN."},
@@ -475,31 +434,35 @@
     btnBack.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
     btnCopy.onclick = () => note("Ouvre d’abord ta session RESA.","warn");
     btnOpen.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
+    btnFiche.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
     btnDownload.onclick = (e) => { e.preventDefault(); note("Ouvre d’abord ta session RESA.","warn"); };
     btnSticker.onclick = (e) => { e.preventDefault(); note("Ouvre d’abord ta session RESA.","warn"); };
     return;
   }
 
-  profile = await loadProfileBySlug(session.slug);
-  clientUrl = publicUrlFromProfile(profile || {}, session.slug);
-  clientUrlText.textContent = "Lien client : " + clientUrl;
-  qrAnchor.href = clientUrl;
-  pillTarget.textContent = "Destination : vitrine client";
+  reservationUrl = publicPageUrl("reserver.html", session.slug);
+  ficheUrl = publicPageUrl("fiche.html", session.slug);
 
-  note("⏳ Préparation du QR client…","warn");
-  configureQrImages(clientUrl);
+  clientUrlText.textContent = "Lien réservation : " + reservationUrl;
+  ficheUrlText.textContent = "Lien fiche / clip : " + ficheUrl;
+  qrAnchor.href = reservationUrl;
+
+  note("⏳ Préparation du QR réservation…","warn");
+  configureQrImages(reservationUrl);
   setBusy(false);
 
   btnBack.onclick = () => { location.href = buildSafeUrl(DASHBOARD_PATH); };
+  btnOpen.onclick = () => { window.open(reservationUrl,"_blank","noopener"); };
+  btnFiche.onclick = () => { window.open(ficheUrl,"_blank","noopener"); };
 
   btnCopy.onclick = async () => {
     try{
-      await copyText(clientUrl);
-      note("✅ Lien client copié.","ok");
+      await copyText(reservationUrl);
+      note("✅ Lien réservation copié.","ok");
       setAssistant(
         "Lien copié",
-        "Le lien client est prêt à être partagé.",
-        ["Vitrine client","Lien copié","Aucune donnée sensible"],
+        "Le lien réservation est prêt à être partagé.",
+        ["Réservation directe","Lien copié","Aucune donnée sensible"],
         [
           {title:"Partage",text:"Le lien est maintenant dans le presse-papiers."},
           {title:"Usage",text:"Tu peux l’envoyer à un client ou l’utiliser sur une affiche."},
@@ -511,8 +474,6 @@
       note("⚠️ Clipboard bloqué. Ouvre le lien puis copie-le depuis le navigateur.","warn");
     }
   };
-
-  btnOpen.onclick = () => { window.open(clientUrl,"_blank","noopener"); };
 
   btnDownload.addEventListener("click", () => {
     note("⬇️ Le QR s’ouvre en image. Sur téléphone : appui long pour enregistrer. Sur ordinateur : clic droit puis enregistrer.","ok");
