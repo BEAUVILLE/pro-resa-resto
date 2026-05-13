@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Je réserve — Accueil RESA · salle, cuisine, client PRO</title>
   <meta name="theme-color" content="#f4ead2" />
-  <meta name="digiy-build" content="resa-dashboard-20260510-v3-lisibilite-anciens" />
+  <meta name="digiy-build" content="resa-dashboard-20260513-v4-porte-qr-client" />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -140,7 +140,7 @@
 
     .mobileHeroActions{
       display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
+      grid-template-columns:repeat(5,minmax(0,1fr));
       gap:10px;
       margin-top:14px;
     }
@@ -716,12 +716,14 @@
         <a class="btn" id="btnAssistantTop" href="./claw.html">Aide</a>
         <a class="btn" id="btnPinTop" href="./pin.html">Accès</a>
         <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Plus</a>
+        <a class="btn primary" id="btnQrTop" href="./qr.html">📲 QR client</a>
       </div>
     </div>
 
     <nav class="nav-rail" aria-label="Navigation Mes réservations">
       <a class="nav-link" id="navCockpit" href="./cockpit.html">Réserv.</a>
       <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
+      <a class="nav-link" id="navQr" href="./qr.html">📲 QR client</a>
       <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
       <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
@@ -741,6 +743,7 @@
 
       <div class="hero-actions">
         <a class="btn primary" id="heroCockpit"  href="./cockpit.html">Voir les réservations</a>
+        <a class="btn primary" id="heroQr" href="./qr.html">📲 Mon QR client</a>
         <a class="btn" id="heroPlanning" href="./planning.html">Ouvrir le planning</a>
         <a class="btn" id="heroAssistant" href="./claw.html">Aide</a>
         <a class="btn" id="heroSettings" href="./etablissement.html">Plus</a>
@@ -748,6 +751,7 @@
 
       <div class="mobileHeroActions">
         <a class="btn primary" id="quickReservations" href="./cockpit.html">📋 Réserv.</a>
+        <a class="btn primary" id="quickQr" href="./qr.html">📲 QR</a>
         <a class="btn" id="quickPlanning" href="./planning.html">🗓️ Planning</a>
         <a class="btn" id="quickNotes" href="#resaNotes">✍️ Notes</a>
         <a class="btn" id="quickPlus" href="./etablissement.html">⚙️ Plus</a>
@@ -800,6 +804,14 @@
       </div>
 
       <div class="clickGrid">
+        <a class="clickCard" id="clickQr" href="./qr.html" aria-label="Ouvrir mon QR client RESA">
+          <div>
+            <div class="ico">📲</div>
+            <strong>Mon QR client</strong>
+            <span>Ouvre le QR à imprimer, partager ou poser sur la table.</span>
+          </div>
+        </a>
+
         <button class="clickCard" type="button" data-resa-note="Nouvelle demande de réservation à traiter">
           <div>
             <div class="ico">📥</div>
@@ -882,6 +894,10 @@
           <strong>🤝 Aide</strong>
           <span>Messages prêts pour parler proprement au client.</span>
         </div>
+        <div class="taskCard">
+          <strong>📲 QR client</strong>
+          <span>La porte publique à poser, envoyer ou imprimer.</span>
+        </div>
       </div>
     </section>
 
@@ -900,6 +916,7 @@
         <div class="mini" id="metaLine"><span>Accès : —</span><span>•</span><span>Session : —</span></div>
         <div class="footer">
           <button class="btn primary" id="btnManageSub" type="button">Ouvrir ma session</button>
+          <a class="btn primary" id="btnQrSession" href="./qr.html">📲 Mon QR client</a>
           <button class="btn" id="btnActivateModule" type="button" hidden>Activer mon module</button>
         </div>
       </div>
@@ -1144,12 +1161,14 @@
     const planningHref = cleanPath("./planning.html");
     const assistantHref = cleanPath("./claw.html");
     const settingsHref = cleanPath("./etablissement.html");
+    const qrHref = cleanPath("./qr.html");
     const pinHref = cleanPath("./pin.html");
     const homeHref = cleanPath("./index.html");
 
     const links = {
       navCockpit: cockpitHref,
       navDashboard: dashboardHref,
+      navQr: qrHref,
       navPlanning: planningHref,
       navAssistant: assistantHref,
       navSettings: settingsHref,
@@ -1159,17 +1178,22 @@
       btnAssistantTop: assistantHref,
       btnPinTop: pinHref,
       btnSettingsTop: settingsHref,
+      btnQrTop: qrHref,
       heroCockpit: cockpitHref,
+      heroQr: qrHref,
       heroPlanning: planningHref,
       heroAssistant: assistantHref,
       heroSettings: settingsHref,
       quickReservations: cockpitHref,
+      quickQr: qrHref,
       quickPlanning: planningHref,
       quickPlus: settingsHref,
       bottomHome: dashboardHref,
       bottomReserv: cockpitHref,
       bottomPlanning: planningHref,
-      bottomMore: settingsHref
+      bottomMore: settingsHref,
+      btnQrSession: qrHref,
+      clickQr: qrHref
     };
 
     Object.entries(links).forEach(([id, href]) => {
@@ -1686,4 +1710,6 @@
 </script>
 </body>
 </html>
+
+
 
