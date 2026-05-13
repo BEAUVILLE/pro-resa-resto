@@ -13,8 +13,7 @@
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-  <script src="./guard.js?v=resa-qr-secure-pin8h"></script>
+  <script src="./guard.js?v=resa-qr-secure-pin8h-no-qrcode-lib"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -37,22 +36,23 @@
     }
     a{color:inherit;text-decoration:none}
     .wrap{max-width:860px;margin:auto;padding:18px}
-    h1{font-size:1.5rem;margin-bottom:6px}
-    p{color:var(--muted);margin-bottom:14px;line-height:1.5}
+    h1{font-size:clamp(1.6rem,4.5vw,2.2rem);margin-bottom:6px;font-weight:1000;letter-spacing:-.02em}
+    p{color:var(--muted);margin-bottom:14px;line-height:1.5;font-weight:800}
     .card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:var(--shadow)}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .btn{
-      width:100%;padding:12px;border-radius:12px;font-weight:900;border:none;cursor:pointer;margin-top:10px;min-height:48px;
+      width:100%;padding:12px;border-radius:12px;font-weight:900;border:none;cursor:pointer;margin-top:10px;min-height:52px;
       text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:transform .12s ease,filter .12s ease,opacity .12s ease;
-      font-family:var(--fontA);
+      font-family:var(--fontA);font-size:15px;
     }
     .btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.05)}
     .btn:disabled{opacity:.55;cursor:not-allowed}
     .btn.primary{background:var(--accent);color:#111827}
     .btn.ghost{background:transparent;border:1px solid rgba(250,204,21,.35);color:#fff}
     .btn.good{background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.35);color:#bbf7d0}
-    .mini{margin-top:10px;color:var(--muted);font-size:.9rem}
-    .note{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);display:none;white-space:pre-wrap;line-height:1.4;font-weight:850}
+    .btn.info{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.32);color:#d8f2ff}
+    .mini{margin-top:10px;color:var(--muted);font-size:.9rem;font-weight:800;line-height:1.5;word-break:break-word}
+    .note{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);display:none;white-space:pre-wrap;line-height:1.45;font-weight:850}
     .note.ok{display:block;border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.08)}
     .note.bad{display:block;border-color:rgba(239,68,68,.35);color:#fecaca;background:rgba(239,68,68,.08)}
     .note.warn{display:block;border-color:rgba(250,204,21,.35);color:#fde68a;background:rgba(250,204,21,.08)}
@@ -80,7 +80,7 @@
     .bottomNav a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(229,231,235,.72);font-size:11px;font-weight:950;text-align:center;border:1px solid transparent;text-decoration:none}
     .bottomNav .ico{font-size:18px;line-height:1}
     .bottomNav a.active{color:#111827;background:linear-gradient(135deg,var(--accent),var(--ok));border-color:rgba(250,204,21,.28);box-shadow:0 12px 26px rgba(34,197,94,.18)}
-    @media(max-width:680px){.wrap{padding:14px}.qrImg{width:260px}}
+    @media(max-width:680px){.wrap{padding:14px}.qrImg{width:260px}.row .btn{flex:1 1 100%}}
   </style>
 </head>
 <body>
@@ -100,16 +100,17 @@
     </div>
     <div class="row">
       <button class="btn good" id="btnOpen" type="button">↗️ Ouvrir côté client</button>
-      <button class="btn primary" id="btnDownload" type="button">⬇️ Télécharger mon QR (PNG)</button>
-      <button class="btn ghost" id="btnSticker" type="button">🟩 Télécharger Sticker XL (PNG)</button>
+      <a class="btn primary" id="btnDownload" href="#" target="_blank" rel="noopener noreferrer">⬇️ Ouvrir / télécharger QR</a>
+      <a class="btn ghost" id="btnSticker" href="#" target="_blank" rel="noopener noreferrer">🟩 Ouvrir Sticker XL</a>
     </div>
 
     <div class="qrbox">
-      <a id="qrAnchor" href="#" target="_blank" rel="noopener">
+      <a id="qrAnchor" href="#" target="_blank" rel="noopener noreferrer">
         <img id="qrImg" class="qrImg" alt="QR client DIGIY RESA" />
       </a>
     </div>
 
+    <div class="mini" id="clientUrlText">Lien client : préparation…</div>
     <div class="note warn" id="note"></div>
 
     <section class="assistant-grid">
@@ -167,11 +168,11 @@
   const btnBack = document.getElementById("btnBack");
   const btnCopy = document.getElementById("btnCopy");
   const btnOpen = document.getElementById("btnOpen");
+  const clientUrlText = document.getElementById("clientUrlText");
 
   let clientUrl = "";
-  let busy = false;
-  let qrNormalDataUrl = "";
-  let qrXLDataUrl = "";
+  let qrNormalUrl = "";
+  let qrXLUrl = "";
   let profile = null;
 
   function note(msg,type){
@@ -181,8 +182,19 @@
   }
 
   function setBusy(on){
-    busy = !!on;
-    [btnDownload,btnSticker,btnCopy,btnOpen,btnBack].forEach(b => b.disabled = on);
+    [btnCopy,btnOpen,btnBack].forEach((b) => { if(b) b.disabled = !!on; });
+    [btnDownload,btnSticker].forEach((a) => {
+      if(!a) return;
+      if(on){
+        a.setAttribute("aria-disabled","true");
+        a.style.pointerEvents = "none";
+        a.style.opacity = ".55";
+      }else{
+        a.removeAttribute("aria-disabled");
+        a.style.pointerEvents = "";
+        a.style.opacity = "";
+      }
+    });
   }
 
   function escapeHtml(v){
@@ -213,7 +225,7 @@
         try{ localStorage.setItem("digiy_resa_slug", legacy); }catch(_){}
         try{ localStorage.setItem("digiy_resa_last_slug", legacy); }catch(_){}
       }
-      ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+      ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
       history.replaceState({}, document.title, u.pathname + u.search + u.hash);
     }catch(_){}
   }
@@ -224,7 +236,7 @@
 
     try{
       const u = /^https?:\/\//i.test(baseStr) ? new URL(baseStr) : new URL(baseStr, location.href);
-      ["slug","phone","tel","resa_"+"tel","module","from"].forEach(k => u.searchParams.delete(k));
+      ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
 
       if(u.origin === location.origin){
         const file = u.pathname.split("/").pop() || "dashboard-pro.html";
@@ -243,14 +255,14 @@
 
     try{
       const u = new URL(input);
-      ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
+      ["phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
       return u.toString();
     }catch(_){
       return PAYLESS_FALLBACK;
     }
   }
 
-  function publicUrlFromProfile(p){
+  function publicUrlFromProfile(p, slug){
     const urls = [
       p?.public_url,
       p?.profile_url,
@@ -261,7 +273,59 @@
     ].map(v => String(v || "").trim()).filter(Boolean);
 
     const found = urls.find(v => /^https:\/\/[a-z0-9.-]+/i.test(v));
-    return found ? sanitizeClientUrl(found) : PAYLESS_FALLBACK;
+    if(found) return sanitizeClientUrl(found);
+
+    const cleanSlug = normalizeSlug(slug || p?.slug || "");
+    if(cleanSlug){
+      const u = new URL("./fiche.html", PUBLIC_BASE_URL);
+      u.searchParams.set("slug", cleanSlug);
+      return sanitizeClientUrl(u.toString());
+    }
+
+    return PAYLESS_FALLBACK;
+  }
+
+  function qrServerUrl(text, size){
+    const s = Math.max(160, Number(size) || 520);
+    return "https://api.qrserver.com/v1/create-qr-code/?size=" + s + "x" + s + "&margin=14&data=" + encodeURIComponent(text);
+  }
+
+  function quickChartQrUrl(text, size){
+    const s = Math.max(160, Number(size) || 520);
+    return "https://quickchart.io/qr?size=" + s + "&margin=2&text=" + encodeURIComponent(text);
+  }
+
+  function configureQrImages(text){
+    qrNormalUrl = qrServerUrl(text, 520);
+    qrXLUrl = qrServerUrl(text, 900);
+
+    qrAnchor.href = text;
+    btnDownload.href = qrNormalUrl;
+    btnSticker.href = qrXLUrl;
+
+    btnDownload.setAttribute("download", "DIGIY_QR_RESA_CLIENT.png");
+    btnSticker.setAttribute("download", "DIGIY_STICKER_XL_RESA_CLIENT.png");
+
+    qrImg.onload = () => {
+      note("✅ QR client prêt. Teste-le sur téléphone avant impression.", "ok");
+      setAssistantReady(true);
+    };
+
+    qrImg.onerror = () => {
+      const fallback = quickChartQrUrl(text, 520);
+      if(qrImg.src !== fallback){
+        qrImg.src = fallback;
+        btnDownload.href = fallback;
+        btnSticker.href = quickChartQrUrl(text, 900);
+        note("✅ QR client prêt avec le générateur de secours.", "ok");
+        setAssistantReady(true);
+        return;
+      }
+      note("❌ Impossible d'afficher le QR. Copie le lien client puis teste-le directement.", "bad");
+      setAssistantError("Image QR indisponible, mais le lien client reste copiable.");
+    };
+
+    qrImg.src = qrNormalUrl;
   }
 
   function setAssistant(mode, summary, pills=[], items=[]){
@@ -310,11 +374,11 @@
   function setAssistantError(message){
     setAssistant(
       "Erreur",
-      "Un blocage est détecté dans la génération locale du QR.",
-      ["Génération locale","Contrôle à faire"],
+      "Un blocage est détecté dans l’affichage du QR.",
+      ["QR image","Lien copiable"],
       [
-        {title:"Blocage",text:message || "Le QR n'a pas pu être généré."},
-        {title:"Action utile",text:"Recharge depuis ton espace RESA ou vérifie que ta fiche publique existe."}
+        {title:"Blocage",text:message || "Le QR n'a pas pu être affiché."},
+        {title:"Action utile",text:"Copie le lien client ou ouvre-le directement côté client."}
       ]
     );
   }
@@ -359,8 +423,10 @@
 
     try{
       const {data,error} = await sb.rpc("resa_public_profile_by_slug",{p_slug:slug});
-      if(error || !data?.ok) return null;
-      return data.profile || null;
+      if(error) throw error;
+      const parsed = typeof data === "string" ? JSON.parse(data) : data;
+      if(!parsed?.ok) return null;
+      return parsed.profile || null;
     }catch(e){
       console.warn("profile load failed",e);
       return null;
@@ -382,68 +448,9 @@
     if(!ok) throw new Error("copy_failed");
   }
 
-  function directDownload(dataUrl, filename){
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-
-  function loadScript(src){
-    return new Promise((resolve,reject) => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.async = true;
-      s.onload = () => resolve(true);
-      s.onerror = () => reject(new Error("script_load_failed: " + src));
-      document.head.appendChild(s);
-    });
-  }
-
-  async function ensureQrLib(){
-    if(window.QRCode?.toDataURL) return true;
-    const fallbacks = [
-      "https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"
-    ];
-
-    for(const src of fallbacks){
-      try{
-        await loadScript(src);
-        if(window.QRCode?.toDataURL) return true;
-      }catch(e){
-        console.warn("QR fallback failed",src,e);
-      }
-    }
-    return !!window.QRCode?.toDataURL;
-  }
-
-  function qrOptions(size){
-    return {
-      width:size,
-      margin:1,
-      errorCorrectionLevel:"M",
-      color:{dark:"#111827",light:"#FFFFFF"}
-    };
-  }
-
-  function makeQrDataUrl(text,size){
-    return new Promise((resolve,reject) => {
-      if(!window.QRCode || typeof window.QRCode.toDataURL !== "function"){
-        reject(new Error("QRCode lib missing"));
-        return;
-      }
-      window.QRCode.toDataURL(text,qrOptions(size),(err,dataUrl) => {
-        if(err) reject(err);
-        else resolve(dataUrl);
-      });
-    });
-  }
-
   cleanVisibleUrl();
   setAssistantLoading();
+  setBusy(true);
   await bootGuardSafe();
 
   const session = getSession();
@@ -453,6 +460,7 @@
 
   if(!hasResaSession){
     pillTarget.textContent = "Destination : protégée";
+    clientUrlText.textContent = "Lien client : ouvre d’abord ta session RESA.";
     note("🔐 Entre par ton code PIN pour préparer ton QR client.","warn");
     setAssistant(
       "Accès requis",
@@ -467,42 +475,20 @@
     btnBack.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
     btnCopy.onclick = () => note("Ouvre d’abord ta session RESA.","warn");
     btnOpen.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
-    btnDownload.onclick = () => note("Ouvre d’abord ta session RESA.","warn");
-    btnSticker.onclick = () => note("Ouvre d’abord ta session RESA.","warn");
+    btnDownload.onclick = (e) => { e.preventDefault(); note("Ouvre d’abord ta session RESA.","warn"); };
+    btnSticker.onclick = (e) => { e.preventDefault(); note("Ouvre d’abord ta session RESA.","warn"); };
     return;
   }
 
   profile = await loadProfileBySlug(session.slug);
-  clientUrl = publicUrlFromProfile(profile || {});
+  clientUrl = publicUrlFromProfile(profile || {}, session.slug);
+  clientUrlText.textContent = "Lien client : " + clientUrl;
   qrAnchor.href = clientUrl;
   pillTarget.textContent = "Destination : vitrine client";
 
   note("⏳ Préparation du QR client…","warn");
-  setBusy(true);
-
-  try{
-    const ok = await ensureQrLib();
-    if(!ok) throw new Error("Librairie QR introuvable");
-
-    qrNormalDataUrl = await makeQrDataUrl(clientUrl,520);
-    qrXLDataUrl = await makeQrDataUrl(clientUrl,900);
-
-    qrImg.onload = () => {
-      note("✅ QR client prêt. Teste sur téléphone avant impression.","ok");
-      setAssistantReady(true);
-    };
-    qrImg.onerror = () => {
-      note("❌ Impossible d'afficher l'image QR locale.","bad");
-      setAssistantError("Impossible d'afficher l'image QR locale.");
-    };
-    qrImg.src = qrNormalDataUrl;
-  }catch(e){
-    console.error(e);
-    note("❌ Génération QR locale impossible : " + (e?.message || e),"bad");
-    setAssistantError(e?.message || "Génération QR locale impossible.");
-  }finally{
-    setBusy(false);
-  }
+  configureQrImages(clientUrl);
+  setBusy(false);
 
   btnBack.onclick = () => { location.href = buildSafeUrl(DASHBOARD_PATH); };
 
@@ -528,48 +514,15 @@
 
   btnOpen.onclick = () => { window.open(clientUrl,"_blank","noopener"); };
 
-  btnDownload.onclick = async () => {
-    if(busy) return;
-    if(!qrNormalDataUrl){
-      note("❌ QR non prêt.","bad");
-      setAssistantError("QR non prêt.");
-      return;
-    }
-    setBusy(true);
-    try{
-      note("⏳ Préparation du PNG…","warn");
-      directDownload(qrNormalDataUrl,"DIGIY_QR_RESA_CLIENT.png");
-      note("⬇️ Téléchargement lancé.","ok");
-    }catch(e){
-      console.error(e);
-      note("❌ Téléchargement impossible : " + (e?.message || e),"bad");
-      setAssistantError(e?.message || "Téléchargement QR impossible.");
-    }finally{
-      setBusy(false);
-    }
-  };
+  btnDownload.addEventListener("click", () => {
+    note("⬇️ Le QR s’ouvre en image. Sur téléphone : appui long pour enregistrer. Sur ordinateur : clic droit puis enregistrer.","ok");
+  });
 
-  btnSticker.onclick = async () => {
-    if(busy) return;
-    if(!qrXLDataUrl){
-      note("❌ Sticker XL non prêt.","bad");
-      setAssistantError("Sticker XL non prêt.");
-      return;
-    }
-    setBusy(true);
-    try{
-      note("🟩 Préparation Sticker XL…","warn");
-      directDownload(qrXLDataUrl,"DIGIY_STICKER_XL_RESA_CLIENT.png");
-      note("⬇️ Sticker XL téléchargé.","ok");
-    }catch(e){
-      console.error(e);
-      note("❌ Sticker XL impossible : " + (e?.message || e),"bad");
-      setAssistantError(e?.message || "Sticker XL impossible.");
-    }finally{
-      setBusy(false);
-    }
-  };
+  btnSticker.addEventListener("click", () => {
+    note("🟩 Le sticker XL s’ouvre en image. Enregistre-le puis imprime-le si besoin.","ok");
+  });
 })();
 </script>
 </body>
 </html>
+
