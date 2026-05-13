@@ -1085,7 +1085,7 @@
           },
           {
             title:"Accueil client",
-            text:`${hasAddress ? "Adresse visible côté fiche." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : "Capacité encore floue."}`
+            text:`${hasAddress ? "Adresse visible côté fiche." : "Adresse à préciser."} ${hasHours ? "Horaires visibles." : "Horaires à préciser."} ${p.capacity ? "Capacité annoncée." : (p.booking_message ? "Accueil personnalisé indiqué." : "Accueil personnalisé à préciser.")}`
           },
           {
             title:"Réservation",
@@ -1377,7 +1377,7 @@
           $("bio").textContent = safe(p.bio,"Présentation à découvrir.");
           $("address").textContent = safe(p.address_text || p.address,"Adresse à préciser");
           $("hours").textContent = safe(p.opening_hours_text || p.hours_text,"Horaires à préciser");
-          $("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : "Capacité à préciser";
+          $("capacity").textContent = p.capacity ? `${p.capacity} places / accueil` : (p.booking_message || "Accueil personnalisé");
           $("contactPublic").textContent = "Visible uniquement côté vitrine client contrôlée";
           $("bookingHelp").textContent = `Réservation simple pour ${businessType.toLowerCase()}`;
 
