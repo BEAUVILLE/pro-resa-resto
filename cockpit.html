@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Je réserve — Réservations RESA PRO</title>
   <meta name="theme-color" content="#f4ead2"/>
-  <meta name="digiy-build" content="resa-cockpit-20260510-v2-lisibilite-anciens"/>
+  <meta name="digiy-build" content="resa-cockpit-20260513-v3-pending-upcoming-mobile"/>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta http-equiv="Pragma" content="no-cache"/>
   <meta http-equiv="Expires" content="0"/>
@@ -20,7 +20,7 @@
     (() => {
       "use strict";
 
-      const BUILD_ID = "resa-cockpit-20260510-v2-lisibilite-anciens";
+      const BUILD_ID = "resa-cockpit-20260513-v3-pending-upcoming-mobile";
       const BUILD_KEY = "DIGIY_RESA_COCKPIT_BUILD_ID";
 
       function cleanBuildUrl(){
@@ -92,7 +92,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-cockpit-20260510-v2-lisibilite-anciens"></script>
+  <script src="./guard.js?v=resa-cockpit-20260513-v3-pending-upcoming-mobile"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -1249,6 +1249,7 @@
       const MODULE = "RESA";
       const QR_PATH = "./qr.html";
       const ASSISTANT_PATH = "./claw.html";
+      const DEFAULT_LOOKAHEAD_DAYS = 30;
 
       const query = new URL(location.href).searchParams;
       const queryDate = query.get("date") || "";
@@ -1261,6 +1262,7 @@
       let PROFILE = null;
       let RESOLVED_SLUG = "";
       let ACTIVE_DATE = "";
+      let IS_RANGE_MODE = false;
       let IS_PREVIEW = true;
 
       function normalizeSlug(v){
@@ -1408,6 +1410,19 @@
         return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
       }
 
+      function addDaysISO(days){
+        const d = new Date();
+        d.setDate(d.getDate() + Number(days || 0));
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      }
+
+      function panelTitleText(){
+        if(IS_RANGE_MODE){
+          return `Prochaines réservations · ${fmtDate(todayISO())} → ${fmtDate(addDaysISO(DEFAULT_LOOKAHEAD_DAYS))}`;
+        }
+        return `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+      }
+
       function normalizeRows(payload){
         let rows = [];
         if(Array.isArray(payload)) rows = payload;
@@ -1516,7 +1531,7 @@
       }
 
       function setLinks(){
-        const dateParam = ACTIVE_DATE ? {date: ACTIVE_DATE} : {};
+        const dateParam = (!IS_RANGE_MODE && ACTIVE_DATE) ? {date: ACTIVE_DATE} : {};
 
         const cockpitHref = cleanPath("./cockpit.html", dateParam);
         const notesHref = cleanPath("./planning.html", dateParam) + "#quickResaNote";
@@ -1619,7 +1634,7 @@
         $("heroDesc").textContent = "Espace visible, mais session non ouverte. Aucune fausse réservation affichée.";
         setHeroPills("—","Multi business");
         $("topSub").textContent = message || "Aperçu sans données.";
-        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("panelTitle").textContent = panelTitleText();
         $("footerNote").textContent = "Aperçu actif — aucune donnée de démonstration.";
         $("miniTitle").textContent = "Espace vierge DIGIY";
         $("miniText").textContent = "Ici, on garde une coquille propre : pas de fausses réservations, pas de brouillage. Les vraies données n'entrent que si l'accès est confirmé.";
@@ -1630,7 +1645,7 @@
         $("modeBadge").className = "mode live";
         $("modeBadge").textContent = "En direct";
         $("topSub").textContent = "Espace chargé.";
-        $("panelTitle").textContent = `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+        $("panelTitle").textContent = panelTitleText();
         $("footerNote").textContent = "Espace vivant branché sur les réservations réelles.";
         $("miniTitle").textContent = "Ce qui demande attention";
         $("miniText").textContent = "Ici tu vois les réservations, les services choisis et les statuts à suivre.";
@@ -1651,15 +1666,46 @@
         setHeroPills(city,type);
       }
 
-      async function loadBookings(){
+      async function loadBookingsForDate(dateIso){
         const payload = await rpc("digiy_resa_get_bookings_by_day",{
           p_slug:RESOLVED_SLUG,
-          p_date:ACTIVE_DATE
+          p_date:dateIso
         });
 
         if(!payload?.ok) throw new Error(payload?.error || "bookings_not_found");
+        return normalizeRows(payload.bookings || []).map(row => ({...row, booking_date: row.booking_date || dateIso}));
+      }
 
-        ALL_BOOKINGS = normalizeRows(payload.bookings || []);
+      async function loadBookings(){
+        if(IS_RANGE_MODE){
+          const collected = [];
+
+          for(let i = 0; i <= DEFAULT_LOOKAHEAD_DAYS; i += 1){
+            const dateIso = addDaysISO(i);
+            try{
+              const rows = await loadBookingsForDate(dateIso);
+              collected.push(...rows);
+            }catch(e){
+              console.warn("[DIGIY RESA] lecture date ignorée", dateIso, e?.message || e);
+            }
+          }
+
+          ALL_BOOKINGS = collected
+            .filter(row => ["pending","confirmed"].includes(normStatus(row.status)))
+            .sort((a,b) => String(a.booking_date + " " + a.booking_time).localeCompare(String(b.booking_date + " " + b.booking_time)));
+
+          $("panelTitle").textContent = panelTitleText();
+          $("topSub").textContent = ALL_BOOKINGS.length
+            ? `${ALL_BOOKINGS.length} réservation(s) à venir chargée(s).`
+            : "Aucune réservation à venir sur les 30 prochains jours.";
+
+          renderStatsFromRows();
+          renderBookings();
+          return;
+        }
+
+        ALL_BOOKINGS = await loadBookingsForDate(ACTIVE_DATE);
+        $("panelTitle").textContent = panelTitleText();
         renderStatsFromRows();
         renderBookings();
       }
@@ -1701,7 +1747,7 @@
           empty.style.display = "block";
           empty.textContent = IS_PREVIEW
             ? "Aucune donnée affichée en aperçu. Entre avec une session valide pour lire les vraies réservations."
-            : "Aucune réservation pour cette date.";
+            : (IS_RANGE_MODE ? "Aucune réservation à venir sur les 30 prochains jours." : "Aucune réservation pour cette date.");
           return;
         }
 
@@ -1946,6 +1992,7 @@
         document.body.classList.add("loading");
         resetView();
         resetStats();
+        IS_RANGE_MODE = !queryDate;
         ACTIVE_DATE = queryDate || todayISO();
 
         try{
@@ -1998,4 +2045,6 @@
   </script>
 </body>
 </html>
+
+
 
