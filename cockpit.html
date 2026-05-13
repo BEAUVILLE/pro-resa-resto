@@ -1400,8 +1400,11 @@
       }
 
       function money(v){
-        const n = Number(v);
-        if(!Number.isFinite(n)) return "";
+        if(v === null || v === undefined) return "";
+        const raw = String(v).trim();
+        if(raw === "" || raw.toLowerCase() === "null") return "";
+        const n = Number(raw);
+        if(!Number.isFinite(n) || n <= 0) return "";
         return n.toLocaleString("fr-FR") + " FCFA";
       }
 
@@ -1442,7 +1445,7 @@
           service_id: r.service_id || "",
           service_name: r.service_name || "",
           duration_minutes: r.duration_minutes ?? "",
-          price_fcfa: r.price_fcfa ?? "",
+          price_fcfa: r.price_fcfa ?? null,
           note: r.note || r.note_text || r.message || r.special_request || ""
         }));
       }
@@ -1666,6 +1669,40 @@
         setHeroPills(city,type);
       }
 
+      async function enrichBookingServices(rows){
+        const list = Array.isArray(rows) ? rows : [];
+        const ids = Array.from(new Set(list.map(row => String(row.service_id || "").trim()).filter(Boolean)));
+        if(!ids.length || !sb?.from) return list;
+
+        try{
+          const {data,error} = await sb
+            .from("digiy_resa_services")
+            .select("id,service_name,duration_minutes,price_fcfa")
+            .in("id", ids);
+
+          if(error) throw error;
+
+          const services = new Map((Array.isArray(data) ? data : []).map(s => [String(s.id), s]));
+
+          return list.map(row => {
+            const service = services.get(String(row.service_id || "")) || {};
+            const rawRowPrice = row.price_fcfa;
+            const rowPriceNumber = Number(rawRowPrice);
+            const servicePrice = service.price_fcfa;
+
+            return {
+              ...row,
+              service_name: row.service_name || service.service_name || "",
+              duration_minutes: row.duration_minutes || service.duration_minutes || "",
+              price_fcfa: Number.isFinite(rowPriceNumber) && rowPriceNumber > 0 ? rawRowPrice : (servicePrice ?? null)
+            };
+          });
+        }catch(e){
+          console.warn("[DIGIY RESA] enrichissement services ignoré", e?.message || e);
+          return list;
+        }
+      }
+
       async function loadBookingsForDate(dateIso){
         const payload = await rpc("digiy_resa_get_bookings_by_day",{
           p_slug:RESOLVED_SLUG,
@@ -1673,7 +1710,8 @@
         });
 
         if(!payload?.ok) throw new Error(payload?.error || "bookings_not_found");
-        return normalizeRows(payload.bookings || []).map(row => ({...row, booking_date: row.booking_date || dateIso}));
+        const rows = normalizeRows(payload.bookings || []).map(row => ({...row, booking_date: row.booking_date || dateIso}));
+        return await enrichBookingServices(rows);
       }
 
       async function loadBookings(){
@@ -1728,9 +1766,18 @@
       function serviceHtml(row){
         const bits = [];
 
-        if(row.service_name) bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
+        if(row.service_name){
+          bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
+        }else if(row.service_id){
+          bits.push(`<span class="service-pill">🧾 Service réservé</span>`);
+        }
+
         if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
-        if(money(row.price_fcfa)) bits.push(`<span class="service-pill">💰 ${escapeHtml(money(row.price_fcfa))}</span>`);
+
+        const priceLabel = money(row.price_fcfa);
+        if(priceLabel){
+          bits.push(`<span class="service-pill">💰 ${escapeHtml(priceLabel)}</span>`);
+        }
 
         if(!bits.length) return "";
 
@@ -2045,6 +2092,7 @@
   </script>
 </body>
 </html>
+
 
 
 
