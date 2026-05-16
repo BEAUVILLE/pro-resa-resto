@@ -615,49 +615,91 @@
     .mini,
     .meta,
     .footer-note,
-    /* ── PAY upsell ─────────────────────────────────────────── */
-    .payUpsellCard{
-      margin:14px 0;padding:16px;border-radius:22px;
-      border:2px solid rgba(250,204,21,.42);
-      background:
-        radial-gradient(circle at right top,rgba(250,204,21,.12),transparent 34%),
-        linear-gradient(160deg,rgba(12,30,22,.97),rgba(6,20,15,.97));
-      box-shadow:0 0 0 1px rgba(250,204,21,.08),0 16px 40px rgba(0,0,0,.28);
-    }
-    .payUpsellBadge{
-      display:inline-flex;align-items:center;gap:6px;padding:5px 11px;
-      border-radius:999px;border:1px solid rgba(250,204,21,.40);
-      background:rgba(250,204,21,.10);color:#fef3c7;
-      font-size:11px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase;
-      margin-bottom:9px;
-    }
-    .payUpsellTitle{font-size:17px;font-weight:1000;color:#fff8dc;margin-bottom:5px;line-height:1.25;}
-    .payUpsellLead{font-size:13px;color:rgba(184,207,196,.82);font-weight:900;line-height:1.5;margin-bottom:11px;}
-    .payUpsellPrice{
-      display:inline-flex;align-items:baseline;gap:5px;padding:7px 13px;
-      border-radius:999px;border:1px solid rgba(250,204,21,.30);
-      background:rgba(250,204,21,.07);color:#fef3c7;
-      font-size:13px;font-weight:1000;margin-bottom:13px;
-    }
-    .payUpsellPrice strong{font-size:18px;color:#facc15;}
-    .payUpsellBtn{
-      display:flex;align-items:center;justify-content:center;gap:8px;
-      min-height:52px;border-radius:18px;border:none;width:100%;
-      background:linear-gradient(135deg,#facc15,#f59e0b);
-      color:#1a1200;font-size:15px;font-weight:1000;cursor:pointer;
-      box-shadow:0 8px 20px rgba(250,204,21,.20);
-    }
-    .payUpsellBtn:hover{filter:brightness(1.06);}
     .foot,
     .noteHelp,
     .taskCard span,
     .clickCard span,
     .guideMini span,
     .service-pill{
+      color:#3d3324 !important;
       font-size:1rem !important;
       line-height:1.62 !important;
       font-weight:900 !important;
     }
+
+    /* ── PAY upsell corrigé : bloc séparé, lisible sur fond clair ── */
+    .payUpsellCard{
+      margin:14px auto;
+      padding:16px;
+      width:min(980px,calc(100% - 28px));
+      border-radius:22px;
+      border:2px solid rgba(83,58,26,.22) !important;
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.18),transparent 34%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      color:#241a0d !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+    }
+    .payUpsellBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 11px;
+      border-radius:999px;
+      border:1px solid rgba(22,101,52,.24) !important;
+      background:rgba(220,252,231,.86) !important;
+      color:#14532d !important;
+      font-size:11px;
+      font-weight:1000;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin-bottom:9px;
+    }
+    .payUpsellTitle{
+      font-size:17px;
+      font-weight:1000;
+      color:#241a0d !important;
+      margin-bottom:5px;
+      line-height:1.25;
+    }
+    .payUpsellLead{
+      font-size:13px;
+      color:#3d3324 !important;
+      font-weight:900;
+      line-height:1.5;
+      margin-bottom:11px;
+    }
+    .payUpsellPrice{
+      display:inline-flex;
+      align-items:baseline;
+      gap:5px;
+      padding:7px 13px;
+      border-radius:999px;
+      border:1px solid rgba(121,83,12,.28) !important;
+      background:rgba(250,204,21,.18) !important;
+      color:#241a0d !important;
+      font-size:13px;
+      font-weight:1000;
+      margin-bottom:13px;
+    }
+    .payUpsellPrice strong{font-size:18px;color:#7c2d12 !important;}
+    .payUpsellBtn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:52px;
+      border-radius:18px;
+      border:none;
+      width:100%;
+      background:linear-gradient(135deg,#facc15,#f59e0b) !important;
+      color:#1a1200 !important;
+      font-size:15px;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(250,204,21,.20);
+    }
+    .payUpsellBtn:hover{filter:brightness(1.06);}
 
     .btn,
     .nav-link,
@@ -777,6 +819,79 @@
       .actionBtn{
         flex:1 1 100% !important;
       }
+    }
+
+
+    /* =========================================================
+       CORRECTION FINALE COULEURS D'ÉCRITURE — fond beige
+       ========================================================= */
+    .topbar *,
+    .hero *,
+    .assistant-card *,
+    .clickPanel *,
+    .card *,
+    .quickResa *,
+    .audioPanel *,
+    .payUpsellCard *,
+    .bottomNavInner *{
+      text-shadow:none !important;
+    }
+
+    .topbar,
+    .hero,
+    .assistant-card,
+    .clickPanel,
+    .card,
+    .quickResa,
+    .audioPanel,
+    .payUpsellCard{
+      color:#1f2a1f !important;
+    }
+
+    .topbar b,
+    .hero b,
+    .assistant-card b,
+    .clickPanel b,
+    .card b,
+    .quickResa b,
+    .audioPanel b,
+    .payUpsellCard b,
+    .notif b,
+    .boostBox b{
+      color:#241a0d !important;
+      font-weight:1000 !important;
+    }
+
+    .topbar small,
+    .hero small,
+    .assistant-card small,
+    .clickPanel small,
+    .card small,
+    .quickResa small,
+    .audioPanel small,
+    .payUpsellCard small{
+      color:#3d3324 !important;
+    }
+
+    .tag.warn{
+      color:#7c2d12 !important;
+      background:rgba(254,215,170,.88) !important;
+      border-color:rgba(194,65,12,.28) !important;
+    }
+    .tag.ok{
+      color:#14532d !important;
+      background:rgba(220,252,231,.88) !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+    .tag.info{
+      color:#1e3a8a !important;
+      background:rgba(219,234,254,.88) !important;
+      border-color:rgba(37,99,235,.24) !important;
+    }
+
+    .bottomNav a:not(.active){
+      color:#3d3324 !important;
+      background:rgba(255,250,238,.86) !important;
     }
 
   </style>
@@ -1857,6 +1972,10 @@
 </script>
 </body>
 </html>
+
+
+
+
 
 
 
