@@ -543,6 +543,167 @@
       }
     }
 
+    /* =========================================================
+       DIGIY RESA — RYTHME DE RÉSERVATION FRONT LÉGER
+       Page Plus : projection métier, aucun SQL.
+       ========================================================= */
+    .rhythmPanel{
+      margin-top:14px;
+      padding:18px;
+      border-radius:24px;
+      border:2px solid rgba(83,58,26,.22);
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      color:#1f2a1f;
+      box-shadow:0 10px 24px rgba(77,52,22,.12);
+      display:grid;
+      gap:14px;
+    }
+
+    .rhythmHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .rhythmHead h2{
+      margin:0;
+      color:#241a0d !important;
+      font-size:clamp(1.6rem,5vw,2.7rem) !important;
+      line-height:1.12;
+      font-weight:900;
+      letter-spacing:-.035em;
+    }
+
+    .rhythmHead p{
+      margin:6px 0 0;
+      color:#3d3324 !important;
+      font-size:1.05rem;
+      line-height:1.55;
+      font-weight:900;
+      max-width:68ch;
+    }
+
+    .rhythmBadge{
+      border-radius:999px;
+      border:1px solid rgba(22,101,52,.24);
+      background:rgba(220,252,231,.86);
+      color:#14532d;
+      padding:9px 12px;
+      font-size:.88rem;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .rhythmGrid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .rhythmCard{
+      min-height:150px;
+      text-align:left;
+      border:1px solid rgba(83,58,26,.22);
+      border-radius:22px;
+      background:rgba(255,255,255,.68);
+      padding:14px;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:10px;
+      color:#1f2a1f;
+      font-family:var(--fontA);
+      box-shadow:0 8px 18px rgba(77,52,22,.08);
+    }
+
+    .rhythmCard:hover,
+    .rhythmCard.active{
+      border-color:rgba(22,101,52,.34);
+      background:rgba(220,252,231,.82);
+      transform:translateY(-1px);
+    }
+
+    .rhythmIcon{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      font-size:24px;
+      margin-bottom:8px;
+    }
+
+    .rhythmCard strong{
+      display:block;
+      color:#241a0d;
+      font-size:1.08rem;
+      line-height:1.18;
+      font-weight:900;
+    }
+
+    .rhythmCard span{
+      display:block;
+      margin-top:6px;
+      color:#3d3324;
+      font-size:.92rem;
+      line-height:1.4;
+      font-weight:900;
+    }
+
+    .rhythmPreview{
+      display:grid;
+      gap:10px;
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:20px;
+      background:rgba(255,255,255,.66);
+      padding:14px;
+    }
+
+    .rhythmPreviewTitle{
+      color:#241a0d;
+      font-size:1.12rem;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .rhythmPreviewText{
+      color:#3d3324;
+      font-size:1rem;
+      font-weight:900;
+      line-height:1.55;
+    }
+
+    .rhythmSlots{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .rhythmSlot{
+      border:1px solid rgba(83,58,26,.20);
+      background:rgba(255,255,255,.74);
+      color:#1f2a1f;
+      border-radius:999px;
+      padding:8px 11px;
+      font-size:.88rem;
+      font-weight:900;
+    }
+
+    @media(max-width:980px){
+      .rhythmGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:720px){
+      .rhythmGrid{grid-template-columns:1fr}
+      .rhythmBadge{width:100%;text-align:center}
+      .rhythmCard{min-height:132px}
+    }
+
   </style>
 </head>
 <body>
@@ -713,6 +874,63 @@
       </div>
       <div class="atelierNotice" id="atelierNotice"></div>
     </section>
+
+
+    <section class="rhythmPanel" id="rhythmPanel" aria-label="Rythme de réservation RESA">
+      <div class="rhythmHead">
+        <div>
+          <h2>🧭 Mon rythme de réservation</h2>
+          <p>
+            Chaque métier a son tempo. Ici, le pro clique pour visualiser son rythme :
+            horaires, durées, respiration, rappels. Rien n’est encore enregistré en base.
+          </p>
+        </div>
+        <div class="rhythmBadge">Aperçu local · zéro SQL</div>
+      </div>
+
+      <div class="rhythmGrid">
+        <button class="rhythmCard" type="button" data-rhythm="restaurant">
+          <div>
+            <div class="rhythmIcon">🍽️</div>
+            <strong>Restaurant</strong>
+            <span>Réservation de table, premier service, second service, couverts et respiration.</span>
+          </div>
+        </button>
+
+        <button class="rhythmCard" type="button" data-rhythm="beaute">
+          <div>
+            <div class="rhythmIcon">💇</div>
+            <strong>Beauté / coiffure</strong>
+            <span>Brushing, coupe, couleur ou soin : chaque geste a sa durée réelle.</span>
+          </div>
+        </button>
+
+        <button class="rhythmCard" type="button" data-rhythm="rdv">
+          <div>
+            <div class="rhythmIcon">🗓️</div>
+            <strong>RDV simple</strong>
+            <span>Créneaux courts, confirmation, rappel client et annulation propre.</span>
+          </div>
+        </button>
+
+        <button class="rhythmCard" type="button" data-rhythm="intervention">
+          <div>
+            <div class="rhythmIcon">🛠️</div>
+            <strong>Intervention</strong>
+            <span>Visite, déplacement, intervention longue ou demi-journée réservée.</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="rhythmPreview" id="rhythmPreview">
+        <div class="rhythmPreviewTitle">Clique sur un rythme pour voir l’exemple.</div>
+        <div class="rhythmPreviewText">
+          DIGIY RESA ne gère pas les commandes : il aide à gérer le moment, la durée, la place et la confirmation.
+        </div>
+        <div class="rhythmSlots" id="rhythmSlots"></div>
+      </div>
+    </section>
+
 
     <section class="grid">
       <div class="card">
@@ -1314,6 +1532,56 @@
       }
 
 
+      function initRhythmPanel(){
+        const panel = document.getElementById("rhythmPanel");
+        const preview = document.getElementById("rhythmPreview");
+        const slotsBox = document.getElementById("rhythmSlots");
+        if(!panel || !preview || !slotsBox) return;
+
+        const examples = {
+          restaurant: {
+            title: "🍽️ Restaurant · réservation de table",
+            text: "Exemple : premier service à 11h30, durée table estimée, puis second service à 13h30. RESA aide à confirmer et placer les tables, sans gérer les commandes.",
+            slots: ["11h30 · service 1", "Durée table 1h30", "13h30 · service 2", "Couverts", "Acompte éventuel"]
+          },
+          beaute: {
+            title: "💇 Beauté / coiffure · durée par geste",
+            text: "Exemple : un brushing, une coupe et une couleur ne bloquent pas le même temps. RESA respecte la durée du rendez-vous.",
+            slots: ["Brushing · 30 min", "Coupe · 45 min", "Soin · 1h", "Couleur · 1h30", "Rappel client"]
+          },
+          rdv: {
+            title: "🗓️ Rendez-vous simple · créneau clair",
+            text: "Exemple : un rendez-vous court ou long garde son heure, son client, son statut et son rappel.",
+            slots: ["Créneau 30 min", "Créneau 1h", "Confirmation", "Rappel", "Annulation"]
+          },
+          intervention: {
+            title: "🛠️ Intervention · temps terrain",
+            text: "Exemple : une intervention peut demander déplacement, préparation et retour. Le planning bloque le bon volume de temps.",
+            slots: ["Visite 1h", "Intervention 2h", "Demi-journée", "Zone client", "Rappel avant départ"]
+          }
+        };
+
+        function render(key){
+          const data = examples[key] || examples.restaurant;
+          panel.querySelectorAll(".rhythmCard").forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.rhythm === key);
+          });
+          preview.querySelector(".rhythmPreviewTitle").textContent = data.title;
+          preview.querySelector(".rhythmPreviewText").textContent = data.text;
+          slotsBox.innerHTML = data.slots.map(item => `<span class="rhythmSlot">${escapeHtml(item)}</span>`).join("");
+          try{ localStorage.setItem("DIGIY_RESA_RHYTHM_PREVIEW", key); }catch(_){}
+        }
+
+        panel.querySelectorAll(".rhythmCard").forEach(btn => {
+          btn.addEventListener("click", () => render(btn.dataset.rhythm || "restaurant"));
+        });
+
+        let saved = "";
+        try{ saved = localStorage.getItem("DIGIY_RESA_RHYTHM_PREVIEW") || ""; }catch(_){}
+        if(saved && examples[saved]) render(saved);
+      }
+
+
       async function boot(){
         cleanVisibleUrl();
         setNavLinks();
@@ -1408,6 +1676,7 @@
       }
 
       bindPlusAudio();
+      initRhythmPanel();
       boot();
     })();
   </script>
