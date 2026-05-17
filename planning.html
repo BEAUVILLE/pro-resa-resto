@@ -862,7 +862,7 @@
           <div class="mode" id="modeBadge">Aperçu</div>
           <!-- heroName écrit par JS — default "JE RÉSERVE" ━━━ -->
           <h2 id="heroName">JE RÉSERVE</h2>
-          <p id="heroDesc">Vue simple pour lire les réservations, les créneaux, les services et les notes du jour.</p>
+          <p id="heroDesc">Vue simple pour lire les réservations, les créneaux et les notes du jour.</p>
           <div class="hero-meta">
             <!-- ━━━ AVANT : "Slug :" → "Identifiant :" ━━━ -->
             <div class="pill" id="heroSession">Session : protégée</div>
@@ -889,7 +889,7 @@
           <div id="miniText" style="color:var(--muted);line-height:1.55;">Ici tu vois qui arrive, à quelle heure, pour quel service, avec quel statut.</div>
           <div class="mini-stats">
             <div class="mini-stat"><div class="k">Réservations</div><div class="v" id="sTotal">0</div></div>
-            <div class="mini-stat"><div class="k">Services actifs</div><div class="v" id="sServices">0</div></div>
+            <div class="mini-stat"><div class="k">Créneaux actifs</div><div class="v" id="sServices">0</div></div>
             <div class="mini-stat"><div class="k">Confirmées</div><div class="v" id="sConfirmed">0</div></div>
             <!-- ━━━ AVANT : "Pending" → "En attente" ━━━ -->
             <div class="mini-stat"><div class="k">En attente</div><div class="v" id="sPending">0</div></div>
@@ -909,15 +909,14 @@
     </section>
 
     <section class="serviceGuide" aria-label="Lecture du service RESA">
-      <h2>Organiser le service, sans écrire long.</h2>
+      <h2>Organiser les réservations, sans écrire long.</h2>
       <p>
-        Le planning montre qui arrive, quand, combien de personnes, et ce qu’il faut préparer.
-        La salle lit, la cuisine anticipe, le responsable garde la mémoire.
+        Le planning montre qui arrive, quand et combien de personnes sont attendues. L’accueil confirme, le planning reste clair et le responsable garde la mémoire.
       </p>
       <div class="guideGrid">
         <div class="guideMini"><strong>🕒 Heure</strong><span>Le service commence par l’ordre du jour.</span></div>
-        <div class="guideMini"><strong>👥 Clients</strong><span>Le nombre de personnes guide la salle.</span></div>
-        <div class="guideMini"><strong>🍽️ Cuisine</strong><span>Les demandes aident à préparer sans panique.</span></div>
+        <div class="guideMini"><strong>👥 Clients</strong><span>Le nombre de personnes aide à préparer l’accueil.</span></div>
+        <div class="guideMini"><strong>📅 Créneau</strong><span>Chaque réservation garde sa place dans le planning.</span></div>
         <div class="guideMini"><strong>✍️ Notes</strong><span>Une phrase suffit pour garder une trace.</span></div>
       </div>
     </section>
@@ -950,18 +949,18 @@
 
       <div class="quickGuide">
         <strong>Une phrase suffit.</strong>
-        <p>Exemples : paiement client, acompte, prestation, achat produit ou client qui doit encore.</p>
+        <p>Exemples : acompte réservation, confirmation client, rappel ou annulation.</p>
         <div class="quickExamples" id="quickResaExamples">
           <button type="button">Client a payé 15000 cash</button>
           <button type="button">Acompte rendez-vous 5000 Wave</button>
-          <button type="button">Prestation coiffure 12000 cash</button>
-          <button type="button">Achat produit 8000</button>
+          <button type="button">Client confirmé 19h</button>
+          <button type="button">Rappel client demain midi</button>
           <button type="button">Client Fatou doit 3000</button>
           <button type="button">Annulation client 18h</button>
         </div>
       </div>
 
-      <textarea class="quickInput" id="quickResaInput" placeholder="Ex : Prestation coiffure 12000 cash"></textarea>
+      <textarea class="quickInput" id="quickResaInput" placeholder="Ex : Acompte réservation 5000 Wave"></textarea>
 
       <div class="hero-cta" style="margin-top:0">
         <button class="btn" id="btnQuickResaPrepare" type="button">Préparer</button>
@@ -999,7 +998,7 @@
           <div class="pill" id="clawMode">Aide en cours</div>
         </div>
         <!-- ━━━ AVANT : "CLAW lit le jour en silence" → humain ━━━ -->
-        <div class="claw-text" id="clawSummary">DIGIY t’aide à lire le jour : charge visible, points d’attention, respiration du planning.</div>
+        <div class="claw-text" id="clawSummary">DIGIY t’aide à lire le jour : réservations visibles, points d’attention et respiration du planning.</div>
         <div class="claw-pills" id="clawPills"></div>
       </article>
       <article class="claw-card">
@@ -1266,7 +1265,7 @@
         $("modeBadge").textContent = "En direct";
         $("topSub").textContent = "Planning chargé.";
         $("miniTitle").textContent = "Lecture terrain";
-        $("miniText").textContent = "Le planning montre l'ordre du jour, les services demandés, les statuts et les personnes à accueillir.";
+        $("miniText").textContent = "Le planning montre l'ordre du jour, les réservations, les statuts et les personnes à accueillir.";
         $("footerNote").textContent = "Planning vivant branché sur les réservations réelles.";
       }
 
@@ -1902,3 +1901,4 @@
   </script>
 </body>
 </html>
+
