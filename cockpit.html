@@ -1132,6 +1132,7 @@
       <a class="nav-link" id="navQr" href="./qr.html">QR</a>
       <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
+      <a class="nav-link" id="navMoney" href="https://pro-pay.digiylyfe.com/admin.html">💰 Mon Argent</a>
       <a class="nav-link" id="navHome" href="./index.html">Façade</a>
     </nav>
 
@@ -1158,6 +1159,7 @@
             <a id="fastPlanning" href="./planning.html">🗓️ Planning</a>
             <a id="fastNotes" href="./planning.html#quickResaNote">✍️ Notes</a>
             <a id="fastPlus" href="./etablissement.html">⚙️ Plus</a>
+            <a id="fastMoney" href="https://pro-pay.digiylyfe.com/admin.html">💰 Mon Argent</a>
           </div>
         </div>
 
@@ -1488,11 +1490,18 @@
           if(/^https?:\/\//i.test(baseStr)){
             u = new URL(baseStr);
           }else{
-            u = new URL(baseStr, location.href);
+            // Résoudre une base absolue fiable
+            const base = (typeof location !== "undefined" &&
+                          typeof location.href === "string" &&
+                          /^https?:\/\//i.test(location.href))
+                          ? location.href
+                          : (typeof document !== "undefined" && /^https?:\/\//i.test(document.baseURI || ""))
+                            ? document.baseURI
+                            : "https://pro-resa.digiylyfe.com/";
+            u = new URL(baseStr, base);
           }
         }catch(e){
-          console.warn("[DIGIY RESA] buildSafeUrl KO:", baseStr, e.message);
-          return baseStr;
+          return baseStr; // fallback silencieux — le lien reste valide
         }
 
         [
@@ -2069,6 +2078,14 @@
           storageSet("digiy_resa_last_slug",RESOLVED_SLUG);
           storageSet("digiy_resa_slug",RESOLVED_SLUG);
 
+          // Câbler Mon Argent avec le slug
+          const _payBase = "https://pro-pay.digiylyfe.com/admin.html";
+          const _payUrl  = RESOLVED_SLUG ? _payBase + "?slug=" + encodeURIComponent(RESOLVED_SLUG) : _payBase;
+          ["navMoney","fastMoney"].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.href = _payUrl;
+          });
+
           setLiveHero();
           await loadProfile();
           await loadBookings();
@@ -2092,6 +2109,11 @@
   </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
