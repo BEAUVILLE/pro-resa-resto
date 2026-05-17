@@ -553,6 +553,58 @@
       .btn{min-height:60px}
       h1{font-size:42px}
     }
+    .payBridge{
+      margin-top:12px;
+      border:2px solid rgba(121,83,12,.26);
+      border-radius:22px;
+      background:
+        radial-gradient(circle at right top,rgba(250,204,21,.20),transparent 34%),
+        rgba(255,255,255,.70);
+      padding:13px;
+      display:grid;
+      gap:9px;
+    }
+
+    .payBridgeTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .payBridgeTitle{
+      color:#241a0d;
+      font-size:16px;
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .payBadge{
+      border-radius:999px;
+      border:1px solid rgba(121,83,12,.28);
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .payBridgeText{
+      color:#3d3324;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:900;
+    }
+
+    .payBridge .btn{
+      min-height:52px;
+      background:linear-gradient(135deg,#facc15,#fff3c4);
+      color:#241a0d;
+      border-color:rgba(121,83,12,.28);
+    }
+
   </style>
 </head>
 
@@ -634,12 +686,18 @@
           <div class="mainActions">
             <a class="btn primary" href="./dashboard-pro.html">🏠 Ouvrir Je réserve</a>
             <a class="btn gold" href="./cockpit.html">📋 Voir les réservations</a>
-            <a class="btn" href="https://pro-pay.digiylyfe.com/admin.html">💰 Mon Argent · acomptes & soldes</a>
           </div>
 
-          <div class="panelText" style="margin-top:10px;font-size:13px">
-            Accès Mon Argent sous réserve d’abonnement PAY déjà activé. RESA garde la réservation,
-            PAY garde les acomptes, soldes et restes à payer.
+          <div class="payBridge" aria-label="Pont RESA vers Mon Argent">
+            <div class="payBridgeTop">
+              <div class="payBridgeTitle">💰 Acomptes, soldes & restes à payer</div>
+              <div class="payBadge">PAY actif requis</div>
+            </div>
+            <div class="payBridgeText">
+              RESA garde la réservation. PAY garde l’argent : acomptes, soldes et restes à payer.
+              Si la session est fermée, repasse d’abord par ton code.
+            </div>
+            <a class="btn" href="./pin.html?return=pay">Ouvrir Mon Argent après accès</a>
           </div>
 
           <div class="smallGrid">
@@ -705,13 +763,13 @@
           <div class="resaCardAction">Confirmer proprement</div>
         </a>
 
-        <a class="resaCard" href="https://pro-pay.digiylyfe.com/admin.html">
+        <a class="resaCard" href="./pin.html?return=pay">
           <div>
             <div class="resaCardIcon">💰</div>
             <b>Mon Argent</b>
-            <span>Acompte, solde ou reste à payer, uniquement si l’abonnement PAY est actif.</span>
+            <span>Acompte, solde ou reste à payer. Accès sous réserve d’abonnement PAY actif.</span>
           </div>
-          <div class="resaCardAction">Ouvrir PAY</div>
+          <div class="resaCardAction">PAY actif requis</div>
         </a>
 
         <a class="resaCard" href="./planning.html">
@@ -844,7 +902,7 @@
         stopAudio();
 
         const text =
-          "Bienvenue dans Je réserve by DIGIY. Ici, le professionnel ne doit pas écrire comme un secrétaire. Il doit cliquer, choisir, confirmer, et laisser DIGIY préparer les mots. RESA sert à recevoir une réservation, la confirmer, la placer dans le planning, puis coordonner l’accueil client. Pour un restaurant, le responsable garde une trace claire des réservations et des acomptes. Les acomptes et soldes peuvent aller vers Mon Argent seulement si l’abonnement PAY est actif. Ouvre l’accueil pour travailler. Va dans les réservations pour suivre les demandes. Va dans planning pour organiser les créneaux. Va dans Plus pour régler l’établissement. Le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité. DIGIY RESA sert à recevoir et confirmer une réservation, pas à gérer les commandes du restaurant.";
+          "Bienvenue dans Je réserve by DIGIY. Ici, le professionnel ne doit pas écrire comme un secrétaire. Il doit cliquer, choisir, confirmer, et laisser DIGIY préparer les mots. RESA sert à recevoir une réservation, la confirmer, la placer dans le planning, puis coordonner l’accueil client. Pour un restaurant, le responsable garde une trace claire des réservations et des acomptes. Les acomptes et soldes peuvent aller vers Mon Argent seulement si l’abonnement PAY est actif. Si la session est fermée, repasse par ton code. Ouvre l’accueil pour travailler. Va dans les réservations pour suivre les demandes. Va dans planning pour organiser les créneaux. Va dans Plus pour régler l’établissement. Le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité. DIGIY RESA sert à recevoir et confirmer une réservation, pas à gérer les commandes du restaurant.";
 
         const run = () => {
           const u = new SpeechSynthesisUtterance(text);
@@ -893,6 +951,12 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
 
