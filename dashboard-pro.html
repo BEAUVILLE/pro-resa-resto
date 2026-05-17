@@ -1847,18 +1847,19 @@
 
   async function checkPayAccess(phone){
     const S = getSbClient();
-    if(!S || !phone) return false;
+    if(!S || !phone) return null; // null = inconclusive, card reste cachée
     try{
       const { data, error } = await S.rpc("digiy_check_module_access",{
         p_phone: phone,
         p_module: "PAY"
       });
-      if(error) return false;
+      if(error) return null;
       return data === true;
-    }catch(_){ return false; }
+    }catch(_){ return null; }
   }
 
   function applyPayAccess(hasPayAccess, slug){
+    if(hasPayAccess === null || hasPayAccess === undefined) return;
     const card = document.getElementById("payUpsellSection");
     const btn  = document.getElementById("btnMonArgent");
     if(hasPayAccess){
@@ -1972,6 +1973,18 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
