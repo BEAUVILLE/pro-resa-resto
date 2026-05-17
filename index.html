@@ -634,6 +634,12 @@
           <div class="mainActions">
             <a class="btn primary" href="./dashboard-pro.html">🏠 Ouvrir Je réserve</a>
             <a class="btn gold" href="./cockpit.html">📋 Voir les réservations</a>
+            <a class="btn" href="https://pro-pay.digiylyfe.com/admin.html">💰 Mon Argent · acomptes & soldes</a>
+          </div>
+
+          <div class="panelText" style="margin-top:10px;font-size:13px">
+            Accès Mon Argent sous réserve d’abonnement PAY déjà activé. RESA garde la réservation,
+            PAY garde les acomptes, soldes et restes à payer.
           </div>
 
           <div class="smallGrid">
@@ -697,6 +703,15 @@
             <span>Préparer la réponse client et garder la réservation claire.</span>
           </div>
           <div class="resaCardAction">Confirmer proprement</div>
+        </a>
+
+        <a class="resaCard" href="https://pro-pay.digiylyfe.com/admin.html">
+          <div>
+            <div class="resaCardIcon">💰</div>
+            <b>Mon Argent</b>
+            <span>Acompte, solde ou reste à payer, uniquement si l’abonnement PAY est actif.</span>
+          </div>
+          <div class="resaCardAction">Ouvrir PAY</div>
         </a>
 
         <a class="resaCard" href="./planning.html">
@@ -829,7 +844,7 @@
         stopAudio();
 
         const text =
-          "Bienvenue dans Je réserve by DIGIY. Ici, le professionnel ne doit pas écrire comme un secrétaire. Il doit cliquer, choisir, confirmer, et laisser DIGIY préparer les mots. RESA sert à recevoir une réservation, la confirmer, la placer dans le planning, puis coordonner l’accueil client. Pour un restaurant, le responsable garde une trace claire des réservations et des acomptes. Ouvre l’accueil pour travailler. Va dans les réservations pour suivre les demandes. Va dans planning pour organiser les créneaux. Va dans Plus pour régler l’établissement. Le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité. DIGIY RESA sert à recevoir et confirmer une réservation, pas à gérer les commandes du restaurant.";
+          "Bienvenue dans Je réserve by DIGIY. Ici, le professionnel ne doit pas écrire comme un secrétaire. Il doit cliquer, choisir, confirmer, et laisser DIGIY préparer les mots. RESA sert à recevoir une réservation, la confirmer, la placer dans le planning, puis coordonner l’accueil client. Pour un restaurant, le responsable garde une trace claire des réservations et des acomptes. Les acomptes et soldes peuvent aller vers Mon Argent seulement si l’abonnement PAY est actif. Ouvre l’accueil pour travailler. Va dans les réservations pour suivre les demandes. Va dans planning pour organiser les créneaux. Va dans Plus pour régler l’établissement. Le pro clique plus qu’il n’écrit. DIGIY formule, le terrain valide avec sa vérité. DIGIY RESA sert à recevoir et confirmer une réservation, pas à gérer les commandes du restaurant.";
 
         const run = () => {
           const u = new SpeechSynthesisUtterance(text);
@@ -878,6 +893,13 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
 
 
 
