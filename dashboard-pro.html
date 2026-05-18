@@ -894,6 +894,95 @@
       background:rgba(255,250,238,.86) !important;
     }
 
+
+
+    /* =========================================================
+       DIGIY RESA — ALERTES VOCALES MÉTIER V1
+       Adapté RESA : réservation, table, planning, acompte.
+       ========================================================= */
+    .voiceBox{
+      margin:0 0 12px;
+      padding:16px;
+      border-radius:24px;
+      border:2px solid rgba(212,160,23,.28);
+      background:
+        radial-gradient(440px 180px at 0% 0%, rgba(250,204,21,.22), transparent 70%),
+        linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
+      box-shadow:0 10px 24px rgba(77,52,22,.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      color:#1f2a1f;
+    }
+
+    .voiceText{
+      min-width:240px;
+      flex:1 1 300px;
+    }
+
+    .voiceTitle{
+      color:#14532d;
+      font-size:1.12rem;
+      line-height:1.2;
+      font-weight:1000;
+    }
+
+    .voiceSub{
+      margin-top:4px;
+      color:#3d3324;
+      font-size:1rem;
+      line-height:1.48;
+      font-weight:900;
+    }
+
+    #voiceStatus{
+      margin-top:9px;
+      display:inline-flex;
+      padding:7px 11px;
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(83,58,26,.18);
+      color:#3d3324;
+      font-size:.92rem;
+      font-weight:950;
+    }
+
+    #btnVoiceAlerts{
+      min-width:250px;
+      background:linear-gradient(135deg,#facc15,#22c55e) !important;
+      color:#04160e !important;
+      border-color:rgba(212,160,23,.34) !important;
+    }
+
+    .voiceExamples{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      margin-top:10px;
+    }
+
+    .voiceExample{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:7px 9px;
+      border-radius:999px;
+      border:1px solid rgba(83,58,26,.16);
+      background:rgba(255,255,255,.62);
+      color:#241a0d;
+      font-size:.82rem;
+      font-weight:1000;
+    }
+
+    @media(max-width:640px){
+      .voiceBox{padding:14px;}
+      #btnVoiceAlerts{width:100%;min-height:60px;font-size:1.05rem !important;}
+      .voiceTitle{font-size:1.08rem;}
+      .voiceSub{font-size:.98rem;}
+    }
+
   </style>
 </head>
 <body>
@@ -962,6 +1051,24 @@
         puis à agir par clic sans écrire comme un secrétaire.
       </span>
       <button class="btn" id="btnResaDashboardAudio" type="button">🎧 Écouter DIGIY</button>
+    </section>
+
+
+    <section class="voiceBox" id="resaVoiceBox" aria-label="Alertes vocales DIGIY RESA">
+      <div class="voiceText">
+        <div class="voiceTitle">🔔 Alertes vocales DIGIY RESA</div>
+        <div class="voiceSub">
+          DIGIY ne parle pas pour faire du bruit : il annonce les gestes utiles du service — réservation à confirmer,
+          table aujourd’hui, planning à suivre, acompte ou reste à payer.
+        </div>
+        <div class="voiceExamples" aria-label="Exemples d’alertes RESA">
+          <span class="voiceExample">Nouvelle réservation à confirmer</span>
+          <span class="voiceExample">Table aujourd’hui</span>
+          <span class="voiceExample">Acompte reçu</span>
+        </div>
+        <span id="voiceStatus">Voix non activée</span>
+      </div>
+      <button class="btn" id="btnVoiceAlerts" type="button" aria-pressed="false">🔔 Activer les alertes vocales</button>
     </section>
 
     <section class="assistant-grid">
@@ -1221,6 +1328,11 @@
 
   const $ = (id) => document.getElementById(id);
   let CURRENT_STATE = null;
+
+  const RESA_VOICE_ENABLED_KEY = "DIGIY_RESA_VOICE_ALERTS";
+  const RESA_VOICE_SEEN_KEY = "DIGIY_RESA_VOICE_SEEN_KEYS";
+  let resaVoiceEnabled = false;
+  let resaVoiceUnlocked = false;
 
   function normalizeSlug(v){
     return String(v || "")
@@ -1562,6 +1674,7 @@
     $("btnPrimaryAction").textContent = "Ouvrir ma session";
     setNotifs([{level:"info",tag:"SESSION",title:"Session à ouvrir",text:"Entre ton numéro WhatsApp abonné et ton code PIN. DIGIY garde l'accès 8 heures sur ce téléphone."}]);
     setAssistantPreview(message);
+    announceResaVoiceState("preview");
   }
 
   function setBlockedState(message, level="warn"){
@@ -1581,6 +1694,7 @@
     $("btnPrimaryAction").textContent = needsSubscription ? "Ouvrir ma session" : "Ouvrir ma session";
     setNotifs([{level:"warn",tag: needsSubscription ? "MODULE" : "SESSION",title: needsSubscription ? "Module à activer" : "Session à ouvrir",text:message}]);
     setAssistantBlocked(message, level);
+    announceResaVoiceState(level === "warn" ? "blocked" : "error");
   }
 
   function setLiveState(){
@@ -1602,6 +1716,7 @@
       {level:"info", tag:"NEXT", title:"Étape suivante", text:"Circule entre réservations, planning, notes rapides et plus."}
     ]);
     setAssistantLive();
+    announceResaVoiceState("live");
   }
 
   async function getGuardState(){
@@ -1749,6 +1864,8 @@
           const pay = $("btnSendResaPay");
           if(pay) pay.href = buildResaPayDraftUrl(draft);
         }catch(_){}
+
+        announceResaVoiceFromNote(note);
       });
     });
   }
@@ -1823,6 +1940,211 @@
   }
 
 
+  // ── Alertes vocales DIGIY RESA V1 ─────────────────────────────
+  function readResaVoiceSeenKeys(){
+    try{
+      const raw = localStorage.getItem(RESA_VOICE_SEEN_KEY) || "[]";
+      const arr = JSON.parse(raw);
+      return new Set(Array.isArray(arr) ? arr : []);
+    }catch(_){
+      return new Set();
+    }
+  }
+
+  function writeResaVoiceSeenKeys(set){
+    try{
+      localStorage.setItem(RESA_VOICE_SEEN_KEY, JSON.stringify(Array.from(set).slice(-120)));
+    }catch(_){}
+  }
+
+  function setResaVoiceStatus(text){
+    const el = $("voiceStatus");
+    if(el) el.textContent = text;
+  }
+
+  function canResaSpeak(){
+    return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  }
+
+  function pickResaVoice(){
+    if(!canResaSpeak()) return null;
+    try{
+      const voices = speechSynthesis.getVoices() || [];
+      return (
+        voices.find(v => /fr[-_]?FR/i.test(v.lang || "") && /thomas|paul|daniel|homme|male/i.test(v.name || "")) ||
+        voices.find(v => /fr[-_]?FR/i.test(v.lang || "")) ||
+        voices.find(v => /^fr/i.test(v.lang || "")) ||
+        voices[0] ||
+        null
+      );
+    }catch(_){
+      return null;
+    }
+  }
+
+  function refreshResaVoiceButton(){
+    const btn = $("btnVoiceAlerts");
+    if(!btn) return;
+
+    if(resaVoiceEnabled && resaVoiceUnlocked){
+      btn.textContent = "🔔 Alertes vocales activées";
+      btn.setAttribute("aria-pressed","true");
+      setResaVoiceStatus("Voix activée pendant cette session RESA");
+      return;
+    }
+
+    if(resaVoiceEnabled && !resaVoiceUnlocked){
+      btn.textContent = "🔔 Réactiver les alertes vocales";
+      btn.setAttribute("aria-pressed","false");
+      setResaVoiceStatus("Clique une fois pour réactiver la voix sur ce téléphone");
+      return;
+    }
+
+    btn.textContent = "🔔 Activer les alertes vocales";
+    btn.setAttribute("aria-pressed","false");
+    setResaVoiceStatus("Voix non activée");
+  }
+
+  function speakResaVoice(message, key){
+    const clean = String(message || "").trim().replace(/\s+/g," ");
+    if(!clean || !resaVoiceEnabled || !resaVoiceUnlocked || !canResaSpeak()) return;
+
+    const seenKey = String(key || clean).toLowerCase().slice(0,180);
+    const seen = readResaVoiceSeenKeys();
+    if(seenKey && seen.has(seenKey)) return;
+    if(seenKey) seen.add(seenKey);
+    writeResaVoiceSeenKeys(seen);
+
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(clean);
+      const voice = pickResaVoice();
+      if(voice) u.voice = voice;
+      u.lang = voice?.lang || "fr-FR";
+      u.rate = 0.88;
+      u.pitch = 1.02;
+      u.volume = 1;
+      u.onstart = () => setResaVoiceStatus("DIGIY RESA parle…");
+      u.onend = () => setResaVoiceStatus("Alertes vocales activées");
+      u.onerror = () => setResaVoiceStatus("Voix interrompue");
+      speechSynthesis.speak(u);
+    }catch(err){
+      console.warn("[RESA VOICE]", err);
+    }
+  }
+
+  function buildResaVoiceStateMessage(mode){
+    const reason = String(CURRENT_STATE?.reason || "");
+    if(mode === "live"){
+      return "Accueil RESA ouvert. Vérifie les réservations à confirmer, les tables d’aujourd’hui, le planning et les acomptes à suivre.";
+    }
+    if(reason === "no_subscription"){
+      return "Module RESA à activer. Aucun service à annoncer tant que l’accès n’est pas ouvert.";
+    }
+    if(mode === "preview" || mode === "blocked"){
+      return "Session RESA à ouvrir. Entre ton numéro WhatsApp abonné et ton code PIN pour voir les réservations.";
+    }
+    return "Accueil RESA en vérification. Reviens au code PIN si l’accès ne s’ouvre pas.";
+  }
+
+  function announceResaVoiceState(mode){
+    if(!resaVoiceEnabled || !resaVoiceUnlocked) return;
+    const msg = buildResaVoiceStateMessage(mode);
+    speakResaVoice(msg, "state:" + String(mode || "unknown") + ":" + String(CURRENT_STATE?.reason || "ok"));
+  }
+
+  function announceResaVoiceFromNote(note){
+    const lower = String(note || "").toLowerCase();
+    let msg = "Action RESA notée. DIGIY prépare la trace, le terrain valide.";
+
+    if(/nouvelle|demande|traiter/.test(lower)){
+      msg = "Nouvelle réservation à confirmer. Ouvre les réservations et réponds proprement au client.";
+    }else if(/confirm/.test(lower)){
+      msg = "Réservation confirmée. Pense au planning et au message client.";
+    }else if(/arriv/.test(lower)){
+      msg = "Table aujourd’hui ou client arrivé. Garde l’accueil clair et le service prêt.";
+    }else if(/termin|clôtur|clotur/.test(lower)){
+      msg = "Réservation terminée. Clôture le service et garde la trace propre.";
+    }else if(/acompte|paiement|payé|paye|wave|cash|table/.test(lower)){
+      msg = "Acompte ou paiement reçu. Envoie la trace vers Mon Argent si nécessaire.";
+    }else if(/reste|doit|dette/.test(lower)){
+      msg = "Reste à payer. Vérifie le solde client avant de clôturer.";
+    }else if(/annul/.test(lower)){
+      msg = "Annulation client. Garde la trace sans paniquer le service.";
+    }else if(/accueil|préparer|preparer/.test(lower)){
+      msg = "Accueil client à préparer. Réservation à confirmer et planning à vérifier.";
+    }
+
+    speakResaVoice(msg, "action:" + lower.slice(0,120));
+  }
+
+  function toggleResaVoiceAlerts(){
+    if(!canResaSpeak()){
+      setResaVoiceStatus("Voix non disponible sur ce navigateur");
+      return;
+    }
+
+    if(resaVoiceEnabled && resaVoiceUnlocked){
+      resaVoiceEnabled = false;
+      resaVoiceUnlocked = false;
+      try{ localStorage.setItem(RESA_VOICE_ENABLED_KEY,"0"); }catch(_){}
+      try{ speechSynthesis.cancel(); }catch(_){}
+      refreshResaVoiceButton();
+      return;
+    }
+
+    resaVoiceEnabled = true;
+    resaVoiceUnlocked = true;
+    try{ localStorage.setItem(RESA_VOICE_ENABLED_KEY,"1"); }catch(_){}
+    refreshResaVoiceButton();
+
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance("Alertes vocales DIGIY RESA activées. Je parle seulement pour les gestes utiles : réservation à confirmer, table aujourd’hui, planning, acompte ou reste à payer.");
+      const voice = pickResaVoice();
+      if(voice) u.voice = voice;
+      u.lang = voice?.lang || "fr-FR";
+      u.rate = 0.88;
+      u.pitch = 1.02;
+      u.volume = 1;
+      u.onstart = () => setResaVoiceStatus("Activation de la voix…");
+      u.onend = () => {
+        setResaVoiceStatus("Alertes vocales activées");
+        setTimeout(() => announceResaVoiceState(CURRENT_STATE?.access_ok ? "live" : "preview"), 450);
+      };
+      u.onerror = () => setResaVoiceStatus("Voix interrompue");
+      speechSynthesis.speak(u);
+    }catch(err){
+      console.warn("[RESA VOICE INIT]", err);
+    }
+  }
+
+  function bindResaVoiceAlerts(){
+    try{ resaVoiceEnabled = localStorage.getItem(RESA_VOICE_ENABLED_KEY) === "1"; }catch(_){ resaVoiceEnabled = false; }
+    resaVoiceUnlocked = false;
+    refreshResaVoiceButton();
+
+    const btn = $("btnVoiceAlerts");
+    if(btn) btn.addEventListener("click", toggleResaVoiceAlerts);
+
+    window.DIGIY_RESA_VOICE_ALERT = (message, opts={}) => {
+      const key = opts.key || opts.id || "external:" + String(message || "").toLowerCase().slice(0,120);
+      speakResaVoice(message, key);
+    };
+
+    window.addEventListener("digiy:resa-alert", (ev) => {
+      const detail = ev.detail || {};
+      const msg = typeof detail === "string" ? detail : detail.message;
+      const key = typeof detail === "object" ? (detail.key || detail.id) : "event:" + String(msg || "").toLowerCase().slice(0,120);
+      speakResaVoice(msg, key);
+    });
+
+    if(canResaSpeak()){
+      try{ speechSynthesis.onvoiceschanged = () => pickResaVoice(); }catch(_){}
+    }
+  }
+
+
   // ── PAY upsell ────────────────────────────────────────────
   const PAY_COCKPIT_URL = "https://pay.digiylyfe.com/cockpit.html";
 
@@ -1877,6 +2199,7 @@
     bindQuickResaNote();
     bindClickActionCards();
     bindDashboardAudio();
+    bindResaVoiceAlerts();
 
     $("brandTitle").textContent = MODULE_LABEL;
     $("brandSub").textContent = "Accueil RESA";
@@ -1973,6 +2296,100 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
