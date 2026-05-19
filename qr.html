@@ -243,12 +243,8 @@
   function cleanVisibleUrl(){
     try{
       const u = new URL(location.href);
-      const legacy = normalizeSlug(u.searchParams.get("slug") || "");
-      if(legacy){
-        try{ sessionStorage.setItem("digiy_resa_slug", legacy); }catch(_){}
-        try{ localStorage.setItem("digiy_resa_slug", legacy); }catch(_){}
-        try{ localStorage.setItem("digiy_resa_last_slug", legacy); }catch(_){}
-      }
+      /* MOULE SAFE : on ne mémorise jamais un slug venu de l’URL.
+         Le QR doit être construit depuis le guard/session du pro actif. */
       ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
       history.replaceState({}, document.title, u.pathname + u.search + u.hash);
     }catch(_){}
@@ -486,6 +482,9 @@
 </script>
 </body>
 </html>
+
+
+
 
 
 
