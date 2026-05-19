@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Je réserve — HUB RESA</title>
+  <meta name="theme-color" content="#f4ead2"/>
+  <meta name="description" content="DIGIY RESA PRO — Hub mobile terrain sans doublon : accueil du jour, réservations, planning, QR, établissement, accès et PAY."/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <meta name="digiy-build" content="resa-hub-paves-mobile-sans-doublon-20260519"/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "RESA";
+    window.DIGIY_LOGIN_URL = "./pin.html";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-hub-paves-mobile-sans-doublon-20260519"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --bg:#f4ead2;--bg2:#ead9b7;--ink:#20170c;--text:#1f2a1f;--muted:#5b4a2d;
+      --card:rgba(255,250,238,.94);--line:rgba(83,58,26,.22);
+      --gold:#facc15;--green:#16a34a;--blue:#4f46e5;
+      --shadow:0 14px 34px rgba(77,52,22,.15);
+      --r:22px;--max:980px;--hdrH:58px;--barH:76px;
+    }
+
+    *{box-sizing:border-box}
+
+    html{
+      scroll-behavior:smooth;
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      margin:0;
+      min-height:100dvh;
+      color:var(--text);
+      font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+      font-size:18px;
+      font-weight:900;
+      background:
+        radial-gradient(560px 360px at 12% -8%,rgba(250,204,21,.28),transparent 58%),
+        radial-gradient(420px 280px at 100% 4%,rgba(79,70,229,.16),transparent 55%),
+        radial-gradient(520px 360px at 100% 100%,rgba(22,163,74,.12),transparent 58%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      padding:calc(var(--hdrH) + 14px) 12px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
+    }
+
+    a{color:inherit;text-decoration:none}
+    button{font:inherit;color:inherit;cursor:pointer}
+
+    .topHeader{
+      position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:80;
+      display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;
+      padding:8px 12px;background:rgba(244,234,210,.92);
+      border-bottom:1px solid rgba(83,58,26,.18);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+
+    .hdrBtn,.hdrTitle,.hdrPill{
+      min-height:38px;border-radius:999px;border:1px solid var(--line);
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:8px 12px;background:rgba(255,255,255,.58);
+      font-size:13px;font-weight:1000;white-space:nowrap;
+    }
+
+    .hdrBtn{justify-self:start;color:#3d3324}
+    .hdrTitle{
+      justify-self:center;color:#4a3508;letter-spacing:.13em;text-transform:uppercase;
+      background:rgba(250,204,21,.20);
+    }
+    .hdrPill{
+      justify-self:end;color:#5b4a2d;max-width:38vw;overflow:hidden;text-overflow:ellipsis;
+    }
+    .hdrPill.ok{color:#14532d;border-color:rgba(22,101,52,.28);background:rgba(220,252,231,.86)}
+    .hdrPill.warn{color:#7c4a03;border-color:rgba(217,119,6,.28);background:rgba(254,243,199,.86)}
+    .hdrPill.bad{color:#7f1d1d;border-color:rgba(220,38,38,.28);background:rgba(254,226,226,.86)}
+
+    .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:14px}
+
+    .hero{
+      border:2px solid var(--line);border-radius:30px;
+      background:linear-gradient(160deg,rgba(255,250,238,.96),rgba(246,232,202,.92));
+      box-shadow:var(--shadow);padding:18px;
+    }
+
+    .eyebrow{
+      font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;
+      color:#7c4a03;margin-bottom:8px;
+    }
+
+    h1{
+      margin:0;font-size:clamp(34px,8vw,58px);line-height:.96;
+      letter-spacing:-.055em;font-weight:1000;color:var(--ink);
+    }
+    h1 span{color:var(--blue)}
+
+    .lead{
+      margin:10px 0 0;color:var(--muted);font-size:17px;font-weight:950;
+      line-height:1.42;max-width:780px;
+    }
+
+    .miniDoctrine{
+      margin-top:12px;padding:12px 14px;border-radius:20px;
+      border:1px solid rgba(121,83,12,.24);background:rgba(254,243,199,.70);
+      color:#4a3508;font-size:15px;font-weight:1000;line-height:1.35;
+    }
+
+    .ruleBox{
+      margin-top:10px;padding:11px 13px;border-radius:18px;
+      border:1px dashed rgba(83,58,26,.28);background:rgba(255,255,255,.48);
+      color:#3d3324;font-size:14px;font-weight:1000;line-height:1.35;
+    }
+
+    .section{display:grid;gap:9px}
+    .sectionTitle{
+      font-size:12px;font-weight:1000;letter-spacing:.15em;text-transform:uppercase;
+      color:rgba(61,51,36,.72);padding:0 4px;
+    }
+
+    .tileGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+
+    .tile{
+      min-height:138px;border-radius:var(--r);border:1px solid var(--line);
+      background:var(--card);box-shadow:var(--shadow);padding:14px;
+      display:flex;flex-direction:column;justify-content:space-between;gap:12px;
+      transition:transform .12s ease,background .12s ease,border-color .12s ease;
+    }
+    .tile:hover{transform:translateY(-1px);background:rgba(255,255,255,.88);border-color:rgba(83,58,26,.32)}
+    .tile:active{transform:none}
+
+    .tileTop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+    .ico{
+      width:48px;height:48px;border-radius:17px;display:grid;place-items:center;
+      font-size:25px;background:rgba(250,204,21,.22);
+      border:1px solid rgba(121,83,12,.18);flex:0 0 auto;
+    }
+    .tag{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-height:26px;padding:5px 8px;border-radius:999px;
+      border:1px solid rgba(83,58,26,.16);background:rgba(255,255,255,.55);
+      color:#6b4e09;font-size:10px;font-weight:1000;letter-spacing:.08em;
+      text-transform:uppercase;white-space:nowrap;
+    }
+    .tile b{
+      display:block;color:var(--ink);font-size:19px;font-weight:1000;
+      line-height:1.08;letter-spacing:-.02em;
+    }
+    .tile span{
+      display:block;margin-top:5px;color:var(--muted);font-size:13.5px;
+      font-weight:950;line-height:1.32;
+    }
+
+    .tile.primary{border-color:rgba(22,101,52,.30);background:linear-gradient(160deg,rgba(220,252,231,.92),rgba(255,250,238,.90))}
+    .tile.primary .ico{background:rgba(22,163,74,.16);border-color:rgba(22,101,52,.20)}
+    .tile.gold{border-color:rgba(121,83,12,.30);background:linear-gradient(160deg,rgba(254,243,199,.96),rgba(255,250,238,.90))}
+    .tile.blue{border-color:rgba(79,70,229,.24);background:linear-gradient(160deg,rgba(224,231,255,.86),rgba(255,250,238,.90))}
+    .tile.pay{border-color:rgba(121,83,12,.34);background:linear-gradient(160deg,rgba(250,204,21,.28),rgba(255,250,238,.90))}
+    .tile.pay .tag{color:#241a0d;background:linear-gradient(135deg,#facc15,#fff3c4);border-color:rgba(121,83,12,.22)}
+
+    .bottomNav{
+      position:fixed;left:0;right:0;bottom:0;height:var(--barH);z-index:90;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(244,234,210,.94);border-top:1px solid rgba(83,58,26,.18);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomInner{
+      width:min(100%,760px);height:100%;margin:0 auto;
+      display:grid;grid-template-columns:repeat(5,1fr);gap:6px;
+    }
+
+    .bottomInner a{
+      border-radius:17px;display:grid;place-items:center;align-content:center;gap:3px;
+      color:#4b3d24;font-size:11px;font-weight:1000;text-align:center;
+      border:1px solid rgba(83,58,26,.15);background:rgba(255,255,255,.56);
+    }
+    .bottomInner a.active{color:#052215;background:linear-gradient(135deg,#16a34a,#bbf7d0);border-color:rgba(22,101,52,.24)}
+    .bottomInner .bi{font-size:19px;line-height:1}
+
+    @media(max-width:860px){
+      .tileGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:520px){
+      body{padding-left:10px;padding-right:10px}
+      .topHeader{grid-template-columns:auto 1fr auto;padding-left:10px;padding-right:10px}
+      .hdrTitle{font-size:11px}
+      .hdrBtn{font-size:12px;padding:8px 10px}
+      .hdrPill{font-size:11px;padding:8px 9px;max-width:34vw}
+      .hero{padding:16px;border-radius:26px}
+      .lead{font-size:16px}
+      .ruleBox{font-size:13px}
+      .tile{min-height:128px;padding:13px}
+      .ico{width:44px;height:44px;font-size:23px}
+      .tile b{font-size:18px}
+      .tile span{font-size:13px}
+      .tag{font-size:9px;padding:4px 7px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      .tile{transition:none}
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topHeader">
+    <a class="hdrBtn" id="hdrBack" href="./dashboard-pro.html">← Accueil</a>
+    <div class="hdrTitle">HUB RESA</div>
+    <div class="hdrPill warn" id="sessionPill">session…</div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">📅 DIGIY PRO · RESA</div>
+      <h1>Je réserve.<br><span>Chaque page son rôle.</span></h1>
+      <p class="lead">
+        Le HUB ne répète pas le dashboard et le cockpit. Il oriente seulement vers le bon geste :
+        voir l’état du jour, traiter la liste, gérer le planning, partager le QR ou ouvrir l’accès.
+      </p>
+      <div class="miniDoctrine">
+        Le pro clique plus qu’il n’écrit. DIGIY range les gestes, le terrain confirme.
+      </div>
+      <div class="ruleBox">
+        Règle RESA : <b>Accueil</b> = vue du jour et notes rapides. <b>Réservations</b> = liste, filtres, statuts et traitement.
+      </div>
+    </section>
+
+    <section class="section" aria-label="Vue du jour RESA">
+      <div class="sectionTitle">Vue du jour</div>
+      <div class="tileGrid">
+        <a class="tile primary" id="goDashboard" href="./dashboard-pro.html">
+          <div class="tileTop"><div class="ico">🏠</div><div class="tag">Accueil</div></div>
+          <div><b>Accueil RESA</b><span>Résumé, attention du jour, alertes, notes.</span></div>
+        </a>
+
+        <a class="tile blue" id="goNotes" href="./dashboard-pro.html#resaNotes">
+          <div class="tileTop"><div class="ico">✍️</div><div class="tag">Note</div></div>
+          <div><b>Note rapide</b><span>Trace client, acompte, rappel ou demande.</span></div>
+        </a>
+
+        <a class="tile" id="goQr" href="./qr.html">
+          <div class="tileTop"><div class="ico">📱</div><div class="tag">QR</div></div>
+          <div><b>QR client</b><span>Partager la porte de réservation.</span></div>
+        </a>
+
+        <a class="tile" id="goClaw" href="./claw.html">
+          <div class="tileTop"><div class="ico">💬</div><div class="tag">Aide</div></div>
+          <div><b>Messages prêts</b><span>Réponse, relance, confirmation.</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Traitement RESA">
+      <div class="sectionTitle">Traitement</div>
+      <div class="tileGrid">
+        <a class="tile gold" id="goCockpit" href="./cockpit.html">
+          <div class="tileTop"><div class="ico">📥</div><div class="tag">Liste</div></div>
+          <div><b>Réservations</b><span>Clients, filtres, statuts, actions.</span></div>
+        </a>
+
+        <a class="tile" id="goPlanning" href="./planning.html">
+          <div class="tileTop"><div class="ico">🗓️</div><div class="tag">Planning</div></div>
+          <div><b>Planning</b><span>Créneaux, arrivées, service du jour.</span></div>
+        </a>
+
+        <a class="tile" id="goEtablissement" href="./etablissement.html">
+          <div class="tileTop"><div class="ico">🏢</div><div class="tag">Étab.</div></div>
+          <div><b>Établissement</b><span>Horaires, règles, infos utiles.</span></div>
+        </a>
+
+        <a class="tile pay" id="goPay" href="https://pro-pay.digiylyfe.com/admin.html">
+          <div class="tileTop"><div class="ico">💰</div><div class="tag">PAY</div></div>
+          <div><b>Mon argent</b><span>Acomptes, soldes, restes à payer.</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Accès et maison RESA">
+      <div class="sectionTitle">Accès · maison</div>
+      <div class="tileGrid">
+        <a class="tile" id="goPin" href="./pin.html">
+          <div class="tileTop"><div class="ico">🔐</div><div class="tag">PIN</div></div>
+          <div><b>Mon accès</b><span>Rouvrir proprement la session.</span></div>
+        </a>
+
+        <a class="tile" id="goGoPin" href="./go-pin.html">
+          <div class="tileTop"><div class="ico">🛂</div><div class="tag">Entrée</div></div>
+          <div><b>Retour accès</b><span>Chemin court vers la porte sécurisée.</span></div>
+        </a>
+
+        <a class="tile" id="goIndex" href="./index.html">
+          <div class="tileTop"><div class="ico">📅</div><div class="tag">Porte</div></div>
+          <div><b>Porte RESA</b><span>Revoir l’entrée du module.</span></div>
+        </a>
+
+        <a class="tile blue" id="goSite" href="https://digiylyfe.com/">
+          <div class="tileTop"><div class="ico">🌍</div><div class="tag">Site</div></div>
+          <div><b>Site DIGIY</b><span>Retour à la maison publique.</span></div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottomNav" aria-label="Navigation rapide RESA">
+    <div class="bottomInner">
+      <a class="active" href="./hub.html"><span class="bi">🧭</span><span>HUB</span></a>
+      <a href="./dashboard-pro.html"><span class="bi">🏠</span><span>Accueil</span></a>
+      <a href="./cockpit.html"><span class="bi">📥</span><span>Réserv.</span></a>
+      <a href="./planning.html"><span class="bi">🗓️</span><span>Planning</span></a>
+      <a href="./pin.html"><span class="bi">🔐</span><span>Accès</span></a>
+    </div>
+  </nav>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SENSITIVE_KEYS = [
+        "phone","tel","p_phone","owner_phone","owner_id","slug",
+        "resa_tel","resa_phone","business_phone","whatsapp",
+        "module","return","redirect","redirect_url","url","from","v"
+      ];
+
+      const $ = id => document.getElementById(id);
+
+      function normSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
+      }
+
+      function isSensitiveSlug(v){
+        return /\d{7,}/.test(String(v || ""));
+      }
+
+      function cleanVisibleUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          SENSITIVE_KEYS.forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          const s = normSlug(url.searchParams.get("slug") || "");
+          if(s && isSensitiveSlug(s)){
+            url.searchParams.delete("slug");
+            changed = true;
+          }
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      function cleanInternalLinks(){
+        try{
+          document.querySelectorAll("a[href]").forEach((link) => {
+            const href = link.getAttribute("href") || "";
+            if(!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+
+            const url = new URL(href, location.href);
+            if(url.origin !== location.origin) return;
+
+            SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
+
+            const s = normSlug(url.searchParams.get("slug") || "");
+            if(s && isSensitiveSlug(s)){
+              url.searchParams.delete("slug");
+            }
+
+            const file = url.pathname.split("/").pop() || "index.html";
+            link.setAttribute("href","./" + file + (url.search || "") + (url.hash || ""));
+          });
+        }catch(_){}
+      }
+
+      async function waitGuard(){
+        try{
+          const guard = window.DIGIY_GUARD;
+          if(!guard) return {};
+
+          if(typeof guard.ready === "function"){
+            const out = guard.ready({ redirect:false, preserve_validation:true });
+            if(out && typeof out.then === "function") await out;
+          }else if(guard.ready && typeof guard.ready.then === "function"){
+            await guard.ready;
+          }
+
+          if(typeof guard.getSession === "function"){
+            return guard.getSession() || guard.state || {};
+          }
+
+          return guard.state || {};
+        }catch(e){
+          console.warn("[RESA HUB] guard", e);
+          return {};
+        }
+      }
+
+      function updatePill(state){
+        const el = $("sessionPill");
+        if(!el) return;
+
+        const ok = !!(state && (state.access_ok || state.access || state.pin_session_ok));
+
+        if(ok){
+          el.textContent = state.pin_session_ok ? "session ouverte" : "accès ouvert";
+          el.className = "hdrPill ok";
+          return;
+        }
+
+        el.textContent = "accès à vérifier";
+        el.className = "hdrPill warn";
+      }
+
+      async function boot(){
+        cleanVisibleUrl();
+        cleanInternalLinks();
+
+        const state = await waitGuard();
+        updatePill(state || {});
+
+        cleanVisibleUrl();
+        cleanInternalLinks();
+      }
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
