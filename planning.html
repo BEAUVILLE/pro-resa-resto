@@ -1274,11 +1274,8 @@
       function cleanVisibleUrl(){
         try{
           const u = new URL(location.href);
-          const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
-          if(legacySlug){
-            storageSet("digiy_resa_slug", legacySlug);
-            storageSet("digiy_resa_last_slug", legacySlug);
-          }
+          /* MOULE SAFE : on ne mémorise jamais un slug venu de l’URL.
+             Le slug doit venir du guard/session, pas d’un ancien lien copié. */
           [
             "slug",
             "phone",
@@ -2170,5 +2167,8 @@
   </script>
 </body>
 </html>
+
+
+
 
 
