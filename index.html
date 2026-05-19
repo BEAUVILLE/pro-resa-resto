@@ -4,10 +4,10 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Je réserve — Entrée RESA</title>
-  <meta name="theme-color" content="#f4ead2"/>
-  <meta name="description" content="DIGIY RESA PRO — porte d’entrée courte vers le HUB RESA."/>
+  <meta name="theme-color" content="#1e7a46"/>
+  <meta name="description" content="DIGIY RESA PRO — porte d’entrée courte vers le HUB RESA, avec secours anti-404."/>
   <meta name="robots" content="noindex,nofollow"/>
-  <meta name="digiy-build" content="resa-index-porte-hub-20260519"/>
+  <meta name="digiy-build" content="resa-index-porte-hub-anti-404-20260519"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -17,7 +17,7 @@
     window.DIGIY_LOGIN_URL = "./pin.html";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-index-porte-hub-20260519"></script>
+  <script src="./guard.js?v=resa-index-porte-hub-anti-404-20260519"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -25,17 +25,17 @@
 
   <style>
     :root{
-      --bg:#f4ead2;
-      --bg2:#ead9b7;
-      --ink:#241a0d;
-      --text:#1f2a1f;
-      --muted:#3d3324;
-      --line:rgba(83,58,26,.22);
-      --gold:#facc15;
-      --green:#16a34a;
-      --blue:#4f46e5;
-      --shadow:0 18px 42px rgba(77,52,22,.16);
-      --r:28px;
+      --bg:#1e7a46;
+      --bg2:#155a34;
+      --bg3:#0e4226;
+      --bar:rgba(8,50,24,.96);
+      --gold:#c4973f;
+      --green:#22c55e;
+      --line:rgba(255,255,255,.18);
+      --text:#f0fff5;
+      --muted:rgba(240,255,245,.78);
+      --shadow:0 18px 46px rgba(0,0,0,.24);
+      --r:26px;
       --max:760px;
     }
 
@@ -51,16 +51,15 @@
       min-height:100dvh;
       display:grid;
       place-items:center;
-      padding:18px;
+      padding:16px;
       color:var(--text);
       font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
-      font-size:18px;
-      font-weight:900;
+      font-size:19px;
+      font-weight:950;
       background:
-        radial-gradient(560px 360px at 12% -8%,rgba(250,204,21,.28),transparent 58%),
-        radial-gradient(420px 280px at 100% 4%,rgba(79,70,229,.16),transparent 55%),
-        radial-gradient(520px 360px at 100% 100%,rgba(22,163,74,.12),transparent 58%),
-        linear-gradient(180deg,var(--bg),var(--bg2));
+        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
+        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
+        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
     }
 
     a{
@@ -68,15 +67,25 @@
       text-decoration:none;
     }
 
+    button{
+      font:inherit;
+      color:inherit;
+      cursor:pointer;
+    }
+
     .door{
       width:min(var(--max),100%);
-      border:2px solid var(--line);
+      border:1px solid rgba(255,255,255,.18);
       border-radius:var(--r);
-      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.94));
+      background:
+        radial-gradient(500px 220px at 100% 0%,rgba(196,151,63,.12),transparent 70%),
+        rgba(8,50,24,.78);
       box-shadow:var(--shadow);
       padding:22px;
       display:grid;
       gap:16px;
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
     }
 
     .brand{
@@ -88,18 +97,17 @@
     .badge{
       width:58px;
       height:58px;
-      border-radius:21px;
+      border-radius:20px;
       display:grid;
       place-items:center;
-      background:linear-gradient(135deg,#facc15,#fff3c4);
-      border:1px solid rgba(121,83,12,.24);
-      box-shadow:0 10px 22px rgba(77,52,22,.12);
+      background:rgba(196,151,63,.16);
+      border:1px solid rgba(196,151,63,.32);
       font-size:30px;
       flex:0 0 auto;
     }
 
     .kicker{
-      color:#7c4a03;
+      color:#fff0a8;
       font-size:12px;
       letter-spacing:.16em;
       text-transform:uppercase;
@@ -107,7 +115,7 @@
     }
 
     .brandTitle{
-      color:var(--ink);
+      color:#fff;
       font-size:18px;
       font-weight:1000;
       margin-top:2px;
@@ -115,7 +123,7 @@
 
     h1{
       margin:0;
-      color:var(--ink);
+      color:#fff;
       font-size:clamp(36px,9vw,62px);
       line-height:.96;
       letter-spacing:-.055em;
@@ -123,27 +131,27 @@
     }
 
     h1 span{
-      color:var(--blue);
+      color:#fff0a8;
     }
 
     .lead{
       margin:0;
       color:var(--muted);
       font-size:17px;
-      font-weight:950;
-      line-height:1.45;
+      font-weight:1000;
+      line-height:1.42;
     }
 
     .status{
-      min-height:52px;
+      min-height:54px;
       display:flex;
       align-items:center;
       gap:10px;
       padding:12px 14px;
-      border-radius:20px;
-      border:1px solid rgba(83,58,26,.18);
-      background:rgba(255,255,255,.58);
-      color:#4a3508;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.08);
+      color:rgba(240,255,245,.92);
       font-size:15px;
       font-weight:1000;
       line-height:1.35;
@@ -153,14 +161,19 @@
       width:13px;
       height:13px;
       border-radius:50%;
-      background:#d97706;
-      box-shadow:0 0 0 6px rgba(217,119,6,.12);
+      background:#f59e0b;
+      box-shadow:0 0 0 6px rgba(245,158,11,.12);
       flex:0 0 auto;
     }
 
     .status.ok .dot{
-      background:#16a34a;
-      box-shadow:0 0 0 6px rgba(22,163,74,.12);
+      background:#22c55e;
+      box-shadow:0 0 0 6px rgba(34,197,94,.12);
+    }
+
+    .status.bad .dot{
+      background:#ef4444;
+      box-shadow:0 0 0 6px rgba(239,68,68,.12);
     }
 
     .actions{
@@ -170,50 +183,59 @@
     }
 
     .btn{
-      min-height:58px;
-      border-radius:20px;
+      min-height:60px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.09);
       display:flex;
       align-items:center;
       justify-content:center;
       gap:9px;
       padding:13px 14px;
-      border:1px solid rgba(83,58,26,.20);
-      background:rgba(255,255,255,.72);
       color:var(--text);
-      font-size:16px;
+      font-size:17px;
       font-weight:1000;
       text-align:center;
-      box-shadow:0 8px 18px rgba(77,52,22,.08);
+      box-shadow:0 10px 24px rgba(0,0,0,.13);
     }
 
     .btn.primary{
       color:#052215;
-      border-color:rgba(22,101,52,.28);
-      background:linear-gradient(135deg,#16a34a,#bbf7d0);
+      border-color:rgba(34,197,94,.38);
+      background:linear-gradient(135deg,#22c55e,#bbf7d0);
     }
 
     .btn.gold{
       color:#241a0d;
-      border-color:rgba(121,83,12,.28);
-      background:linear-gradient(135deg,#facc15,#fff3c4);
+      border-color:rgba(196,151,63,.38);
+      background:linear-gradient(135deg,#c4973f,#fff0a8);
+    }
+
+    .btn.ghost{
+      color:rgba(240,255,245,.88);
+      background:rgba(255,255,255,.06);
     }
 
     .rule{
       padding:12px 14px;
-      border-radius:20px;
-      border:1px dashed rgba(83,58,26,.28);
-      background:rgba(255,255,255,.44);
-      color:#3d3324;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.22);
+      background:rgba(0,0,0,.14);
+      color:rgba(240,255,245,.86);
       font-size:14px;
       font-weight:1000;
-      line-height:1.42;
+      line-height:1.4;
+    }
+
+    .rule b{
+      color:#fff0a8;
     }
 
     @media(max-width:540px){
-      body{padding:12px}
-      .door{padding:18px;border-radius:26px}
+      body{padding:10px}
+      .door{padding:18px;border-radius:24px}
       .actions{grid-template-columns:1fr}
-      .btn{font-size:17px}
+      .btn{font-size:18px}
       .lead{font-size:16px}
       .rule{font-size:13px}
     }
@@ -233,23 +255,25 @@
     <h1>Entrée courte.<br><span>Direction HUB.</span></h1>
 
     <p class="lead">
-      Cette page ne répète plus le dashboard ni le cockpit.
-      Elle ouvre la maison RESA : le HUB en pavés.
+      Cette page ouvre le HUB RESA quand il existe.
+      Si le fichier HUB n’est pas encore posé, elle évite le 404 et garde les portes secours.
     </p>
 
     <div class="status" id="statusBox">
       <span class="dot"></span>
-      <span id="statusText">Vérification de l’accès RESA…</span>
+      <span id="statusText">Contrôle du HUB RESA…</span>
     </div>
 
     <div class="actions">
-      <a class="btn primary" id="btnHub" href="./hub.html">🧭 Ouvrir le HUB</a>
+      <button class="btn primary" id="btnHub" type="button">🧭 Ouvrir le HUB</button>
       <a class="btn gold" id="btnPin" href="./pin.html">🔐 Mon accès</a>
+      <a class="btn ghost" id="btnDashboard" href="./dashboard-pro.html">🏠 Accueil</a>
+      <a class="btn ghost" id="btnCockpit" href="./cockpit.html">📥 Réservations</a>
     </div>
 
     <div class="rule">
-      Règle : <b>index.html</b> est la porte. <b>hub.html</b> organise les gestes.
-      <b>dashboard-pro.html</b> montre l’accueil du jour. <b>cockpit.html</b> traite les réservations.
+      Ordre propre : poser <b>hub.html</b> d’abord, puis poser cet <b>index.html</b>.
+      Si le HUB manque, cette porte ne force plus un 404.
     </div>
   </main>
 
@@ -259,7 +283,9 @@
 
       const ROUTES = {
         hub:"./hub.html",
-        pin:"./pin.html"
+        pin:"./pin.html",
+        dashboard:"./dashboard-pro.html",
+        cockpit:"./cockpit.html"
       };
 
       const SENSITIVE_KEYS = [
@@ -283,6 +309,7 @@
       ];
 
       const $ = (id) => document.getElementById(id);
+      let hubAvailable = false;
 
       function cleanVisibleUrl(){
         try{
@@ -342,50 +369,60 @@
         }
       }
 
-      function setStatus(text, ok){
+      function setStatus(text, kind){
         const box = $("statusBox");
         const el = $("statusText");
         if(el) el.textContent = text;
-        if(box) box.className = ok ? "status ok" : "status";
+        if(box) box.className = kind ? "status " + kind : "status";
       }
 
       function safeGo(path){
         try{
           const url = new URL(path, location.href);
           SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
-          const file = url.pathname.split("/").pop() || "hub.html";
-          location.replace("./" + file + (url.search || "") + (url.hash || ""));
+          const file = url.pathname.split("/").pop() || "index.html";
+          location.href = "./" + file + (url.search || "") + (url.hash || "");
         }catch(_){
-          location.replace(path);
+          location.href = path;
+        }
+      }
+
+      async function checkHub(){
+        try{
+          const res = await fetch(ROUTES.hub + "?check=" + Date.now(), {
+            method:"HEAD",
+            cache:"no-store"
+          });
+          return !!(res && res.ok);
+        }catch(_){
+          return false;
         }
       }
 
       async function boot(){
-        const state = await waitGuard();
-
         cleanVisibleUrl();
         cleanInternalLinks();
 
-        const ok = !!(state && (state.access_ok || state.access || state.pin_session_ok));
+        const state = await waitGuard();
+        const accessOk = !!(state && (state.access_ok || state.access || state.pin_session_ok));
 
-        if(ok){
-          setStatus("Session RESA reconnue. Ouverture du HUB…", true);
-        }else{
-          setStatus("Accès non confirmé ici. Le HUB peut s’ouvrir, ou passe par Mon accès.", false);
+        hubAvailable = await checkHub();
+
+        if(hubAvailable){
+          setStatus(accessOk ? "Session RESA reconnue. Ouverture du HUB…" : "HUB trouvé. Ouverture propre…", "ok");
+          window.setTimeout(() => safeGo(ROUTES.hub), accessOk ? 350 : 650);
+          return;
         }
 
-        /*
-          Doctrine module :
-          index.html reste une porte courte.
-          hub.html devient la maison de navigation.
-          On ne transmet pas phone, tel, slug ou identifiant sensible dans l’URL.
-        */
-        window.setTimeout(() => safeGo(ROUTES.hub), ok ? 350 : 900);
+        setStatus("HUB RESA introuvable : hub.html n’est pas encore posé. Aucun 404 forcé.", "bad");
       }
 
-      $("btnHub")?.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        safeGo(ROUTES.hub);
+      $("btnHub")?.addEventListener("click", () => {
+        if(hubAvailable){
+          safeGo(ROUTES.hub);
+          return;
+        }
+        setStatus("Impossible d’ouvrir : pose d’abord le fichier hub.html dans le dépôt.", "bad");
       });
 
       $("btnPin")?.addEventListener("click", (ev) => {
@@ -393,11 +430,22 @@
         safeGo(ROUTES.pin);
       });
 
+      $("btnDashboard")?.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        safeGo(ROUTES.dashboard);
+      });
+
+      $("btnCockpit")?.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        safeGo(ROUTES.cockpit);
+      });
+
       boot();
     })();
   </script>
 </body>
 </html>
+
 
 
 
