@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="DIGIY RESA PRO — Hub mobile terrain en conteneur DRIVER : pavés larges, écriture grande, routes propres."/>
   <meta name="robots" content="noindex,nofollow"/>
-  <meta name="digiy-build" content="resa-hub-container-driver-grand-gras-session-20260519"/>
+  <meta name="digiy-build" content="resa-hub-paves-grand-gras-20260520"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -706,6 +706,127 @@
     </div>
   </nav>
 
+  <!-- ══ DIGIY VOICE — HUB RESA ══ -->
+  <style>
+    .audioCoachFab{
+      position:fixed;
+      right:14px;
+      top:calc(var(--hdrH) + 12px + env(safe-area-inset-top,0px));
+      z-index:90;
+      min-height:52px;
+      min-width:52px;
+      max-width:148px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(196,151,63,.42);
+      background:linear-gradient(135deg,rgba(196,151,63,.96),rgba(180,135,50,.96));
+      color:#1a0e00;
+      box-shadow:0 16px 34px rgba(0,0,0,.22);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      font-size:14px;
+      font-weight:1000;
+      font-family:inherit;
+      cursor:pointer;
+    }
+    .audioCoachFab .ico{font-size:20px;line-height:1}
+    @media(max-width:520px){
+      .audioCoachFab span:not(.ico){display:none}
+      .audioCoachFab{right:10px;min-width:48px;min-height:48px;padding:9px 10px}
+    }
+
+    .audioCoachPanel{
+      position:fixed;
+      left:12px;right:12px;
+      top:calc(var(--hdrH) + 72px + env(safe-area-inset-top,0px));
+      z-index:89;
+      width:min(calc(100% - 24px),680px);
+      margin:0 auto;
+      display:none;
+      border-radius:24px;
+      border:1px solid rgba(196,151,63,.32);
+      background:
+        radial-gradient(480px 180px at 100% 0%,rgba(196,151,63,.16),transparent 72%),
+        linear-gradient(180deg,rgba(8,50,24,.98),rgba(5,33,16,.98));
+      box-shadow:0 22px 56px rgba(0,0,0,.32);
+      padding:16px;
+    }
+    .audioCoachPanel.open{display:block}
+    .audioCoachTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .audioCoachKicker{color:#fff0a8;font-size:11px;font-weight:1000;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+    .audioCoachTitle{margin:0;font-size:22px;line-height:1.06;font-weight:1000;letter-spacing:-.03em;color:#fff}
+    .audioCoachText{margin-top:10px;color:rgba(240,255,245,.82);font-size:15px;font-weight:900;line-height:1.45}
+    .audioCoachClose{width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#f0fff5;font-size:18px;font-weight:1000;cursor:pointer;font-family:inherit}
+    .audioCoachActions{display:grid;gap:9px;grid-template-columns:1fr 1fr;margin-top:12px}
+    .audioCoachActions button{min-height:46px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#f0fff5;font-weight:1000;font-size:14px;font-family:inherit;cursor:pointer}
+    .audioCoachActions button.primary{background:linear-gradient(135deg,var(--gold),#b38a30);color:#1a0e00;border-color:transparent}
+    .audioCoachHint{margin-top:10px;padding:11px;border-radius:16px;border:1px dashed rgba(255,255,255,.20);background:rgba(255,255,255,.05);color:rgba(240,255,245,.72);font-size:13px;font-weight:900;line-height:1.38}
+  </style>
+
+  <button class="audioCoachFab" id="digiyAudioFab" type="button" aria-label="Écouter DIGIY">
+    <span class="ico">🎧</span><span>Écouter</span>
+  </button>
+
+  <section class="audioCoachPanel" id="digiyAudioPanel" aria-label="Lecteur DIGIY RESA">
+    <div class="audioCoachTop">
+      <div>
+        <div class="audioCoachKicker">Lecteur DIGIY · Je réserve</div>
+        <h2 class="audioCoachTitle">DIGIY explique le geste</h2>
+      </div>
+      <button class="audioCoachClose" id="digiyAudioClose" type="button" aria-label="Fermer">×</button>
+    </div>
+    <div class="audioCoachText" id="digiyAudioText">
+      Toutes tes portes sont là. Chaque pavé a un seul geste. Ouvre, agis, reviens.
+    </div>
+    <div class="audioCoachActions">
+      <button class="primary" id="digiyAudioPlay" type="button">▶ Écouter</button>
+      <button id="digiyAudioStop" type="button">⏹ Stop</button>
+    </div>
+    <div class="audioCoachHint">Doctrine : une voix courte vaut mieux qu'un long mode d'emploi.</div>
+  </section>
+
+  <script>
+  (function(){
+    var SPEAK = "Hub RESA ouvert. Toutes tes portes sont ici. Accueil pour la vue du jour. Réservations pour la liste et le traitement. Planning pour les créneaux. QR pour partager ta porte client. Chaque pavé a un seul geste : ouvre, agis, reviens.";
+
+    var fab   = document.getElementById("digiyAudioFab");
+    var panel = document.getElementById("digiyAudioPanel");
+    var close = document.getElementById("digiyAudioClose");
+    var play  = document.getElementById("digiyAudioPlay");
+    var stop  = document.getElementById("digiyAudioStop");
+
+    function openPanel(){ panel.classList.add("open"); }
+    function closePanel(){ panel.classList.remove("open"); stopSpeech(); }
+
+    function canSpeak(){ return "speechSynthesis" in window; }
+
+    function stopSpeech(){
+      if(canSpeak()) window.speechSynthesis.cancel();
+    }
+
+    function speak(){
+      if(!canSpeak()) return;
+      stopSpeech();
+      var u = new SpeechSynthesisUtterance(SPEAK);
+      u.lang = "fr-FR";
+      u.rate = 0.88;
+      u.pitch = 1.02;
+      window.speechSynthesis.speak(u);
+    }
+
+    fab.addEventListener("click", function(){
+      panel.classList.contains("open") ? closePanel() : openPanel();
+    });
+    close.addEventListener("click", closePanel);
+    play.addEventListener("click", speak);
+    stop.addEventListener("click", stopSpeech);
+    window.addEventListener("pagehide", stopSpeech);
+  })();
+  </script>
+  <!-- ══ FIN DIGIY VOICE — HUB RESA ══ -->
+
   <script>
     (() => {
       "use strict";
@@ -843,6 +964,10 @@
   </script>
 </body>
 </html>
+
+
+
+
 
 
 
