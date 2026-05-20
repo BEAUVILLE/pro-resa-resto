@@ -131,6 +131,47 @@
     .mini-stat .k{font-size:.8rem;color:var(--muted);margin-bottom:6px;font-weight:800;}
     .mini-stat .v{font-size:1.2rem;font-weight:900;line-height:1;}
     .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+
+    /* ══ CALENDRIER MENSUEL ══ */
+    .calBlock{margin-bottom:18px;border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(255,255,255,.055);padding:14px;box-shadow:0 14px 32px rgba(0,0,0,.18);}
+    .calNav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+    .calNavBtn{min-width:42px;min-height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:var(--text);font-size:18px;font-weight:1000;font-family:inherit;cursor:pointer;display:grid;place-items:center;transition:background .14s;}
+    .calNavBtn:hover{background:rgba(255,255,255,.16);}
+    .calMonthLabel{font-size:16px;font-weight:1000;letter-spacing:.05em;color:#fff0a8;text-align:center;flex:1;text-transform:uppercase;}
+    .calGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;}
+    .calDayName{text-align:center;font-size:11px;font-weight:1000;color:rgba(240,255,245,.45);letter-spacing:.06em;padding:4px 0 6px;}
+    .calDay{
+      min-height:48px;border-radius:13px;border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:3px;cursor:pointer;
+      font-size:14px;font-weight:1000;color:var(--text);position:relative;
+      transition:background .13s,border-color .13s,transform .1s;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .calDay:hover{background:rgba(255,255,255,.12);transform:translateY(-1px);}
+    .calDay.other-month{opacity:.28;cursor:default;}
+    .calDay.other-month:hover{background:rgba(255,255,255,.04);transform:none;}
+    .calDay.today{border-color:rgba(250,204,21,.50);background:rgba(250,204,21,.10);color:#fff0a8;}
+    .calDay.selected{border-color:rgba(250,204,21,.80);background:rgba(250,204,21,.22);color:#fff0a8;font-size:15px;}
+    .calDay.closed{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.28);color:rgba(240,255,245,.42);cursor:not-allowed;}
+    .calDay.closed:hover{background:rgba(239,68,68,.12);transform:none;}
+    .calDay.has-confirmed .calDot{background:#22c55e;}
+    .calDay.has-pending .calDot{background:#facc15;}
+    .calDay.closed .calDot{display:none;}
+    .calDot{width:6px;height:6px;border-radius:999px;background:transparent;}
+    .calDay.past{opacity:.48;}
+    .calLegend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);}
+    .calLegItem{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:900;color:rgba(240,255,245,.62);}
+    .calLegItem .calDot{width:8px;height:8px;flex:0 0 auto;}
+    .calLegItem .calDot.today{background:#facc15;box-shadow:0 0 0 3px rgba(250,204,21,.18);}
+    .calLegItem .calDot.confirmed{background:#22c55e;}
+    .calLegItem .calDot.pending{background:#facc15;}
+    .calLegItem .calDot.closed{background:rgba(239,68,68,.70);}
+    @media(max-width:480px){
+      .calDay{min-height:40px;font-size:13px;border-radius:11px;}
+      .calGrid{gap:4px;}
+      .calMonthLabel{font-size:14px;}
+    }
     .toolbar-left,.toolbar-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
     .input,.select{min-height:46px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);padding:10px 12px;font-weight:800;outline:none;font-family:var(--fontA);}
     .input:focus,.select:focus{border-color:rgba(250,204,21,.35);box-shadow:0 0 0 3px rgba(250,204,21,.10);}
@@ -171,129 +212,24 @@
     .claw-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:var(--text);font-size:.82rem;font-weight:900;}
     .footer-note{margin-top:14px;color:var(--muted);font-size:.92rem;text-align:center;}
 
-    .quickResa{
-      margin-bottom:18px;
-      border:1px solid rgba(250,204,21,.22);
-      background:
-        radial-gradient(460px 180px at 100% 0%, rgba(250,204,21,.10), transparent 70%),
-        linear-gradient(180deg,rgba(250,204,21,.08),rgba(56,189,248,.04));
-      border-radius:20px;
-      padding:16px;
-      box-shadow:var(--shadow);
-      display:grid;
-      gap:12px;
-    }
-    .quickResaTitle{
-      font-weight:900;
-      font-size:1rem;
-      margin:0;
-    }
-    .quickResaSub{
-      color:var(--muted);
-      line-height:1.55;
-      font-weight:700;
-      margin:0;
-    }
-    .quickGuide{
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      display:grid;
-      gap:8px;
-    }
-    .quickGuide strong{
-      color:#fff1a8;
-      font-weight:900;
-      font-size:.92rem;
-    }
-    .quickGuide p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.45;
-      font-weight:700;
-      font-size:.88rem;
-    }
-    .quickExamples{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-    .quickExamples button{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
-      border-radius:999px;
-      padding:8px 10px;
-      font-family:var(--fontA);
-      font-weight:900;
-      font-size:.80rem;
-      cursor:pointer;
-    }
-    .quickExamples button:hover{
-      border-color:rgba(250,204,21,.35);
-      color:#fff1a8;
-    }
-    .quickInput{
-      width:100%;
-      min-height:88px;
-      resize:vertical;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
-      padding:12px;
-      font-family:var(--fontA);
-      font-weight:800;
-      outline:none;
-    }
-    .quickInput:focus{
-      border-color:rgba(250,204,21,.35);
-      box-shadow:0 0 0 3px rgba(250,204,21,.10);
-    }
-    .quickDraft{
-      display:none;
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(34,197,94,.30);
-      background:rgba(34,197,94,.10);
-      color:#b8ffd0;
-      line-height:1.5;
-      font-weight:800;
-    }
-    .quickDraft strong{color:#fff}
-    .memoryBox{
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.14);
-      display:grid;
-      gap:10px;
-    }
-    .memoryHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .memoryTitle{
-      font-weight:900;
-      color:#fff1a8;
-      line-height:1.25;
-    }
-    .memoryHelp{
-      margin-top:4px;
-      color:var(--muted);
-      font-size:.82rem;
-      font-weight:700;
-      line-height:1.4;
-    }
-    .memoryList{
-      display:grid;
-      gap:8px;
-    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     .memoryItem{
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.04);
@@ -324,15 +260,7 @@
       line-height:1.35;
       font-weight:700;
     }
-    .memoryEmpty{
-      padding:10px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.14);
-      color:var(--muted);
-      font-size:.84rem;
-      line-height:1.45;
-      font-weight:700;
-    }
+    
     .memoryPayAction{
       margin-top:6px;
       display:inline-flex;
@@ -358,8 +286,6 @@
       line-height:1.35;
     }
 
-
-    #quickResaNote, #timeline, #planningTop{scroll-margin-top:96px}
 
     .bottomNav{
       position:fixed;
@@ -493,20 +419,7 @@
     .timebox,
     .booking-card,
     .claw-card,
-    .quickResa,
-    .quickGuide,
-    .memoryBox,
-    .memoryItem,
-    .audioPanel,
-    .serviceGuide,
-    .empty,
-    .empty-big,
-    .bottomNavInner{
-      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
-      border:2px solid rgba(83,58,26,.22) !important;
-      color:#1f2a1f !important;
-      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
-    }
+    
 
     .bottomNav{
       background:rgba(244,234,210,.92) !important;
@@ -530,27 +443,7 @@
     }
 
     h3,
-    .quickResaTitle,
-    .claw-title,
-    .mini-card strong,
-    .booking-name,
-    .memoryTitle,
-    .audioPanel strong,
-    .serviceGuide h2{
-      color:#241a0d !important;
-      font-size:1.35rem !important;
-      line-height:1.18 !important;
-      font-weight:900 !important;
-    }
-
-    .eyebrow,
-    .claw-kicker,
-    .mini-stat .k{
-      color:#6b4e09 !important;
-      font-size:.98rem !important;
-      font-weight:900 !important;
-      letter-spacing:.08em !important;
-    }
+    
 
     .sub,
     .hero p,
@@ -558,46 +451,7 @@
     .mini-stat .k,
     .claw-text,
     .claw-item span,
-    .quickResaSub,
-    .quickGuide p,
-    .memoryHelp,
-    .memoryItemMeta,
-    .memoryEmpty,
-    .note,
-    .meta,
-    .service-pill,
-    .footer-note,
-    .empty,
-    .empty-big,
-    .serviceGuide p,
-    .guideMini span{
-      color:#3d3324 !important;
-      font-size:1.05rem !important;
-      line-height:1.62 !important;
-      font-weight:900 !important;
-    }
-
-    .btn,
-    .btn.secondary,
-    .btn.warn,
-    .btn.ghost,
-    .nav-link,
-    .input,
-    .select,
-    .quickExamples button,
-    .memoryPayAction,
-    .bottomNav a,
-    button,
-    a.btn{
-      background:rgba(255,255,255,.72) !important;
-      color:#1f2a1f !important;
-      border:1px solid rgba(83,58,26,.22) !important;
-      font-size:1.05rem !important;
-      font-weight:900 !important;
-      line-height:1.22 !important;
-      min-height:58px !important;
-      box-shadow:0 8px 18px rgba(77,52,22,.08) !important;
-    }
+    
 
     .btn.warn,
     .btn.primary,
@@ -665,23 +519,7 @@
 
     .booking-card,
     .slot,
-    .quickResa,
-    .claw-card,
-    .serviceGuide{
-      border-radius:24px !important;
-    }
-
-    .quickInput,
-    textarea,
-    input,
-    select{
-      background:rgba(255,255,255,.82) !important;
-      color:#1f2a1f !important;
-      border:2px solid rgba(83,58,26,.24) !important;
-      font-size:1.12rem !important;
-      font-weight:900 !important;
-      line-height:1.55 !important;
-    }
+    
 
     .quickInput::placeholder,
     textarea::placeholder,
@@ -689,26 +527,12 @@
       color:rgba(31,42,31,.52) !important;
     }
 
-    .quickDraft{
-      background:rgba(220,252,231,.86) !important;
-      color:#14532d !important;
-      border:2px solid rgba(22,101,52,.28) !important;
-      font-size:1.05rem !important;
-      font-weight:900 !important;
-      line-height:1.6 !important;
-    }
+    
 
-    .quickDraft strong{
-      color:#052215 !important;
-      font-size:1.15rem !important;
-    }
+    
 
     .audioPanel,
-    .serviceGuide{
-      margin-bottom:18px;
-      padding:18px;
-      border-radius:24px;
-    }
+    
 
     .audioPanel{
       text-align:center;
@@ -732,43 +556,17 @@
       border-color:rgba(121,83,12,.28) !important;
     }
 
-    .serviceGuide{
-      display:grid;
-      gap:10px;
-    }
+    
 
-    .serviceGuide h2{
-      margin:0;
-      font-size:clamp(1.65rem,5vw,2.8rem) !important;
-      line-height:1.12;
-      letter-spacing:-.035em;
-    }
+    
 
-    .serviceGuide p{
-      margin:0;
-    }
+    
 
-    .guideGrid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:10px;
-    }
+    
 
-    .guideMini{
-      border:1px solid rgba(83,58,26,.20);
-      border-radius:20px;
-      background:rgba(255,255,255,.66);
-      padding:14px;
-      display:grid;
-      gap:6px;
-    }
+    
 
-    .guideMini strong{
-      color:#241a0d;
-      font-size:1.08rem;
-      font-weight:900;
-      line-height:1.2;
-    }
+    
 
     .bottomNav a{
       min-height:68px !important;
@@ -780,7 +578,7 @@
     }
 
     @media(max-width:980px){
-      .guideGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      
     }
 
     @media(max-width:640px){
@@ -803,21 +601,15 @@
       }
 
       h3,
-      .quickResaTitle,
-      .booking-name{
-        font-size:1.42rem !important;
-      }
+      
 
       .btn,
       .nav-link,
       .input,
       .select,
-      .quickExamples button{
-        min-height:64px !important;
-        font-size:1.08rem !important;
-      }
+      
 
-      .guideGrid{grid-template-columns:1fr}
+      
       .mini-stats{grid-template-columns:1fr 1fr}
       .slot{gap:10px}
       .timebox{text-align:left}
@@ -829,142 +621,35 @@
        DIGIY RESA — RYTHME MÉTIER FRONT LÉGER
        Démonstration locale : aucun SQL, aucune RPC.
        ========================================================= */
-    .rhythmPanel{
-      margin-bottom:18px;
-      padding:18px;
-      border-radius:24px;
-      border:2px solid rgba(83,58,26,.22);
-      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96));
-      color:#1f2a1f;
-      box-shadow:0 10px 24px rgba(77,52,22,.12);
-      display:grid;
-      gap:14px;
-    }
+    
 
-    .rhythmHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+    
 
-    .rhythmHead h2{
-      margin:0;
-      color:#241a0d !important;
-      font-size:clamp(1.55rem,4.8vw,2.55rem) !important;
-      line-height:1.12;
-      font-weight:900;
-      letter-spacing:-.035em;
-    }
+    
 
-    .rhythmHead p{
-      margin:6px 0 0;
-      color:#3d3324 !important;
-      font-size:1.02rem;
-      line-height:1.55;
-      font-weight:900;
-      max-width:68ch;
-    }
+    
 
-    .rhythmBadge{
-      border-radius:999px;
-      border:1px solid rgba(22,101,52,.24);
-      background:rgba(220,252,231,.86);
-      color:#14532d;
-      padding:9px 12px;
-      font-size:.88rem;
-      font-weight:900;
-      white-space:nowrap;
-    }
+    
 
-    .rhythmGrid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:10px;
-    }
+    
 
-    .rhythmCard{
-      min-height:150px;
-      text-align:left;
-      border:1px solid rgba(83,58,26,.22);
-      border-radius:22px;
-      background:rgba(255,255,255,.68);
-      padding:14px;
-      cursor:pointer;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      gap:10px;
-      color:#1f2a1f;
-      font-family:var(--fontA);
-      box-shadow:0 8px 18px rgba(77,52,22,.08);
-    }
+    
 
-    .rhythmCard:hover,
-    .rhythmCard.active{
-      border-color:rgba(22,101,52,.34);
-      background:rgba(220,252,231,.82);
-      transform:translateY(-1px);
-    }
+    
 
-    .rhythmCard .rhythmIcon{
-      width:48px;
-      height:48px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      background:linear-gradient(135deg,#facc15,#fff3c4);
-      color:#241a0d;
-      font-size:24px;
-      margin-bottom:8px;
-    }
+    
 
-    .rhythmCard strong{
-      display:block;
-      color:#241a0d;
-      font-size:1.08rem;
-      line-height:1.18;
-      font-weight:900;
-    }
+    
 
-    .rhythmCard span{
-      display:block;
-      margin-top:6px;
-      color:#3d3324;
-      font-size:.92rem;
-      line-height:1.4;
-      font-weight:900;
-    }
+    
 
-    .rhythmPreview{
-      display:grid;
-      gap:10px;
-      border:1px solid rgba(83,58,26,.20);
-      border-radius:20px;
-      background:rgba(255,255,255,.66);
-      padding:14px;
-    }
+    
 
-    .rhythmPreviewTitle{
-      color:#241a0d;
-      font-size:1.12rem;
-      font-weight:900;
-      line-height:1.25;
-    }
+    
 
-    .rhythmPreviewText{
-      color:#3d3324;
-      font-size:1rem;
-      font-weight:900;
-      line-height:1.55;
-    }
+    
 
-    .rhythmSlots{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
+    
 
     .rhythmSlot{
       border:1px solid rgba(83,58,26,.20);
@@ -977,13 +662,13 @@
     }
 
     @media(max-width:980px){
-      .rhythmGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      
     }
 
     @media(max-width:640px){
-      .rhythmGrid{grid-template-columns:1fr}
-      .rhythmBadge{width:100%;text-align:center}
-      .rhythmCard{min-height:132px}
+      
+      
+      
     }
 
   </style>
@@ -1040,7 +725,6 @@
           <div class="mobileFastRow" id="planningTop">
             <a id="fastReservations" href="./cockpit.html">📋 Réserv.</a>
             <a class="primary" id="fastPlanning" href="./planning.html">🗓️ Planning</a>
-            <a id="fastNotes" href="#quickResaNote">✍️ Notes</a>
             <a id="fastPlus" href="./etablissement.html">⚙️ Plus</a>
           </div>
         </div>
@@ -1069,82 +753,12 @@
       <button class="btn" id="btnResaPlanningAudio" type="button">🎧 Écouter DIGIY</button>
     </section>
 
-    <section class="serviceGuide" aria-label="Lecture du service RESA">
-      <h2>Organiser les réservations, sans écrire long.</h2>
-      <p>
-        Le planning montre qui arrive, quand et combien de personnes sont attendues. L’accueil confirme, le planning reste clair et le responsable garde la mémoire.
-      </p>
-      <div class="guideGrid">
-        <div class="guideMini"><strong>🕒 Heure</strong><span>Le service commence par l’ordre du jour.</span></div>
-        <div class="guideMini"><strong>👥 Clients</strong><span>Le nombre de personnes aide à préparer l’accueil.</span></div>
-        <div class="guideMini"><strong>📅 Créneau</strong><span>Chaque réservation garde sa place dans le planning.</span></div>
-        <div class="guideMini"><strong>✍️ Notes</strong><span>Une phrase suffit pour garder une trace.</span></div>
-      </div>
-    </section>
-
-
-    <section class="rhythmPanel" id="rhythmPanel" aria-label="Choisir mon rythme d’activité">
-      <div class="rhythmHead">
-        <div>
-          <h2>Choisir mon rythme d’activité</h2>
-          <p>
-            Ici, rien n’est enregistré en base. Le pro clique pour se projeter :
-            DIGIY montre comment RESA peut respecter le rythme de son métier avant de durcir la configuration.
-          </p>
-        </div>
-        <div class="rhythmBadge">Front léger · zéro SQL</div>
-      </div>
-
-      <div class="rhythmGrid">
-        <button class="rhythmCard" type="button" data-rhythm="restaurant">
-          <div>
-            <div class="rhythmIcon">🍽️</div>
-            <strong>Restaurant</strong>
-            <span>Service midi, second service, tables, couverts et respiration entre deux passages.</span>
-          </div>
-        </button>
-
-        <button class="rhythmCard" type="button" data-rhythm="beaute">
-          <div>
-            <div class="rhythmIcon">💇</div>
-            <strong>Beauté / coiffure</strong>
-            <span>Brushing, coupe, couleur ou soin : chaque prestation bloque un temps différent.</span>
-          </div>
-        </button>
-
-        <button class="rhythmCard" type="button" data-rhythm="rdv">
-          <div>
-            <div class="rhythmIcon">🗓️</div>
-            <strong>Rendez-vous simple</strong>
-            <span>Créneaux de 30 minutes, 1 heure ou rappel client selon le besoin.</span>
-          </div>
-        </button>
-
-        <button class="rhythmCard" type="button" data-rhythm="intervention">
-          <div>
-            <div class="rhythmIcon">🛠️</div>
-            <strong>Intervention</strong>
-            <span>Un déplacement ou une visite peut bloquer 1h, 2h ou une demi-journée.</span>
-          </div>
-        </button>
-      </div>
-
-      <div class="rhythmPreview" id="rhythmPreview">
-        <div class="rhythmPreviewTitle">Sélectionne un rythme pour voir l’exemple.</div>
-        <div class="rhythmPreviewText">
-          RESA apprend le rythme du métier avant de remplir le planning.
-        </div>
-        <div class="rhythmSlots" id="rhythmSlots"></div>
-      </div>
-    </section>
-
 
     <section class="toolbar">
       <div class="toolbar-left">
         <input class="input" id="dateInput" type="date"/>
         <select class="select" id="filterStatus">
           <option value="all">Tous les statuts</option>
-          <!-- ━━━ AVANT : "Pending" → "En attente" ; "Done" → "Passées" ━━━ -->
           <option value="pending">En attente</option>
           <option value="confirmed">Confirmées</option>
           <option value="done">Passées</option>
@@ -1153,54 +767,26 @@
         </select>
       </div>
       <div class="toolbar-right">
-        <!-- ━━━ AVANT : "Profil / établissement" → "Plus" ━━━ -->
         <a class="btn ghost" id="btnSettings" href="./etablissement.html">Plus</a>
       </div>
     </section>
 
-
-    <section class="quickResa" id="quickResaNote">
-      <div>
-        <h3 class="quickResaTitle">🧠 Notes rapides</h3>
-        <p class="quickResaSub">Écris comme tu parles. DIGIY prépare la trace vers Mon argent.</p>
+    <!-- ══ CALENDRIER MENSUEL DIGIY RESA ══ -->
+    <section class="calBlock" aria-label="Calendrier mensuel">
+      <div class="calNav">
+        <button class="calNavBtn" id="calPrev" type="button" aria-label="Mois précédent">◀</button>
+        <div class="calMonthLabel" id="calMonthLabel">—</div>
+        <button class="calNavBtn" id="calNext" type="button" aria-label="Mois suivant">▶</button>
       </div>
-
-      <div class="quickGuide">
-        <strong>Une phrase suffit.</strong>
-        <p>Exemples : acompte réservation, confirmation client, rappel ou annulation.</p>
-        <div class="quickExamples" id="quickResaExamples">
-          <button type="button">Client a payé 15000 cash</button>
-          <button type="button">Acompte rendez-vous 5000 Wave</button>
-          <button type="button">Client confirmé 19h</button>
-          <button type="button">Rappel client demain midi</button>
-          <button type="button">Client Fatou doit 3000</button>
-          <button type="button">Annulation client 18h</button>
-        </div>
-      </div>
-
-      <textarea class="quickInput" id="quickResaInput" placeholder="Ex : Acompte réservation 5000 Wave"></textarea>
-
-      <div class="hero-cta" style="margin-top:0">
-        <button class="btn" id="btnQuickResaPrepare" type="button">Préparer</button>
-        <button class="btn secondary" id="btnQuickResaConfirm" type="button" style="display:none">✅ Confirmer</button>
-        <button class="btn ghost" id="btnQuickResaClear" type="button">Effacer</button>
-      </div>
-
-      <div class="quickDraft" id="quickResaDraft"></div>
-
-      <div class="memoryBox">
-        <div class="memoryHead">
-          <div>
-            <div class="memoryTitle">Aide-mémoire réservations</div>
-            <div class="memoryHelp">Dernières notes confirmées ici. Les notes argent peuvent partir vers Mon argent.</div>
-          </div>
-          <button class="btn ghost" id="btnQuickResaMemoryClear" type="button">Vider</button>
-        </div>
-        <div class="memoryList" id="quickResaMemoryList">
-          <div class="memoryEmpty">Aucune note réservation confirmée pour le moment.</div>
-        </div>
+      <div class="calGrid" id="calGrid"></div>
+      <div class="calLegend">
+        <span class="calLegItem"><span class="calDot today"></span>Aujourd'hui</span>
+        <span class="calLegItem"><span class="calDot confirmed"></span>Réservations</span>
+        <span class="calLegItem"><span class="calDot pending"></span>En attente</span>
+        <span class="calLegItem"><span class="calDot closed"></span>Fermé</span>
       </div>
     </section>
+    <!-- ══ FIN CALENDRIER ══ -->
 
 
     <section class="claw" id="clawWrap">
@@ -1237,7 +823,6 @@
       <a id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
       <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
       <a class="active" id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
-      <a id="bottomNotes" href="#quickResaNote"><span class="ico">✍️</span><span>Notes</span></a>
       <a id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
     </div>
   </nav>
@@ -1426,8 +1011,6 @@
 
         const fastNotes = $("fastNotes");
         const bottomNotes = $("bottomNotes");
-        if(fastNotes) fastNotes.href = "#quickResaNote";
-        if(bottomNotes) bottomNotes.href = "#quickResaNote";
       }
 
       async function resolveGuardState(){
@@ -1621,365 +1204,6 @@
       }
 
 
-      function quickResaNorm(text){
-        return String(text || "")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-      }
-
-      function quickResaAmount(text){
-        const m = String(text || "").replace(/\s+/g, " ").match(/(\d[\d\s.,]*)\s*(f|fcfa|xof)?/i);
-        if(!m) return 0;
-        const raw = String(m[1] || "").replace(/[^\d]/g, "");
-        const n = Number(raw);
-        return Number.isFinite(n) ? n : 0;
-      }
-
-      function quickResaChannel(text){
-        const t = quickResaNorm(text);
-        if(/\bwave\b/.test(t)) return "wave";
-        if(/\b(cash|especes|liquide)\b/.test(t)) return "cash";
-        if(/\b(orange money|om)\b/.test(t)) return "orange_money";
-        if(/\b(banque|virement)\b/.test(t)) return "bank";
-        return "other";
-      }
-
-      function quickResaComplement(text, type){
-        const s = String(text || "").trim();
-        const lower = quickResaNorm(s);
-
-        if(/\b(coiffure|brushing|tresse|ongle|ongles|massage|table|repas|consultation|rendez vous|rendez-vous)\b/.test(lower)){
-          const found = lower.match(/\b(coiffure|brushing|tresse|ongle|ongles|massage|table|repas|consultation|rendez vous|rendez-vous)\b/);
-          return found ? found[1].replace("rendez vous", "rendez-vous") : "";
-        }
-
-        if(/\b(produit|stock|materiel|materiaux|achat)\b/.test(lower)) return "produit";
-        if(/\b(acompte|avance)\b/.test(lower)) return "acompte";
-        if(/\b(annulation|annule|annuler)\b/.test(lower)) return "annulation";
-
-        if(/\bclient\b/.test(lower) && /\b(doit|reste)\b/.test(lower)){
-          const words = s.replace(/[.,;:!?]/g, " ").split(/\s+/).filter(Boolean);
-          const banned = new Set(["client","doit","reste","payer","cash","wave","fcfa","xof","f"]);
-          const candidates = words.filter(w => {
-            const clean = quickResaNorm(w).replace(/[^\p{L}\p{N}-]/gu, "");
-            if(!clean || /^\d+$/.test(clean)) return false;
-            return !banned.has(clean);
-          });
-          if(candidates.length){
-            const raw = candidates[candidates.length - 1].replace(/[^\p{L}\p{N}-]/gu, "");
-            return raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : "";
-          }
-        }
-
-        return "";
-      }
-
-      function quickResaDraftFromText(text){
-        const sentence = String(text || "").trim().replace(/\s+/g, " ");
-        const lower = quickResaNorm(sentence);
-        const amount = quickResaAmount(sentence);
-        const channel = quickResaChannel(sentence);
-
-        let type = "note";
-        let title = "Note réservation";
-        let direction = "none";
-        let category = "resa_note";
-        let kind = "other";
-        let impact = "à classer";
-
-        if(/\b(annulation|annule|annuler|absent|no show)\b/.test(lower)){
-          type = "appointment_note";
-          title = "Note rendez-vous";
-          direction = "none";
-          category = "appointment_note";
-          kind = "other";
-          impact = "planning à vérifier";
-        } else if(/\b(client)\b.*\b(doit|reste)\b|\b(doit|reste)\b/.test(lower)){
-          type = "client_debt";
-          title = "Client doit encore";
-          direction = "out";
-          category = "client_debt";
-          kind = "expense";
-          impact = "à suivre";
-        } else if(/\b(acompte|avance)\b/.test(lower)){
-          type = "deposit";
-          title = "Acompte reçu";
-          direction = "in";
-          category = "deposit";
-          kind = "sale";
-          impact = "entrée réservation";
-        } else if(/\b(achat|produit|stock|materiel|materiaux)\b/.test(lower)){
-          type = "product_purchase";
-          title = "Achat produit";
-          direction = "out";
-          category = "product_purchase";
-          kind = "expense";
-          impact = "dépense service";
-        } else if(/\b(paye|payee|payé|payée|encaisse|encaissé|recu|reçu|prestation|service|coiffure|brushing|massage|repas|table|consultation)\b/.test(lower)){
-          type = "service_income";
-          title = "Prestation encaissée";
-          direction = "in";
-          category = "service_income";
-          kind = "sale";
-          impact = "recette réservation";
-        }
-
-        const complement = quickResaComplement(sentence, type);
-
-        return {
-          sentence,
-          type,
-          title,
-          amount_xof: amount,
-          channel,
-          direction,
-          category,
-          kind,
-          impact,
-          complement,
-          module: "RESA",
-          status: "draft",
-          created_at: new Date().toISOString()
-        };
-      }
-
-      function quickResaMemoryKey(){
-        return `digiy_resa_quick_memory:${RESOLVED_SLUG || getFallbackSlug() || "unknown"}`;
-      }
-
-      function quickResaDraftKey(){
-        return `digiy_resa_quick_draft:${RESOLVED_SLUG || getFallbackSlug() || "unknown"}`;
-      }
-
-      function readQuickResaMemory(){
-        try{
-          const raw = localStorage.getItem(quickResaMemoryKey());
-          const arr = raw ? JSON.parse(raw) : [];
-          return Array.isArray(arr) ? arr : [];
-        }catch{
-          return [];
-        }
-      }
-
-      function writeQuickResaMemory(items){
-        try{
-          localStorage.setItem(quickResaMemoryKey(), JSON.stringify((items || []).slice(0, 10)));
-          return true;
-        }catch{
-          return false;
-        }
-      }
-
-      function saveQuickResaDraft(draft, confirmed = false){
-        try{
-          localStorage.setItem(quickResaDraftKey(), JSON.stringify({
-            ...draft,
-            status: confirmed ? "confirmed_local" : "draft",
-            confirmed_at: confirmed ? new Date().toISOString() : null
-          }));
-          return true;
-        }catch{
-          return false;
-        }
-      }
-
-      function addQuickResaMemory(draft){
-        const item = {
-          ...draft,
-          memory_id: "resa_" + Date.now(),
-          confirmed_at: new Date().toISOString()
-        };
-        const list = readQuickResaMemory();
-        list.unshift(item);
-        writeQuickResaMemory(list);
-        renderQuickResaMemory();
-      }
-
-      function isQuickResaFinancial(item){
-        const type = String(item?.type || "").toLowerCase();
-        return ["service_income","deposit","product_purchase","client_debt"].includes(type);
-      }
-
-      function payResaLabel(item){
-        const type = String(item?.type || "").toLowerCase();
-        const comp = String(item?.complement || "").trim();
-
-        if(type === "service_income") return comp ? "Prestation " + comp : "Prestation RESA";
-        if(type === "deposit") return "Acompte réservation";
-        if(type === "product_purchase") return "Achat lié à la réservation";
-        if(type === "client_debt") return comp ? "Client doit " + comp : "Client doit encore";
-        return item?.title || "Note réservation";
-      }
-
-      function buildPayFromResaUrl(item){
-        const qsPay = new URLSearchParams();
-
-        qsPay.set("fromDraft", "1");
-        qsPay.set("direction", item?.direction === "in" ? "in" : "out");
-        qsPay.set("scope", "pro");
-        qsPay.set("amount", String(Math.round(Number(item?.amount_xof || 0))));
-        qsPay.set("amount_xof", String(Math.round(Number(item?.amount_xof || 0))));
-        qsPay.set("kind", item?.kind || (item?.direction === "in" ? "sale" : "expense"));
-        qsPay.set("channel", item?.channel || "other");
-        qsPay.set("category", item?.category || "resa_note");
-        qsPay.set("source_module", "RESA");
-        qsPay.set("source_id", item?.memory_id || ("resa-note-" + Date.now()));
-        qsPay.set("label", payResaLabel(item));
-        qsPay.set("note", String(item?.sentence || "").trim());
-        qsPay.set("complement", String(item?.complement || "").trim());
-        qsPay.set("intent", "quick_note");
-
-        return "https://pro-pay.digiylyfe.com/admin.html?" + qsPay.toString();
-      }
-
-      function renderQuickResaDraft(draft){
-        const box = $("quickResaDraft");
-        const confirmBtn = $("btnQuickResaConfirm");
-        if(!box) return;
-
-        if(!draft || !draft.sentence){
-          box.style.display = "none";
-          box.innerHTML = "";
-          if(confirmBtn) confirmBtn.style.display = "none";
-          return;
-        }
-
-        const amountText = draft.amount_xof ? money(draft.amount_xof) : "montant à préciser";
-        const channelText = draft.channel === "other" ? "canal à préciser" : draft.channel;
-
-        box.style.display = "block";
-        if(confirmBtn) confirmBtn.style.display = "inline-flex";
-
-        box.innerHTML = `
-          <strong>Voilà ce que DIGIY RESA a préparé :</strong><br>
-          Type : ${escapeHtml(draft.title)}<br>
-          Montant : ${escapeHtml(amountText)}<br>
-          Canal : ${escapeHtml(channelText)}<br>
-          Impact : ${escapeHtml(draft.impact)}<br>
-          ${draft.complement ? `Complément : ${escapeHtml(draft.complement)}<br>` : ``}
-          <br>
-          <span style="color:rgba(234,255,241,.70)">Brouillon seulement. Rien n’est envoyé en base automatiquement.</span>
-        `;
-      }
-
-      function renderQuickResaMemory(){
-        const box = $("quickResaMemoryList");
-        if(!box) return;
-
-        const list = readQuickResaMemory();
-        if(!list.length){
-          box.innerHTML = `<div class="memoryEmpty">Aucune note réservation confirmée pour le moment.</div>`;
-          return;
-        }
-
-        box.innerHTML = list.slice(0, 10).map(item => {
-          const amount = item.amount_xof ? money(item.amount_xof) : "montant à préciser";
-          const channel = item.channel && item.channel !== "other" ? item.channel : "canal à préciser";
-          const comp = item.complement ? " · " + item.complement : "";
-
-          return `
-            <div class="memoryItem">
-              <div class="memoryItemTop">
-                <div class="memoryItemTitle">✅ ${escapeHtml(item.title || "Note réservation")}</div>
-                <div class="memoryItemAmount">${escapeHtml(amount)}</div>
-              </div>
-              <div class="memoryItemMeta">${escapeHtml(channel)} · ${escapeHtml(item.impact || "à classer")}${escapeHtml(comp)}</div>
-              <div class="memoryItemMeta">${escapeHtml(item.sentence || "")}</div>
-              ${isQuickResaFinancial(item) ? `
-                <a class="memoryPayAction" href="${escapeHtml(buildPayFromResaUrl(item))}">
-                  💼 Envoyer vers Mon argent
-                </a>
-                <div class="memoryPayHint">Abonnement Mon argent requis pour enregistrer.</div>
-              ` : ``}
-            </div>
-          `;
-        }).join("");
-      }
-
-      function clearQuickResaMemory(){
-        const ok = window.confirm("Vider l’aide-mémoire rendez-vous sur cet appareil ?");
-        if(!ok) return;
-        writeQuickResaMemory([]);
-        renderQuickResaMemory();
-      }
-
-      function bindQuickResaNote(){
-        if(window.__DIGIY_RESA_QUICK_BOUND) return;
-        window.__DIGIY_RESA_QUICK_BOUND = true;
-
-        const input = $("quickResaInput");
-        if(!input){
-          window.__DIGIY_RESA_QUICK_BOUND = false;
-          return;
-        }
-        const prepare = $("btnQuickResaPrepare");
-        const confirm = $("btnQuickResaConfirm");
-        const clear = $("btnQuickResaClear");
-
-        const examplesBox = $("quickResaExamples");
-        if(examplesBox) examplesBox.querySelectorAll("button").forEach(btn => {
-          btn.addEventListener("click", () => {
-            if(!input) return;
-            input.value = btn.textContent.trim();
-            input.focus();
-          });
-        });
-
-        prepare?.addEventListener("click", () => {
-          const sentence = String(input?.value || "").trim();
-          if(!sentence){
-            window.alert("Écris une note réservation avant de préparer.");
-            return;
-          }
-
-          const draft = quickResaDraftFromText(sentence);
-          saveQuickResaDraft(draft, false);
-          renderQuickResaDraft(draft);
-        });
-
-        confirm?.addEventListener("click", () => {
-          const draft = quickResaDraftFromText(String(input?.value || "").trim());
-          if(!draft.sentence){
-            window.alert("Prépare d’abord une note réservation.");
-            return;
-          }
-
-          saveQuickResaDraft(draft, true);
-          addQuickResaMemory(draft);
-          renderQuickResaDraft({...draft, status:"confirmed_local"});
-          if(confirm) confirm.style.display = "none";
-        });
-
-        clear?.addEventListener("click", () => {
-          if(input) input.value = "";
-          renderQuickResaDraft(null);
-        });
-
-        $("btnQuickResaMemoryClear")?.addEventListener("click", clearQuickResaMemory);
-        renderQuickResaMemory();
-      }
-
-
-
-      function safeBindQuickResaNote(){
-        const run = () => {
-          try{
-            bindQuickResaNote();
-          }catch(err){
-            console.error("[RESA quick note] bind error", err);
-          }
-        };
-
-        if(document.readyState === "loading"){
-          document.addEventListener("DOMContentLoaded", run, { once:true });
-        }else{
-          run();
-        }
-      }
-
-
-
       function bindPlanningAudio(){
         const btn = $("btnResaPlanningAudio");
         if(!btn) return;
@@ -2104,69 +1328,198 @@
         }
       }
 
-      safeBindQuickResaNote();
       bindPlanningAudio();
 
       $("btnReload").addEventListener("click",boot);
       $("filterStatus").addEventListener("change",(e)=>{ ACTIVE_FILTER=e.target.value||"all"; renderTimeline(); });
       $("dateInput").addEventListener("change",()=>{ ACTIVE_DATE=$("dateInput").value||todayISO(); setLinks(); boot(); });
+      /* ══════════════════════════════════════════════════
+         CALENDRIER MENSUEL DIGIY RESA
+         - Lit les fermetures depuis DIGIY_RESA_PRO_FERMETURES
+           { weekly_closed:[0,6], exceptional:["2026-05-25"] }
+         - Lit les réservations locales depuis DIGIY_RESA_PRO_RESERVATIONS
+         - Se synchronise avec dateInput + déclenche l'event change
+      ══════════════════════════════════════════════════ */
+      (function initCalendar(){
+        const DAY_NAMES = ["Lu","Ma","Me","Je","Ve","Sa","Di"];
+        const MONTH_NAMES = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+        const FERMETURES_KEY = "DIGIY_RESA_PRO_FERMETURES";
+        const RESAS_KEY      = "DIGIY_RESA_PRO_RESERVATIONS";
 
-      function initRhythmPanel(){
-        const panel = document.getElementById("rhythmPanel");
-        const preview = document.getElementById("rhythmPreview");
-        const slotsBox = document.getElementById("rhythmSlots");
-        if(!panel || !preview || !slotsBox) return;
+        let calYear, calMonth;
 
-        const examples = {
-          restaurant: {
-            title: "🍽️ Restaurant · réservation de table",
-            text: "Exemple : premier service à 11h30, respiration, puis second service à 13h30. RESA ne gère pas les commandes : il aide à placer, confirmer et suivre les tables.",
-            slots: ["11h30 · service 1", "Durée table 1h30", "13h30 · service 2", "Rappel client", "Acompte éventuel"]
-          },
-          beaute: {
-            title: "💇 Beauté / coiffure · durée par prestation",
-            text: "Exemple : un brushing ne bloque pas le même temps qu’une couleur. RESA aide à respecter la durée réelle du geste.",
-            slots: ["Brushing · 30 min", "Coupe · 45 min", "Soin · 1h", "Couleur · 1h30", "Rappel client"]
-          },
-          rdv: {
-            title: "🗓️ Rendez-vous simple · créneaux clairs",
-            text: "Exemple : un rendez-vous peut durer 30 minutes ou 1 heure. RESA garde l’heure, le client et la confirmation.",
-            slots: ["Créneau 30 min", "Créneau 1h", "Confirmation", "Rappel", "Annulation"]
-          },
-          intervention: {
-            title: "🛠️ Intervention · temps de déplacement",
-            text: "Exemple : une visite terrain ou une intervention peut bloquer plus longtemps qu’un rendez-vous au comptoir.",
-            slots: ["Visite 1h", "Intervention 2h", "Demi-journée", "Zone client", "Rappel avant départ"]
-          }
-        };
-
-        function render(key){
-          const data = examples[key] || examples.restaurant;
-          panel.querySelectorAll(".rhythmCard").forEach(btn => {
-            btn.classList.toggle("active", btn.dataset.rhythm === key);
-          });
-          preview.querySelector(".rhythmPreviewTitle").textContent = data.title;
-          preview.querySelector(".rhythmPreviewText").textContent = data.text;
-          slotsBox.innerHTML = data.slots.map(item => `<span class="rhythmSlot">${escapeHtml(item)}</span>`).join("");
-          try{ localStorage.setItem("DIGIY_RESA_RHYTHM_PREVIEW", key); }catch(_){}
+        function todayCal(){
+          const d = new Date();
+          return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() };
         }
 
-        panel.querySelectorAll(".rhythmCard").forEach(btn => {
-          btn.addEventListener("click", () => render(btn.dataset.rhythm || "restaurant"));
-        });
+        function ymd(y, m, d){
+          return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+        }
 
-        let saved = "";
-        try{ saved = localStorage.getItem("DIGIY_RESA_RHYTHM_PREVIEW") || ""; }catch(_){}
-        if(saved && examples[saved]) render(saved);
-      }
+        function readFermetures(){
+          try{
+            const raw = localStorage.getItem(FERMETURES_KEY);
+            return raw ? JSON.parse(raw) : { weekly_closed:[], exceptional:[] };
+          }catch(_){ return { weekly_closed:[], exceptional:[] }; }
+        }
 
+        function readResaMap(){
+          // Retourne un Map<"YYYY-MM-DD", {hasConfirmed, hasPending}>
+          const map = new Map();
+          try{
+            const raw = localStorage.getItem(RESAS_KEY);
+            const rows = raw ? JSON.parse(raw) : [];
+            (Array.isArray(rows) ? rows : []).forEach(r => {
+              const date = String(r.checkin || r.booking_date || r.date || "").slice(0,10);
+              if(!date) return;
+              const prev = map.get(date) || { hasConfirmed:false, hasPending:false };
+              const st = String(r.status || "").toLowerCase();
+              if(st === "confirmed" || st === "done") prev.hasConfirmed = true;
+              else if(st === "pending" || st === "") prev.hasPending = true;
+              map.set(date, prev);
+            });
+          }catch(_){}
+          return map;
+        }
 
-      initRhythmPanel();
+        function isClosed(jsDay, dateStr, fermetures){
+          // jsDay: 0=dim,1=lun,...,6=sam → convertir en 0=lun,...,6=dim
+          const lun0 = (jsDay + 6) % 7;
+          const wc = Array.isArray(fermetures.weekly_closed) ? fermetures.weekly_closed : [];
+          const ex = Array.isArray(fermetures.exceptional) ? fermetures.exceptional : [];
+          return wc.includes(lun0) || ex.includes(dateStr);
+        }
+
+        function renderCal(){
+          const grid = document.getElementById("calGrid");
+          const label = document.getElementById("calMonthLabel");
+          if(!grid || !label) return;
+
+          const today = todayCal();
+          const selDate = (document.getElementById("dateInput")?.value || "").slice(0,10);
+          const fermetures = readFermetures();
+          const resaMap = readResaMap();
+
+          label.textContent = `${MONTH_NAMES[calMonth]} ${calYear}`;
+
+          // En-têtes jours
+          let html = DAY_NAMES.map(n => `<div class="calDayName">${n}</div>`).join("");
+
+          // Premier jour du mois (0=dim → 0=lun offset)
+          const firstJs = new Date(calYear, calMonth, 1).getDay(); // 0=dim
+          const startOffset = (firstJs + 6) % 7; // décaler pour Lundi=0
+          const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+          const daysInPrev  = new Date(calYear, calMonth, 0).getDate();
+
+          // Jours du mois précédent (grisés)
+          for(let i = startOffset - 1; i >= 0; i--){
+            html += `<div class="calDay other-month">${daysInPrev - i}</div>`;
+          }
+
+          // Jours du mois courant
+          for(let d = 1; d <= daysInMonth; d++){
+            const jsDay = new Date(calYear, calMonth, d).getDay();
+            const dateStr = ymd(calYear, calMonth, d);
+            const isToday = (d === today.d && calMonth === today.m && calYear === today.y);
+            const isSel   = dateStr === selDate;
+            const closed  = isClosed(jsDay, dateStr, fermetures);
+            const resa    = resaMap.get(dateStr);
+            const isPast  = new Date(calYear, calMonth, d) < new Date(today.y, today.m, today.d);
+
+            let cls = "calDay";
+            if(closed)           cls += " closed";
+            if(isToday)          cls += " today";
+            if(isSel)            cls += " selected";
+            if(isPast && !isToday) cls += " past";
+            if(resa?.hasConfirmed) cls += " has-confirmed";
+            else if(resa?.hasPending) cls += " has-pending";
+
+            const dot = (!closed) ? `<span class="calDot"></span>` : "";
+            const label2 = closed ? `<span style="font-size:10px;opacity:.6">Fermé</span>` : "";
+
+            html += `<div class="${cls}" data-date="${dateStr}" role="button" tabindex="${closed ? -1 : 0}" aria-label="${dateStr}${closed?" — Fermé":""}">
+              ${d}${dot}${label2}
+            </div>`;
+          }
+
+          // Compléter la dernière semaine
+          const total = startOffset + daysInMonth;
+          const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+          for(let d = 1; d <= remaining; d++){
+            html += `<div class="calDay other-month">${d}</div>`;
+          }
+
+          grid.innerHTML = html;
+
+          // Clics sur les jours
+          grid.querySelectorAll(".calDay:not(.other-month):not(.closed)").forEach(el => {
+            el.addEventListener("click", () => {
+              const date = el.getAttribute("data-date");
+              if(!date) return;
+              const input = document.getElementById("dateInput");
+              if(input){
+                input.value = date;
+                input.dispatchEvent(new Event("change", { bubbles:true }));
+              }
+              renderCal(); // refresh sélection
+            });
+            el.addEventListener("keydown", e => {
+              if(e.key === "Enter" || e.key === " ") el.click();
+            });
+          });
+        }
+
+        function initCalNav(){
+          const today = todayCal();
+          calYear  = today.y;
+          calMonth = today.m;
+          renderCal();
+
+          document.getElementById("calPrev")?.addEventListener("click", () => {
+            calMonth--;
+            if(calMonth < 0){ calMonth = 11; calYear--; }
+            renderCal();
+          });
+          document.getElementById("calNext")?.addEventListener("click", () => {
+            calMonth++;
+            if(calMonth > 11){ calMonth = 0; calYear++; }
+            renderCal();
+          });
+
+          // Sync quand dateInput change depuis la toolbar
+          document.getElementById("dateInput")?.addEventListener("change", () => {
+            const val = document.getElementById("dateInput")?.value || "";
+            if(val){
+              const parts = val.split("-");
+              if(parts.length === 3){
+                calYear  = parseInt(parts[0]);
+                calMonth = parseInt(parts[1]) - 1;
+              }
+            }
+            renderCal();
+          });
+        }
+
+        if(document.readyState === "loading"){
+          document.addEventListener("DOMContentLoaded", initCalNav);
+        }else{
+          initCalNav();
+        }
+
+        // Exposer pour que les autres scripts puissent forcer un refresh
+        window.DIGIY_RESA_CAL = { refresh: renderCal };
+      })();
+      /* ══ FIN CALENDRIER ══ */
+
       boot();
     })();
   </script>
 </body>
 </html>
+
+
+
 
 
 
