@@ -1,45 +1,705 @@
-PRO RESA — fermeture ciblée planning.html
-Version : resa-planning-fermeture-ciblee-20260521
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Je réserve — Planning RESA PRO</title>
+  <meta name="theme-color" content="#f4ead2"/>
+  <meta name="digiy-build" content="resa-planning-complet-anti-noir-20260521"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
 
-Ce n'est pas un patch compliqué.
-Ce sont deux lignes à ajouter manuellement dans planning.html.
-
-1) Dans planning.html, trouve :
-
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
-
-Ajoute juste dessous :
-
     window.DIGIY_LOGIN_URL = "./pin.html";
+  </script>
 
-Ça devient :
+  <script>
+    (() => {
+      "use strict";
+      const BUILD_ID = "resa-planning-complet-anti-noir-20260521";
+      const BUILD_KEY = "DIGIY_RESA_PLANNING_BUILD_ID";
+      const SENSITIVE = [
+        "phone","tel","owner_phone","owner_id","slug","resa_tel","resa_phone",
+        "business_phone","whatsapp","module","return","redirect","redirect_url","url","from","v","pin","token"
+      ];
 
-    window.DIGIY_MODULE = "RESA";
-    window.DIGIY_LOGIN_URL = "./pin.html";
+      function cleanBuildUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+          SENSITIVE.forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+          if(changed) history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }catch(_){}
+      }
 
+      function clearOldCachesOnce(){
+        try{
+          const previous = localStorage.getItem(BUILD_KEY);
+          if(previous === BUILD_ID) return;
+          localStorage.setItem(BUILD_KEY, BUILD_ID);
+          ["digiy_resa_planning_cache","digiy_resa_planning_old_state","resa_planning_old_ui","digiy_resa_old_planning"].forEach((key) => {
+            try{ localStorage.removeItem(key); }catch(_){}
+            try{ sessionStorage.removeItem(key); }catch(_){}
+          });
+          if("caches" in window){
+            caches.keys().then((keys) => {
+              keys.filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || ""))).forEach((name) => caches.delete(name));
+            }).catch(() => {});
+          }
+        }catch(_){}
+      }
 
-2) Plus bas, trouve :
+      cleanBuildUrl();
+      clearOldCachesOnce();
+      window.DIGIY_RESA_PLANNING_BUILD_ID = BUILD_ID;
+    })();
+  </script>
 
-    <script src="./guard.js?v=resa-planning-20260510-v1-cache-audio-lisibilite"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-planning-complet-anti-noir-20260521"></script>
+  <script src="./assets/js/digiy-resa-memory.js?v=resa-planning-complet-anti-noir-20260521"></script>
 
-Ajoute juste dessous :
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 
-    <script src="./assets/js/digiy-resa-memory.js?v=resa-planning-memory-20260521"></script>
+  <style>
+    :root{
+      --bg:#f4ead2;--bg2:#ead9b7;--bg3:#dec99c;--bar:rgba(246,237,216,.96);
+      --card:#fff7e6;--card2:#fffaf0;--text:#1f2a1f;--muted:rgba(31,42,31,.74);
+      --line:rgba(83,58,26,.22);--gold:#facc15;--gold2:#fff3b0;--ok:#16a34a;
+      --green:#22c55e;--warn:#d97706;--danger:#dc2626;--info:#2563eb;
+      --shadow:0 14px 34px rgba(77,52,22,.16);--r:22px;--hdrH:54px;--barH:78px;--max:1120px;
+      --font:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{
+      margin:0;min-height:100dvh;color:var(--text);font-family:var(--font);
+      font-size:18px;font-weight:850;line-height:1.45;
+      background:
+        radial-gradient(circle at 10% 0%,rgba(250,204,21,.22),transparent 34%),
+        radial-gradient(circle at 100% 100%,rgba(22,101,52,.10),transparent 30%),
+        linear-gradient(180deg,var(--bg),var(--bg2) 58%,var(--bg3));
+      padding:calc(var(--hdrH) + 14px) 12px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer;color:inherit}
+    .topHeader{
+      position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;
+      background:var(--bar);border-bottom:1px solid var(--line);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+    .hdrBack{min-height:36px;display:inline-flex;align-items:center;justify-content:center;color:rgba(31,42,31,.68);font-size:14px;font-weight:1000;white-space:nowrap}
+    .hdrTitle{font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;color:#6b4e09;white-space:nowrap}
+    .hdrPill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.55);color:var(--muted);font-size:12px;font-weight:1000;white-space:nowrap;max-width:38vw;overflow:hidden;text-overflow:ellipsis}
+    .hdrPill.ok{color:#14532d;border-color:rgba(22,101,52,.28);background:rgba(220,252,231,.72)}
+    .hdrPill.warn{color:#6b4e09;border-color:rgba(250,204,21,.38);background:rgba(250,204,21,.18)}
+    .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:16px}
+    .hero,.card,.panel,.calBlock,.bookingCard,.clawCard{
+      border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.56);box-shadow:var(--shadow);
+    }
+    .hero{padding:18px;background:linear-gradient(160deg,rgba(255,247,230,.95),rgba(245,230,200,.86))}
+    .heroGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:stretch}
+    .eyebrow{color:#6b4e09;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:1000;margin-bottom:8px}
+    h1{margin:0 0 8px;font-size:clamp(42px,9vw,72px);font-weight:1000;line-height:.92;letter-spacing:-.06em;color:#241a0d}
+    h2{margin:0 0 10px;font-size:clamp(24px,4vw,36px);font-weight:1000;letter-spacing:-.035em;color:#241a0d}
+    h3{margin:0;font-size:20px;font-weight:1000;color:#241a0d}
+    .lead,.sub{color:var(--muted);font-size:17px;font-weight:900;line-height:1.45;max-width:740px}
+    .rule{
+      margin-top:12px;padding:13px 14px;border-radius:18px;border:1px dashed rgba(83,58,26,.24);
+      background:rgba(255,255,255,.55);color:#3d3324;font-size:14px;font-weight:950;line-height:1.45;
+    }
+    .rule b{color:#14532d}
+    .badNotice{display:none;padding:13px 14px;border-radius:18px;border:1px solid rgba(220,38,38,.25);background:rgba(254,226,226,.78);color:#7f1d1d;font-size:14px;font-weight:1000}
+    .badNotice.show{display:block}
+    .miniStats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .miniStat{padding:15px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.58)}
+    .miniStat .k{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:1000;margin-bottom:8px}
+    .miniStat .v{font-size:34px;line-height:1;font-weight:1000;color:#241a0d}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.45);box-shadow:var(--shadow)}
+    .group{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn,.input,.select{
+      min-height:52px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.70);
+      color:var(--text);padding:11px 14px;font-weight:1000;outline:none;
+    }
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center}
+    .btn.primary{background:linear-gradient(135deg,var(--ok),#bbf7d0);color:#052215;border-color:rgba(22,101,52,.24)}
+    .btn.gold{background:linear-gradient(135deg,var(--gold),#fff3c4);color:#241a0d;border-color:rgba(121,83,12,.24)}
+    .btn.ghost{background:rgba(255,255,255,.45)}
+    .calBlock{padding:14px;background:rgba(255,255,255,.50)}
+    .calNav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .calNavBtn{width:48px;height:48px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.72);font-weight:1000;font-size:20px}
+    .calMonthLabel{font-size:16px;font-weight:1000;letter-spacing:.05em;color:#6b4e09;text-align:center;text-transform:uppercase;flex:1}
+    .calGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+    .calDayName{text-align:center;font-size:11px;font-weight:1000;color:rgba(31,42,31,.46);letter-spacing:.06em;padding:4px 0 6px}
+    .calDay{
+      min-height:52px;border-radius:14px;border:1px solid rgba(83,58,26,.16);background:rgba(255,255,255,.60);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:15px;font-weight:1000;
+      position:relative;transition:.13s;-webkit-tap-highlight-color:transparent;
+    }
+    .calDay:not(.other):not(.closed){cursor:pointer}
+    .calDay:not(.other):not(.closed):hover{background:rgba(250,204,21,.20);transform:translateY(-1px)}
+    .calDay.other{opacity:.28}
+    .calDay.today{border-color:rgba(250,204,21,.60);background:rgba(250,204,21,.18);color:#6b4e09}
+    .calDay.selected{border-color:rgba(22,101,52,.45);background:rgba(34,197,94,.18);color:#14532d}
+    .calDay.closed{background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.22);color:rgba(31,42,31,.42)}
+    .calDot{width:7px;height:7px;border-radius:999px;background:transparent}
+    .calDay.hasConfirmed .calDot{background:var(--ok)}
+    .calDay.hasPending .calDot{background:var(--gold)}
+    .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+    .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:950;color:var(--muted)}
+    .dot{width:9px;height:9px;border-radius:999px;display:inline-block}
+    .timeline{display:grid;gap:12px}
+    .slot{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:start}
+    .timeBox{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.58);padding:14px 12px;text-align:center;box-shadow:var(--shadow)}
+    .timeBox .time{font-size:24px;font-weight:1000;line-height:1;color:#241a0d}
+    .timeBox .date{margin-top:6px;color:var(--muted);font-size:13px;font-weight:900}
+    .bookingCard{padding:16px;background:rgba(255,255,255,.72);display:grid;gap:12px}
+    .bookingTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .bookingName{font-size:22px;font-weight:1000;color:#241a0d;line-height:1.1}
+    .meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:14px;font-weight:900;margin-top:5px}
+    .badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;font-weight:1000;border:1px solid transparent;white-space:nowrap;font-size:13px}
+    .badge.pending{background:rgba(254,243,199,.92);color:#6b4e09;border-color:rgba(121,83,12,.25)}
+    .badge.confirmed{background:rgba(220,252,231,.92);color:#14532d;border-color:rgba(22,101,52,.25)}
+    .badge.cancelled{background:rgba(254,226,226,.92);color:#9f1239;border-color:rgba(159,18,57,.25)}
+    .badge.done,.badge.no_show{background:rgba(255,255,255,.80);color:#1f2a1f;border-color:rgba(83,58,26,.20)}
+    .serviceBox{display:flex;gap:8px;flex-wrap:wrap}
+    .servicePill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.62);color:var(--muted);font-size:13px;font-weight:950}
+    .note{border-left:4px solid rgba(250,204,21,.70);padding-left:12px;color:#3d3324;line-height:1.5;font-weight:900}
+    .empty{border:1px dashed var(--line);background:rgba(255,255,255,.48);border-radius:20px;color:var(--muted);text-align:center;padding:28px 18px;font-weight:950;display:none}
+    .claw{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}
+    .clawCard{padding:15px;background:rgba(255,255,255,.56)}
+    .clawList{display:grid;gap:10px}
+    .clawItem{border:1px solid var(--line);background:rgba(255,255,255,.62);border-radius:16px;padding:12px}
+    .clawItem b{display:block;color:#241a0d;margin-bottom:4px}
+    .clawItem span{display:block;color:var(--muted);font-size:14px;font-weight:900;line-height:1.4}
+    .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:rgba(255,255,255,.65);border-radius:999px;padding:8px 11px;color:#3d3324;font-size:13px;font-weight:950}
+    .audioPanel{padding:14px;text-align:center;display:grid;gap:10px}
+    .bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:100;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bar);border-top:1px solid var(--line);backdrop-filter:blur(16px)}
+    .bottomInner{width:min(760px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(31,42,31,.66);font-size:11px;font-weight:1000;text-align:center;border:1px solid transparent}
+    .bottomInner a.active{color:#052215;background:linear-gradient(135deg,var(--gold),#bbf7d0);border-color:rgba(22,101,52,.20)}
+    .loading{opacity:.72;pointer-events:none}
+    @media(max-width:980px){.heroGrid,.claw{grid-template-columns:1fr}}
+    @media(max-width:720px){.slot{grid-template-columns:1fr}.toolbar .group{width:100%}.toolbar .btn,.toolbar .input,.toolbar .select{flex:1 1 auto}h1{font-size:44px}}
+    @media(max-width:480px){body{font-size:17px}.calGrid{gap:4px}.calDay{min-height:42px;font-size:13px;border-radius:11px}.bottomInner a{min-height:62px}}
+  </style>
+</head>
 
+<body>
+  <header class="topHeader">
+    <a class="hdrBack" href="./dashboard-pro.html">← Accueil</a>
+    <div class="hdrTitle">JE RÉSERVE · PLANNING</div>
+    <div class="hdrPill warn" id="sessionPill">session…</div>
+  </header>
 
-3) Ne touche pas au reste.
+  <main class="wrap">
+    <section class="badNotice" id="badNotice"></section>
 
-Ne pas ajouter bridge sur planning.html.
-Planning est une page d'écriture/lecture planning.
-La mémoire RESA suffit ici.
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="eyebrow">DIGIY PRO · RESA</div>
+          <h1>Planning</h1>
+          <div class="lead" id="topSub">Lecture du jour : réservations, créneaux, notes et respiration du planning.</div>
+          <div class="rule">
+            <b>Doctrine RESA :</b> le pro clique plus qu’il n’écrit. DIGIY prépare la lecture du jour, le terrain confirme avec sa vérité.
+          </div>
+          <div class="group" style="margin-top:14px">
+            <a class="btn primary" href="./cockpit.html">📋 Réservations</a>
+            <a class="btn gold" href="./planning.html">🗓️ Planning</a>
+            <a class="btn ghost" href="./etablissement.html">⚙️ Plus</a>
+            <a class="btn ghost" href="./pin.html">🔐 Accès</a>
+          </div>
+        </div>
 
-Verdict après ajout :
-- RESA garde son planning.
-- PIN connu.
-- mémoire RESA disponible.
-- pas de téléphone/slug visible.
-- pas de grosse recouture.
+        <aside class="miniStats">
+          <div class="miniStat"><div class="k">Réservations</div><div class="v" id="sTotal">0</div></div>
+          <div class="miniStat"><div class="k">Créneaux actifs</div><div class="v" id="sServices">0</div></div>
+          <div class="miniStat"><div class="k">Confirmées</div><div class="v" id="sConfirmed">0</div></div>
+          <div class="miniStat"><div class="k">En attente</div><div class="v" id="sPending">0</div></div>
+        </aside>
+      </div>
+    </section>
 
+    <section class="card audioPanel" aria-label="Guide audio planning RESA">
+      <strong>🎧 Guide du planning RESA</strong>
+      <span class="sub">Écoute DIGIY : le planning sert à voir l’ordre du jour, les heures, les clients attendus, les respirations et les notes rapides.</span>
+      <button class="btn gold" id="btnResaPlanningAudio" type="button">🎧 Écouter DIGIY</button>
+    </section>
+
+    <section class="toolbar">
+      <div class="group">
+        <input class="input" id="dateInput" type="date"/>
+        <select class="select" id="filterStatus">
+          <option value="all">Tous les statuts</option>
+          <option value="pending">En attente</option>
+          <option value="confirmed">Confirmées</option>
+          <option value="done">Passées</option>
+          <option value="no_show">Absent</option>
+          <option value="cancelled">Annulées</option>
+        </select>
+      </div>
+      <div class="group">
+        <button class="btn primary" id="btnReload" type="button">🔄 Recharger</button>
+        <a class="btn ghost" href="./etablissement.html">Plus</a>
+      </div>
+    </section>
+
+    <section class="calBlock" aria-label="Calendrier mensuel">
+      <div class="calNav">
+        <button class="calNavBtn" id="calPrev" type="button" aria-label="Mois précédent">‹</button>
+        <div class="calMonthLabel" id="calMonthLabel">—</div>
+        <button class="calNavBtn" id="calNext" type="button" aria-label="Mois suivant">›</button>
+      </div>
+      <div class="calGrid" id="calGrid"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:#facc15"></i>Aujourd’hui</span>
+        <span><i class="dot" style="background:#16a34a"></i>Confirmée</span>
+        <span><i class="dot" style="background:#facc15"></i>En attente</span>
+        <span><i class="dot" style="background:#dc2626"></i>Fermé</span>
+      </div>
+    </section>
+
+    <section class="claw" id="clawWrap">
+      <article class="clawCard">
+        <div class="eyebrow">Mon assistant DIGIY</div>
+        <h3>Lecture du jour</h3>
+        <p class="sub" id="clawSummary">DIGIY t’aide à lire le jour : réservations visibles, points d’attention et respiration du planning.</p>
+        <div class="pills" id="clawPills"></div>
+      </article>
+      <article class="clawCard">
+        <div class="clawList" id="clawList"></div>
+      </article>
+    </section>
+
+    <section class="timeline" id="timeline"></section>
+    <div class="empty" id="emptyState">Aucune réservation pour cette date.</div>
+  </main>
+
+  <nav class="bottomNav" aria-label="Navigation RESA">
+    <div class="bottomInner">
+      <a href="./dashboard-pro.html"><span>🏠</span><span>Accueil</span></a>
+      <a href="./cockpit.html"><span>📋</span><span>Réserv.</span></a>
+      <a class="active" href="./planning.html"><span>🗓️</span><span>Planning</span></a>
+      <a href="./etablissement.html"><span>⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const MODULE = "RESA";
+    const $ = (id) => document.getElementById(id);
+    const MONTHS = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+    const DAYS = ["Lu","Ma","Me","Je","Ve","Sa","Di"];
+
+    let sb = null;
+    let PROFILE = null;
+    let SERVICES = [];
+    let BOOKINGS = [];
+    let ACTIVE_DATE = "";
+    let ACTIVE_FILTER = "all";
+    let RESOLVED_SLUG = "";
+    let IS_PREVIEW = true;
+    let calYear = new Date().getFullYear();
+    let calMonth = new Date().getMonth();
+
+    function esc(v){ return String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function normalizeSlug(v){ return String(v || "").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,""); }
+    function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    function ymd(y,m,d){ return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`; }
+    function fmtDate(v){ if(!v) return "—"; try{ const [y,m,d]=String(v).slice(0,10).split("-"); return `${d}/${m}/${y}`; }catch(_){ return String(v); } }
+    function fmtLong(v){ try{ const [y,m,d]=String(v).slice(0,10).split("-"); const dt=new Date(Number(y),Number(m)-1,Number(d)); return dt.toLocaleDateString("fr-FR",{weekday:"long",year:"numeric",month:"long",day:"numeric"}); }catch(_){ return String(v||"—"); } }
+    function fmtTime(v){ const s=String(v||"").trim(); return s ? s.slice(0,5) : "—"; }
+    function money(v){ const n=Number(v); return Number.isFinite(n) && n ? n.toLocaleString("fr-FR")+" FCFA" : ""; }
+    function normStatus(v){ const s=String(v||"pending").toLowerCase().trim(); return ["pending","confirmed","cancelled","done","no_show"].includes(s) ? s : "pending"; }
+    function statusLabel(v){ return {pending:"En attente",confirmed:"Confirmée",cancelled:"Annulée",done:"Passée",no_show:"Absent"}[normStatus(v)] || "En attente"; }
+    function readJson(key, fallback){ try{ const raw=localStorage.getItem(key)||sessionStorage.getItem(key)||""; return raw ? JSON.parse(raw) : fallback; }catch(_){ return fallback; } }
+    function readRaw(key){ try{ return sessionStorage.getItem(key)||localStorage.getItem(key)||""; }catch(_){ return ""; } }
+    function writeRaw(key,val){ try{ sessionStorage.setItem(key,String(val||"")); localStorage.setItem(key,String(val||"")); }catch(_){} }
+    function showBad(msg){ const b=$("badNotice"); if(!b) return; b.textContent=msg; b.className=msg ? "badNotice show" : "badNotice"; }
+
+    function getSessionSlug(){
+      const keys = ["DIGIY_RESA_SESSION","DIGIY_RESA_PIN_SESSION","DIGIY_SESSION_RESA","digiy_resa_session","DIGIY_ACCESS"];
+      for(const key of keys){
+        const obj = readJson(key, null);
+        if(obj && (!obj.module || String(obj.module).toUpperCase() === MODULE) && obj.slug) return normalizeSlug(obj.slug);
+      }
+      return normalizeSlug(readRaw("digiy_resa_slug") || readRaw("digiy_resa_last_slug") || readRaw("RESA_LAST_SLUG"));
+    }
+
+    function cleanPath(path, extra={}){
+      try{
+        const u = new URL(path, location.href);
+        ["slug","phone","tel","owner_phone","owner_id","resa_tel","resa_phone","business_phone","whatsapp","module","return","redirect","redirect_url","url","from","v","pin","token"].forEach(k => u.searchParams.delete(k));
+        Object.entries(extra || {}).forEach(([k,v]) => {
+          if(v != null && String(v).trim() !== "") u.searchParams.set(k, String(v));
+        });
+        if(u.origin === location.origin){
+          const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+          return "./" + file + (u.search || "") + (u.hash || "");
+        }
+        return u.toString();
+      }catch(_){ return path; }
+    }
+
+    function setSessionPill(ok, text){
+      const p=$("sessionPill");
+      if(!p) return;
+      p.textContent = text || (ok ? "session ouverte" : "aperçu");
+      p.className = "hdrPill " + (ok ? "ok" : "warn");
+    }
+
+    function initClient(){
+      if(window.DIGIY_SB){ sb=window.DIGIY_SB; return; }
+      if(window.supabase && window.supabase.createClient){
+        sb = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON, {
+          auth: {storageKey:"digiy-resa-planning-auth-token",persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+        });
+        window.DIGIY_SB = sb;
+      }
+    }
+
+    async function resolveGuard(){
+      const fallback = getSessionSlug();
+      try{
+        if(window.DIGIY_GUARD && typeof window.DIGIY_GUARD.ready === "function"){
+          const st = await window.DIGIY_GUARD.ready({redirect:false,preserve_validation:true,allow_soft_session:true});
+          return {...(st||{}), slug: normalizeSlug(st?.slug || fallback)};
+        }
+        if(window.DIGIY_GUARD && window.DIGIY_GUARD.state){
+          return {...window.DIGIY_GUARD.state, slug: normalizeSlug(window.DIGIY_GUARD.state.slug || fallback)};
+        }
+      }catch(e){ console.warn("[RESA planning] guard ignoré", e?.message || e); }
+      return {preview:true, access_ok:false, slug:fallback};
+    }
+
+    async function rpc(name,args){
+      if(!sb || !sb.rpc) throw new Error("supabase_unavailable");
+      const {data,error} = await sb.rpc(name,args);
+      if(error) throw error;
+      return data;
+    }
+
+    async function loadProfile(){
+      try{
+        const data = await rpc("resa_public_profile_by_slug", {p_slug:RESOLVED_SLUG});
+        PROFILE = data?.profile || null;
+      }catch(e){ console.warn("[RESA planning] profile RPC ignorée", e?.message || e); PROFILE=null; }
+    }
+
+    async function loadServices(){
+      SERVICES = [];
+      try{
+        if(!sb || !sb.from || !RESOLVED_SLUG) return;
+        const {data,error} = await sb.from("digiy_resa_services").select("id,service_name,duration_minutes,price_fcfa,is_active").eq("slug",RESOLVED_SLUG).eq("is_active",true).order("service_name",{ascending:true});
+        if(error) throw error;
+        SERVICES = Array.isArray(data) ? data : [];
+      }catch(e){ console.warn("[RESA planning] services ignorés", e?.message || e); SERVICES=[]; }
+    }
+
+    async function loadBookings(){
+      BOOKINGS = [];
+      try{
+        const payload = await rpc("digiy_resa_get_bookings_by_day", {p_slug:RESOLVED_SLUG, p_date:ACTIVE_DATE});
+        const rows = Array.isArray(payload?.bookings) ? payload.bookings : [];
+        BOOKINGS = rows.map(r => ({
+          id:String(r.id||""), booking_date:r.booking_date||ACTIVE_DATE, booking_time:r.booking_time||"",
+          customer_name:r.customer_name||"Sans nom", guests_count:r.guests_count ?? "",
+          service_name:r.service_name||"", duration_minutes:r.duration_minutes ?? "", price_fcfa:r.price_fcfa ?? "",
+          status:normStatus(r.status), note:r.note_text||r.note||"", created_at:r.created_at||null
+        }));
+      }catch(e){
+        console.warn("[RESA planning] bookings RPC ignorée", e?.message || e);
+        const localRows = window.DIGIY_RESA_MEMORY?.listBookings?.() || window.DIGIY_RESA_MEMORY?.bookings?.() || readJson("DIGIY_RESA_PRO_RESERVATIONS", []);
+        BOOKINGS = (Array.isArray(localRows) ? localRows : []).filter(r => String(r.booking_date || r.date || r.checkin || "").slice(0,10) === ACTIVE_DATE).map(r => ({
+          id:String(r.id||Date.now()), booking_date:String(r.booking_date||r.date||r.checkin||ACTIVE_DATE).slice(0,10),
+          booking_time:r.booking_time||r.time||"", customer_name:r.customer_name||r.client||r.name||"Client",
+          guests_count:r.guests_count||r.guests||"", service_name:r.service_name||r.service||"", duration_minutes:r.duration_minutes||"",
+          price_fcfa:r.price_fcfa||r.amount||"", status:normStatus(r.status), note:r.note_text||r.note||"", created_at:r.created_at||null
+        }));
+      }
+    }
+
+    function renderStats(){
+      $("sTotal").textContent = String(BOOKINGS.length);
+      $("sServices").textContent = String(SERVICES.length);
+      $("sConfirmed").textContent = String(BOOKINGS.filter(b => normStatus(b.status)==="confirmed").length);
+      $("sPending").textContent = String(BOOKINGS.filter(b => normStatus(b.status)==="pending").length);
+    }
+
+    function filteredBookings(){
+      let rows = BOOKINGS.slice().sort((a,b) => String(a.booking_time).localeCompare(String(b.booking_time)));
+      if(ACTIVE_FILTER !== "all") rows = rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+      return rows;
+    }
+
+    function renderTimeline(){
+      const rows = filteredBookings();
+      const box=$("timeline"), empty=$("emptyState");
+      if(!rows.length){
+        box.innerHTML = "";
+        empty.style.display = "block";
+        empty.textContent = IS_PREVIEW ? "Accès non ouvert. Entre par PIN pour lire le planning vivant." : "Aucune réservation pour cette date.";
+        return;
+      }
+      empty.style.display = "none";
+      box.innerHTML = rows.map(row => `
+        <article class="slot">
+          <div class="timeBox">
+            <div class="time">${esc(fmtTime(row.booking_time))}</div>
+            <div class="date">${esc(fmtDate(row.booking_date))}</div>
+          </div>
+          <div class="bookingCard">
+            <div class="bookingTop">
+              <div>
+                <div class="bookingName">${esc(row.customer_name)}</div>
+                <div class="meta"><span>👥 ${esc(row.guests_count || "—")}</span><span>🧾 ${esc(row.created_at ? fmtDate(row.created_at) : "—")}</span></div>
+              </div>
+              <div class="badge ${esc(normStatus(row.status))}">${esc(statusLabel(row.status))}</div>
+            </div>
+            <div class="serviceBox">
+              ${row.service_name ? `<span class="servicePill">🧾 ${esc(row.service_name)}</span>` : ""}
+              ${row.duration_minutes ? `<span class="servicePill">⏱️ ${esc(row.duration_minutes)} min</span>` : ""}
+              ${money(row.price_fcfa) ? `<span class="servicePill">💰 ${esc(money(row.price_fcfa))}</span>` : ""}
+            </div>
+            ${row.note ? `<div class="note">“${esc(row.note)}”</div>` : ""}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function minutesFromTime(v){ const m=String(v||"").match(/^(\d{1,2}):(\d{2})/); return m ? Number(m[1])*60+Number(m[2]) : null; }
+    function timeFromMinutes(n){ return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0"); }
+
+    function computeWindows(rows){
+      const startDay=8*60, endDay=19*60;
+      const items = rows.map(r => {
+        const start=minutesFromTime(r.booking_time);
+        if(start == null) return null;
+        const dur=Number(r.duration_minutes)>0 ? Number(r.duration_minutes) : 60;
+        return {start,end:Math.min(endDay,start+dur)};
+      }).filter(Boolean).sort((a,b)=>a.start-b.start);
+      const free=[]; let cursor=startDay;
+      for(const item of items){ if(item.start>cursor) free.push({start:cursor,end:item.start}); cursor=Math.max(cursor,item.end); }
+      if(cursor<endDay) free.push({start:cursor,end:endDay});
+      return free.filter(s => s.end-s.start >= 30);
+    }
+
+    function renderClaw(){
+      const rows = BOOKINGS.filter(r => normStatus(r.status)!=="cancelled");
+      const pending = rows.filter(r => normStatus(r.status)==="pending").length;
+      const confirmed = rows.filter(r => normStatus(r.status)==="confirmed").length;
+      const windows = computeWindows(rows);
+      const biggest = windows.slice().sort((a,b)=>(b.end-b.start)-(a.end-a.start))[0];
+
+      if(IS_PREVIEW){
+        $("clawSummary").textContent = "L’espace est visible, mais sans accès confirmé aucune donnée réelle n’est inventée.";
+        $("clawPills").innerHTML = `<span class="pill">Date : ${esc(fmtDate(ACTIVE_DATE))}</span><span class="pill">Session non ouverte</span><span class="pill">Zéro démo</span>`;
+        $("clawList").innerHTML = `
+          <div class="clawItem"><b>Lecture protégée</b><span>Entre par PIN pour ouvrir le planning vivant.</span></div>
+          <div class="clawItem"><b>Règle DIGIY</b><span>Ici on n’invente pas de faux clients. Soit c’est vivant, soit c’est vide propre.</span></div>`;
+        return;
+      }
+
+      $("clawSummary").textContent = rows.length ? "On lit le jour : charge, respiration, confirmations en attente et préparation simple." : "Jour calme. Le planning peut accueillir de nouveaux créneaux.";
+      $("clawPills").innerHTML = [
+        `Jour : ${fmtDate(ACTIVE_DATE)}`,
+        `Réservations : ${rows.length}`,
+        `Confirmées : ${confirmed}`,
+        pending ? `À confirmer : ${pending}` : "Aucune en attente",
+        windows.length ? `Respirations : ${windows.length}` : "Journée serrée"
+      ].map(t => `<span class="pill">${esc(t)}</span>`).join("");
+      $("clawList").innerHTML = `
+        <div class="clawItem"><b>Charge du jour</b><span>${esc(rows.length)} réservation(s), dont ${esc(confirmed)} confirmée(s) et ${esc(pending)} en attente.</span></div>
+        <div class="clawItem"><b>Respiration</b><span>${biggest ? "Plus grand créneau libre : "+timeFromMinutes(biggest.start)+" — "+timeFromMinutes(biggest.end)+"." : "Peu ou pas de respiration de 30 minutes détectée entre 08:00 et 19:00."}</span></div>
+        <div class="clawItem"><b>Action simple</b><span>${pending ? "Commence par confirmer les réservations en attente." : "Le jour est propre : surveille les nouvelles demandes."}</span></div>`;
+    }
+
+    function readFermetures(){
+      try{
+        const mem = window.DIGIY_RESA_MEMORY;
+        if(mem && typeof mem.listClosures === "function"){
+          const rows = mem.listClosures();
+          const exceptional = Array.isArray(rows) ? rows.map(x => String(x.date || x.day || x).slice(0,10)).filter(Boolean) : [];
+          return {weekly_closed:[], exceptional};
+        }
+      }catch(_){}
+      return readJson("DIGIY_RESA_PRO_FERMETURES", {weekly_closed:[], exceptional:[]});
+    }
+
+    function readResaMap(){
+      const map = new Map();
+      const rows = BOOKINGS.length ? BOOKINGS : readJson("DIGIY_RESA_PRO_RESERVATIONS", []);
+      (Array.isArray(rows) ? rows : []).forEach(r => {
+        const date = String(r.booking_date || r.date || r.checkin || "").slice(0,10);
+        if(!date) return;
+        const prev = map.get(date) || {hasConfirmed:false, hasPending:false};
+        const st = normStatus(r.status);
+        if(st === "confirmed" || st === "done") prev.hasConfirmed = true;
+        else if(st === "pending") prev.hasPending = true;
+        map.set(date, prev);
+      });
+      return map;
+    }
+
+    function isClosed(jsDay, dateStr, fermetures){
+      const lun0 = (jsDay + 6) % 7;
+      const wc = Array.isArray(fermetures.weekly_closed) ? fermetures.weekly_closed : [];
+      const ex = Array.isArray(fermetures.exceptional) ? fermetures.exceptional : [];
+      return wc.includes(lun0) || ex.includes(dateStr);
+    }
+
+    function renderCalendar(){
+      const grid=$("calGrid"), label=$("calMonthLabel");
+      if(!grid || !label) return;
+      const today = new Date();
+      const todayStr = todayISO();
+      const fermetures = readFermetures();
+      const resaMap = readResaMap();
+      label.textContent = `${MONTHS[calMonth]} ${calYear}`;
+
+      let out = DAYS.map(d => `<div class="calDayName">${d}</div>`).join("");
+      const firstJs = new Date(calYear, calMonth, 1).getDay();
+      const startOffset = (firstJs + 6) % 7;
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+
+      for(let i=startOffset-1;i>=0;i--) out += `<div class="calDay other">${daysInPrev-i}</div>`;
+
+      for(let d=1; d<=daysInMonth; d++){
+        const dateStr = ymd(calYear, calMonth, d);
+        const jsDay = new Date(calYear, calMonth, d).getDay();
+        const closed = isClosed(jsDay, dateStr, fermetures);
+        const resa = resaMap.get(dateStr);
+        const isToday = dateStr === todayStr;
+        const isSelected = dateStr === ACTIVE_DATE;
+        let cls = "calDay";
+        if(closed) cls += " closed";
+        if(isToday) cls += " today";
+        if(isSelected) cls += " selected";
+        if(resa?.hasConfirmed) cls += " hasConfirmed";
+        else if(resa?.hasPending) cls += " hasPending";
+        out += `<div class="${cls}" data-date="${dateStr}" role="button" tabindex="${closed ? -1 : 0}" aria-label="${dateStr}${closed ? " — Fermé" : ""}">${d}${closed ? "<small>Fermé</small>" : "<span class='calDot'></span>"}</div>`;
+      }
+
+      const total = startOffset + daysInMonth;
+      const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+      for(let d=1; d<=remaining; d++) out += `<div class="calDay other">${d}</div>`;
+
+      grid.innerHTML = out;
+      grid.querySelectorAll(".calDay:not(.other):not(.closed)").forEach(el => {
+        el.addEventListener("click", () => {
+          const date = el.getAttribute("data-date");
+          if(!date) return;
+          ACTIVE_DATE = date;
+          $("dateInput").value = date;
+          boot(false);
+        });
+        el.addEventListener("keydown", e => { if(e.key==="Enter" || e.key===" ") el.click(); });
+      });
+    }
+
+    function bindAudio(){
+      const btn=$("btnResaPlanningAudio");
+      if(!btn) return;
+      function stop(){ try{ speechSynthesis.cancel(); }catch(_){} btn.textContent="🎧 Écouter DIGIY"; }
+      function speak(){
+        if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return;
+        stop();
+        const txt = "Bienvenue dans le planning RESA by DIGIY. Cette page sert à lire le service dans l’ordre du jour. Tu vois la date, les heures, les clients, les personnes attendues, les services et les notes. Le responsable comprend vite si la journée respire ou si elle devient serrée.";
+        const u = new SpeechSynthesisUtterance(txt);
+        u.lang = "fr-FR"; u.rate = .86; u.pitch = 1.04; u.volume = 1;
+        u.onend = () => btn.textContent="🎧 Écouter DIGIY";
+        u.onerror = () => btn.textContent="🎧 Écouter DIGIY";
+        btn.textContent="⏹ Stop";
+        speechSynthesis.speak(u);
+      }
+      btn.addEventListener("click", () => { if("speechSynthesis" in window && speechSynthesis.speaking) stop(); else speak(); });
+      window.addEventListener("pagehide", stop);
+      document.addEventListener("visibilitychange", () => { if(document.hidden) stop(); });
+    }
+
+    function updateDateMonth(){
+      const val = ACTIVE_DATE || todayISO();
+      const parts = val.split("-");
+      if(parts.length === 3){
+        calYear = parseInt(parts[0],10);
+        calMonth = parseInt(parts[1],10) - 1;
+      }
+    }
+
+    async function boot(forceDate=true){
+      document.body.classList.add("loading");
+      showBad("");
+      try{
+        initClient();
+        ACTIVE_DATE = forceDate ? ($("dateInput").value || new URL(location.href).searchParams.get("date") || ACTIVE_DATE || todayISO()) : (ACTIVE_DATE || $("dateInput").value || todayISO());
+        $("dateInput").value = ACTIVE_DATE;
+        updateDateMonth();
+
+        const st = await resolveGuard();
+        RESOLVED_SLUG = normalizeSlug(st?.slug || getSessionSlug() || "");
+        const access = !!(st?.access_ok || st?.access || st?.ok || st?.has_access);
+        IS_PREVIEW = !access;
+
+        setSessionPill(access, access ? "session ouverte" : "aperçu protégé");
+        $("topSub").textContent = access ? "Planning chargé : " + fmtLong(ACTIVE_DATE) : "Session RESA non ouverte. Aucune donnée réelle affichée.";
+        if(RESOLVED_SLUG){ writeRaw("digiy_resa_last_slug", RESOLVED_SLUG); writeRaw("digiy_resa_slug", RESOLVED_SLUG); }
+
+        if(access && RESOLVED_SLUG){
+          await Promise.all([loadProfile(), loadServices(), loadBookings()]);
+        }else{
+          PROFILE = null; SERVICES = []; BOOKINGS = [];
+        }
+
+        renderStats();
+        renderCalendar();
+        renderTimeline();
+        renderClaw();
+
+        try{ window.DIGIY_RESA_MEMORY?.rememberSession?.({slug:RESOLVED_SLUG,module:MODULE,access_ok:access}); }catch(_){}
+      }catch(err){
+        console.error(err);
+        setSessionPill(false, "erreur");
+        showBad("Erreur de chargement. Le planning reste affiché, repasse par ton code PIN ou recharge.");
+        BOOKINGS=[]; SERVICES=[];
+        renderStats(); renderCalendar(); renderTimeline(); renderClaw();
+      }finally{
+        document.body.classList.remove("loading");
+      }
+    }
+
+    $("btnReload").addEventListener("click", () => boot(true));
+    $("filterStatus").addEventListener("change", (e) => { ACTIVE_FILTER = e.target.value || "all"; renderTimeline(); renderClaw(); });
+    $("dateInput").addEventListener("change", () => { ACTIVE_DATE = $("dateInput").value || todayISO(); boot(false); });
+    $("calPrev").addEventListener("click", () => { calMonth--; if(calMonth < 0){calMonth=11;calYear--;} renderCalendar(); });
+    $("calNext").addEventListener("click", () => { calMonth++; if(calMonth > 11){calMonth=0;calYear++;} renderCalendar(); });
+
+    bindAudio();
+    ACTIVE_DATE = new URL(location.href).searchParams.get("date") || todayISO();
+    $("dateInput").value = ACTIVE_DATE;
+    boot(false);
+  })();
+  </script>
+</body>
+</html>
 
 
 
