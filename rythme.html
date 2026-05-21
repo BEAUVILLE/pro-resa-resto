@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Je réserve — Chaque métier réserve différemment</title>
+  <meta name="theme-color" content="#1e7a46"/>
+  <meta name="description" content="DIGIY RESA — Mon rythme de réservation : restaurant, beauté, santé, garage, RDV, intervention."/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <meta name="digiy-build" content="resa-chaque-metier-paves-20260520"/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL     = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY= "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON   = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE           = "RESA";
+    window.DIGIY_LOGIN_URL        = "./pin.html";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-rythme-20260520"></script>
+  <script src="./assets/js/digiy-module-bridge.js?v=bridge-20260520" defer></script>
+  <script src="./assets/js/digiy-resa-memory.js?v=resa-memory-20260520" defer></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --bg:#1e7a46;--bg2:#155a34;--bg3:#0e4226;
+      --bar:rgba(8,50,24,.96);
+      --gold:#c4973f;--gold2:#fff0a8;
+      --green:#22c55e;--green2:#16a34a;
+      --line:rgba(255,255,255,.16);
+      --text:#f0fff5;--muted:rgba(240,255,245,.72);
+      --shadow:0 18px 42px rgba(0,0,0,.22);
+      --r:22px;--max:860px;
+      --hdrH:54px;--barH:76px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{
+      margin:0;min-height:100dvh;color:var(--text);
+      font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+      font-size:18px;font-weight:900;
+      background:
+        radial-gradient(600px 380px at 14% 0%,rgba(196,151,63,.16),transparent 58%),
+        radial-gradient(420px 280px at 92% 8%,rgba(34,197,94,.14),transparent 52%),
+        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 58%,var(--bg3) 100%);
+      padding:calc(var(--hdrH) + 16px) 14px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
+    }
+    a{color:inherit;text-decoration:none}
+    button{font:inherit;color:inherit;cursor:pointer}
+
+    /* ── HEADER ── */
+    .topHeader{
+      position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;
+      display:flex;align-items:center;justify-content:space-between;padding:0 14px;
+      background:var(--bar);border-bottom:1px solid rgba(196,151,63,.24);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+    .hdrBack{font-size:14px;font-weight:1000;color:var(--muted);padding:8px 0;white-space:nowrap;}
+    .hdrTitle{font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);}
+    .hdrPill{
+      display:inline-flex;align-items:center;min-height:30px;padding:5px 10px;
+      border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);
+      color:var(--muted);font-size:12px;font-weight:1000;white-space:nowrap;
+    }
+    .hdrPill.ok{color:#bbf7d0;border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.12)}
+
+    /* ── WRAP ── */
+    .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:14px;}
+
+    /* ── HERO ── */
+    .hero{
+      border:1px solid var(--line);border-radius:var(--r);
+      background:radial-gradient(560px 220px at 100% 0%,rgba(196,151,63,.14),transparent 68%),
+        linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+      box-shadow:var(--shadow);padding:18px;
+    }
+    .eyebrow{color:var(--gold2);font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+    h1{margin:0 0 10px;font-size:clamp(32px,8vw,52px);line-height:.95;letter-spacing:-.05em;font-weight:1000;}
+    .lead{color:var(--muted);font-size:16px;font-weight:900;line-height:1.5;max-width:72ch;margin:0;}
+
+    /* ── PAVÉS ── */
+    .pavesBlock{
+      border:1px solid var(--line);border-radius:var(--r);
+      background:rgba(255,255,255,.055);box-shadow:var(--shadow);padding:16px;
+    }
+    .pavesTitle{font-size:14px;font-weight:1000;letter-spacing:.10em;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;}
+    .pavesGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;}
+
+    .pave{
+      min-height:140px;text-align:left;border-radius:20px;border:2px solid transparent;
+      padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:9px;
+      font-family:inherit;box-shadow:0 10px 24px rgba(0,0,0,.18);
+      transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .pave:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(0,0,0,.26);}
+    .pave.active{border-width:2px;}
+
+    .pave[data-rhythm="restaurant"]{background:linear-gradient(145deg,rgba(251,146,60,.22),rgba(245,101,0,.12));border-color:rgba(251,146,60,.28);}
+    .pave[data-rhythm="restaurant"]:hover,.pave[data-rhythm="restaurant"].active{border-color:rgba(251,146,60,.75);background:linear-gradient(145deg,rgba(251,146,60,.32),rgba(245,101,0,.20));}
+
+    .pave[data-rhythm="beaute"]{background:linear-gradient(145deg,rgba(232,121,249,.22),rgba(192,38,211,.12));border-color:rgba(232,121,249,.28);}
+    .pave[data-rhythm="beaute"]:hover,.pave[data-rhythm="beaute"].active{border-color:rgba(232,121,249,.75);background:linear-gradient(145deg,rgba(232,121,249,.32),rgba(192,38,211,.20));}
+
+    .pave[data-rhythm="sante"]{background:linear-gradient(145deg,rgba(56,189,248,.22),rgba(14,165,233,.12));border-color:rgba(56,189,248,.28);}
+    .pave[data-rhythm="sante"]:hover,.pave[data-rhythm="sante"].active{border-color:rgba(56,189,248,.75);background:linear-gradient(145deg,rgba(56,189,248,.32),rgba(14,165,233,.20));}
+
+    .pave[data-rhythm="garage"]{background:linear-gradient(145deg,rgba(148,163,184,.22),rgba(100,116,139,.12));border-color:rgba(148,163,184,.28);}
+    .pave[data-rhythm="garage"]:hover,.pave[data-rhythm="garage"].active{border-color:rgba(148,163,184,.75);background:linear-gradient(145deg,rgba(148,163,184,.32),rgba(100,116,139,.20));}
+
+    .pave[data-rhythm="rdv"]{background:linear-gradient(145deg,rgba(34,197,94,.22),rgba(22,163,74,.12));border-color:rgba(34,197,94,.28);}
+    .pave[data-rhythm="rdv"]:hover,.pave[data-rhythm="rdv"].active{border-color:rgba(34,197,94,.75);background:linear-gradient(145deg,rgba(34,197,94,.32),rgba(22,163,74,.20));}
+
+    .pave[data-rhythm="intervention"]{background:linear-gradient(145deg,rgba(251,191,36,.22),rgba(217,119,6,.12));border-color:rgba(251,191,36,.28);}
+    .pave[data-rhythm="intervention"]:hover,.pave[data-rhythm="intervention"].active{border-color:rgba(251,191,36,.75);background:linear-gradient(145deg,rgba(251,191,36,.32),rgba(217,119,6,.20));}
+
+    .paveIco{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);flex:0 0 auto;}
+    .pave strong{display:block;font-size:.96rem;line-height:1.15;font-weight:1000;color:#fff;}
+    .pave span{display:block;font-size:.84rem;line-height:1.4;font-weight:900;color:rgba(255,255,255,.72);}
+
+    /* ── PREVIEW ── */
+    .previewBlock{
+      border:1px solid var(--line);border-radius:var(--r);
+      background:rgba(255,255,255,.06);box-shadow:var(--shadow);padding:16px;
+      display:none;
+    }
+    .previewBlock.visible{display:grid;gap:12px;}
+    .previewTitle{font-size:1.1rem;font-weight:1000;line-height:1.2;}
+    .previewText{font-size:.95rem;font-weight:900;line-height:1.55;color:var(--muted);}
+    .previewSlots{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+    .previewSlot{
+      border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);
+      border-radius:999px;padding:7px 13px;font-size:.86rem;font-weight:900;
+    }
+
+    /* ── BOTTOM BAR ── */
+    .bottomBar{
+      position:fixed;bottom:0;left:0;right:0;height:var(--barH);z-index:100;
+      display:flex;align-items:center;justify-content:space-around;
+      padding:0 20px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(6,38,18,.97);border-top:1px solid rgba(196,151,63,.18);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+    .bottomBar a{
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+      font-size:11px;font-weight:1000;color:var(--muted);padding:4px 10px;
+      border-radius:14px;transition:color .13s;
+    }
+    .bottomBar a span:first-child{font-size:20px;line-height:1;}
+    .bottomBar a.active{color:var(--gold2);}
+
+    /* ── VOICE FAB ── */
+    .voiceFab{
+      position:fixed;right:14px;top:calc(var(--hdrH) + 12px);z-index:90;
+      min-height:48px;min-width:48px;padding:10px 13px;border-radius:999px;
+      border:1px solid rgba(196,151,63,.40);
+      background:linear-gradient(135deg,rgba(196,151,63,.96),rgba(180,135,50,.96));
+      color:#1a0e00;display:inline-flex;align-items:center;gap:7px;
+      font-size:14px;font-weight:1000;font-family:inherit;cursor:pointer;
+      box-shadow:0 14px 30px rgba(0,0,0,.22);
+    }
+    @media(max-width:520px){.voiceFab span:not(.ico){display:none}}
+    .voiceFab .ico{font-size:18px;line-height:1;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:860px){.pavesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:480px){
+      .pavesGrid{grid-template-columns:1fr}
+      .pave{min-height:auto;flex-direction:row;align-items:flex-start;}
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topHeader">
+    <a class="hdrBack" href="./etablissement.html">← Plus</a>
+    <div class="hdrTitle">Mes créneaux</div>
+    <div class="hdrPill" id="sessionPill">session…</div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="hero">
+      <div class="eyebrow">📅 Je réserve</div>
+      <h1>Chaque métier réserve différemment.</h1>
+      <p class="lead">
+        Restaurant, cabinet, salon de beauté, garage, dentiste, onglerie, coach, artisan —
+        clique sur ton activité. DIGIY montre comment il respecte ton tempo
+        avant toute configuration.
+      </p>
+    </section>
+
+    <section class="pavesBlock">
+      <div class="pavesTitle">Choisis ton activité</div>
+      <div class="pavesGrid">
+
+        <button class="pave" type="button" data-rhythm="restaurant">
+          <div class="paveIco">🍽️</div>
+          <div>
+            <strong>Restaurant · café</strong>
+            <span>Service midi, second service, tables et couverts.</span>
+          </div>
+        </button>
+
+        <button class="pave" type="button" data-rhythm="beaute">
+          <div class="paveIco">💅</div>
+          <div>
+            <strong>Beauté · bien-être</strong>
+            <span>Coiffure, ongles, soin, massage, épilation.</span>
+          </div>
+        </button>
+
+        <button class="pave" type="button" data-rhythm="sante">
+          <div class="paveIco">🏥</div>
+          <div>
+            <strong>Santé · cabinet</strong>
+            <span>Docteur, dentiste, kiné, ostéo, sage-femme.</span>
+          </div>
+        </button>
+
+        <button class="pave" type="button" data-rhythm="garage">
+          <div class="paveIco">🔧</div>
+          <div>
+            <strong>Garage · atelier</strong>
+            <span>Mécanique, révision, réparation, dépannage.</span>
+          </div>
+        </button>
+
+        <button class="pave" type="button" data-rhythm="rdv">
+          <div class="paveIco">🗓️</div>
+          <div>
+            <strong>RDV professionnel</strong>
+            <span>Avocat, comptable, coach, notaire, consultant.</span>
+          </div>
+        </button>
+
+        <button class="pave" type="button" data-rhythm="intervention">
+          <div class="paveIco">🛠️</div>
+          <div>
+            <strong>Intervention terrain</strong>
+            <span>Plombier, électricien, climatisation, artisan.</span>
+          </div>
+        </button>
+
+      </div>
+    </section>
+
+    <section class="previewBlock" id="previewBlock">
+      <div class="previewTitle" id="previewTitle">—</div>
+      <div class="previewText" id="previewText">—</div>
+      <div class="previewSlots" id="previewSlots"></div>
+    </section>
+
+  </main>
+
+  <nav class="bottomBar" aria-label="Navigation RESA">
+    <a href="./hub.html"><span>🧭</span><span>HUB</span></a>
+    <a href="./dashboard-pro.html"><span>🏠</span><span>Accueil</span></a>
+    <a href="./cockpit.html"><span>📋</span><span>Réserv.</span></a>
+    <a href="./planning.html"><span>🗓️</span><span>Planning</span></a>
+    <a href="./etablissement.html" class="active"><span>⚙️</span><span>Plus</span></a>
+  </nav>
+
+  <button class="voiceFab" id="voiceFab" type="button" aria-label="Écouter DIGIY">
+    <span class="ico">🎧</span><span>Écouter</span>
+  </button>
+
+  <script>
+  /* ── RYTHMES MULTI-MÉTIER ── */
+  (function(){
+    "use strict";
+
+    var EXAMPLES = {
+      restaurant:{
+        title:"🍽️ Restaurant · réservation de table",
+        text:"Service midi à 12h, respiration, second service à 19h30. RESA place, confirme et suit les tables sans gérer les commandes.",
+        slots:["12h00 · service 1","Durée table : 1h30","14h00 · créneau libre","19h30 · service 2","Rappel client","Acompte éventuel"]
+      },
+      beaute:{
+        title:"💅 Beauté · bien-être",
+        text:"Un brushing ne bloque pas le même temps qu'une couleur ou une pose d'ongles complète. RESA respecte la durée réelle de chaque geste.",
+        slots:["Brushing · 30 min","Coupe · 45 min","Couleur · 1h30","Pose ongles · 1h","Soin visage · 1h","Rappel veille RDV"]
+      },
+      sante:{
+        title:"🏥 Santé · cabinet médical",
+        text:"Consultation courte, acte long ou urgence : chaque créneau est différent. RESA garde l'heure, le patient et la confirmation.",
+        slots:["Consultation · 15 min","Acte · 30 min","Bilan · 45 min","Urgence · dispo","Rappel patient","Confirmation SMS"]
+      },
+      garage:{
+        title:"🔧 Garage · atelier",
+        text:"Un véhicule immobilisé bloque un poste entier. RESA gère l'entrée, la durée estimée et la restitution.",
+        slots:["Dépôt véhicule · 8h","Diagnostic · 1h","Révision · demi-journée","Réparation · journée","Appel client prêt","Restitution"]
+      },
+      rdv:{
+        title:"🗓️ RDV professionnel",
+        text:"Consultation, suivi ou première rencontre : le créneau est court, la confirmation est essentielle.",
+        slots:["Créneau · 30 min","Créneau · 1h","Première consultation","Suivi · 20 min","Rappel la veille","Confirmation client"]
+      },
+      intervention:{
+        title:"🛠️ Intervention terrain",
+        text:"Une visite ou un dépannage peut bloquer plus longtemps qu'un RDV comptoir. RESA garde la zone, l'heure et la durée estimée.",
+        slots:["Visite diagnostic · 1h","Intervention · 2h","Demi-journée réservée","Zone client notée","Rappel avant départ","Compte-rendu"]
+      }
+    };
+
+    var preview = document.getElementById("previewBlock");
+    var pTitle  = document.getElementById("previewTitle");
+    var pText   = document.getElementById("previewText");
+    var pSlots  = document.getElementById("previewSlots");
+
+    function esc(s){ return String(s||"").replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];}); }
+
+    function render(key){
+      var data = EXAMPLES[key];
+      if(!data) return;
+
+      document.querySelectorAll(".pave").forEach(function(btn){
+        btn.classList.toggle("active", btn.dataset.rhythm === key);
+      });
+
+      pTitle.textContent = data.title;
+      pText.textContent  = data.text;
+      pSlots.innerHTML   = data.slots.map(function(s){
+        return '<span class="previewSlot">'+esc(s)+'</span>';
+      }).join("");
+
+      preview.classList.add("visible");
+      preview.scrollIntoView({behavior:"smooth",block:"nearest"});
+
+      try{ localStorage.setItem("DIGIY_RESA_RHYTHM_PREVIEW", key); }catch(_){}
+    }
+
+    document.querySelectorAll(".pave").forEach(function(btn){
+      btn.addEventListener("click", function(){ render(btn.dataset.rhythm); });
+    });
+
+    /* Restaurer dernier choix */
+    var saved = "";
+    try{ saved = localStorage.getItem("DIGIY_RESA_RHYTHM_PREVIEW") || ""; }catch(_){}
+    if(saved && EXAMPLES[saved]) render(saved);
+
+    /* ── VOICE ── */
+    var fab = document.getElementById("voiceFab");
+    var playing = false;
+    var SPEAK = "Chaque métier réserve différemment. Six activités disponibles : restaurant, beauté, santé, garage, rendez-vous professionnel et intervention terrain. Clique sur ton activité pour voir comment DIGIY RESA respecte ton tempo. Rien n'est enregistré ici — c'est un aperçu local pour t'aider à configurer ensuite.";
+
+    function stopVoice(){
+      if("speechSynthesis" in window) window.speechSynthesis.cancel();
+      playing = false;
+      fab.querySelector("span:not(.ico)") && (fab.querySelector("span:not(.ico)").textContent = "Écouter");
+    }
+    function playVoice(){
+      if(!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(SPEAK);
+      u.lang="fr-FR"; u.rate=0.88; u.pitch=1.02;
+      u.onend = stopVoice;
+      window.speechSynthesis.speak(u);
+      playing = true;
+      fab.querySelector("span:not(.ico)") && (fab.querySelector("span:not(.ico)").textContent = "Stop");
+    }
+
+    fab.addEventListener("click", function(){ playing ? stopVoice() : playVoice(); });
+    window.addEventListener("pagehide", stopVoice);
+
+    /* ── SESSION PILL ── */
+    (function(){
+      function waitGuard(){
+        try{
+          var g = window.DIGIY_GUARD; if(!g) return;
+          var out = typeof g.ready==="function" ? g.ready({redirect:false,preserve_validation:true}) : g.ready;
+          if(out && typeof out.then==="function") out.then(paint); else paint();
+        }catch(_){ paint(); }
+      }
+      function paint(){
+        try{
+          var s = window.DIGIY_GUARD?.getSession?.() || window.DIGIY_GUARD?.state || {};
+          var ok = !!(s.access_ok||s.access||s.pin_session_ok);
+          var pill = document.getElementById("sessionPill");
+          if(!pill) return;
+          pill.textContent = ok ? "session ouverte" : "accès à vérifier";
+          pill.className = "hdrPill" + (ok ? " ok" : "");
+        }catch(_){}
+      }
+      waitGuard();
+    })();
+
+  })();
+  </script>
+</body>
+</html>
