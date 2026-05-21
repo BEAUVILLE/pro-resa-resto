@@ -521,8 +521,8 @@
           <input id="activity" placeholder="Ex : Restaurant, table, salon, activité"/>
           <label for="zone">Ville / zone</label>
           <input id="zone" placeholder="Ex : Saly, Mbour, Dakar"/>
-          <label for="vehicle">Horaires / règle utile</label>
-          <input id="vehicle" placeholder="Ex : Ouvert 12h-23h · réservation conseillée"/>
+          <label for="horaires">Horaires / règle utile</label>
+          <input id="horaires" placeholder="Ex : Ouvert 12h-23h · réservation conseillée"/>
           <label for="contact">WhatsApp / téléphone</label>
           <input id="contact" placeholder="+221..."/>
           <label for="publicUrl">Lien public de réservation</label>
@@ -620,7 +620,7 @@
           proName: $("proName").value.trim(),
           activity: $("activity").value.trim(),
           zone: $("zone").value.trim(),
-          vehicle: $("vehicle").value.trim(),
+          horaires: $("horaires").value.trim(),
           contact: $("contact").value.trim(),
           publicUrl: $("publicUrl").value.trim(),
           photoUrl: $("photoUrl").value.trim(),
@@ -634,7 +634,7 @@
         $("proName").value = data.proName || "";
         $("activity").value = data.activity || "";
         $("zone").value = data.zone || "";
-        $("vehicle").value = data.vehicle || "";
+        $("horaires").value = data.horaires || "";
         $("contact").value = data.contact || "";
         $("publicUrl").value = data.publicUrl || "";
         $("photoUrl").value = data.photoUrl || "";
@@ -683,7 +683,7 @@
         $("previewText").textContent = d.note || "La présentation courte apparaîtra ici.";
         $("badgeActivity").textContent = d.activity || "Réservation";
         $("badgeZone").textContent = d.zone || "Zone";
-        $("badgeExtra").textContent = d.vehicle || "Info utile";
+        $("badgeExtra").textContent = d.horaires || "Info utile";
 
         const poster = $("posterBox");
         if(d.photoUrl){
@@ -739,7 +739,7 @@
         }
       });
 
-      ["proName","activity","zone","vehicle","contact","publicUrl","photoUrl","note"].forEach(id => {
+      ["proName","activity","zone","horaires","contact","publicUrl","photoUrl","note"].forEach(id => {
         $(id).addEventListener("input", () => render());
       });
 
