@@ -3,10 +3,13 @@
 // PIN une seule fois -> session RESA locale fraîche -> navigation interne directe
 // Façade : jamais de téléphone dans les URLs visibles
 // Coffre interne : phone gardé seulement pour les RPC Supabase si nécessaire
+// Rail ABOS : digiy_has_module_access_from_abos(phone, "RESA") d'abord
+// Secours transition : digiy_has_access(phone, "RESA")
+
 (() => {
   "use strict";
 
-  const BUILD_ID = "resa-guard-20260510-v2-url-clean-session8h";
+  const BUILD_ID = "resa-guard-abos-central-v1-20260522";
   const BUILD_KEY = "DIGIY_RESA_GUARD_BUILD_ID";
 
   const CFG = {
@@ -34,18 +37,22 @@
         "DIGIY_RESA_PIN_SESSION",
         "DIGIY_RESA_SESSION",
         "DIGIY_SESSION_RESA",
+        "DIGIY_RESA_ACCESS",
         "digiy_resa_session",
         "DIGIY_ACCESS"
       ],
       SLUG_KEY: "digiy_resa_slug",
       PHONE_KEY: "digiy_resa_phone",
       LAST_SLUG_KEY: "digiy_resa_last_slug",
+      LAST_PHONE_KEY: "digiy_resa_last_phone",
+      HUB_PHONE_KEY: "DIGIY_RESA_HUB_PHONE",
       ACTIVE_MODULE_KEY: "DIGIY_ACTIVE_MODULE"
     },
 
     RPC: {
       VERIFY_PIN: "digiy_verify_pin",
-      HAS_ACCESS: "digiy_has_access"
+      HAS_MODULE_ACCESS_FROM_ABOS: "digiy_has_module_access_from_abos",
+      HAS_ACCESS_LEGACY: "digiy_has_access"
     },
 
     TABLES: {
@@ -61,24 +68,75 @@
   const MODULE = CFG.MODULE_CODE;
   const MODULE_LOWER = CFG.MODULE_CODE_LOWER;
 
+  const MODULE_ALIASES = Array.from(new Set([
+    MODULE,
+    MODULE_LOWER,
+    "RESA_PRO",
+    "resa_pro",
+    "RESERVATION",
+    "reservation",
+    "RESERVATIONS",
+    "reservations"
+  ]));
+
   const bootUrl = new URL(location.href);
   const bootQs = new URLSearchParams(bootUrl.search);
 
   const legacySlugQ = bootQs.get("slug") || "";
-  const legacyPhoneQ = bootQs.get("phone") || bootQs.get("tel") || bootQs.get("resa_" + "tel") || "";
+  const legacyPhoneQ =
+    bootQs.get("phone") ||
+    bootQs.get("tel") ||
+    bootQs.get("resa_" + "tel") ||
+    "";
+
+  const SENSITIVE_URL_KEYS = [
+    "slug",
+    "phone",
+    "tel",
+    "owner_phone",
+    "owner_id",
+    "p_phone",
+    "resa_" + "tel",
+    "resa_phone",
+    "business_phone",
+    "whatsapp",
+    "module",
+    "return",
+    "redirect",
+    "redirect_url",
+    "url",
+    "from",
+    "v",
+    "pin",
+    "code",
+    "token",
+    "session",
+    "access",
+    "keybox_code",
+    "keybox_location",
+    "access_note"
+  ];
+
+  let pendingPromise = null;
 
   function safeJsonParse(raw) {
-    try { return JSON.parse(raw); } catch (_) { return null; }
+    try {
+      return JSON.parse(raw);
+    } catch (_) {
+      return null;
+    }
   }
 
   function normSlug(value) {
     return String(value || "")
       .trim()
       .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
       .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")
+      .replace(/[^a-z0-9-_]/g, "")
       .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "");
+      .replace(/^[-_]+|[-_]+$/g, "");
   }
 
   function normPhone(value) {
@@ -105,18 +163,67 @@
     return new Date().toISOString();
   }
 
+  function parseTime(value) {
+    if (value === null || value === undefined || value === "") return 0;
+
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value > 0 && value < 100000000000 ? value * 1000 : value;
+    }
+
+    const str = String(value).trim();
+    if (!str) return 0;
+
+    if (/^\d+$/.test(str)) {
+      const n = Number(str);
+      if (!Number.isFinite(n) || n <= 0) return 0;
+      return n < 100000000000 ? n * 1000 : n;
+    }
+
+    const d = Date.parse(str);
+    return Number.isFinite(d) ? d : 0;
+  }
+
   function isRecent(ts) {
-    const n = Number(ts || 0);
+    const n = parseTime(ts);
     if (!n) return false;
-    return (nowMs() - n) <= CFG.SESSION_MAX_AGE_MS;
+    const age = nowMs() - n;
+    return age >= 0 && age <= CFG.SESSION_MAX_AGE_MS;
+  }
+
+  function isFuture(ts) {
+    const n = parseTime(ts);
+    return n > nowMs();
+  }
+
+  function isSensitiveSlug(slug) {
+    return /\d{7,}/.test(String(slug || ""));
+  }
+
+  function canExposeSlug(slug) {
+    const s = normSlug(slug);
+    return !!s && !isSensitiveSlug(s);
+  }
+
+  function isLoginPage() {
+    const path = String(location.pathname || "").toLowerCase();
+    return path.endsWith("/pin.html") || path.endsWith("pin.html");
+  }
+
+  function isPublicEntryPage() {
+    const path = String(location.pathname || "").toLowerCase();
+    return path.endsWith("/") || path.endsWith("/index.html") || path.endsWith("index.html");
   }
 
   function hidePage() {
-    try { document.documentElement.style.visibility = "hidden"; } catch (_) {}
+    try {
+      document.documentElement.style.visibility = "hidden";
+    } catch (_) {}
   }
 
   function showPage() {
-    try { document.documentElement.style.visibility = ""; } catch (_) {}
+    try {
+      document.documentElement.style.visibility = "";
+    } catch (_) {}
   }
 
   function jsonHeaders() {
@@ -126,61 +233,6 @@
       "Content-Type": "application/json",
       Accept: "application/json"
     };
-  }
-
-  function clearGuardCacheOnce() {
-    try {
-      const previous = localStorage.getItem(BUILD_KEY);
-      if (previous === BUILD_ID) return;
-
-      localStorage.setItem(BUILD_KEY, BUILD_ID);
-
-      [
-        "digiy_resa_guard_cache",
-        "digiy_resa_old_guard",
-        "resa_guard_old_state"
-      ].forEach((key) => {
-        try { localStorage.removeItem(key); } catch (_) {}
-        try { sessionStorage.removeItem(key); } catch (_) {}
-      });
-
-      if ("caches" in window) {
-        caches.keys().then((keys) => {
-          keys
-            .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
-            .forEach((name) => caches.delete(name));
-        }).catch(() => {});
-      }
-    } catch (_) {}
-  }
-
-  const SENSITIVE_URL_KEYS = [
-    "slug",
-    "phone",
-    "tel",
-    "owner_phone",
-    "owner_id",
-    "resa_" + "tel",
-    "resa_phone",
-    "business_phone",
-    "whatsapp",
-    "module",
-    "return",
-    "redirect",
-    "redirect_url",
-    "url",
-    "from",
-    "v",
-    "keybox_code",
-    "keybox_location",
-    "access_note"
-  ];
-
-  function removeSensitiveParams(url) {
-    try {
-      SENSITIVE_URL_KEYS.forEach((key) => url.searchParams.delete(key));
-    } catch (_) {}
-    return url;
   }
 
   function getHeaders() {
@@ -213,27 +265,99 @@
     return { ok: res.ok, status: res.status, data };
   }
 
-  function cleanVisibleUrl() {
+  function boolFromRpcData(data) {
+    const raw = Array.isArray(data) ? data[0] : data;
+
+    if (raw === true) return true;
+    if (raw === 1) return true;
+
+    if (typeof raw === "string") {
+      const txt = raw.trim().toLowerCase();
+
+      if (txt === "true" || txt === "t" || txt === "1" || txt === "yes" || txt === "ok") {
+        return true;
+      }
+
+      if (txt.startsWith("(")) {
+        const first = txt.replace(/^\(/, "").split(",")[0];
+        const token = String(first || "").trim().replace(/^"|"$/g, "").toLowerCase();
+        if (token === "t" || token === "true" || token === "1") return true;
+      }
+
+      return false;
+    }
+
+    if (raw && typeof raw === "object") {
+      if (raw.ok === true) return true;
+      if (raw.access === true) return true;
+      if (raw.access_ok === true) return true;
+      if (raw.has_access === true) return true;
+      if (raw.allowed === true) return true;
+      if (raw.active === true) return true;
+      if (raw.is_active === true) return true;
+      if (raw.subscribed === true) return true;
+      if (raw.valid === true) return true;
+
+      const vals = Object.values(raw);
+      if (vals.some((v) => v === true || v === 1 || v === "t" || v === "true")) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async function tryRpcBoolean(name, payloads) {
+    for (const body of payloads) {
+      try {
+        const clean = {};
+        Object.entries(body || {}).forEach(([key, value]) => {
+          if (value) clean[key] = value;
+        });
+
+        if (!Object.keys(clean).length) continue;
+
+        const res = await rpc(name, clean);
+        if (!res.ok) continue;
+
+        if (boolFromRpcData(res.data)) return true;
+      } catch (_) {}
+    }
+
+    return false;
+  }
+
+  function clearGuardCacheOnce() {
     try {
-      const url = new URL(location.href);
+      const previous = localStorage.getItem(BUILD_KEY);
+      if (previous === BUILD_ID) return;
 
-      const slugFromUrl = normSlug(url.searchParams.get("slug") || "");
-      const phoneFromUrl = normPhone(
-        url.searchParams.get("phone") ||
-        url.searchParams.get("tel") ||
-        url.searchParams.get("resa_" + "tel") ||
-        url.searchParams.get("resa_phone") ||
-        url.searchParams.get("business_phone") ||
-        ""
-      );
+      localStorage.setItem(BUILD_KEY, BUILD_ID);
 
-      if (slugFromUrl) saveSlugOnly(slugFromUrl);
-      if (phoneFromUrl) savePhoneOnly(phoneFromUrl);
+      [
+        "digiy_resa_guard_cache",
+        "digiy_resa_old_guard",
+        "resa_guard_old_state"
+      ].forEach((key) => {
+        try { localStorage.removeItem(key); } catch (_) {}
+        try { sessionStorage.removeItem(key); } catch (_) {}
+      });
 
-      removeSensitiveParams(url);
-
-      history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+      if ("caches" in window) {
+        caches.keys().then((keys) => {
+          keys
+            .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+            .forEach((name) => caches.delete(name));
+        }).catch(() => {});
+      }
     } catch (_) {}
+  }
+
+  function removeSensitiveParams(url) {
+    try {
+      SENSITIVE_URL_KEYS.forEach((key) => url.searchParams.delete(key));
+    } catch (_) {}
+    return url;
   }
 
   function saveSlugOnly(slug) {
@@ -241,10 +365,16 @@
     if (!clean) return;
 
     try {
-      localStorage.setItem(CFG.STORAGE.SLUG_KEY, clean);
-      localStorage.setItem(CFG.STORAGE.LAST_SLUG_KEY, clean);
       sessionStorage.setItem(CFG.STORAGE.SLUG_KEY, clean);
       sessionStorage.setItem(CFG.STORAGE.LAST_SLUG_KEY, clean);
+
+      if (canExposeSlug(clean)) {
+        localStorage.setItem(CFG.STORAGE.SLUG_KEY, clean);
+        localStorage.setItem(CFG.STORAGE.LAST_SLUG_KEY, clean);
+      } else {
+        localStorage.removeItem(CFG.STORAGE.SLUG_KEY);
+        localStorage.removeItem(CFG.STORAGE.LAST_SLUG_KEY);
+      }
     } catch (_) {}
   }
 
@@ -253,14 +383,22 @@
     if (!clean) return;
 
     try {
-      localStorage.setItem(CFG.STORAGE.PHONE_KEY, clean);
       sessionStorage.setItem(CFG.STORAGE.PHONE_KEY, clean);
+      sessionStorage.setItem(CFG.STORAGE.LAST_PHONE_KEY, clean);
+      sessionStorage.setItem(CFG.STORAGE.HUB_PHONE_KEY, clean);
+
+      // Téléphone gardé pour la session active, pas exposé durablement dans les clés simples locales.
+      localStorage.removeItem(CFG.STORAGE.PHONE_KEY);
+      localStorage.removeItem(CFG.STORAGE.LAST_PHONE_KEY);
+      localStorage.removeItem(CFG.STORAGE.HUB_PHONE_KEY);
+
+      window.DIGIY_RESA_HUB_PHONE = clean;
     } catch (_) {}
   }
 
   function readSavedSlug() {
     try {
-      return normSlug(
+      const clean = normSlug(
         legacySlugQ ||
         sessionStorage.getItem(CFG.STORAGE.SLUG_KEY) ||
         sessionStorage.getItem(CFG.STORAGE.LAST_SLUG_KEY) ||
@@ -268,6 +406,15 @@
         localStorage.getItem(CFG.STORAGE.LAST_SLUG_KEY) ||
         ""
       );
+
+      if (clean && isSensitiveSlug(clean)) {
+        try {
+          localStorage.removeItem(CFG.STORAGE.SLUG_KEY);
+          localStorage.removeItem(CFG.STORAGE.LAST_SLUG_KEY);
+        } catch (_) {}
+      }
+
+      return clean;
     } catch (_) {
       return normSlug(legacySlugQ || "");
     }
@@ -278,7 +425,9 @@
       return normPhone(
         legacyPhoneQ ||
         sessionStorage.getItem(CFG.STORAGE.PHONE_KEY) ||
-        localStorage.getItem(CFG.STORAGE.PHONE_KEY) ||
+        sessionStorage.getItem(CFG.STORAGE.LAST_PHONE_KEY) ||
+        sessionStorage.getItem(CFG.STORAGE.HUB_PHONE_KEY) ||
+        window.DIGIY_RESA_HUB_PHONE ||
         ""
       );
     } catch (_) {
@@ -299,11 +448,49 @@
     [
       CFG.STORAGE.SLUG_KEY,
       CFG.STORAGE.PHONE_KEY,
-      CFG.STORAGE.LAST_SLUG_KEY
+      CFG.STORAGE.LAST_SLUG_KEY,
+      CFG.STORAGE.LAST_PHONE_KEY,
+      CFG.STORAGE.HUB_PHONE_KEY
     ].forEach((key) => {
       try { localStorage.removeItem(key); } catch (_) {}
       try { sessionStorage.removeItem(key); } catch (_) {}
     });
+
+    try {
+      delete window.DIGIY_ACCESS;
+      delete window.DIGIY_RESA_HUB_PHONE;
+    } catch (_) {}
+  }
+
+  function moduleMatches(moduleName) {
+    const m = upper(moduleName || "");
+    if (!m) return true;
+    return MODULE_ALIASES.map((x) => upper(x)).includes(m);
+  }
+
+  function cleanVisibleUrl() {
+    try {
+      const url = new URL(location.href);
+
+      const slugFromUrl = normSlug(url.searchParams.get("slug") || "");
+      const phoneFromUrl = normPhone(
+        url.searchParams.get("phone") ||
+        url.searchParams.get("tel") ||
+        url.searchParams.get("resa_" + "tel") ||
+        url.searchParams.get("resa_phone") ||
+        url.searchParams.get("business_phone") ||
+        url.searchParams.get("owner_phone") ||
+        url.searchParams.get("p_phone") ||
+        ""
+      );
+
+      if (slugFromUrl) saveSlugOnly(slugFromUrl);
+      if (phoneFromUrl) savePhoneOnly(phoneFromUrl);
+
+      removeSensitiveParams(url);
+
+      history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+    } catch (_) {}
   }
 
   function readStoredSession() {
@@ -318,31 +505,34 @@
       if (!parsed || typeof parsed !== "object") continue;
 
       const moduleName = upper(parsed.module || parsed.module_code || "");
-      if (moduleName !== MODULE) continue;
+      if (!moduleMatches(moduleName)) continue;
 
       const slug = normSlug(parsed.slug || "");
       const phone = normPhone(parsed.phone || "");
       const owner_id = parsed.owner_id || null;
 
       const access =
-        !!parsed.access ||
-        !!parsed.access_ok ||
-        !!parsed.ok ||
-        !!parsed.has_access ||
-        !!parsed.verified;
+        parsed.access === true ||
+        parsed.access_ok === true ||
+        parsed.ok === true ||
+        parsed.has_access === true ||
+        parsed.verified === true ||
+        parsed.pin_session_ok === true;
 
       const verifiedAt =
-        Number(parsed.verified_at || parsed.validated_at_ms || parsed.ts || 0) || 0;
+        parseTime(parsed.verified_at) ||
+        parseTime(parsed.validated_at_ms) ||
+        parseTime(parsed.ts) ||
+        parseTime(parsed.created_at) ||
+        0;
 
+      const expiresAt = parseTime(parsed.expires_at || parsed.expiresAt || 0);
       const validatedAtIso = parsed.validated_at || null;
 
-      let ageOk = false;
-      if (verifiedAt && isRecent(verifiedAt)) ageOk = true;
-
-      if (!ageOk && validatedAtIso) {
-        const dt = new Date(validatedAtIso).getTime();
-        if (dt && isRecent(dt)) ageOk = true;
-      }
+      const ageOk =
+        isFuture(expiresAt) ||
+        isRecent(verifiedAt) ||
+        isRecent(validatedAtIso);
 
       if (!slug && !phone) continue;
       if (!ageOk) continue;
@@ -355,8 +545,11 @@
         owner_id,
         module: MODULE,
         access: true,
-        verified_at: verifiedAt || (validatedAtIso ? new Date(validatedAtIso).getTime() : 0),
-        validated_at: validatedAtIso || (verifiedAt ? new Date(verifiedAt).toISOString() : null)
+        access_ok: true,
+        pin_session_ok: true,
+        verified_at: verifiedAt || nowMs(),
+        validated_at: validatedAtIso || new Date(verifiedAt || nowMs()).toISOString(),
+        expires_at: expiresAt || (nowMs() + CFG.SESSION_MAX_AGE_MS)
       };
     }
 
@@ -364,7 +557,13 @@
   }
 
   function saveSession(payload = {}) {
-    const verifiedAtMs = Number(payload.verified_at || nowMs()) || nowMs();
+    const verifiedAtMs =
+      parseTime(payload.verified_at || payload.validated_at_ms || 0) ||
+      nowMs();
+
+    const expiresAtMs =
+      parseTime(payload.expires_at || payload.expiresAt || 0) ||
+      verifiedAtMs + CFG.SESSION_MAX_AGE_MS;
 
     const validatedAtIso =
       payload.validated_at ||
@@ -379,10 +578,12 @@
       access_ok: !!payload.access,
       ok: !!payload.access,
       verified: !!payload.access,
+      pin_session_ok: !!payload.access,
       preview: !payload.access,
       verified_at: verifiedAtMs,
       validated_at: validatedAtIso,
       validated_at_ms: verifiedAtMs,
+      expires_at: expiresAtMs,
       ts: nowMs(),
       reason: payload.reason || "resa_guard"
     };
@@ -392,17 +593,21 @@
       sessionStorage.setItem(CFG.STORAGE.ACTIVE_MODULE_KEY, MODULE);
     } catch (_) {}
 
+    const raw = JSON.stringify(session);
+
     for (const key of CFG.STORAGE.SESSION_KEYS) {
-      try { localStorage.setItem(key, JSON.stringify(session)); } catch (_) {}
-      try { sessionStorage.setItem(key, JSON.stringify(session)); } catch (_) {}
+      try { sessionStorage.setItem(key, raw); } catch (_) {}
+      try { localStorage.setItem(key, raw); } catch (_) {}
     }
 
-    saveSlugOnly(session.slug);
-    savePhoneOnly(session.phone);
+    if (session.slug) saveSlugOnly(session.slug);
+    if (session.phone) savePhoneOnly(session.phone);
 
     try {
       window.DIGIY_ACCESS = Object.assign({}, window.DIGIY_ACCESS || {}, session);
     } catch (_) {}
+
+    cleanVisibleUrl();
 
     return session;
   }
@@ -416,6 +621,11 @@
         : new URL(baseStr, location.href);
 
       removeSensitiveParams(url);
+
+      const slug = normSlug(url.searchParams.get("slug") || "");
+      if (slug && isSensitiveSlug(slug)) {
+        url.searchParams.delete("slug");
+      }
 
       if (url.origin === location.origin) {
         const file = url.pathname.split("/").pop() || "dashboard-pro.html";
@@ -458,6 +668,11 @@
   }
 
   function goPin() {
+    if (isLoginPage()) {
+      showPage();
+      return;
+    }
+
     location.replace(buildPinUrl());
   }
 
@@ -487,7 +702,7 @@
       if (!res.ok || !Array.isArray(res.data) || !res.data[0]) continue;
 
       const moduleName = upper(res.data[0].module || MODULE);
-      if (moduleName && moduleName !== MODULE) continue;
+      if (moduleName && !moduleMatches(moduleName)) continue;
 
       return {
         slug: normSlug(res.data[0].slug),
@@ -514,7 +729,7 @@
       if (!res.ok || !Array.isArray(res.data) || !res.data[0]) continue;
 
       const moduleName = upper(res.data[0].module || MODULE);
-      if (moduleName && moduleName !== MODULE) continue;
+      if (moduleName && !moduleMatches(moduleName)) continue;
 
       return {
         slug: normSlug(res.data[0].slug),
@@ -526,27 +741,48 @@
     return null;
   }
 
+  function buildAccessPayloads(phone) {
+    const p = normPhone(phone);
+    const payloads = [];
+
+    MODULE_ALIASES.forEach((moduleCode) => {
+      payloads.push({ p_phone: p, p_module: moduleCode });
+      payloads.push({ phone: p, module: moduleCode });
+      payloads.push({ input_phone: p, input_module: moduleCode });
+    });
+
+    return payloads;
+  }
+
+  async function checkAccessFromAbos(phone) {
+    const p = normPhone(phone);
+    if (!p) return false;
+
+    return tryRpcBoolean(
+      CFG.RPC.HAS_MODULE_ACCESS_FROM_ABOS,
+      buildAccessPayloads(p)
+    );
+  }
+
+  async function checkAccessLegacy(phone) {
+    const p = normPhone(phone);
+    if (!p) return false;
+
+    return tryRpcBoolean(
+      CFG.RPC.HAS_ACCESS_LEGACY,
+      buildAccessPayloads(p)
+    );
+  }
+
   async function checkAccess(phone) {
     const p = normPhone(phone);
     if (!p) return false;
 
-    const tries = [
-      { p_phone: p, p_module: MODULE },
-      { p_phone: p, p_module: MODULE_LOWER },
-      { phone: p, module: MODULE },
-      { phone: p, module: MODULE_LOWER }
-    ];
+    const abosOk = await checkAccessFromAbos(p);
+    if (abosOk) return true;
 
-    for (const body of tries) {
-      const res = await rpc(CFG.RPC.HAS_ACCESS, body);
-
-      if (!res.ok) continue;
-
-      if (res.data === true) return true;
-      if (res.data?.ok === true) return true;
-      if (res.data?.access === true) return true;
-      if (res.data?.has_access === true) return true;
-    }
+    const legacyOk = await checkAccessLegacy(p);
+    if (legacyOk) return true;
 
     return false;
   }
@@ -558,12 +794,16 @@
     if (typeof raw === "object" && !Array.isArray(raw)) {
       const moduleName = upper(raw.module || raw.p_module || MODULE);
 
-      if (raw.ok === true && moduleName === MODULE) {
+      if (
+        (raw.ok === true || raw.access_ok === true || raw.valid === true) &&
+        moduleMatches(moduleName)
+      ) {
         return {
           ok: true,
           phone: normPhone(raw.phone || raw.p_phone || fallbackPhone || ""),
           module: moduleName,
-          owner_id: raw.owner_id || null
+          owner_id: raw.owner_id || null,
+          slug: normSlug(raw.slug || raw.owner_slug || "")
         };
       }
 
@@ -578,12 +818,13 @@
 
         const mod = upper(vals[1] || MODULE);
 
-        if (okLike && mod === MODULE) {
+        if (okLike && moduleMatches(mod)) {
           return {
             ok: true,
             module: mod,
             phone: normPhone(vals[2] || fallbackPhone || ""),
-            owner_id: vals[4] || null
+            owner_id: vals[4] || null,
+            slug: ""
           };
         }
       }
@@ -607,12 +848,13 @@
 
           const mod = upper(modToken || MODULE);
 
-          if (okLike && mod === MODULE) {
+          if (okLike && moduleMatches(mod)) {
             return {
               ok: true,
               module: mod,
               phone: normPhone(phoneToken || fallbackPhone || ""),
-              owner_id: null
+              owner_id: null,
+              slug: ""
             };
           }
         }
@@ -643,7 +885,7 @@
 
       return {
         ok: true,
-        slug: s,
+        slug: normSlug(parsed.slug || s),
         phone: normPhone(parsed.phone || ph),
         owner_id: parsed.owner_id || null
       };
@@ -664,6 +906,7 @@
 
     access: false,
     access_ok: false,
+    pin_session_ok: false,
     preview: true,
     ready_flag: false,
     error: null,
@@ -676,12 +919,11 @@
 
     verified_at: stored?.verified_at || null,
     validated_at: stored?.validated_at || null,
+    expires_at: stored?.expires_at || null,
     pin_url: "",
     pay_url: "",
     build_id: BUILD_ID
   };
-
-  let pendingPromise = null;
 
   async function loginWithPin(slug, pin) {
     const s = normSlug(slug || state.slug || readSavedSlug() || "");
@@ -708,7 +950,17 @@
     }
 
     const finalPhone = normPhone(auth.phone || phone);
+    let finalSlug = normSlug(auth.slug || s);
     const finalOwnerId = auth.owner_id || null;
+
+    if (!finalSlug && finalPhone) {
+      const sub = await resolveSubByPhone(finalPhone);
+      finalSlug = normSlug(sub?.slug || "");
+    }
+
+    if (!finalSlug && finalPhone) {
+      finalSlug = `${MODULE_LOWER}-${finalPhone}`;
+    }
 
     const accessOk = await checkAccess(finalPhone);
 
@@ -717,7 +969,7 @@
     }
 
     const saved = saveSession({
-      slug: s,
+      slug: finalSlug,
       phone: finalPhone,
       owner_id: finalOwnerId,
       access: true,
@@ -731,11 +983,13 @@
     state.owner_id = saved.owner_id;
     state.access = true;
     state.access_ok = true;
+    state.pin_session_ok = true;
     state.preview = false;
     state.ready_flag = true;
     state.error = null;
     state.verified_at = saved.verified_at;
     state.validated_at = saved.validated_at;
+    state.expires_at = saved.expires_at;
     state.pin_url = buildPinUrl();
     state.pay_url = buildPayUrl();
 
@@ -758,17 +1012,27 @@
     state.owner_id = null;
     state.access = false;
     state.access_ok = false;
+    state.pin_session_ok = false;
     state.preview = true;
     state.ready_flag = false;
     state.error = null;
     state.verified_at = null;
     state.validated_at = null;
+    state.expires_at = null;
 
     showPage();
     goPin();
   }
 
-  async function check() {
+  async function check(options = {}) {
+    const opts = Object.assign(
+      {
+        redirect: true,
+        preserve_validation: true
+      },
+      options || {}
+    );
+
     cleanVisibleUrl();
 
     const storedSession = readStoredSession();
@@ -778,14 +1042,22 @@
     let slug = normSlug(storedSession?.slug || state.slug || persistedSlug || "");
     let phone = normPhone(storedSession?.phone || state.phone || persistedPhone || "");
     let owner_id = storedSession?.owner_id || state.owner_id || null;
-    let verifiedAt = Number(storedSession?.verified_at || state.verified_at || 0) || 0;
-    let validatedAt = storedSession?.validated_at || state.validated_at || null;
+
+    const verifiedAt =
+      parseTime(storedSession?.verified_at || state.verified_at || 0) || 0;
+
+    const validatedAt =
+      storedSession?.validated_at || state.validated_at || null;
+
+    const expiresAt =
+      parseTime(storedSession?.expires_at || state.expires_at || 0) || 0;
 
     state.slug = slug;
     state.phone = phone;
     state.owner_id = owner_id;
     state.verified_at = verifiedAt;
     state.validated_at = validatedAt;
+    state.expires_at = expiresAt;
     state.pin_url = buildPinUrl();
     state.pay_url = buildPayUrl();
     state.error = null;
@@ -818,6 +1090,7 @@
       if (CFG.ALLOW_PREVIEW_WITHOUT_IDENTITY) {
         state.access = false;
         state.access_ok = false;
+        state.pin_session_ok = false;
         state.preview = true;
         state.ready_flag = true;
         state.error = "Accès RESA absent.";
@@ -825,16 +1098,22 @@
         return { ...state };
       }
 
-      clearSessionsOnly();
+      if (!opts.preserve_validation) clearSessionsOnly();
+      else clearSessionsOnly();
 
       state.access = false;
       state.access_ok = false;
+      state.pin_session_ok = false;
       state.preview = true;
       state.ready_flag = true;
       state.error = "Accès RESA absent.";
 
       showPage();
-      goPin();
+
+      if (opts.redirect !== false && !isLoginPage()) {
+        goPin();
+      }
+
       return { ...state };
     }
 
@@ -843,16 +1122,24 @@
 
       state.access = false;
       state.access_ok = false;
+      state.pin_session_ok = false;
       state.preview = true;
       state.ready_flag = true;
       state.error = "Identifiant RESA absent côté coffre.";
 
       showPage();
-      goPin();
+
+      if (opts.redirect !== false && !isLoginPage()) {
+        goPin();
+      }
+
       return { ...state };
     }
 
-    const freshSession = !!verifiedAt && isRecent(verifiedAt);
+    const freshSession =
+      isFuture(expiresAt) ||
+      (!!verifiedAt && isRecent(verifiedAt)) ||
+      (!!validatedAt && isRecent(validatedAt));
 
     if (!freshSession) {
       clearSessionsOnly();
@@ -862,17 +1149,23 @@
 
       state.access = false;
       state.access_ok = false;
+      state.pin_session_ok = false;
       state.preview = true;
       state.ready_flag = true;
       state.error = "Session PIN absente ou expirée.";
 
       showPage();
-      goPin();
+
+      if (opts.redirect !== false && !isLoginPage()) {
+        goPin();
+      }
+
       return { ...state };
     }
 
     state.access = true;
     state.access_ok = true;
+    state.pin_session_ok = true;
     state.preview = false;
     state.ready_flag = true;
     state.error = null;
@@ -883,6 +1176,7 @@
       owner_id,
       access: true,
       verified_at: verifiedAt || nowMs(),
+      expires_at: expiresAt || (nowMs() + CFG.SESSION_MAX_AGE_MS),
       validated_at: validatedAt || nowIso(),
       reason: "session_fresh"
     });
@@ -892,6 +1186,7 @@
     state.owner_id = saved.owner_id;
     state.verified_at = saved.verified_at;
     state.validated_at = saved.validated_at;
+    state.expires_at = saved.expires_at;
     state.pin_url = buildPinUrl();
     state.pay_url = buildPayUrl();
 
@@ -901,9 +1196,20 @@
     return { ...state };
   }
 
-  function ready() {
+  function ready(options = {}) {
+    const opts = Object.assign(
+      {
+        redirect: true,
+        preserve_validation: true
+      },
+      options || {}
+    );
+
     clearGuardCacheOnce();
-    hidePage();
+
+    if (opts.redirect !== false && !isLoginPage() && !isPublicEntryPage()) {
+      hidePage();
+    }
 
     if (state.ready_flag) {
       showPage();
@@ -911,7 +1217,7 @@
     }
 
     if (!pendingPromise) {
-      pendingPromise = check().finally(() => {
+      pendingPromise = check(opts).finally(() => {
         pendingPromise = null;
       });
     }
@@ -920,14 +1226,15 @@
   }
 
   window.DIGIY_GUARD = {
+    VERSION: BUILD_ID,
     state,
     ready,
 
-    async refresh() {
+    async refresh(options = {}) {
       state.ready_flag = false;
       state.error = null;
       pendingPromise = null;
-      return ready();
+      return ready(options);
     },
 
     getSession() {
@@ -966,9 +1273,11 @@
       state.owner_id = saved.owner_id || null;
       state.access = !!saved.access;
       state.access_ok = !!saved.access;
+      state.pin_session_ok = !!saved.access;
       state.preview = !saved.access;
       state.verified_at = saved.verified_at;
       state.validated_at = saved.validated_at;
+      state.expires_at = saved.expires_at;
       state.ready_flag = true;
       state.error = null;
       state.pin_url = buildPinUrl();
@@ -984,6 +1293,7 @@
 
       state.access = false;
       state.access_ok = false;
+      state.pin_session_ok = false;
       state.preview = true;
       state.ready_flag = false;
       state.error = null;
@@ -994,6 +1304,7 @@
 
       state.access = false;
       state.access_ok = false;
+      state.pin_session_ok = false;
       state.preview = true;
       state.ready_flag = false;
       state.error = null;
@@ -1002,6 +1313,7 @@
       state.owner_id = null;
       state.verified_at = null;
       state.validated_at = null;
+      state.expires_at = null;
     },
 
     loginWithPin,
@@ -1038,8 +1350,20 @@
 
     async checkAccess(phone) {
       return checkAccess(phone || state.phone || "");
+    },
+
+    async checkAccessFromAbos(phone) {
+      return checkAccessFromAbos(phone || state.phone || "");
+    },
+
+    async checkAccessLegacy(phone) {
+      return checkAccessLegacy(phone || state.phone || "");
     }
   };
 
-  ready();
+  if (isPublicEntryPage() || isLoginPage()) {
+    ready({ redirect: false }).catch(() => showPage());
+  } else {
+    ready({ redirect: true }).catch(() => showPage());
+  }
 })();
