@@ -1,7 +1,7 @@
 /* ==========================================================================
-   DIGIYLYFE — OREILLE RESA V1
+   DIGIYLYFE — OREILLE RESA V2
    Fichier : assets/js/oreille-resa.js
-   Version : 2026-05-24 · client + téléphone + date + heure + nombre + statut
+   Version : 2026-05-24 · extraction sécurisée + paiement protégé
    Dépendance : assets/js/oreille-metier-core.js
 
    Doctrine :
@@ -11,11 +11,10 @@
    RESA range.
    Aucune réservation n’est confirmée automatiquement.
    ========================================================================== */
-
 (function () {
   "use strict";
 
-  var VERSION = "oreille-resa-v1-20260524";
+  var VERSION = "oreille-resa-v2-20260524";
   var CLIENTS_KEY = "DIGIY_RESA_CLIENTS_LOCAL_V1";
 
   var RESA_GUIDE =
@@ -29,7 +28,7 @@
 
   var RESA_TEMPLATES = [
     "📅 Nouvelle demande — client · téléphone · date · heure · nombre · détail.",
-    "✅ Confirmation — client · téléphone · date · heure · nombre · message prêt.",
+    "✅ Confirmation à préparer — client · téléphone · date · heure · nombre · message prêt.",
     "⛔ Fermeture / indisponible — date · raison · proposer une autre date.",
     "🕐 Modification — client · téléphone · ancienne date · nouvelle date · détail.",
     "❌ Annulation — client · téléphone · date · raison · statut.",
@@ -50,11 +49,8 @@
   };
 
   function ready(fn) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn);
-    } else {
-      fn();
-    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
   }
 
   function normalizeText(value) {
@@ -66,6 +62,19 @@
 
   function lower(value) {
     return normalizeText(value).toLowerCase();
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeRegExp(value) {
+    return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   function findMountTarget() {
@@ -80,17 +89,17 @@
 
   function extractField(text, labels) {
     var clean = normalizeText(text);
+    var nextLabels =
+      "client|nom|source|tel|tél|telephone|téléphone|date|jour|heure|horaire|nombre|personnes|pers|lieu|endroit|adresse|service|table|salle|chambre|zone|détail|detail|demande|besoin|statut|raison|message|note|acompte|preuve|mode|montant|paiement";
 
     for (var i = 0; i < labels.length; i += 1) {
-      var label = labels[i];
-
+      var label = escapeRegExp(labels[i]);
       var re = new RegExp(
         "(?:^|[\\s;,.|—-])" +
           label +
-          "\\s*[:\\-]?\\s*([^;|\\n]+?)(?=\\s+(?:client|nom|source|tel|tél|telephone|téléphone|date|jour|heure|horaire|nombre|personnes|pers|lieu|endroit|service|table|détail|detail|demande|statut|raison|message|acompte|preuve|mode|montant)\\s*[:\\-]|$)",
+          "\\s*[:\\-]?\\s*([^;|\\n]+?)(?=\\s+(?:" + nextLabels + ")\\s*[:\\-]|$)",
         "i"
       );
-
       var match = clean.match(re);
       if (match && match[1]) return normalizeText(match[1]);
     }
@@ -116,9 +125,8 @@
 
     if (pour && pour[1]) {
       var candidate = normalizeText(pour[1])
-        .replace(/\b(?:tel|date|heure|pour|personnes|pers|à|a|le|la|demain|aujourd'hui)\b.*$/i, "")
+        .replace(/\b(?:tel|tél|date|heure|personnes|pers|à|a|le|la|demain|aujourd'hui|pour)\b.*$/i, "")
         .trim();
-
       if (candidate && candidate.length <= 45) return candidate;
     }
 
@@ -130,14 +138,11 @@
     if (explicit) return explicit;
 
     var clean = normalizeText(text);
-
     var numeric = clean.match(/\b(\d{1,2}[\/.-]\d{1,2}(?:[\/.-]\d{2,4})?)\b/);
     if (numeric && numeric[1]) return numeric[1];
 
     var natural = clean.match(/\b(aujourd'hui|demain|après-demain|apres-demain|lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b/i);
-    if (natural && natural[1]) return natural[1];
-
-    return "";
+    return natural && natural[1] ? natural[1] : "";
   }
 
   function extractTime(text) {
@@ -154,12 +159,8 @@
     if (explicit) return explicit;
 
     var clean = normalizeText(text);
-    var match = clean.match(/\b(\d{1,3})\s*(personnes|pers|clients|places|tables|chambres)?\b/i);
-
-    if (match && match[1]) {
-      var n = Number(match[1]);
-      if (n > 0 && n < 300) return String(n);
-    }
+    var match = clean.match(/\b(\d{1,3})\s*(personnes|pers|clients|places|tables|chambres)\b/i);
+    if (match && match[1]) return String(Number(match[1]));
 
     return "";
   }
@@ -172,14 +173,23 @@
     return extractField(text, ["détail", "detail", "demande", "besoin", "raison", "message", "note"]);
   }
 
+  function hasPaymentWords(text) {
+    return /\b(acompte|avance|paiement|payé|paye|payer|reçu|recu|règlement|reglement|solde|montant|preuve|wave|cash|espèce|espece|liquide|virement|orange money|om\b|carte)\b/i.test(text);
+  }
+
   function extractPaymentHint(text) {
     var clean = normalizeText(text);
-    var amount = clean.match(/(\d[\d\s.,]*)\s*(fcfa|f\s*cfa|xof|cfa|€|eur|euro|euros)?/i);
     var mode = "";
 
-    if (/wave|wav/i.test(clean)) mode = "wave";
-    else if (/cash|espèce|espece|liquide/i.test(clean)) mode = "cash";
-    else if (/autre|carte|virement|orange money|om\b/i.test(clean)) mode = "autre";
+    if (/\bwave|wav\b/i.test(clean)) mode = "wave";
+    else if (/\bcash\b|espèce|espece|liquide/i.test(clean)) mode = "cash";
+    else if (/carte|virement|orange money|\bom\b/i.test(clean)) mode = "autre";
+
+    if (!hasPaymentWords(clean)) return { amount: "", mode: "" };
+
+    var labeled = clean.match(/(?:montant|acompte|avance|paiement|payé|paye|reçu|recu|solde)\s*[:\-]?\s*(\d[\d\s.,]*)\s*(fcfa|f\s*cfa|xof|cfa|€|eur|euro|euros)?/i);
+    var currency = clean.match(/\b(\d[\d\s.,]*)\s*(fcfa|f\s*cfa|xof|cfa|€|eur|euro|euros)\b/i);
+    var amount = labeled || currency;
 
     return {
       amount: amount && amount[1] ? normalizeText(amount[1] + (amount[2] ? " " + amount[2] : "")) : "",
@@ -194,29 +204,26 @@
     if (/confirme|confirmé|confirmee|confirmation|ok pour|validé|valide/.test(t)) return "à confirmer par le pro";
     if (/modifier|modification|changer|décaler|decaler|reporter/.test(t)) return "modification";
     if (/annuler|annulation|annulé|annule/.test(t)) return "annulation";
-    if (/acompte|avance|paiement|payé|paye|wave|cash/.test(t)) return "paiement à vérifier";
+    if (hasPaymentWords(t)) return "paiement à vérifier";
 
     return "nouvelle demande";
   }
 
   function missingFields(draft) {
     var missing = [];
-
     if (!draft.client_name) missing.push("client");
     if (!draft.client_phone) missing.push("téléphone");
     if (!draft.date) missing.push("date");
     if (!draft.time) missing.push("heure");
     if (!draft.count) missing.push("nombre");
-    if (!draft.detail) missing.push("détail");
     if (!draft.location) missing.push("lieu/service");
-
+    if (!draft.detail) missing.push("détail");
     return missing;
   }
 
   function buildResaDraft(text) {
     var clean = normalizeText(text);
     var payment = extractPaymentHint(clean);
-
     var draft = {
       module: "RESA",
       raw_text: clean,
@@ -233,7 +240,6 @@
       created_at: new Date().toISOString(),
       warning: "À vérifier par le pro avant confirmation."
     };
-
     draft.missing = missingFields(draft);
     return draft;
   }
@@ -243,70 +249,44 @@
       return "RESA · Note vide : préciser client, téléphone, date, heure, nombre, lieu/service et détail avant validation.";
     }
 
-    var clientPart = "Client : " + (draft.client_name || "à préciser");
-    var phonePart = "Téléphone : " + (draft.client_phone || "à préciser");
-    var datePart = "Date : " + (draft.date || "à préciser");
-    var timePart = "Heure : " + (draft.time || "à préciser");
-    var countPart = "Nombre : " + (draft.count || "à préciser");
-    var locationPart = "Lieu/service : " + (draft.location || "à préciser");
-    var detailPart = "Détail : " + (draft.detail || "à préciser");
-    var statusPart = "Statut : " + (draft.status || "nouvelle demande");
+    var parts = [
+      "Client : " + (draft.client_name || "à préciser"),
+      "Téléphone : " + (draft.client_phone || "à préciser"),
+      "Date : " + (draft.date || "à préciser"),
+      "Heure : " + (draft.time || "à préciser"),
+      "Nombre : " + (draft.count || "à préciser"),
+      "Lieu/service : " + (draft.location || "à préciser"),
+      "Détail : " + (draft.detail || "à préciser"),
+      "Statut : " + (draft.status || "nouvelle demande")
+    ];
 
-    var paymentPart = "";
     if (draft.payment_amount || draft.payment_mode) {
-      paymentPart =
-        " · Paiement/acompte : " +
-        (draft.payment_amount || "montant à préciser") +
-        " " +
-        (draft.payment_mode || "mode à préciser");
+      parts.push(
+        "Paiement/acompte : " +
+          (draft.payment_amount || "montant à préciser") +
+          " " +
+          (draft.payment_mode || "mode à préciser")
+      );
     }
 
-    var missing =
-      draft.missing && draft.missing.length
-        ? "Manque : " + draft.missing.join(", ") + ". "
-        : "Demande complète à vérifier. ";
+    var missing = draft.missing && draft.missing.length
+      ? "Manque : " + draft.missing.join(", ") + ". "
+      : "Demande complète à vérifier. ";
 
-    var warning =
-      "RESA ne confirme pas seule. Vérifier planning, disponibilité, fermeture et conditions avant réponse client.";
+    var warning = draft.status === "indisponible"
+      ? "Période ou créneau à vérifier. Proposer une autre date si nécessaire."
+      : "RESA ne confirme pas seule. Vérifier planning, disponibilité, fermeture et conditions avant réponse client.";
 
-    if (draft.status === "indisponible") {
-      warning = "Période ou créneau à vérifier. Proposer une autre date si nécessaire.";
-    }
-
-    return (
-      "RESA · Demande préparée — " +
-      clientPart +
-      " · " +
-      phonePart +
-      " · " +
-      datePart +
-      " · " +
-      timePart +
-      " · " +
-      countPart +
-      " · " +
-      locationPart +
-      " · " +
-      detailPart +
-      " · " +
-      statusPart +
-      paymentPart +
-      ". " +
-      missing +
-      warning +
-      " Texte d’origine : " +
-      draft.raw_text
-    );
+    return "RESA · Demande préparée — " + parts.join(" · ") + ". " + missing + warning + " Texte d’origine : " + draft.raw_text;
   }
 
-  function formulateResaDeep(text) {
+  function formulateResa(text) {
     return formatResaDraftMessage(buildResaDraft(text));
   }
 
   function getClients() {
     try {
-      var raw = localStorage.getItem(CLIENTS_KEY) || "[]";
-      var parsed = JSON.parse(raw);
+      var parsed = JSON.parse(localStorage.getItem(CLIENTS_KEY) || "[]");
       return Array.isArray(parsed) ? parsed : [];
     } catch (_err) {
       return [];
@@ -328,15 +308,11 @@
     var found = null;
 
     if (phone) {
-      found = clients.find(function (c) {
-        return normalizeText(c.phone) === phone;
-      });
+      found = clients.find(function (c) { return normalizeText(c.phone) === phone; });
     }
 
     if (!found && name) {
-      found = clients.find(function (c) {
-        return lower(c.name) === lower(name);
-      });
+      found = clients.find(function (c) { return lower(c.name) === lower(name); });
     }
 
     var now = new Date().toISOString();
@@ -366,7 +342,6 @@
         created_at: now,
         updated_at: now
       };
-
       clients.unshift(found);
     }
 
@@ -380,79 +355,12 @@
     var style = document.createElement("style");
     style.id = "digiyOreilleResaStyles";
     style.textContent =
-      ".digiy-resa-help{" +
-        "margin:10px 0 0;" +
-        "border:1px dashed rgba(83,58,26,.24);" +
-        "border-radius:16px;" +
-        "background:rgba(220,252,231,.35);" +
-        "padding:10px;" +
-        "color:#25351f;" +
-        "font-weight:950;" +
-        "line-height:1.32;" +
-        "font-size:14px;" +
-      "}" +
-
+      ".digiy-resa-help{margin:10px 0 0;border:1px dashed rgba(83,58,26,.24);border-radius:16px;background:rgba(220,252,231,.35);padding:10px;color:#25351f;font-weight:950;line-height:1.32;font-size:14px}" +
       ".digiy-resa-help b{color:#14532d;font-weight:1000}" +
-
-      ".digiy-oreille-templates{" +
-        "display:grid!important;" +
-        "grid-template-columns:repeat(2,minmax(0,1fr))!important;" +
-        "gap:7px!important;" +
-        "max-height:220px!important;" +
-        "overflow-y:auto!important;" +
-        "padding-right:5px!important;" +
-        "scroll-snap-type:y proximity!important;" +
-        "-webkit-overflow-scrolling:touch!important;" +
-        "border:1px solid rgba(83,58,26,.18)!important;" +
-        "border-radius:18px!important;" +
-        "background:rgba(255,255,255,.38)!important;" +
-        "padding:8px!important;" +
-      "}" +
-
-      ".digiy-oreille-template{" +
-        "min-height:52px!important;" +
-        "display:flex!important;" +
-        "align-items:center!important;" +
-        "justify-content:flex-start!important;" +
-        "border-radius:14px!important;" +
-        "font-size:12px!important;" +
-        "font-weight:1000!important;" +
-        "line-height:1.14!important;" +
-        "padding:8px!important;" +
-        "letter-spacing:-.01em!important;" +
-        "scroll-snap-align:start!important;" +
-        "overflow:hidden!important;" +
-      "}" +
-
-      ".digiy-resa-client-mini{" +
-        "margin-top:10px;" +
-        "border:1px solid rgba(24,32,20,.14);" +
-        "border-radius:16px;" +
-        "background:#fffdf4;" +
-        "padding:10px;" +
-        "font-weight:900;" +
-        "color:#182014;" +
-        "line-height:1.32;" +
-        "font-size:14px;" +
-      "}" +
-
-      ".digiy-resa-client-mini b{" +
-        "display:block;" +
-        "margin-bottom:4px;" +
-        "color:#14532d;" +
-        "font-weight:1000;" +
-      "}" +
-
-      "@media(min-width:760px){" +
-        ".digiy-oreille-templates{max-height:245px!important;}" +
-        ".digiy-oreille-template{min-height:56px!important;font-size:12.5px!important;}" +
-      "}" +
-
-      "@media(max-width:360px){" +
-        ".digiy-oreille-templates{max-height:205px!important;}" +
-        ".digiy-oreille-template{min-height:49px!important;font-size:11.5px!important;}" +
-      "}";
-
+      ".digiy-resa-client-mini{margin-top:10px;border:1px solid rgba(24,32,20,.14);border-radius:16px;background:#fffdf4;padding:10px;font-weight:900;color:#182014;line-height:1.32;font-size:14px}" +
+      ".digiy-resa-client-mini b{display:block;margin-bottom:4px;color:#14532d;font-weight:1000}" +
+      ".digiy-resa-chipline{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}" +
+      ".digiy-resa-chipline span{display:inline-flex;border-radius:999px;background:#ecfff3;border:1px solid rgba(20,83,45,.16);padding:5px 8px;color:#14532d;font-size:12px;font-weight:1000}";
     document.head.appendChild(style);
   }
 
@@ -465,9 +373,10 @@
     var help = document.createElement("div");
     help.className = "digiy-resa-help";
     help.innerHTML =
-      "<b>RESA demande une trace complète.</b><br>" +
+      "<b>RESA prépare seulement.</b><br>" +
       "Client · téléphone · date · heure · nombre · lieu/service · détail · statut. " +
-      "Aucune réservation n’est confirmée sans validation du pro.";
+      "Aucune réservation, fermeture, prix ou paiement n’est confirmé sans validation du pro." +
+      "<div class=\"digiy-resa-chipline\"><span>Brouillon</span><span>Copie WhatsApp</span><span>Validation pro</span></div>";
 
     status.insertAdjacentElement("afterend", help);
   }
@@ -487,50 +396,6 @@
     notes.insertAdjacentElement("beforebegin", box);
   }
 
-  function patchInstanceButtons(target, core) {
-    if (!target) return;
-
-    target.addEventListener(
-      "click",
-      function (event) {
-        var actionEl = event.target.closest("[data-action]");
-        if (!actionEl) return;
-
-        var action = actionEl.getAttribute("data-action");
-        var textArea = target.querySelector(".digiy-oreille-text");
-        var status = target.querySelector(".digiy-oreille-status");
-
-        if (!textArea) return;
-
-        if (action === "formulate") {
-          window.setTimeout(function () {
-            textArea.value = formulateResaDeep(textArea.value);
-            if (status) status.textContent = "Demande RESA préparée. Complète les champs manquants puis valide.";
-          }, 0);
-        }
-
-        if (action === "save") {
-          window.setTimeout(function () {
-            var draft = buildResaDraft(textArea.value);
-            upsertClientFromDraft(draft);
-
-            if (status) {
-              status.textContent =
-                draft.missing && draft.missing.length
-                  ? "Demande rangée en brouillon. Il manque : " + draft.missing.join(", ") + "."
-                  : "Demande rangée. Client local mis à jour si nom ou téléphone présent.";
-            }
-
-            if (core && typeof core.showToast === "function") {
-              core.showToast("RESA rangé en brouillon");
-            }
-          }, 0);
-        }
-      },
-      true
-    );
-  }
-
   function exposeResaApi(core) {
     window.DigiyOreilleRESA = {
       version: VERSION,
@@ -538,22 +403,13 @@
       templates: RESA_TEMPLATES.slice(),
       guideText: RESA_GUIDE,
       clientsKey: CLIENTS_KEY,
-
-      detect: function (text) {
-        return buildResaDraft(text);
-      },
-
-      formulate: function (text) {
-        return formulateResaDeep(text);
-      },
-
+      detect: buildResaDraft,
+      formulate: formulateResa,
       getClients: getClients,
       setClients: setClients,
-
       saveDraft: function (text) {
         var draft = buildResaDraft(text);
         var message = formatResaDraftMessage(draft);
-
         upsertClientFromDraft(draft);
 
         if (!core || typeof core.saveNote !== "function") return null;
@@ -563,11 +419,9 @@
           reservation: draft
         });
       },
-
       speakGuide: function () {
         if (core && typeof core.speak === "function") core.speak(RESA_GUIDE);
       },
-
       stopVoice: function () {
         if (core && typeof core.stopVoice === "function") core.stopVoice();
       }
@@ -586,7 +440,6 @@
     }
 
     if (target.getAttribute("data-digiy-oreille-mounted") === "1") return;
-
     target.setAttribute("data-digiy-oreille-mounted", "1");
 
     var instance = core.mount({
@@ -596,16 +449,26 @@
       subtitle: RESA_CONFIG.subtitle,
       storagePrefix: RESA_CONFIG.storagePrefix,
       guideText: RESA_CONFIG.guideText,
-      templates: RESA_CONFIG.templates
+      templates: RESA_CONFIG.templates,
+      formulate: function (text) {
+        return formulateResa(text);
+      },
+      buildSaveExtra: function (text) {
+        var draft = buildResaDraft(text);
+        upsertClientFromDraft(draft);
+        return {
+          resa_draft: draft,
+          reservation: draft,
+          warning: "Brouillon RESA : validation pro obligatoire avant confirmation."
+        };
+      }
     });
 
     window.DigiyOreilleRESA.instance = instance || null;
-
     addResaHelp(target);
     addClientPreview(target);
-    patchInstanceButtons(target, core);
 
-    console.info("[DIGIY Oreille RESA] montée avec succès.");
+    console.info("[DIGIY Oreille RESA] montée avec succès", VERSION);
   }
 
   function bootResaOreille() {
@@ -614,7 +477,6 @@
 
     function attempt() {
       tries += 1;
-
       var core = window.DigiyOreilleMetier;
 
       if (core && typeof core.mount === "function") {
