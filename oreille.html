@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Oreille RESA — Je réserve</title>
+  <meta name="theme-color" content="#1e7a46"/>
+  <meta name="description" content="Oreille RESA DIGIYLYFE — dicter, formuler, copier et ranger une demande de réservation."/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <meta name="digiy-build" content="resa-oreille-page-20260524"/>
+
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_SUPABASE_KEY = window.DIGIY_SUPABASE_ANON_KEY;
+
+    window.DIGIY_MODULE = "RESA";
+    window.DIGIY_LOGIN_URL = "./pin.html";
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/digiy-abos-access.js?v=abos-20260522"></script>
+  <script src="./guard.js?v=resa-oreille-page-20260524"></script>
+  <script src="./assets/js/digiy-module-bridge.js?v=bridge-20260520" defer></script>
+  <script src="./assets/js/digiy-resa-memory.js?v=resa-memory-20260520" defer></script>
+
+  <style>
+    :root{
+      --bg:#1e7a46;
+      --bg2:#155a34;
+      --bg3:#0e4226;
+      --bar:rgba(8,50,24,.96);
+      --gold:#c4973f;
+      --green:#22c55e;
+      --text:#f0fff5;
+      --muted:rgba(240,255,245,.76);
+      --line:rgba(255,255,255,.18);
+      --soft:rgba(255,255,255,.09);
+      --shadow:0 16px 40px rgba(0,0,0,.22);
+      --r:18px;
+      --hdrH:52px;
+      --barH:78px;
+      --max:960px;
+      --ff:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+
+    html{
+      scroll-behavior:smooth;
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      margin:0;
+      min-height:100dvh;
+      color:var(--text);
+      font-family:var(--ff);
+      font-size:19px;
+      font-weight:950;
+      background:
+        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
+        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
+        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
+      padding:
+        calc(var(--hdrH) + 14px)
+        12px
+        calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
+    }
+
+    a{color:inherit;text-decoration:none}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer;color:inherit}
+
+    .topHeader{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      height:var(--hdrH);
+      z-index:100;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:0 14px;
+      background:var(--bar);
+      border-bottom:1px solid rgba(196,151,63,.26);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .hdrBack{
+      min-height:36px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:rgba(240,255,245,.72);
+      font-size:14px;
+      font-weight:1000;
+      white-space:nowrap;
+    }
+
+    .hdrTitle{
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--gold);
+      white-space:nowrap;
+    }
+
+    .hdrPill{
+      min-height:32px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:1000;
+      white-space:nowrap;
+      max-width:38vw;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .hdrPill.ok{
+      color:#bbf7d0;
+      border-color:rgba(34,197,94,.38);
+      background:rgba(34,197,94,.12);
+    }
+
+    .hdrPill.warn{
+      color:#fde68a;
+      border-color:rgba(245,158,11,.38);
+      background:rgba(245,158,11,.12);
+    }
+
+    .wrap{
+      width:min(var(--max),100%);
+      margin:0 auto;
+      display:grid;
+      gap:16px;
+    }
+
+    .card,.guide{
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:var(--r);
+      background:rgba(255,255,255,.09);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .eyebrow{
+      color:#fff0a8;
+      font-size:12px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      font-weight:1000;
+      margin-bottom:8px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(34px,8.5vw,56px);
+      font-weight:1000;
+      line-height:.94;
+      letter-spacing:-.05em;
+      color:#fff;
+    }
+
+    .lead{
+      color:var(--muted);
+      font-size:17px;
+      font-weight:1000;
+      line-height:1.38;
+      max-width:780px;
+    }
+
+    .rule{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.22);
+      background:rgba(5,31,17,.32);
+      color:rgba(240,255,245,.90);
+      font-size:14px;
+      font-weight:1000;
+      line-height:1.35;
+    }
+
+    .rule b{color:#fff0a8}
+
+    .guide{
+      border-color:rgba(34,197,94,.30);
+      background:
+        radial-gradient(480px 180px at 100% 0%,rgba(196,151,63,.16),transparent 72%),
+        linear-gradient(180deg,rgba(255,255,255,.10),rgba(5,33,16,.34));
+      display:grid;
+      gap:10px;
+    }
+
+    .guide h2{
+      margin:0;
+      font-size:clamp(24px,6vw,38px);
+      line-height:.98;
+      letter-spacing:-.04em;
+      color:#fff;
+      font-weight:1000;
+    }
+
+    .guide p{
+      margin:0;
+      color:rgba(240,255,245,.82);
+      font-size:15px;
+      line-height:1.45;
+      font-weight:950;
+    }
+
+    .actions{
+      display:flex;
+      gap:9px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+
+    .btn{
+      min-height:56px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:12px 16px;
+      font-weight:1000;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    .btn.primary{
+      background:linear-gradient(135deg,#22c55e,#fff0a8);
+      color:#052215;
+      border-color:rgba(34,197,94,.32);
+    }
+
+    .btn.danger{
+      background:rgba(251,113,133,.10);
+      border-color:rgba(251,113,133,.34);
+      color:#fecaca;
+    }
+
+    .oreilleShell{
+      scroll-margin-top:72px;
+    }
+
+    .bottomBar{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      height:var(--barH);
+      z-index:100;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(6,38,18,.97);
+      border-top:1px solid rgba(196,151,63,.18);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .bottomInner{
+      width:min(100%,760px);
+      height:100%;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomInner a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(240,255,245,.56);
+      font-size:11px;
+      font-weight:1000;
+      text-align:center;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.04);
+    }
+
+    .bottomInner a.active{
+      color:#052215;
+      background:linear-gradient(135deg,#22c55e,#fff0a8);
+      border-color:rgba(34,197,94,.32);
+    }
+
+    .bottomInner .bi{
+      font-size:19px;
+      line-height:1;
+    }
+
+    @media(max-width:520px){
+      body{
+        font-size:19px;
+        padding:
+          calc(var(--hdrH) + 12px)
+          10px
+          calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);
+      }
+
+      .topHeader{
+        padding:0 10px;
+        gap:7px;
+      }
+
+      .hdrBack{font-size:13px}
+      .hdrTitle{font-size:11px;letter-spacing:.12em}
+      .hdrPill{font-size:11px;padding:6px 8px;max-width:34vw}
+      h1{font-size:34px}
+      .lead{font-size:16px}
+      .actions .btn{width:100%}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topHeader">
+    <a class="hdrBack" href="./hub.html">← HUB</a>
+    <div class="hdrTitle">OREILLE RESA</div>
+    <div class="hdrPill warn" id="sessionPill">session…</div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="eyebrow">📅 JE RÉSERVE · OREILLE MÉTIER</div>
+      <h1>Demande, date, client.</h1>
+      <div class="lead">
+        Ici, le pro parle ou clique. DIGIY prépare une demande RESA complète :
+        client, téléphone, date, heure, nombre, lieu ou service, détail et statut.
+      </div>
+      <div class="rule">
+        <b>Règle :</b> RESA prépare la demande, mais ne confirme jamais seule une réservation.
+        Le pro vérifie planning, disponibilité, fermeture et conditions.
+      </div>
+    </section>
+
+    <section class="guide" aria-label="Lecteur guide Oreille RESA">
+      <h2>🎧 Lecteur-guide RESA</h2>
+      <p>
+        Écoute le guide avant de confirmer : RESA prépare, mais le pro valide toujours.
+        Une réservation ne doit jamais être confirmée sans vérifier planning, disponibilité ou fermeture.
+      </p>
+
+      <div class="actions">
+        <button class="btn primary" type="button" id="resaGuidePlay">🎧 Écouter le guide</button>
+        <button class="btn danger" type="button" id="resaGuideStop">⏹ Arrêter</button>
+      </div>
+    </section>
+
+    <section class="card oreilleShell" id="oreille-resa-section">
+      <div id="digiy-oreille-resa"></div>
+    </section>
+  </main>
+
+  <nav class="bottomBar" aria-label="Navigation rapide RESA">
+    <div class="bottomInner">
+      <a href="./hub.html"><span class="bi">🧭</span><span>HUB</span></a>
+      <a href="./dashboard-pro.html"><span class="bi">🏠</span><span>Accueil</span></a>
+      <a href="./cockpit.html"><span class="bi">📥</span><span>Réserv.</span></a>
+      <a class="active" href="./oreille.html"><span class="bi">🎙️</span><span>Oreille</span></a>
+      <a href="./session.html"><span class="bi">🛡️</span><span>Session</span></a>
+    </div>
+  </nav>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SENSITIVE_KEYS = [
+        "phone","tel","p_phone","owner_phone","owner_id","slug",
+        "resa_tel","resa_phone","business_phone","whatsapp",
+        "module","return","redirect","redirect_url","url","from","v"
+      ];
+
+      function normSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
+      }
+
+      function isSensitiveSlug(v){
+        return /\d{7,}/.test(String(v || ""));
+      }
+
+      function cleanVisibleUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          SENSITIVE_KEYS.forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          const s = normSlug(url.searchParams.get("slug") || "");
+          if(s && isSensitiveSlug(s)){
+            url.searchParams.delete("slug");
+            changed = true;
+          }
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      async function waitGuard(){
+        try{
+          const guard = window.DIGIY_GUARD;
+          if(!guard) return {};
+
+          if(typeof guard.ready === "function"){
+            const out = guard.ready({ redirect:false, preserve_validation:true });
+            if(out && typeof out.then === "function") await out;
+          }else if(guard.ready && typeof guard.ready.then === "function"){
+            await guard.ready;
+          }
+
+          if(typeof guard.getSession === "function"){
+            return guard.getSession() || guard.state || {};
+          }
+
+          return guard.state || {};
+        }catch(e){
+          console.warn("[RESA OREILLE] guard", e);
+          return {};
+        }
+      }
+
+      function updatePill(state){
+        const el = document.getElementById("sessionPill");
+        if(!el) return;
+
+        const ok = !!(state && (state.access_ok || state.access || state.pin_session_ok));
+
+        if(ok){
+          el.textContent = state.pin_session_ok ? "session ouverte" : "accès ouvert";
+          el.className = "hdrPill ok";
+        }else{
+          el.textContent = "accès à vérifier";
+          el.className = "hdrPill warn";
+        }
+      }
+
+      const RESA_GUIDE_TEXT =
+        "Bienvenue dans Oreille RESA DIGIYLYFE. " +
+        "Ici, tu peux parler ou cliquer pour préparer une demande de réservation. " +
+        "RESA demande le client, le téléphone, la date, l’heure, le nombre de personnes, le lieu ou service, le détail et le statut. " +
+        "RESA ne confirme jamais seule une réservation. " +
+        "Le professionnel doit vérifier le planning, la disponibilité, les fermetures et les conditions avant de répondre au client. " +
+        "L’Oreille prépare. DIGIY formule. Le pro relit. Le pro valide. RESA range. " +
+        "Le terrain garde la main.";
+
+      function loadVoices(callback){
+        if(!("speechSynthesis" in window)){
+          callback([]);
+          return;
+        }
+
+        let voices = window.speechSynthesis.getVoices();
+
+        if(voices && voices.length){
+          callback(voices);
+          return;
+        }
+
+        let tries = 0;
+        const timer = window.setInterval(() => {
+          tries += 1;
+          voices = window.speechSynthesis.getVoices();
+
+          if((voices && voices.length) || tries > 12){
+            window.clearInterval(timer);
+            callback(voices || []);
+          }
+        }, 120);
+      }
+
+      function speakGuide(){
+        if(!("speechSynthesis" in window)){
+          alert("Lecture vocale non disponible sur ce navigateur.");
+          return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        loadVoices((voices) => {
+          const u = new SpeechSynthesisUtterance(RESA_GUIDE_TEXT);
+          u.lang = "fr-FR";
+          u.rate = 0.86;
+          u.pitch = 1.02;
+          u.volume = 1;
+
+          const preferred =
+            voices.find(v => /fr/i.test(v.lang || "") && /Google|Thomas|Daniel|Amelie|Audrey|Pauline/i.test(v.name || "")) ||
+            voices.find(v => /fr/i.test(v.lang || "")) ||
+            voices[0];
+
+          if(preferred) u.voice = preferred;
+
+          window.speechSynthesis.speak(u);
+        });
+      }
+
+      function stopGuide(){
+        if("speechSynthesis" in window){
+          window.speechSynthesis.cancel();
+        }
+      }
+
+      async function boot(){
+        cleanVisibleUrl();
+        const state = await waitGuard();
+        updatePill(state || {});
+        cleanVisibleUrl();
+      }
+
+      document.getElementById("resaGuidePlay")?.addEventListener("click", speakGuide);
+      document.getElementById("resaGuideStop")?.addEventListener("click", stopGuide);
+
+      if("speechSynthesis" in window){
+        window.speechSynthesis.onvoiceschanged = function(){};
+      }
+
+      window.addEventListener("pagehide", stopGuide);
+
+      boot();
+    })();
+  </script>
+
+  <script src="./assets/js/oreille-metier-core.js?v=20260524-core2" defer></script>
+  <script src="./assets/js/oreille-resa.js?v=20260524-resa1" defer></script>
+</body>
+</html>
