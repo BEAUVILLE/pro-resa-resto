@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="Oreille RESA DIGIYLYFE — dicter, formuler, copier et ranger une demande de réservation."/>
   <meta name="robots" content="noindex,nofollow"/>
-  <meta name="digiy-build" content="resa-oreille-page-20260524"/>
+  <meta name="digiy-build" content="resa-oreille-grand-gras-20260524"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -21,7 +21,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/digiy-abos-access.js?v=abos-20260522"></script>
-  <script src="./guard.js?v=resa-oreille-page-20260524"></script>
+  <script src="./guard.js?v=resa-oreille-grand-gras-20260524"></script>
   <script src="./assets/js/digiy-module-bridge.js?v=bridge-20260520" defer></script>
   <script src="./assets/js/digiy-resa-memory.js?v=resa-memory-20260520" defer></script>
 
@@ -34,14 +34,14 @@
       --gold:#c4973f;
       --green:#22c55e;
       --text:#f0fff5;
-      --muted:rgba(240,255,245,.76);
+      --muted:rgba(240,255,245,.80);
       --line:rgba(255,255,255,.18);
       --soft:rgba(255,255,255,.09);
-      --shadow:0 16px 40px rgba(0,0,0,.22);
-      --r:18px;
+      --shadow:0 18px 46px rgba(0,0,0,.24);
+      --r:22px;
       --hdrH:52px;
       --barH:78px;
-      --max:960px;
+      --max:980px;
       --ff:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
     }
 
@@ -58,11 +58,11 @@
       min-height:100dvh;
       color:var(--text);
       font-family:var(--ff);
-      font-size:19px;
+      font-size:20px;
       font-weight:950;
       background:
-        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
-        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
+        radial-gradient(700px 430px at 16% 0%,rgba(74,222,128,.20),transparent 58%),
+        radial-gradient(460px 300px at 92% 8%,rgba(196,151,63,.18),transparent 52%),
         linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
       padding:
         calc(var(--hdrH) + 14px)
@@ -104,9 +104,9 @@
     }
 
     .hdrTitle{
-      font-size:12px;
+      font-size:15px;
       font-weight:1000;
-      letter-spacing:.16em;
+      letter-spacing:.14em;
       text-transform:uppercase;
       color:var(--gold);
       white-space:nowrap;
@@ -150,47 +150,63 @@
     }
 
     .card,.guide{
-      border:1px solid rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.16);
       border-radius:var(--r);
-      background:rgba(255,255,255,.09);
+      background:rgba(255,255,255,.10);
       box-shadow:var(--shadow);
-      padding:16px;
+      padding:18px;
+    }
+
+    .oreilleHero{
+      border-color:rgba(196,151,63,.46);
+      background:
+        radial-gradient(600px 240px at 100% 0%,rgba(255,240,168,.20),transparent 72%),
+        linear-gradient(180deg,rgba(255,255,255,.14),rgba(5,33,16,.34));
     }
 
     .eyebrow{
       color:#fff0a8;
-      font-size:12px;
-      letter-spacing:.16em;
+      font-size:14px;
+      letter-spacing:.14em;
       text-transform:uppercase;
       font-weight:1000;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
 
     h1{
-      margin:0 0 8px;
-      font-size:clamp(34px,8.5vw,56px);
+      margin:0 0 10px;
+      font-size:clamp(52px,15vw,108px);
       font-weight:1000;
-      line-height:.94;
-      letter-spacing:-.05em;
+      line-height:.82;
+      letter-spacing:-.075em;
       color:#fff;
+      text-transform:uppercase;
+      text-shadow:0 12px 30px rgba(0,0,0,.20);
+    }
+
+    .bigWord{
+      display:block;
+      color:#fff0a8;
+      font-size:clamp(62px,18vw,132px);
     }
 
     .lead{
       color:var(--muted);
-      font-size:17px;
+      font-size:clamp(20px,5vw,30px);
       font-weight:1000;
-      line-height:1.38;
-      max-width:780px;
+      line-height:1.16;
+      letter-spacing:-.025em;
+      max-width:850px;
     }
 
     .rule{
-      margin-top:12px;
-      padding:12px 14px;
-      border-radius:18px;
-      border:1px dashed rgba(255,255,255,.22);
-      background:rgba(5,31,17,.32);
-      color:rgba(240,255,245,.90);
-      font-size:14px;
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:20px;
+      border:1px dashed rgba(255,255,255,.24);
+      background:rgba(5,31,17,.36);
+      color:rgba(240,255,245,.92);
+      font-size:16px;
       font-weight:1000;
       line-height:1.35;
     }
@@ -203,46 +219,47 @@
         radial-gradient(480px 180px at 100% 0%,rgba(196,151,63,.16),transparent 72%),
         linear-gradient(180deg,rgba(255,255,255,.10),rgba(5,33,16,.34));
       display:grid;
-      gap:10px;
+      gap:12px;
     }
 
     .guide h2{
       margin:0;
-      font-size:clamp(24px,6vw,38px);
-      line-height:.98;
-      letter-spacing:-.04em;
+      font-size:clamp(32px,8.5vw,56px);
+      line-height:.90;
+      letter-spacing:-.055em;
       color:#fff;
       font-weight:1000;
     }
 
     .guide p{
       margin:0;
-      color:rgba(240,255,245,.82);
-      font-size:15px;
-      line-height:1.45;
-      font-weight:950;
+      color:rgba(240,255,245,.84);
+      font-size:18px;
+      line-height:1.35;
+      font-weight:1000;
     }
 
     .actions{
       display:flex;
-      gap:9px;
+      gap:10px;
       flex-wrap:wrap;
       margin-top:4px;
     }
 
     .btn{
-      min-height:56px;
-      border-radius:18px;
+      min-height:66px;
+      border-radius:20px;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(255,255,255,.08);
       display:inline-flex;
       align-items:center;
       justify-content:center;
       text-align:center;
-      padding:12px 16px;
+      padding:14px 18px;
       font-weight:1000;
-      font-size:16px;
+      font-size:20px;
       cursor:pointer;
+      box-shadow:0 12px 28px rgba(0,0,0,.16);
     }
 
     .btn.primary{
@@ -252,13 +269,27 @@
     }
 
     .btn.danger{
-      background:rgba(251,113,133,.10);
+      background:rgba(251,113,133,.12);
       border-color:rgba(251,113,133,.34);
       color:#fecaca;
     }
 
     .oreilleShell{
       scroll-margin-top:72px;
+      border-color:rgba(255,240,168,.40);
+      background:rgba(255,255,255,.13);
+    }
+
+    .oreilleShell::before{
+      content:"🎙️ OREILLE RESA";
+      display:block;
+      margin:0 0 12px;
+      color:#fff0a8;
+      font-size:clamp(28px,7vw,48px);
+      line-height:.95;
+      font-weight:1000;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
     }
 
     .bottomBar{
@@ -291,8 +322,8 @@
       place-items:center;
       align-content:center;
       gap:3px;
-      color:rgba(240,255,245,.56);
-      font-size:11px;
+      color:rgba(240,255,245,.62);
+      font-size:12px;
       font-weight:1000;
       text-align:center;
       border:1px solid rgba(255,255,255,.06);
@@ -306,61 +337,55 @@
     }
 
     .bottomInner .bi{
-      font-size:19px;
+      font-size:22px;
       line-height:1;
     }
 
     @media(max-width:520px){
       body{
-        font-size:19px;
+        font-size:20px;
         padding:
           calc(var(--hdrH) + 12px)
           10px
           calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);
       }
 
-      .topHeader{
-        padding:0 10px;
-        gap:7px;
-      }
-
+      .topHeader{padding:0 10px;gap:7px}
       .hdrBack{font-size:13px}
-      .hdrTitle{font-size:11px;letter-spacing:.12em}
+      .hdrTitle{font-size:13px;letter-spacing:.10em}
       .hdrPill{font-size:11px;padding:6px 8px;max-width:34vw}
-      h1{font-size:34px}
-      .lead{font-size:16px}
-      .actions .btn{width:100%}
+      .card,.guide{padding:15px;border-radius:20px}
+      .lead{font-size:21px}
+      .rule{font-size:15px}
+      .guide p{font-size:16px}
+      .actions .btn{width:100%;font-size:20px;min-height:68px}
     }
 
-    @media(prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
-    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   </style>
 </head>
 
 <body>
   <header class="topHeader">
     <a class="hdrBack" href="./hub.html">← HUB</a>
-    <div class="hdrTitle">OREILLE RESA</div>
+    <div class="hdrTitle">🎙️ OREILLE RESA</div>
     <div class="hdrPill warn" id="sessionPill">session…</div>
   </header>
 
   <main class="wrap">
-    <section class="card">
+    <section class="card oreilleHero">
       <div class="eyebrow">📅 JE RÉSERVE · OREILLE MÉTIER</div>
-      <h1>Demande, date, client.</h1>
+      <h1><span class="bigWord">Oreille</span>RESA.</h1>
       <div class="lead">
-        Ici, le pro parle ou clique. DIGIY prépare une demande RESA complète :
-        client, téléphone, date, heure, nombre, lieu ou service, détail et statut.
+        Le pro parle ou clique. DIGIY prépare la demande. Le pro valide. RESA range.
       </div>
       <div class="rule">
-        <b>Règle :</b> RESA prépare la demande, mais ne confirme jamais seule une réservation.
-        Le pro vérifie planning, disponibilité, fermeture et conditions.
+        <b>Règle :</b> grand, gras, clair. RESA prépare, mais ne confirme jamais seule une réservation, un paiement, un prix, une fermeture ou une promesse client.
       </div>
     </section>
 
     <section class="guide" aria-label="Lecteur guide Oreille RESA">
-      <h2>🎧 Lecteur-guide RESA</h2>
+      <h2>🎧 Guide RESA</h2>
       <p>
         Écoute le guide avant de confirmer : RESA prépare, mais le pro valide toujours.
         Une réservation ne doit jamais être confirmée sans vérifier planning, disponibilité ou fermeture.
@@ -407,31 +432,24 @@
           .replace(/^-|-$/g,"");
       }
 
-      function isSensitiveSlug(v){
-        return /\d{7,}/.test(String(v || ""));
-      }
+      function isSensitiveSlug(v){return /\d{7,}/.test(String(v || ""));}
 
       function cleanVisibleUrl(){
         try{
           const url = new URL(location.href);
           let changed = false;
-
           SENSITIVE_KEYS.forEach((key) => {
             if(url.searchParams.has(key)){
               url.searchParams.delete(key);
               changed = true;
             }
           });
-
           const s = normSlug(url.searchParams.get("slug") || "");
           if(s && isSensitiveSlug(s)){
             url.searchParams.delete("slug");
             changed = true;
           }
-
-          if(changed){
-            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-          }
+          if(changed) history.replaceState({}, document.title, url.pathname + url.search + url.hash);
         }catch(_){}
       }
 
@@ -439,18 +457,13 @@
         try{
           const guard = window.DIGIY_GUARD;
           if(!guard) return {};
-
           if(typeof guard.ready === "function"){
             const out = guard.ready({ redirect:false, preserve_validation:true });
             if(out && typeof out.then === "function") await out;
           }else if(guard.ready && typeof guard.ready.then === "function"){
             await guard.ready;
           }
-
-          if(typeof guard.getSession === "function"){
-            return guard.getSession() || guard.state || {};
-          }
-
+          if(typeof guard.getSession === "function") return guard.getSession() || guard.state || {};
           return guard.state || {};
         }catch(e){
           console.warn("[RESA OREILLE] guard", e);
@@ -461,9 +474,7 @@
       function updatePill(state){
         const el = document.getElementById("sessionPill");
         if(!el) return;
-
         const ok = !!(state && (state.access_ok || state.access || state.pin_session_ok));
-
         if(ok){
           el.textContent = state.pin_session_ok ? "session ouverte" : "accès ouvert";
           el.className = "hdrPill ok";
@@ -483,23 +494,13 @@
         "Le terrain garde la main.";
 
       function loadVoices(callback){
-        if(!("speechSynthesis" in window)){
-          callback([]);
-          return;
-        }
-
+        if(!("speechSynthesis" in window)){callback([]);return;}
         let voices = window.speechSynthesis.getVoices();
-
-        if(voices && voices.length){
-          callback(voices);
-          return;
-        }
-
+        if(voices && voices.length){callback(voices);return;}
         let tries = 0;
         const timer = window.setInterval(() => {
           tries += 1;
           voices = window.speechSynthesis.getVoices();
-
           if((voices && voices.length) || tries > 12){
             window.clearInterval(timer);
             callback(voices || []);
@@ -512,31 +513,24 @@
           alert("Lecture vocale non disponible sur ce navigateur.");
           return;
         }
-
         window.speechSynthesis.cancel();
-
         loadVoices((voices) => {
           const u = new SpeechSynthesisUtterance(RESA_GUIDE_TEXT);
           u.lang = "fr-FR";
           u.rate = 0.86;
           u.pitch = 1.02;
           u.volume = 1;
-
           const preferred =
             voices.find(v => /fr/i.test(v.lang || "") && /Google|Thomas|Daniel|Amelie|Audrey|Pauline/i.test(v.name || "")) ||
             voices.find(v => /fr/i.test(v.lang || "")) ||
             voices[0];
-
           if(preferred) u.voice = preferred;
-
           window.speechSynthesis.speak(u);
         });
       }
 
       function stopGuide(){
-        if("speechSynthesis" in window){
-          window.speechSynthesis.cancel();
-        }
+        if("speechSynthesis" in window) window.speechSynthesis.cancel();
       }
 
       async function boot(){
@@ -548,18 +542,13 @@
 
       document.getElementById("resaGuidePlay")?.addEventListener("click", speakGuide);
       document.getElementById("resaGuideStop")?.addEventListener("click", stopGuide);
-
-      if("speechSynthesis" in window){
-        window.speechSynthesis.onvoiceschanged = function(){};
-      }
-
+      if("speechSynthesis" in window) window.speechSynthesis.onvoiceschanged = function(){};
       window.addEventListener("pagehide", stopGuide);
-
       boot();
     })();
   </script>
 
-  <script src="./assets/js/oreille-metier-core.js?v=20260524-core2" defer></script>
-  <script src="./assets/js/oreille-resa.js?v=20260524-resa1" defer></script>
+  <script src="./assets/js/oreille-metier-core.js?v=20260524-core-grand-gras" defer></script>
+  <script src="./assets/js/oreille-resa.js?v=20260524-resa-v2-grand-gras" defer></script>
 </body>
 </html>
