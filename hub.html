@@ -833,10 +833,17 @@
       if(canSpeak()) window.speechSynthesis.cancel();
     }
 
+    function digiySpeakText(text){
+      return String(text || "")
+        .replace(/\bWave\b/g, "Wéïv")
+        .replace(/\bWhatsApp\b/g, "Ouatsap")
+        .replace(/\bDIGIYLYFE\b/g, "Di-ji-laïf");
+    }
+
     function speak(){
       if(!canSpeak()) return;
       stopSpeech();
-      var u = new SpeechSynthesisUtterance(SPEAK);
+      var u = new SpeechSynthesisUtterance(digiySpeakText(SPEAK));
       u.lang = "fr-FR";
       u.rate = 0.88;
       u.pitch = 1.02;
@@ -991,6 +998,38 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
