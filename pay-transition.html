@@ -1,3 +1,61 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RESA vers PAY</title><meta name="robots" content="noindex,nofollow"><style>body{margin:0;min-height:100vh;font-family:system-ui;background:linear-gradient(180deg,#1e7a46,#0e4226);color:white;padding:18px;display:grid;place-items:center;font-weight:900}.card{width:min(680px,100%);border:1px solid rgba(255,255,255,.2);border-radius:28px;background:rgba(255,255,255,.09);padding:20px;box-shadow:0 18px 44px rgba(0,0,0,.25)}.k{color:#fde68a;font-size:12px;font-weight:1000;letter-spacing:.14em;text-transform:uppercase}h1{font-size:clamp(42px,12vw,74px);line-height:.9;margin:10px 0;font-weight:1000;letter-spacing:-.07em}p{font-weight:900;line-height:1.4;color:rgba(255,255,255,.85)}textarea,input{width:100%;border-radius:18px;border:1px solid rgba(250,204,21,.35);background:#062612;color:white;padding:13px;font:900 16px system-ui;margin-top:10px}label{display:block;margin-top:10px;color:#fde68a;font-weight:1000}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.btn,a.btn{min-height:56px;border-radius:18px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;background:rgba(255,255,255,.1);color:white;text-decoration:none;font-weight:1000;margin-top:10px}.go{background:linear-gradient(135deg,#22c55e,#facc15);color:#06130e}.gold{background:#d6a63a;color:#111}.small{font-size:13px;color:rgba(255,255,255,.72);margin-top:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}
-</style></head><body><main class="card"><div class="k">📅 RESA → PAY</div><h1>Acompte réel.</h1><p>RESA garde la réservation. PAY reçoit seulement acompte, solde ou argent réellement reçu.</p><label>Montant reçu</label><input id="amount" inputmode="numeric" placeholder="10000"><label>Mode</label><input id="mode" placeholder="Wave / Cash / Orange Money / Carte" value="Wave"><label>Client</label><input id="client" placeholder="Client RESA" value="Client RESA"><label>Réservation</label><input id="route" placeholder="Samedi 20h · 4 personnes" value="Réservation RESA"><label>Phrase PAY</label><textarea id="phrase">acompte réservation RESA 10000 Wave</textarea><div class="grid"><button class="btn gold" id="copy" type="button">📋 Copier phrase PAY</button><a class="btn go" href="https://pro-pay.digiylyfe.com/action.html">💳 Ouvrir PAY</a></div><a class="btn" href="./action.html">← Retour DIGIY GO RESA</a><div class="small">Validation humaine obligatoire dans PAY. RESA ne confirme pas seul la réservation ni le paiement.</div></main><script>(function(){function $(id){return document.getElementById(id)}function clean(n){return String(n||'').replace(/[^0-9]/g,'')||'0'}function load(){try{var d=JSON.parse(localStorage.getItem('DIGIY_RESA_GO_LATEST')||'null');if(!d)return;if(d.acompte)$('amount').value=d.acompte;if(d.mode)$('mode').value=d.mode;if(d.client)$('client').value=d.client;if(d.moment||d.personnes)$('route').value=[d.moment,d.personnes].filter(Boolean).join(' · ')}catch(e){}}function refresh(){var a=clean($('amount').value||'10000'),m=$('mode').value||'Cash',r=$('route').value||'Réservation RESA';$('phrase').value='acompte réservation RESA '+a+' '+m+' — '+r}['amount','mode','route'].forEach(function(id){$(id).addEventListener('input',refresh)});$('copy').onclick=function(){refresh();navigator.clipboard&&navigator.clipboard.writeText($('phrase').value)};load();refresh();})();</script></body></html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RESA vers PAY</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0e4226">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:radial-gradient(720px 380px at 8% -10%,rgba(34,197,94,.28),transparent 62%),linear-gradient(180deg,#1e7a46,#0e4226 58%,#062612);color:white;padding:12px;font-weight:900}a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}.wrap{width:min(820px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.top b{color:#fde68a}.top a{font-size:12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 10px;background:rgba(255,255,255,.08)}.card{border:1px solid rgba(250,204,21,.34);border-radius:26px;background:rgba(255,255,255,.09);padding:16px;box-shadow:0 18px 44px rgba(0,0,0,.24)}.k{color:#fde68a;font-size:12px;letter-spacing:.14em;text-transform:uppercase}h1{font-size:clamp(42px,12vw,76px);line-height:.88;margin:8px 0 10px;font-weight:1000;letter-spacing:-.06em}.lead{line-height:1.4;color:rgba(255,255,255,.84);margin:0 0 10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}label{display:block;margin-top:10px;color:#fde68a;font-weight:1000;font-size:12px;text-transform:uppercase;letter-spacing:.08em}textarea,input,select{width:100%;border-radius:16px;border:1px solid rgba(250,204,21,.35);background:#062612;color:white;padding:12px;font-weight:900;margin-top:5px}textarea{min-height:90px;resize:vertical}.btn{min-height:50px;border-radius:16px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;text-align:center;padding:9px;background:rgba(255,255,255,.1);color:white;font-weight:1000;margin-top:10px;cursor:pointer}.go{background:linear-gradient(135deg,#22c55e,#facc15);color:#06130e}.gold{background:#facc15;color:#111}.status{margin-top:10px;padding:10px;border-radius:16px;background:rgba(0,0,0,.18);border:1px dashed rgba(250,204,21,.25);color:#dfffe9;line-height:1.35;font-size:13px}@media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top"><b>📅 RESA → PAY</b><a href="./action.html">← GO RESA</a></div>
+  <section class="card">
+    <div class="k">Acompte · solde · dépense · à recevoir</div>
+    <h1>Réservation gardée.<br>PAY encaisse.</h1>
+    <p class="lead">RESA garde la réservation, la table, le client, le créneau et le service. PAY reçoit seulement l’argent réel ou le reste à recevoir, après validation humaine.</p>
+    <div class="grid">
+      <div><label>Type</label><select id="type"><option value="income">Acompte / recette</option><option value="income_solde">Solde</option><option value="expense">Dépense</option><option value="receivable">À recevoir</option></select></div>
+      <div><label>Montant</label><input id="amount" inputmode="numeric" value="10000"></div>
+    </div>
+    <div class="grid">
+      <div><label>Canal</label><select id="mode"><option>Wave</option><option>Cash</option><option>Orange Money</option><option>Carte</option></select></div>
+      <div><label>Client</label><input id="client" value="Client RESA"></div>
+    </div>
+    <label>Réservation</label><input id="route" value="Réservation RESA · samedi 20h · 4 personnes">
+    <label>Note PAY</label><textarea id="phrase">acompte réservation RESA 10000 Wave — Réservation RESA</textarea>
+    <div class="grid"><button class="btn gold" id="copy" type="button">📋 Copier brouillon</button><button class="btn go" id="send" type="button">💳 Valider vers PAY</button></div>
+    <div class="status" id="status">Prêt. RESA ne confirme pas seul la réservation ni le paiement.</div>
+  </section>
+</main>
+<script>
+(function(){
+'use strict';
+const PAY_URL='https://pro-pay.digiylyfe.com/module-bridge.html';
+const $=id=>document.getElementById(id);
+function clean(n){return String(n||'').replace(/[^0-9]/g,'')||'0'}
+function norm(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function set(m){$('status').textContent=m}
+function detectType(raw){const t=norm(raw);if(/depense|achat|frais|commission|annulation/.test(t))return'expense';if(/doit|dette|credit|reste|a recevoir/.test(t))return'receivable';if(/solde|reste paye|reste payé/.test(t))return'income_solde';return'income'}
+function detectChannel(raw){const t=norm(raw);if(t.includes('wave'))return'Wave';if(t.includes('orange'))return'Orange Money';if(t.includes('carte'))return'Carte';if(t.includes('cash')||t.includes('espece'))return'Cash';return'Wave'}
+function extractAmount(raw){const m=String(raw||'').match(/(\d[\d\s.,]*)/);return m?String(m[1]).replace(/[^0-9]/g,''):'10000'}
+function extractClient(raw){const m=String(raw||'').match(/client\s+([a-zA-ZÀ-ÿ0-9_-]+)/i);return m?'Client '+m[1]:'Client RESA'}
+function extractRoute(raw){let s=String(raw||'').replace(/\d[\d\s.,]*/g,' ').replace(/\b(wave|cash|orange money|orange|carte|fcfa|f|acompte|solde|paiement|client)\b/ig,' ').replace(/[,;:]+/g,' ').replace(/\s+/g,' ').trim();return s||'Réservation RESA'}
+function load(){try{const d=JSON.parse(localStorage.getItem('DIGIY_RESA_GO_LATEST')||'null');if(!d)return;const raw=d.raw||d.text||'';$('amount').value=d.acompte||d.amount||extractAmount(raw);$('mode').value=d.mode||detectChannel(raw);$('client').value=d.client||extractClient(raw);$('route').value=d.moment||d.route||extractRoute(raw);$('type').value=d.type||detectType(raw)}catch(e){}refresh()}
+function typeReal(){const t=$('type').value;if(t==='expense')return'expense';if(t==='receivable')return'receivable';return'income'}
+function typeLabel(){const t=$('type').value;if(t==='expense')return'Dépense';if(t==='receivable')return'À recevoir';if(t==='income_solde')return'Solde';return'Acompte'}
+function category(){const t=$('type').value;if(t==='expense')return'Dépense RESA';if(t==='receivable')return'À recevoir RESA';if(t==='income_solde')return'Solde réservation RESA';return'Acompte réservation RESA'}
+function refresh(){const a=clean($('amount').value),m=$('mode').value||'Cash',r=$('route').value||'Réservation RESA';const head=$('type').value==='expense'?'dépense réservation RESA':$('type').value==='receivable'?'à recevoir réservation RESA':$('type').value==='income_solde'?'solde réservation RESA':'acompte réservation RESA';$('phrase').value=head+' '+a+' '+m+' — '+r;return {a,m,r}}
+function payload(){const r=refresh();return{source:'RESA',module:'RESA',target:'PAY',type:typeReal(),typeLabel:typeLabel(),amount:Number(r.a)||0,currency:'XOF',channel:r.m,who:$('client').value||'Client RESA',category:category(),note:$('phrase').value,proofRef:'RESA-PAY-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),status:'draft',requiresHumanValidation:true,createdAt:new Date().toISOString(),safety:{resaKeepsBooking:true,payKeepsFinalMoney:true,noAutoPayment:true,noAutoReservation:true,humanValidationRequired:true}}}
+function urlFromPayload(p){const q=new URLSearchParams();q.set('from','RESA');q.set('type',p.type);q.set('amount',String(Math.round(p.amount||0)));q.set('channel',p.channel);q.set('who',p.who);q.set('category',p.category);q.set('note',p.note);q.set('proofRef',p.proofRef);return PAY_URL+'?'+q.toString()}
+['type','amount','mode','client','route'].forEach(id=>$(id).addEventListener('input',refresh));
+$('copy').onclick=async()=>{refresh();try{await navigator.clipboard.writeText($('phrase').value);set('Brouillon copié.')}catch(e){prompt('Copie le brouillon :',$('phrase').value)}};
+$('send').onclick=()=>{const p=payload();if(!p.amount){set('Montant manquant.');return}try{localStorage.setItem('DIGIY_RESA_PAY_BRIDGE',JSON.stringify(p));localStorage.setItem('DIGIY_PAY_PENDING_MOVEMENT',JSON.stringify(p));localStorage.setItem('DIGIY_RESA_LATEST_ACTION',JSON.stringify(p))}catch(e){}set('Ouverture PAY…');location.href=urlFromPayload(p)};
+load();
+})();
+</script>
+</body>
+</html>
