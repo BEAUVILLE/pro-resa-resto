@@ -271,8 +271,44 @@
     return true;
   }
 
+  function injectResaGoPaves(){
+    try{
+      var path = String(location.pathname || "").toLowerCase();
+      if(path.indexOf("hub") === -1 && !/\/$/.test(path)) return;
+      var grid = document.querySelector(".tileGrid");
+      if(!grid) return;
+
+      if(!document.getElementById("doorDigiyGoResa")){
+        var go = document.createElement("a");
+        go.id = "doorDigiyGoResa";
+        go.className = "tile primary metierTileClair";
+        go.href = "./action.html";
+        go.innerHTML = '<div class="tileTop"><div class="tileIcon">🎙️</div><div class="tileTag">GO</div></div><div><b>DIGIY GO RESA</b><span>Le client ou le pro parle. RESA prépare.</span></div>';
+        grid.insertBefore(go, grid.firstElementChild);
+      }
+
+      if(!document.getElementById("doorResaPayTransition")){
+        var pay = document.createElement("a");
+        pay.id = "doorResaPayTransition";
+        pay.className = "tile pay";
+        pay.href = "./pay-transition.html";
+        pay.innerHTML = '<div class="tileTop"><div class="tileIcon">💳</div><div class="tileTag">PAY</div></div><div><b>Acompte vers PAY</b><span>Argent réel seulement. PAY valide.</span></div>';
+        var target = document.querySelector('a[href*="pay"], a[href*="PAY"], a[href*="paiement"], a[href*="wave"]');
+        if(target && target.parentNode) target.parentNode.insertBefore(pay, target);
+        else grid.appendChild(pay);
+      }
+    }catch(e){
+      console.warn("[DIGIY RESA] pavés GO/PAY non injectés", e && e.message ? e.message : e);
+    }
+  }
+
+  function bootResaGoPaves(){
+    injectResaGoPaves();
+    setTimeout(injectResaGoPaves, 500);
+  }
+
   window.DIGIY_RESA_MEMORY = {
-    version: "resa-memory-v1-20260521",
+    version: "resa-memory-v1-20260528-go-pay",
     sessionHint,
     rememberSession,
     saveDraft,
@@ -287,6 +323,13 @@
     isClosedDate,
     notes,
     addNote,
-    clearLocal
+    clearLocal,
+    injectResaGoPaves
   };
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", bootResaGoPaves);
+  }else{
+    bootResaGoPaves();
+  }
 })();
