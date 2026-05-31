@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="DIGIY RESA PRO — état de session, accès protégé et retour PIN sans exposer le téléphone."/>
   <meta name="robots" content="noindex,nofollow"/>
-  <meta name="digiy-build" content="resa-session-oreille-door-20260524"/>
+  <meta name="digiy-build" content="resa-session-safe-local-clean-20260531"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -18,7 +18,7 @@
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-session-container-driver-20260519"></script>
+  <script src="./guard.js?v=resa-guard-20260531"></script>
   <script src="./assets/js/digiy-module-bridge.js?v=resa-session-cockpit-rail-clean-20260521"></script>
   <script src="./assets/js/digiy-resa-memory.js?v=resa-session-cockpit-rail-clean-20260521"></script>
 
@@ -625,10 +625,15 @@
       const SENSITIVE_KEYS = [
         "phone","tel","p_phone","owner_phone","owner_id","slug",
         "resa_tel","resa_phone","business_phone","whatsapp",
-        "module","return","redirect","redirect_url","url","from","v"
+        "module","return","redirect","redirect_url","url","from","v",
+        "pin","token","session_token","access_token","business_code",
+        "keybox_code","keybox_location","access_note"
       ];
 
-      const RESA_LOCAL_KEYS = [
+      /* Nettoyage SESSION uniquement.
+         Ne pas supprimer les données métier : réservations, planning,
+         disponibilité, fiche, établissement, signaux ou snapshot. */
+      const RESA_SESSION_KEYS = [
         "digiy_resa_last_slug",
         "digiy_resa_slug",
         "digiy_resa_phone",
@@ -636,17 +641,12 @@
         "DIGIY_RESA_SESSION",
         "DIGIY_RESA_ACCESS",
         "DIGIY_RESA_PIN_SESSION",
-        "digiy_resa_planning_cache",
-        "digiy_resa_bookings_cache",
-        "digiy_resa_etablissement_cache",
-        "digiy_resa_profile_old",
-        "digiy_resa_old_profile",
-        "digiy_resa_old_planning",
-        "digiy_resa_old_ui",
-        "resa_planning_old_ui",
-        "resa_etablissement_old_ui",
-        "resa_cockpit_old_state"
+        "DIGIY_SESSION_RESA",
+        "digiy_resa_pin_session",
+        "digiy_resa_access_session"
       ];
+
+      const RESA_DATA_KEEP = /RESERVATION|RESERVATIONS|BOOKING|BOOKINGS|PLANNING|AVAIL|DISPO|SIGNAL|SIGNALS|SNAPSHOT|FICHE|ETABLISSEMENT|PROFILE|RHYTHM|RYTHME/i;
 
       const $ = id => document.getElementById(id);
 
@@ -779,32 +779,53 @@
         try{ stores.push(localStorage); }catch(_){}
         try{ stores.push(sessionStorage); }catch(_){}
 
+        function removeKey(store, key){
+          try{
+            if(store.getItem(key) !== null){
+              store.removeItem(key);
+              removed.push(key);
+            }
+          }catch(_){}
+        }
+
+        function readMaybeJson(store, key){
+          try{
+            const raw = store.getItem(key);
+            if(!raw) return null;
+            return JSON.parse(raw);
+          }catch(_){ return null; }
+        }
+
         stores.forEach(store => {
-          RESA_LOCAL_KEYS.forEach(key => {
-            try{
-              if(store.getItem(key) !== null){
-                store.removeItem(key);
-                removed.push(key);
-              }
-            }catch(_){}
-          });
+          RESA_SESSION_KEYS.forEach(key => removeKey(store, key));
+
+          /* DIGIY_ACCESS est générique : on ne l’efface que s’il pointe bien sur RESA. */
+          try{
+            const generic = readMaybeJson(store, "DIGIY_ACCESS");
+            if(generic && String(generic.module || "").toUpperCase() === "RESA"){
+              removeKey(store, "DIGIY_ACCESS");
+            }
+          }catch(_){}
 
           try{
             Object.keys(store).forEach(key => {
-              if(/digiy.*resa|resa.*digiy|resa_/i.test(String(key || ""))){
-                store.removeItem(key);
-                removed.push(key);
-              }
+              const k = String(key || "");
+              if(RESA_DATA_KEEP.test(k)) return;
+
+              const looksResaSession =
+                /resa/i.test(k) && /(session|access|pin|slug|phone|tel|guard|login)/i.test(k);
+
+              if(looksResaSession) removeKey(store, k);
             });
           }catch(_){}
         });
 
         const notice = $("notice");
         if(notice){
-          notice.innerHTML = "<b>Nettoyage fait :</b> traces locales RESA retirées de ce navigateur. Repasse par Mon accès si nécessaire.";
+          notice.innerHTML = "<b>Nettoyage fait :</b> accès local RESA retiré de ce navigateur. Les réservations, le planning, la fiche et la mémoire métier sont conservés.";
         }
 
-        setPill("nettoyé", "warn");
+        setPill("session nettoyée", "warn");
       }
 
       async function boot(){
@@ -825,4 +846,6 @@
   </script>
 </body>
 </html>
+
+
 
