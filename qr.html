@@ -241,12 +241,31 @@
       .replace(/^-|-$/g,"");
   }
 
+  function isSensitiveSlug(v){
+    const s = String(v || "").trim();
+    if(!s) return false;
+    /* Sécurité terrain : un slug public ne doit jamais être un téléphone,
+       un PIN, un token ou une longue suite de chiffres. */
+    if(/\d{7,}/.test(s)) return true;
+    if(/^(\+?221|221|00221)?(70|75|76|77|78)\d{6,}$/i.test(s.replace(/[^\d+]/g,""))) return true;
+    if(/token|session|pin|phone|tel|whatsapp/i.test(s)) return true;
+    return false;
+  }
+
+  const SENSITIVE_KEYS = [
+    "slug","phone","tel","p_phone","owner_phone","owner_id",
+    "resa_tel","resa_phone","business_phone","whatsapp",
+    "business_code","keybox_code","keybox_location","access_note",
+    "pin","token","session_token","module","from","return",
+    "redirect","redirect_url","url","v"
+  ];
+
   function cleanVisibleUrl(){
     try{
       const u = new URL(location.href);
       /* MOULE SAFE : on ne mémorise jamais un slug venu de l’URL.
          Le QR doit être construit depuis le guard/session du pro actif. */
-      ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
+      SENSITIVE_KEYS.forEach(k => u.searchParams.delete(k));
       history.replaceState({}, document.title, u.pathname + u.search + u.hash);
     }catch(_){}
   }
@@ -256,7 +275,7 @@
     if(!baseStr) return "./dashboard-pro.html";
     try{
       const u = /^https?:\/\//i.test(baseStr) ? new URL(baseStr) : new URL(baseStr, location.href);
-      ["slug","phone","tel","resa_"+"tel","module","from","owner_phone","owner_id","business_code","keybox_code","keybox_location","access_note"].forEach(k => u.searchParams.delete(k));
+      SENSITIVE_KEYS.forEach(k => u.searchParams.delete(k));
       if(u.origin === location.origin){
         const file = u.pathname.split("/").pop() || "dashboard-pro.html";
         return "./" + file + (u.search || "") + (u.hash || "");
@@ -269,8 +288,9 @@
 
   function publicPageUrl(page, slug){
     const cleanSlug = normalizeSlug(slug || "");
+    if(!cleanSlug || isSensitiveSlug(cleanSlug)) return "";
     const u = new URL(page, PUBLIC_BASE_URL);
-    if(cleanSlug) u.searchParams.set("slug", cleanSlug);
+    u.searchParams.set("slug", cleanSlug);
     return u.toString();
   }
 
@@ -382,10 +402,12 @@
   function getSession(){
     const st = window.DIGIY_GUARD?.state || {};
     const raw = window.DIGIY_GUARD?.getSession?.() || {};
+    const slug = normalizeSlug(st.slug || raw.slug || "");
     return {
       ok: !!(st.access_ok || raw.access_ok || raw.access),
       module: String(st.module || raw.module || "").toUpperCase(),
-      slug: normalizeSlug(st.slug || raw.slug || "")
+      slug,
+      slug_ok: !!slug && !isSensitiveSlug(slug)
     };
   }
 
@@ -437,8 +459,39 @@
     return;
   }
 
+  if(!session.slug_ok){
+    clientUrlText.textContent = "Lien réservation : slug public absent ou invalide.";
+    ficheUrlText.textContent = "Lien fiche / clip : slug public absent ou invalide.";
+    note("🛡️ Sécurité : le QR n’est pas fabriqué, car le slug public est absent ou ressemble à un numéro/téléphone. Repasse par le PIN ou vérifie la fiche établissement.", "bad");
+    setAssistant(
+      "Slug public à corriger",
+      "Le QR client doit porter un slug public propre, jamais un téléphone ni une donnée privée.",
+      ["QR bloqué", "Slug sécurisé", "Aucune fuite"],
+      [
+        {title:"Protection", text:"DIGIY refuse de créer un QR si l’identifiant ressemble à un numéro ou à une donnée sensible."},
+        {title:"Action utile", text:"Ouvre la session proprement par PIN, puis vérifie que la fiche établissement possède un slug public lisible."},
+        {title:"Règle", text:"Le client reçoit seulement une porte publique, pas l’identité technique du pro."}
+      ]
+    );
+    setBusy(false);
+    btnBack.onclick = () => { location.href = buildSafeUrl(DASHBOARD_PATH); };
+    btnCopy.onclick = () => note("QR bloqué : slug public absent ou invalide.", "bad");
+    btnOpen.onclick = () => note("QR bloqué : vérifie le slug public RESA.", "bad");
+    btnFiche.onclick = () => note("Fiche bloquée : vérifie le slug public RESA.", "bad");
+    btnDownload.onclick = (e) => { e.preventDefault(); note("QR bloqué : aucun QR sensible n’est généré.", "bad"); };
+    btnSticker.onclick = (e) => { e.preventDefault(); note("Sticker bloqué : aucun QR sensible n’est généré.", "bad"); };
+    return;
+  }
+
   reservationUrl = publicPageUrl("reserver.html", session.slug);
   ficheUrl = publicPageUrl("fiche.html", session.slug);
+
+  if(!reservationUrl || !ficheUrl){
+    note("🛡️ Sécurité : lien public non construit. Vérifie le slug RESA.", "bad");
+    setAssistantError("Le slug public RESA est absent ou sensible.");
+    setBusy(false);
+    return;
+  }
 
   clientUrlText.textContent = "Lien réservation : " + reservationUrl;
   ficheUrlText.textContent = "Lien fiche / clip : " + ficheUrl;
@@ -483,6 +536,12 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
 
