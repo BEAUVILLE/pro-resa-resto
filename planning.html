@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
+  <meta name="robots" content="noindex,nofollow"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Planning • DIGIY</title>
   <meta name="theme-color" content="#0f172a"/>
@@ -401,6 +402,17 @@
       .cal-day{font-size:.72rem}
     }
   </style>
+<script>
+  window.DIGIY_MODULE       = "RESA";
+  window.DIGIY_ABOS_MODULE  = "RESA";
+  window.DIGIY_MODULE_LABEL = "Je réserve";
+  window.DIGIY_LOGIN_URL    = "./pin.html";
+  window.DIGIY_SUPABASE_URL      = window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
+  window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+  window.DIGIY_SUPABASE_ANON     = window.DIGIY_SUPABASE_ANON_KEY;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./guard.js?v=resa-guard-20260531"></script>
 </head>
 <body>
 
@@ -1222,6 +1234,14 @@
 </body>
 </html>
 ENDHTML
+
+
+
+
+
+
+
+
 
 
 
