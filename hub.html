@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="DIGIY RESA PRO — Hub mobile terrain en conteneur DRIVER : pavés larges, écriture grande, routes propres."/>
   <meta name="robots" content="noindex,nofollow"/>
-  <meta name="digiy-build" content="resa-hub-oreille-page-directe-20260524"/>
+  <meta name="digiy-build" content="resa-hub-rythme-visible-clean-20260531"/>
 
   <script>
   window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -652,11 +652,11 @@
         <a class="tile gold" id="goRythme" href="./rythme.html">
           <div class="tileTop">
             <div class="tileIcon">🧭</div>
-            <div class="tileTag">Activité</div>
+            <div class="tileTag">Rythme</div>
           </div>
           <div>
-            <b>Chaque métier réserve différemment</b>
-            <span>Restaurant, santé, beauté, garage…</span>
+            <b>Mes créneaux métier</b>
+            <span>Restaurant, santé, beauté, garage : chaque activité a son tempo.</span>
           </div>
         </a>
 
@@ -805,7 +805,7 @@
       <button class="audioCoachClose" id="digiyAudioClose" type="button" aria-label="Fermer">×</button>
     </div>
     <div class="audioCoachText" id="digiyAudioText">
-      Toutes tes portes sont là. Chaque pavé a un seul geste. Ouvre, agis, reviens.
+      Toutes tes portes sont là. Le pavé Mes créneaux métier ouvre le rythme de réservation. Chaque pavé a un seul geste. Ouvre, agis, reviens.
     </div>
     <div class="audioCoachActions">
       <button class="primary" id="digiyAudioPlay" type="button">▶ Écouter</button>
@@ -816,7 +816,7 @@
 
   <script>
   (function(){
-    var SPEAK = "Hub RESA ouvert. Toutes tes portes sont ici. Accueil pour la vue du jour. Oreille RESA pour dicter une demande avec client, téléphone, date, heure et nombre. Réservations pour la liste et le traitement. Planning pour les créneaux. QR pour partager ta porte client. Chaque pavé a un seul geste : ouvre, agis, reviens.";
+    var SPEAK = "Hub RESA ouvert. Toutes tes portes sont ici. Accueil pour la vue du jour. Oreille RESA pour dicter une demande avec client, téléphone, date, heure et nombre. Réservations pour la liste et le traitement. Planning pour les créneaux. Mes créneaux métier pour choisir le rythme de réservation selon l’activité. QR pour partager ta porte client. Chaque pavé a un seul geste : ouvre, agis, reviens.";
 
     var fab   = document.getElementById("digiyAudioFab");
     var panel = document.getElementById("digiyAudioPanel");
@@ -835,10 +835,10 @@
 
     function digiySpeakText(text){
       return String(text || "")
-        .replace(/\bWave\b/g, "Wéïv")
-        .replace(/\bWouève\b/g, "Wéïv")
+        .replace(/\bWave\b/g, "Ouève")
+        .replace(/\bWouève\b/g, "Ouève")
         .replace(/\bWhatsApp\b/g, "Ouatsap")
-        .replace(/\bDIGIYLYFE\b/g, "Di-ji-laïf")
+        .replace(/\bDIGIYLYFE\b/g, "diji laïfe")
         .replace(/\bRESA\b/g, "réservation")
         .replace(/\bRÉSA\b/g, "réservation");
     }
@@ -1130,8 +1130,6 @@
 
 
 
-
-</html>
 
 
 
