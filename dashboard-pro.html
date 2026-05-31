@@ -2146,7 +2146,8 @@
 
 
   // ── PAY upsell ────────────────────────────────────────────
-  const PAY_COCKPIT_URL = "https://pay.digiylyfe.com/cockpit.html";
+  // PAY s’ouvre proprement : aucun slug, aucun téléphone, aucun identifiant sensible dans l’URL.
+  const PAY_COCKPIT_URL = "https://pro-pay.digiylyfe.com/admin.html";
 
   function getSbClient(){
     if(window.DIGIY_SUPABASE_CLIENT) return window.DIGIY_SUPABASE_CLIENT;
@@ -2163,7 +2164,7 @@
       module: "PAY",
       plan: "9A",
       from: "resa",
-      return: location.href.split("?")[0]
+      return: location.origin + location.pathname
     });
   }
 
@@ -2180,14 +2181,13 @@
     }catch(_){ return null; }
   }
 
-  function applyPayAccess(hasPayAccess, slug){
+  function applyPayAccess(hasPayAccess){
     if(hasPayAccess === null || hasPayAccess === undefined) return;
     const card = document.getElementById("payUpsellSection");
     const btn  = document.getElementById("btnMonArgent");
     if(hasPayAccess){
       if(card) card.style.display = "none";
-      const url = PAY_COCKPIT_URL + (slug ? "?slug=" + encodeURIComponent(slug) : "");
-      if(btn){ btn.href = url; btn.textContent = "💰 Ouvrir Mon Argent"; }
+      if(btn){ btn.href = PAY_COCKPIT_URL; btn.textContent = "💰 Ouvrir Mon Argent"; }
     } else {
       if(card) card.style.display = "";
       if(btn) btn.href = buildPayUpsellUrl();
@@ -2214,8 +2214,7 @@
 
     // Vérif PAY async après session
     const _phone = CURRENT_STATE?.phone || "";
-    const _slug  = normalizeSlug(CURRENT_STATE?.slug || getFallbackSlug() || "");
-    if(_phone) checkPayAccess(_phone).then(ok => applyPayAccess(ok, _slug));
+    if(_phone) checkPayAccess(_phone).then(ok => applyPayAccess(ok));
 
     const stateModule = String(CURRENT_STATE?.module || CURRENT_STATE?.module_code || MODULE_CODE).toUpperCase();
     const sessionSlug = normalizeSlug(CURRENT_STATE?.slug || getFallbackSlug() || "");
@@ -2296,6 +2295,193 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
