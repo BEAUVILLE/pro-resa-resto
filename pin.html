@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
+  <meta name="robots" content="noindex,nofollow"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Accès • DIGIY</title>
+  <title>Accès RESA • DIGIY</title>
   <meta name="theme-color" content="#020617"/>
 
   <!-- CONFIG — changer ces 5 lignes par module -->
@@ -153,8 +154,8 @@ const INDEX_URL=window.DIGIY_INDEX_URL||"./index.html";
 const SLUG_PREFIX=(window.DIGIY_SLUG_PREFIX||MODULE.toLowerCase()).replace(/_/g,"-");
 const MAX_AGE=8*60*60*1000;
 const mod=MODULE.toLowerCase();
-const SKEYS=[`digiy_${mod}_session`,`digiy_${mod}_guard_session`,`digiy_guard_${mod}_session`];
-const PKEYS=[`digiy_${mod}_phone`,`digiy_${mod}_last_phone`,"DIGIY_LOC_HUB_PHONE","digiy_phone"];
+const SKEYS=[`digiy_${mod}_session`,`digiy_${mod}_guard_session`,`digiy_guard_${mod}_session`,`DIGIY_${MODULE}_PIN_SESSION`,`DIGIY_${MODULE}_SESSION`,`DIGIY_SESSION_${MODULE}`,`DIGIY_${MODULE}_ACCESS`,"DIGIY_ACCESS"];
+const PKEYS=[`digiy_${mod}_phone`,`digiy_${mod}_last_phone`,`DIGIY_${MODULE}_HUB_PHONE`,"digiy_phone"];
 const SLKEYS=[`digiy_${mod}_last_slug`,`digiy_${mod}_slug`,"digiy_last_slug"];
 
 const $=id=>document.getElementById(id);
@@ -200,8 +201,60 @@ function writeSession(phone,sl,token){
 }
 
 function redirect(sl){
-  try{const u=new URL(INDEX_URL,location.href);if(sl)u.searchParams.set("slug",sl);u.searchParams.delete("phone");location.replace(u.toString())}
-  catch(_){location.replace(INDEX_URL)}
+  try{
+    if(sl){
+      ls(`digiy_${mod}_slug`, sl);
+      ss(`digiy_${mod}_slug`, sl);
+      ls(`digiy_${mod}_last_slug`, sl);
+      ss(`digiy_${mod}_last_slug`, sl);
+    }
+
+    const returnTarget =
+      ss(`digiy_${mod}_return_target`) ||
+      ls(`digiy_${mod}_return_target`) ||
+      ss("digiy_resa_return_target") ||
+      ls("digiy_resa_return_target") ||
+      "";
+
+    let target = INDEX_URL;
+    if(returnTarget === "planning") target = "./planning.html";
+    else if(returnTarget === "reserv") target = "./cockpit.html";
+    else if(returnTarget === "session") target = "./session.html";
+    else if(returnTarget === "plus") target = "./etablissement.html";
+    else if(returnTarget === "qr") target = "./qr.html";
+    else if(returnTarget === "dashboard") target = "./dashboard-pro.html";
+
+    const u = new URL(target, location.href);
+
+    [
+      "slug",
+      "phone",
+      "tel",
+      "owner_phone",
+      "owner_id",
+      "p_phone",
+      "resa_tel",
+      "resa_phone",
+      "business_phone",
+      "whatsapp",
+      "module",
+      "return",
+      "redirect",
+      "redirect_url",
+      "url",
+      "from",
+      "v",
+      "pin",
+      "code",
+      "token",
+      "session",
+      "access"
+    ].forEach(k => u.searchParams.delete(k));
+
+    location.replace(u.toString());
+  }catch(_){
+    location.replace(INDEX_URL);
+  }
 }
 
 // ETAPE 1
@@ -285,7 +338,7 @@ async function doLogin(){
       return;
     }
     const rpcSlug=row?.slug||row?.identifiant||"";
-    const finalSlug=rpcSlug||slug(confirmedPhone);
+    const finalSlug=rpcSlug||"";
     writeSession(confirmedPhone,finalSlug,row?.session_token||"");
     showSt("status2","✅ Accès ouvert. Redirection…","ok");
     setTimeout(()=>redirect(finalSlug),700);
@@ -299,6 +352,9 @@ async function doLogin(){
 </script>
 </body>
 </html>
+
+
+
 
 
 
