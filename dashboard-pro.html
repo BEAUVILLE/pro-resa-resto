@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Je réserve — Accueil RESA PRO · réservation client</title>
   <meta name="theme-color" content="#f4ead2" />
-  <meta name="digiy-build" content="resa-dashboard-20260513-v4-porte-qr-client" />
+  <meta name="digiy-build" content="resa-dashboard-20260531-pay-url-clean-v1" />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -1423,6 +1423,42 @@
     );
   }
 
+  const SENSITIVE_URL_KEYS = [
+    "slug",
+    "phone",
+    "tel",
+    "owner_phone",
+    "owner_id",
+    "resa_tel",
+    "resa_phone",
+    "business_phone",
+    "whatsapp",
+    "p_phone",
+    "token",
+    "session_token",
+    "pin",
+    "v"
+  ];
+
+  function cleanNestedReturnValue(value){
+    const raw = String(value || "").trim();
+    if(!raw) return "";
+
+    try{
+      const nested = new URL(raw, location.href);
+      SENSITIVE_URL_KEYS.forEach((key) => nested.searchParams.delete(key));
+
+      if(nested.origin === location.origin){
+        return nested.pathname + (nested.search || "") + (nested.hash || "");
+      }
+
+      return nested.toString();
+    }catch(_){
+      return raw.split("?")[0].split("#")[0];
+    }
+  }
+
+
   function buildSafeUrl(base, params){
     const baseStr = (base == null ? "" : String(base)).trim();
     if(!baseStr) return "./dashboard-pro.html";
@@ -1459,8 +1495,17 @@
 
     try{
       Object.entries(params || {}).forEach(([k,v]) => {
-        if(["slug","phone","tel","resa_"+"tel"].includes(k)) return;
-        if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+        const key = String(k || "").toLowerCase();
+        if(SENSITIVE_URL_KEYS.includes(key)) return;
+
+        let value = String(v ?? "").trim();
+        if(!value) return;
+
+        if(["return","redirect","redirect_url","url"].includes(key)){
+          value = cleanNestedReturnValue(value);
+        }
+
+        if(value) u.searchParams.set(k,value);
       });
     }catch(e){}
 
@@ -1807,6 +1852,7 @@
     u.searchParams.set("label", d.label || "Note réservation");
     u.searchParams.set("note", d.sentence || "");
 
+    SENSITIVE_URL_KEYS.forEach((key) => u.searchParams.delete(key));
     return u.toString();
   }
 
@@ -2187,7 +2233,7 @@
     const btn  = document.getElementById("btnMonArgent");
     if(hasPayAccess){
       if(card) card.style.display = "none";
-      if(btn){ btn.href = PAY_COCKPIT_URL; btn.textContent = "💰 Ouvrir Mon Argent"; }
+      if(btn){ btn.href = buildSafeUrl(PAY_COCKPIT_URL, {}); btn.textContent = "💰 Ouvrir Mon Argent"; }
     } else {
       if(card) card.style.display = "";
       if(btn) btn.href = buildPayUpsellUrl();
@@ -2256,7 +2302,7 @@
   };
 
   $("btnActivateModule")?.addEventListener("click", () => {
-    location.href = CURRENT_STATE?.pay_url || buildPayUrl();
+    location.href = buildSafeUrl(CURRENT_STATE?.pay_url || buildPayUrl(), {});
   });
 
   $("btnPrimaryAction").onclick = () => {
@@ -2295,6 +2341,381 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
