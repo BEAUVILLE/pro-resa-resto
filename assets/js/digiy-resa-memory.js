@@ -1,335 +1,305 @@
-/*
-  DIGIYLYFE — Mémoire locale RESA
-  Module : RESA / Je réserve
-  Rôle : garder brouillons, demandes, réservations, fermetures et notes locales
-  sans bloquer Supabase. Local robuste d'abord, Supabase ensuite.
-*/
+/* =========================================================
+   DIGIY RESA PRO — MÉMOIRE LOCALE RÉSERVATIONS
+   Version terrain V1 — 2026-05-20
+
+   Même doctrine que DIGIY DRIVER PRO MEMORY.
+   Deux blocs :
+     1) Réservations reçues  → pense-bête établissement
+     2) Disponibilités posées → planning public / fiche client
+
+   Local robuste d'abord, Supabase ensuite.
+   ========================================================= */
 (function(){
   "use strict";
 
-  const ROOT = "DIGIY_RESA_MEMORY_V1";
-  const MODULE = "RESA";
+  if(window.DIGIY_RESA_PRO_MEMORY_READY) return;
+  window.DIGIY_RESA_PRO_MEMORY_READY = true;
 
-  const LEGACY = {
-    slug: ["digiy_resa_slug", "digiy_resa_last_slug", "RESA_LAST_SLUG"],
-    phone: ["digiy_resa_phone", "resa_tel", "resa_phone", "RESA_PHONE"],
-    bookings: ["digiy_resa_bookings", "digiy_resa_bookings_cache"],
-    closures: ["digiy_resa_closures", "digiy_resa_closed_days"],
-    notes: ["digiy_resa_notes"],
-    draft: ["digiy_resa_draft", "digiy_resa_request_draft"]
+  /* ── Clés PRO (courantes) ── */
+  var KEYS = {
+    reservations: "DIGIY_RESA_PRO_RESERVATIONS",
+    planning:     "DIGIY_RESA_PRO_PLANNING",
+    signals:      "DIGIY_RESA_PRO_SIGNALS",
+    snapshot:     "DIGIY_RESA_PRO_SYNC_SNAPSHOT_V1"
   };
 
-  function safeStorage(kind){
-    try{
-      const s = kind === "session" ? window.sessionStorage : window.localStorage;
-      const k = ROOT + "_TEST";
-      s.setItem(k, "1");
-      s.removeItem(k);
-      return s;
-    }catch(_){
-      return null;
-    }
-  }
+  /* ── Clés LEGACY (rétrocompat pages déjà posées) ── */
+  var LEGACY = {
+    reservations: "DIGIY_RESA_RESERVATIONS",
+    planning:     "DIGIY_RESA_PLANNING",
+    signals:      "DIGIY_RESA_SIGNALS",
+    snapshot:     "DIGIY_RESA_SYNC_SNAPSHOT_V1"
+  };
 
-  const local = safeStorage("local");
-  const session = safeStorage("session");
-
-  function readRaw(key){
-    try{
-      return (session && session.getItem(key)) || (local && local.getItem(key)) || "";
-    }catch(_){ return ""; }
-  }
-
-  function writeRaw(key, value, opts){
-    const target = opts && opts.session ? session : local;
-    if(!target) return false;
-    try{
-      target.setItem(key, String(value ?? ""));
-      return true;
-    }catch(_){ return false; }
-  }
-
-  function removeRaw(key){
-    try{ if(local) local.removeItem(key); }catch(_){}
-    try{ if(session) session.removeItem(key); }catch(_){}
-  }
+  /* ═══════════════════════════════════════════════════════
+     UTILITAIRES
+  ═══════════════════════════════════════════════════════ */
 
   function readJson(key, fallback){
-    const raw = readRaw(key);
-    if(!raw) return fallback;
     try{
-      const parsed = JSON.parse(raw);
-      return parsed ?? fallback;
-    }catch(_){
-      return fallback;
+      var raw = localStorage.getItem(key);
+      if(!raw) return fallback;
+      var parsed = JSON.parse(raw);
+      return parsed == null ? fallback : parsed;
+    }catch(_){ return fallback; }
+  }
+
+  function writeJson(key, value){
+    try{
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    }catch(e){
+      console.warn("[DIGIY RESA MEMORY] impossible d'écrire", key, e && e.message ? e.message : e);
+      return false;
     }
   }
 
-  function writeJson(key, value, opts){
-    try{
-      return writeRaw(key, JSON.stringify(value), opts);
-    }catch(_){ return false; }
+  function writeBoth(proKey, legacyKey, value){
+    writeJson(proKey, value);
+    if(legacyKey && legacyKey !== proKey) writeJson(legacyKey, value);
   }
 
-  function normSlug(value){
-    return String(value || "")
-      .trim()
+  function readBoth(proKey, legacyKey, fallback){
+    var pro = readJson(proKey, null);
+    if(pro != null) return pro;
+    var legacy = readJson(legacyKey, null);
+    if(legacy != null) return legacy;
+    return fallback;
+  }
+
+  function idFrom(text){
+    return String(text || "")
       .toLowerCase()
-      .replace(/\s+/g,"-")
-      .replace(/[^a-z0-9-]/g,"")
-      .replace(/-+/g,"-")
-      .replace(/^-|-$/g,"");
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 80) || ("id-" + Date.now());
   }
 
-  function normPhone(value){
-    const digits = String(value || "").replace(/[^\d]/g,"");
-    if(!digits) return "";
-    if(digits.startsWith("221") && digits.length === 12) return digits;
-    if(digits.length === 9) return "221" + digits;
-    return digits.slice(0,15);
+  function now(){ return new Date().toISOString(); }
+
+  function list(pairs){
+    var out = [];
+    pairs.forEach(function(pair){
+      var rows = readBoth(pair[0], pair[1], []);
+      if(Array.isArray(rows)) out = out.concat(rows);
+    });
+    return out;
   }
 
-  function first(keys){
-    for(const key of keys){
-      const v = readRaw(key);
-      if(String(v || "").trim()) return String(v).trim();
-    }
-    return "";
+  function dedupe(rows){
+    var map = new Map();
+    rows.forEach(function(row){
+      if(!row) return;
+      var key = String(
+        row.id ||
+        row.reference ||
+        row.booking_ref ||
+        row.client_name + "-" + (row.checkin || row.date || "") ||
+        Math.random()
+      );
+      map.set(key, Object.assign({}, map.get(key) || {}, row));
+    });
+    return Array.from(map.values());
   }
 
-  function sessionHint(){
-    let bridge = {};
-    try{
-      if(window.DIGIY_MODULE_BRIDGE && typeof window.DIGIY_MODULE_BRIDGE.readSession === "function"){
-        bridge = window.DIGIY_MODULE_BRIDGE.readSession() || {};
-      }else if(window.DIGIY_MODULE_BRIDGE && typeof window.DIGIY_MODULE_BRIDGE.getSession === "function"){
-        bridge = window.DIGIY_MODULE_BRIDGE.getSession() || {};
-      }
-    }catch(_){}
+  /* ═══════════════════════════════════════════════════════
+     SIGNAUX
+  ═══════════════════════════════════════════════════════ */
 
-    const slug = normSlug(
-      bridge.slug ||
-      bridge.workspace_slug ||
-      first(LEGACY.slug)
-    );
-
-    const phone = normPhone(
-      bridge.phone ||
-      bridge.tel ||
-      first(LEGACY.phone)
-    );
-
-    return { slug, phone, module: MODULE };
+  function rememberSignal(type, label, message, href){
+    var rows = readBoth(KEYS.signals, LEGACY.signals, []);
+    if(!Array.isArray(rows)) rows = [];
+    rows.push({
+      id: String(Date.now()) + "-" + Math.random().toString(16).slice(2),
+      module: "RESA",
+      side: "PRO",
+      source: "resa-pro-memory",
+      type:    type    || "memoire",
+      label:   label   || "Mémoire RESA PRO",
+      message: message || "",
+      href:    href    || "./hub.html",
+      created_at: now()
+    });
+    writeBoth(KEYS.signals, LEGACY.signals, rows.slice(-120));
   }
 
-  function rememberSession(data){
-    const input = data || {};
-    const slug = normSlug(input.slug || input.workspace_slug || "");
-    const phone = normPhone(input.phone || input.tel || "");
+  /* ═══════════════════════════════════════════════════════
+     SNAPSHOT
+  ═══════════════════════════════════════════════════════ */
 
-    if(slug){
-      writeRaw("digiy_resa_slug", slug);
-      writeRaw("digiy_resa_last_slug", slug);
-    }
-
-    if(phone){
-      writeRaw("digiy_resa_phone", phone);
-      writeRaw("resa_phone", phone);
-      writeRaw("resa_tel", phone);
-    }
-
-    return sessionHint();
+  function updateSnapshot(patch){
+    var old  = readBoth(KEYS.snapshot, LEGACY.snapshot, {});
+    var next = Object.assign({}, old || {}, patch || {}, {
+      module:   "RESA",
+      side:     "PRO",
+      saved_at: now()
+    });
+    writeBoth(KEYS.snapshot, LEGACY.snapshot, next);
+    return next;
   }
 
-  function saveDraft(draft){
-    const payload = {
-      ...(draft || {}),
-      updated_at: new Date().toISOString()
-    };
-    writeJson("digiy_resa_draft", payload);
-    writeJson(ROOT + "_draft", payload);
-    return payload;
-  }
+  /* ═══════════════════════════════════════════════════════
+     BLOC 1 — RÉSERVATIONS REÇUES
+     Pense-bête établissement : client, date, chambre/créneau
+  ═══════════════════════════════════════════════════════ */
 
-  function loadDraft(){
-    return readJson(ROOT + "_draft", null) || readJson("digiy_resa_draft", {});
-  }
+  function normalizeReservation(item){
+    var r = item || {};
+    var id = String(r.id || r.reference || r.booking_ref || "").trim() ||
+      idFrom([r.client_name, r.checkin, r.room].filter(Boolean).join("-")) + "-" + Date.now();
 
-  function clearDraft(){
-    removeRaw(ROOT + "_draft");
-    removeRaw("digiy_resa_draft");
-    removeRaw("digiy_resa_request_draft");
-    return true;
-  }
-
-  function listBookings(){
-    const modern = readJson(ROOT + "_bookings", null);
-    if(Array.isArray(modern)) return modern;
-
-    for(const key of LEGACY.bookings){
-      const rows = readJson(key, null);
-      if(Array.isArray(rows)) return rows;
-    }
-
-    return [];
-  }
-
-  function saveBookings(items){
-    const arr = Array.isArray(items) ? items : [];
-    writeJson(ROOT + "_bookings", arr.slice(-500));
-    writeJson("digiy_resa_bookings", arr.slice(-500));
-    return arr;
-  }
-
-  function upsertBooking(booking){
-    const item = {
-      id: booking?.id || ("local_resa_" + Date.now()),
-      ...booking,
-      local_saved_at: new Date().toISOString()
-    };
-    const arr = listBookings().filter(x => String(x?.id) !== String(item.id));
-    arr.unshift(item);
-    saveBookings(arr);
-    return item;
-  }
-
-  function listClosures(){
-    const modern = readJson(ROOT + "_closures", null);
-    if(Array.isArray(modern)) return modern;
-
-    for(const key of LEGACY.closures){
-      const rows = readJson(key, null);
-      if(Array.isArray(rows)) return rows;
-    }
-
-    return [];
-  }
-
-  function saveClosures(items){
-    const arr = Array.isArray(items) ? items : [];
-    writeJson(ROOT + "_closures", arr.slice(-500));
-    writeJson("digiy_resa_closures", arr.slice(-500));
-    writeJson("digiy_resa_closed_days", arr.slice(-500));
-    return arr;
-  }
-
-  function addClosure(closure){
-    const item = {
-      id: closure?.id || ("closure_" + Date.now()),
-      ...closure,
-      local_saved_at: new Date().toISOString()
-    };
-    const arr = listClosures().filter(x => String(x?.id) !== String(item.id));
-    arr.unshift(item);
-    saveClosures(arr);
-    return item;
-  }
-
-  function isClosedDate(dateString){
-    const d = String(dateString || "").slice(0,10);
-    if(!d) return false;
-
-    return listClosures().some(row => {
-      const start = String(row.start || row.date || row.from || "").slice(0,10);
-      const end = String(row.end || row.to || row.date || row.start || "").slice(0,10);
-      if(start && end) return d >= start && d <= end;
-      return start === d;
+    return Object.assign({}, r, {
+      id:          id,
+      module:      "RESA",
+      side:        "PRO",
+      memory_type: "reservation",
+      source:      r.source || "cockpit",
+      reference:   String(r.reference  || r.booking_ref || id).trim(),
+      client_name: String(r.client_name || r.client     || "").trim(),
+      client_phone:String(r.client_phone || r.phone     || "").trim(),
+      room:        String(r.room  || r.chambre || r.logement || "").trim(),
+      checkin:     String(r.checkin  || r.date_in  || r.arrival   || "").trim(),
+      checkout:    String(r.checkout || r.date_out || r.departure || "").trim(),
+      guests:      Number(r.guests   || r.personnes || 1) || 1,
+      amount:      Number(r.amount   || r.total     || r.price || 0) || 0,
+      status:      String(r.status   || "confirmed").trim(),
+      note:        String(r.note     || "").trim(),
+      updated_at:  now(),
+      created_at:  r.created_at || now()
     });
   }
 
-  function notes(){
-    const arr = readJson(ROOT + "_notes", null);
-    if(Array.isArray(arr)) return arr;
-    const legacy = readJson("digiy_resa_notes", []);
-    return Array.isArray(legacy) ? legacy : [];
-  }
+  function saveReservation(item){
+    var resa = normalizeReservation(item);
 
-  function addNote(text, meta){
-    const note = {
-      id: "resa_note_" + Date.now(),
-      text: String(text || "").trim(),
-      meta: meta || {},
-      created_at: new Date().toISOString()
-    };
-    if(!note.text) return null;
-    const arr = notes();
-    arr.unshift(note);
-    writeJson(ROOT + "_notes", arr.slice(0,200));
-    writeJson("digiy_resa_notes", arr.slice(0,200));
-    return note;
-  }
+    var rows = dedupe(
+      list([
+        [KEYS.reservations, LEGACY.reservations]
+      ]).concat([resa])
+    );
 
-  function clearLocal(){
-    [
-      ROOT + "_draft",
-      ROOT + "_bookings",
-      ROOT + "_closures",
-      ROOT + "_notes",
-      "digiy_resa_draft",
-      "digiy_resa_request_draft"
-    ].forEach(removeRaw);
-    return true;
-  }
+    writeBoth(KEYS.reservations, LEGACY.reservations, rows.slice(-200));
 
-  function injectResaGoPaves(){
+    var old = readBoth(KEYS.snapshot, LEGACY.snapshot, {});
+    updateSnapshot({
+      reservations: rows.slice(-200),
+      summary: Object.assign({}, old.summary || {}, {
+        counts: Object.assign({}, (old.summary || {}).counts || {}, {
+          reservations: rows.length
+        })
+      })
+    });
+
+    rememberSignal(
+      "reservation_recue",
+      "Réservation gardée",
+      [resa.client_name || "Client", resa.checkin, resa.room].filter(Boolean).join(" · "),
+      "./cockpit.html"
+    );
+
     try{
-      var path = String(location.pathname || "").toLowerCase();
-      if(path.indexOf("hub") === -1 && !/\/$/.test(path)) return;
-      var grid = document.querySelector(".tileGrid");
-      if(!grid) return;
+      window.dispatchEvent(new CustomEvent("digiy:resa:pro:reservation:saved", { detail: resa }));
+    }catch(_){}
 
-      if(!document.getElementById("doorDigiyGoResa")){
-        var go = document.createElement("a");
-        go.id = "doorDigiyGoResa";
-        go.className = "tile primary metierTileClair";
-        go.href = "./action.html";
-        go.innerHTML = '<div class="tileTop"><div class="tileIcon">🎙️</div><div class="tileTag">GO</div></div><div><b>DIGIY GO RESA</b><span>Le client ou le pro parle. RESA prépare.</span></div>';
-        grid.insertBefore(go, grid.firstElementChild);
-      }
-
-      if(!document.getElementById("doorResaPayTransition")){
-        var pay = document.createElement("a");
-        pay.id = "doorResaPayTransition";
-        pay.className = "tile pay";
-        pay.href = "./pay-transition.html";
-        pay.innerHTML = '<div class="tileTop"><div class="tileIcon">💳</div><div class="tileTag">PAY</div></div><div><b>Acompte vers PAY</b><span>Argent réel seulement. PAY valide.</span></div>';
-        var target = document.querySelector('a[href*="pay"], a[href*="PAY"], a[href*="paiement"], a[href*="wave"]');
-        if(target && target.parentNode) target.parentNode.insertBefore(pay, target);
-        else grid.appendChild(pay);
-      }
-    }catch(e){
-      console.warn("[DIGIY RESA] pavés GO/PAY non injectés", e && e.message ? e.message : e);
-    }
+    return resa;
   }
 
-  function bootResaGoPaves(){
-    injectResaGoPaves();
-    setTimeout(injectResaGoPaves, 500);
+  function readReservations(){
+    return dedupe(
+      list([[KEYS.reservations, LEGACY.reservations]])
+    );
   }
 
-  window.DIGIY_RESA_MEMORY = {
-    version: "resa-memory-v1-20260528-go-pay",
-    sessionHint,
-    rememberSession,
-    saveDraft,
-    loadDraft,
-    clearDraft,
-    listBookings,
-    saveBookings,
-    upsertBooking,
-    listClosures,
-    saveClosures,
-    addClosure,
-    isClosedDate,
-    notes,
-    addNote,
-    clearLocal,
-    injectResaGoPaves
+  /* ═══════════════════════════════════════════════════════
+     BLOC 2 — DISPONIBILITÉS POSÉES
+     Planning public : créneaux ouverts, fermetures, tarifs
+  ═══════════════════════════════════════════════════════ */
+
+  function normalizeAvailability(item){
+    var a = item || {};
+    var date = String(a.date || a.day || a.date_day || "").trim();
+    var id   = String(a.id || "").trim() || idFrom(date + "-" + (a.room || "")) + "-" + Date.now();
+
+    return Object.assign({}, a, {
+      id:          id,
+      module:      "RESA",
+      side:        "PRO",
+      memory_type: "availability",
+      source:      a.source || "planning",
+      date:        date,
+      room:        String(a.room    || a.chambre  || "").trim(),
+      status:      String(a.status  || "open").trim(),
+      is_closed:   !!(a.is_closed   || a.closed   || a.ferme),
+      is_booked:   !!(a.is_booked   || a.booked   || a.reserved),
+      price:       Number(a.price   || a.tarif    || a.amount || 0) || 0,
+      note:        String(a.note    || a.label    || "").trim(),
+      updated_at:  now(),
+      created_at:  a.created_at || now()
+    });
+  }
+
+  function saveAvailability(item){
+    var avail = normalizeAvailability(item);
+
+    var rows = dedupe(
+      list([
+        [KEYS.planning, LEGACY.planning]
+      ]).concat([avail])
+    ).filter(function(r){ return !!r.date; });
+
+    writeBoth(KEYS.planning, LEGACY.planning, rows.slice(-365));
+
+    updateSnapshot({
+      planning: rows.slice(-365),
+    });
+
+    rememberSignal(
+      "disponibilite_posee",
+      "Disponibilité gardée",
+      [avail.date, avail.room, avail.is_closed ? "Fermé" : "Ouvert"].filter(Boolean).join(" · "),
+      "./planning.html"
+    );
+
+    try{
+      window.dispatchEvent(new CustomEvent("digiy:resa:pro:availability:saved", { detail: avail }));
+    }catch(_){}
+
+    return avail;
+  }
+
+  function readAvailabilities(){
+    return dedupe(
+      list([[KEYS.planning, LEGACY.planning]])
+    ).filter(function(r){ return !!r.date; });
+  }
+
+  /* ═══════════════════════════════════════════════════════
+     API PUBLIQUE
+  ═══════════════════════════════════════════════════════ */
+
+  window.DIGIY_RESA_PRO_MEMORY = {
+    keys:       KEYS,
+    legacyKeys: LEGACY,
+
+    /* lecture brute */
+    readJson:   readJson,
+    writeJson:  writeJson,
+
+    /* réservations */
+    readReservations:  readReservations,
+    saveReservation:   saveReservation,
+
+    /* planning */
+    readAvailabilities: readAvailabilities,
+    saveAvailability:   saveAvailability,
+
+    /* signaux + snapshot */
+    rememberSignal: rememberSignal,
+    updateSnapshot: updateSnapshot
   };
 
-  if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", bootResaGoPaves);
-  }else{
-    bootResaGoPaves();
-  }
+  /* Alias court pour cohérence avec l'écosystème */
+  window.DIGIY_RESA_MEMORY = window.DIGIY_RESA_PRO_MEMORY;
+
 })();
