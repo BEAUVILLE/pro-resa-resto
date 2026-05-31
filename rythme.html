@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="DIGIY RESA — Mon rythme de réservation : restaurant, beauté, santé, garage, RDV, intervention."/>
   <meta name="robots" content="noindex,nofollow"/>
-  <meta name="digiy-build" content="resa-chaque-metier-paves-20260520"/>
+  <meta name="digiy-build" content="resa-rythme-url-clean-20260531"/>
 
   <script>
     window.DIGIY_SUPABASE_URL     = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -17,7 +17,7 @@
     window.DIGIY_LOGIN_URL        = "./pin.html";
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-rythme-20260520"></script>
+  <script src="./guard.js?v=resa-guard-20260531"></script>
   <script src="./assets/js/digiy-module-bridge.js?v=bridge-20260520" defer></script>
   <script src="./assets/js/digiy-resa-memory.js?v=resa-memory-20260520" defer></script>
 
@@ -275,6 +275,75 @@
   (function(){
     "use strict";
 
+    var SENSITIVE_KEYS = [
+      "phone","tel","p_phone","owner_phone","owner_id","slug",
+      "resa_tel","resa_phone","business_phone","whatsapp",
+      "module","return","redirect","redirect_url","url","from","v",
+      "pin","token","session_token","access_token","business_code",
+      "keybox_code","keybox_location","access_note"
+    ];
+
+    function normSlug(v){
+      return String(v || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g,"-")
+        .replace(/[^a-z0-9-]/g,"")
+        .replace(/-+/g,"-")
+        .replace(/^-|-$/g,"");
+    }
+
+    function isSensitiveSlug(v){
+      return /\d{7,}/.test(String(v || ""));
+    }
+
+    function cleanVisibleUrl(){
+      try{
+        var url = new URL(location.href);
+        var changed = false;
+
+        SENSITIVE_KEYS.forEach(function(key){
+          if(url.searchParams.has(key)){
+            url.searchParams.delete(key);
+            changed = true;
+          }
+        });
+
+        var s = normSlug(url.searchParams.get("slug") || "");
+        if(s && isSensitiveSlug(s)){
+          url.searchParams.delete("slug");
+          changed = true;
+        }
+
+        if(changed){
+          history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }
+      }catch(_){}
+    }
+
+    function cleanInternalLinks(){
+      try{
+        document.querySelectorAll("a[href]").forEach(function(link){
+          var href = link.getAttribute("href") || "";
+          if(!href || href.indexOf("#") === 0 || href.indexOf("mailto:") === 0 || href.indexOf("tel:") === 0) return;
+
+          var url = new URL(href, location.href);
+          if(url.origin !== location.origin) return;
+
+          SENSITIVE_KEYS.forEach(function(key){ url.searchParams.delete(key); });
+
+          var s = normSlug(url.searchParams.get("slug") || "");
+          if(s && isSensitiveSlug(s)) url.searchParams.delete("slug");
+
+          var file = url.pathname.split("/").pop() || "index.html";
+          link.setAttribute("href", "./" + file + (url.search || "") + (url.hash || ""));
+        });
+      }catch(_){}
+    }
+
+    cleanVisibleUrl();
+    cleanInternalLinks();
+
     var EXAMPLES = {
       restaurant:{
         title:"🍽️ Restaurant · réservation de table",
@@ -388,6 +457,8 @@
         }catch(_){}
       }
       waitGuard();
+      cleanVisibleUrl();
+      cleanInternalLinks();
     })();
 
   })();
