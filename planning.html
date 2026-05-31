@@ -637,6 +637,7 @@
   </div>
 </div>
 
+<script src="./assets/js/digiy-resa-memory.js?v=resa-memory-20260520"></script>
 <script>
 (function(){
   /* ══ CONFIG ══ */
@@ -677,7 +678,133 @@
 
   /* ══ STORAGE ══ */
   function ls(k,v){ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(_){return null} }
-  function loadData(){ return ls(STORE_KEY)||{} }
+
+  function getResaMemory(){
+    return window.DIGIY_RESA_PRO_MEMORY || window.DIGIY_RESA_MEMORY || null;
+  }
+
+  function statusToMemoryStatus(status){
+    if(status === "ok") return "confirmed";
+    if(status === "wait") return "pending";
+    if(status === "close") return "closed";
+    return "info";
+  }
+
+  function memoryStatusToPlanningStatus(status, isClosed){
+    if(isClosed) return "close";
+    const s = String(status || "").toLowerCase();
+    if(["confirmed","confirmé","confirme","ok","reserved","booked"].includes(s)) return "ok";
+    if(["pending","attente","wait","waiting"].includes(s)) return "wait";
+    if(["closed","ferme","fermé","blocked","bloque","bloqué"].includes(s)) return "close";
+    return "info";
+  }
+
+  function toMemoryDateTime(dateKey, time){
+    return String(dateKey || "") + (time ? "T" + String(time).slice(0,5) : "");
+  }
+
+  function syncEventToResaMemory(dateKey, ev){
+    const mem = getResaMemory();
+    if(!mem || !ev) return;
+
+    const safeName = String(ev.name || "").trim();
+    const safeRoom = String(ev.ressource || "").trim();
+    const status = statusToMemoryStatus(ev.status || "wait");
+
+    try{
+      if(typeof mem.saveAvailability === "function"){
+        mem.saveAvailability({
+          id: "planning-" + String(ev.id || ""),
+          date: dateKey,
+          room: safeRoom,
+          status,
+          is_closed: ev.status === "close",
+          is_booked: ev.status === "ok" || ev.status === "wait",
+          price: Number(ev.amount || 0) || 0,
+          note: [safeName, ev.desc].filter(Boolean).join(" · "),
+          source: "planning"
+        });
+      }
+
+      if(ev.status !== "close" && typeof mem.saveReservation === "function"){
+        mem.saveReservation({
+          id: "planning-" + String(ev.id || ""),
+          reference: "RESA-" + String(ev.id || Date.now()).slice(-8),
+          client_name: safeName,
+          client_phone: String(ev.phone || "").trim(),
+          room: safeRoom,
+          checkin: toMemoryDateTime(dateKey, ev.timeStart),
+          checkout: toMemoryDateTime(dateKey, ev.timeEnd),
+          amount: Number(ev.amount || 0) || 0,
+          status,
+          note: String(ev.desc || "").trim(),
+          source: "planning"
+        });
+      }
+    }catch(e){
+      console.warn("[DIGIY PLANNING] sync RESA memory", e && e.message ? e.message : e);
+    }
+  }
+
+  function mergeMemoryIntoPlanning(data){
+    const mem = getResaMemory();
+    if(!mem) return data || {};
+    const next = Object.assign({}, data || {});
+
+    try{
+      const rows = typeof mem.readReservations === "function" ? mem.readReservations() : [];
+      (Array.isArray(rows) ? rows : []).forEach(row => {
+        const key = String(row.checkin || row.date || "").slice(0,10);
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+        next[key] = Array.isArray(next[key]) ? next[key] : [];
+        const id = String(row.id || row.reference || "memory-" + key);
+        if(next[key].some(ev => String(ev.id) === id || String(ev.id) === "memory-" + id)) return;
+        next[key].push({
+          id: "memory-" + id,
+          name: row.client_name || row.client || "Client RESA",
+          phone: row.client_phone || row.phone || "",
+          desc: row.note || row.reference || "",
+          timeStart: String(row.checkin || "").slice(11,16) || "09:00",
+          timeEnd: String(row.checkout || "").slice(11,16) || "10:00",
+          status: memoryStatusToPlanningStatus(row.status, false),
+          amount: row.amount || "",
+          ressource: row.room || "",
+          updatedAt: row.updated_at ? Date.parse(row.updated_at) || Date.now() : Date.now()
+        });
+      });
+    }catch(e){
+      console.warn("[DIGIY PLANNING] lecture réservations mémoire", e && e.message ? e.message : e);
+    }
+
+    try{
+      const rows = typeof mem.readAvailabilities === "function" ? mem.readAvailabilities() : [];
+      (Array.isArray(rows) ? rows : []).forEach(row => {
+        const key = String(row.date || "").slice(0,10);
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+        next[key] = Array.isArray(next[key]) ? next[key] : [];
+        const id = "availability-" + String(row.id || key + "-" + (row.room || ""));
+        if(next[key].some(ev => String(ev.id) === id)) return;
+        next[key].push({
+          id,
+          name: row.is_closed ? "Fermeture" : (row.note || "Disponibilité"),
+          phone: "",
+          desc: row.note || "",
+          timeStart: "09:00",
+          timeEnd: "10:00",
+          status: memoryStatusToPlanningStatus(row.status, row.is_closed),
+          amount: row.price || "",
+          ressource: row.room || "",
+          updatedAt: row.updated_at ? Date.parse(row.updated_at) || Date.now() : Date.now()
+        });
+      });
+    }catch(e){
+      console.warn("[DIGIY PLANNING] lecture disponibilités mémoire", e && e.message ? e.message : e);
+    }
+
+    return next;
+  }
+
+  function loadData(){ return mergeMemoryIntoPlanning(ls(STORE_KEY)||{}) }
   function saveData(d){ ls(STORE_KEY, d) }
   function loadParams(){
     const def = { joursfermes: window.DIGIY_JOURS_FERMES||[], ressources: window.DIGIY_RESSOURCES||[], exceptions:[] };
@@ -837,9 +964,21 @@
 
   function deleteEvt(dateKey, id){
     const data=loadData();
+    const oldEvt=(data[dateKey]||[]).find(e=>e.id===id);
     data[dateKey]=(data[dateKey]||[]).filter(e=>e.id!==id);
     if(data[dateKey].length===0) delete data[dateKey];
     saveData(data);
+    try{
+      const mem=getResaMemory();
+      if(mem && typeof mem.rememberSignal === "function"){
+        mem.rememberSignal(
+          "planning_suppression",
+          "Planning modifié",
+          [oldEvt?.name || "Événement", dateKey].filter(Boolean).join(" · "),
+          "./planning.html"
+        );
+      }
+    }catch(_){ }
     renderCal();
     renderEvts("evtZone","evtDateLabel","evtCount","btnAdd");
     renderEvtsW();
@@ -1111,6 +1250,7 @@
       data[dateKey].push(ev);
     }
     saveData(data);
+    syncEventToResaMemory(dateKey, ev);
     closeForm();
     renderCal(); renderEvts("evtZone","evtDateLabel","evtCount","btnAdd"); renderEvtsW(); renderList();
   });
@@ -1234,6 +1374,13 @@
 </body>
 </html>
 ENDHTML
+
+
+
+
+
+
+
 
 
 
