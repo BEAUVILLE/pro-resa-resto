@@ -1716,14 +1716,97 @@
         }
       }
 
-      async function loadBookingsForDate(dateIso){
-        const payload = await rpc("digiy_resa_get_bookings_by_day",{
-          p_slug:RESOLVED_SLUG,
-          p_date:dateIso
+
+      function readResaLocalMemoryRows(dateIso){
+        let rawRows = [];
+
+        try{
+          if(window.DIGIY_RESA_MEMORY && typeof window.DIGIY_RESA_MEMORY.readReservations === "function"){
+            rawRows = rawRows.concat(window.DIGIY_RESA_MEMORY.readReservations() || []);
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] mémoire officielle ignorée", e?.message || e);
+        }
+
+        [
+          "DIGIY_RESA_PRO_RESERVATIONS",
+          "DIGIY_RESA_RESERVATIONS",
+          "DIGIY_RESA_ACTION_RESERVATIONS"
+        ].forEach(key => {
+          try{
+            const rows = JSON.parse(localStorage.getItem(key) || "[]");
+            if(Array.isArray(rows)) rawRows = rawRows.concat(rows);
+          }catch(_){}
         });
 
-        if(!payload?.ok) throw new Error(payload?.error || "bookings_not_found");
-        const rows = normalizeRows(payload.bookings || []).map(row => ({...row, booking_date: row.booking_date || dateIso}));
+        const map = new Map();
+
+        rawRows.forEach(r => {
+          if(!r) return;
+
+          const row = {
+            id: bookingIdOf(r),
+            status: normStatus(r.status || "pending"),
+            status_note: r.status_note || "",
+            created_at: r.created_at || r.updated_at || null,
+            customer_name: r.customer_name || r.client_name || r.client || r.full_name || r.name || "Client RESA",
+            booking_date: r.booking_date || r.checkin || r.date || r.arrival || "",
+            booking_time: r.booking_time || r.time || r.hour || r.heure || "",
+            guests_count: r.guests_count ?? r.guests ?? r.personnes ?? r.pax ?? r.covers ?? "",
+            service_id: r.service_id || "",
+            service_name: r.service_name || r.room || r.table || r.zone || "",
+            duration_minutes: r.duration_minutes ?? "",
+            price_fcfa: r.price_fcfa ?? r.amount ?? r.total ?? null,
+            note: r.note || r.note_text || r.message || r.raw_text || "",
+            source: r.source || "ACTION_RESA"
+          };
+
+          if(dateIso && row.booking_date && row.booking_date !== dateIso) return;
+
+          const key = String(row.id || row.customer_name + "-" + row.booking_date + "-" + row.booking_time);
+          map.set(key, Object.assign({}, map.get(key) || {}, row));
+        });
+
+        return Array.from(map.values());
+      }
+
+      function mergeResaRows(remoteRows, localRows){
+        const map = new Map();
+
+        (localRows || []).forEach(row => {
+          const key = String(row.id || row.customer_name + "-" + row.booking_date + "-" + row.booking_time);
+          map.set(key, row);
+        });
+
+        (remoteRows || []).forEach(row => {
+          const key = String(row.id || row.customer_name + "-" + row.booking_date + "-" + row.booking_time);
+          map.set(key, Object.assign({}, map.get(key) || {}, row));
+        });
+
+        return Array.from(map.values());
+      }
+
+
+      async function loadBookingsForDate(dateIso){
+        let remoteRows = [];
+
+        try{
+          const payload = await rpc("digiy_resa_get_bookings_by_day",{
+            p_slug:RESOLVED_SLUG,
+            p_date:dateIso
+          });
+
+          if(payload?.ok){
+            remoteRows = normalizeRows(payload.bookings || []).map(row => ({...row, booking_date: row.booking_date || dateIso}));
+          }else{
+            console.warn("[DIGIY RESA] RPC sans réservation", payload?.error || "bookings_not_found");
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] RPC ignorée, lecture mémoire locale", e?.message || e);
+        }
+
+        const localRows = readResaLocalMemoryRows(dateIso);
+        const rows = mergeResaRows(remoteRows, localRows);
         return await enrichBookingServices(rows);
       }
 
@@ -2113,6 +2196,79 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
