@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Je réserve — Accueil RESA PRO · réservation client</title>
   <meta name="theme-color" content="#f4ead2" />
-  <meta name="digiy-build" content="resa-dashboard-20260531-pay-url-clean-v1" />
+  <meta name="digiy-build" content="resa-dashboard-action-planning-clean-20260602" />
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
@@ -997,28 +997,26 @@
       </div>
       <div class="right">
         <div class="pill" id="pillStatus">Statut : <b>…</b></div>
-        <a class="btn" id="btnCockpitTop"  href="./cockpit.html">Réserv.</a>
-        <a class="btn" id="btnAssistantTop" href="./claw.html">Aide</a>
-        <a class="btn" id="btnPinTop" href="./pin.html">Accès</a>
+        <a class="btn primary" id="btnActionTop" href="./action.html">🎙️ ACTION</a>
+        <a class="btn" id="btnPlanningTop" href="./planning.html">📅 Planning</a>
+        <a class="btn" id="btnCockpitTop"  href="./cockpit.html">📋 Réserv.</a>
         <a class="btn" id="btnSettingsTop" href="./etablissement.html">⚙️ Plus</a>
-        <a class="btn primary" id="btnQrTop" href="./qr.html">📲 QR client</a>
       </div>
     </div>
 
-    <nav class="nav-rail" aria-label="Navigation Mes réservations">
-      <a class="nav-link" id="navCockpit" href="./cockpit.html">Réserv.</a>
+    <nav class="nav-rail" aria-label="Navigation RESA">
       <a class="nav-link active" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
+      <a class="nav-link" id="navAction" href="./action.html">🎙️ ACTION RESA</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">📅 Planning</a>
+      <a class="nav-link" id="navCockpit" href="./cockpit.html">📋 Réservations</a>
       <a class="nav-link" id="navQr" href="./qr.html">📲 QR client</a>
-      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
-      <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
       <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
       <a class="nav-link" id="navPin" href="./pin.html">Accès</a>
-      <a class="nav-link" id="navHome" href="./index.html">Façade</a>
     </nav>
 
     <section class="hero">
       <h2 id="heroTitle">Accueil RESA</h2>
-      <p id="heroDesc">Ici tu vois ce qui demande attention : demandes reçues, confirmations, planning, arrivées, paiements à surveiller et notes rapides.</p>
+      <p id="heroDesc">Accueil RESA : prépare une réservation, regarde le calendrier, puis vérifie la liste. Moins d’écriture, plus de clics utiles.</p>
 
       <div class="hero-meta">
         <div class="hero-pill" id="heroSession">Session : protégée</div>
@@ -1027,18 +1025,18 @@
       </div>
 
       <div class="hero-actions">
-        <a class="btn primary" id="heroCockpit"  href="./cockpit.html">Voir les réservations</a>
-        <a class="btn primary" id="heroQr" href="./qr.html">📲 Mon QR client</a>
-        <a class="btn" id="heroPlanning" href="./planning.html">Ouvrir le planning</a>
-        <a class="btn" id="heroAssistant" href="./claw.html">Aide</a>
-        <a class="btn" id="heroSettings" href="./etablissement.html">Plus</a>
+        <a class="btn primary" id="heroAction" href="./action.html">🎙️ ACTION RESA</a>
+        <a class="btn primary" id="heroPlanning" href="./planning.html">📅 Calendrier pro</a>
+        <a class="btn" id="heroCockpit"  href="./cockpit.html">📋 Réservations</a>
+        <a class="btn" id="heroQr" href="./qr.html">📲 QR client</a>
+        <a class="btn" id="heroSettings" href="./etablissement.html">⚙️ Plus</a>
       </div>
 
       <div class="mobileHeroActions">
-        <a class="btn primary" id="quickReservations" href="./cockpit.html">📋 Réserv.</a>
-        <a class="btn primary" id="quickQr" href="./qr.html">📲 QR</a>
-        <a class="btn" id="quickPlanning" href="./planning.html">🗓️ Planning</a>
-        <a class="btn" id="quickNotes" href="#resaNotes">✍️ Notes</a>
+        <a class="btn primary" id="quickAction" href="./action.html">🎙️ ACTION</a>
+        <a class="btn primary" id="quickPlanning" href="./planning.html">📅 Planning</a>
+        <a class="btn" id="quickReservations" href="./cockpit.html">📋 Réserv.</a>
+        <a class="btn" id="quickQr" href="./qr.html">📲 QR</a>
         <a class="btn" id="quickPlus" href="./etablissement.html">⚙️ Plus</a>
       </div>
     </section>
@@ -1307,9 +1305,9 @@
   <nav class="bottomNav" aria-label="Navigation RESA">
     <div class="bottomNavInner">
       <a class="active" id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a id="bottomAction" href="./action.html"><span class="ico">🎙️</span><span>ACTION</span></a>
+      <a id="bottomPlanning" href="./planning.html"><span class="ico">📅</span><span>Planning</span></a>
       <a id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
-      <a id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
-      <a id="bottomNotes" href="#resaNotes"><span class="ico">✍️</span><span>Notes</span></a>
       <a id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
     </div>
   </nav>
@@ -1320,8 +1318,8 @@
 
   const MODULE_CODE = "RESA";
   const MODULE_LABEL = "JE RÉSERVE";
-  const PRIMARY_ACTION_LABEL = "Voir les réservations";
-  const PRIMARY_ACTION_HINT = "Regarde les réservations ou ouvre le planning.";
+  const PRIMARY_ACTION_LABEL = "ACTION RESA";
+  const PRIMARY_ACTION_HINT = "Prépare une réservation, puis vérifie dans Planning ou Réservations.";
 
   const ABOS_URL = "https://commencer-a-payer.digiylyfe.com/";
   const PAY_ADMIN_URL = "https://pro-pay.digiylyfe.com/admin.html";
@@ -1567,10 +1565,10 @@
       if(el) el.href = href;
     });
 
-    const quickNotes = $("quickNotes");
-    const bottomNotes = $("bottomNotes");
-    if(quickNotes) quickNotes.href = "#resaNotes";
-    if(bottomNotes) bottomNotes.href = "#resaNotes";
+    const quickReservations = $("quickReservations");
+    const bottomReserv = $("bottomReserv");
+    if(quickReservations) quickReservations.href = "#resaNotes";
+    if(bottomReserv) bottomReserv.href = "#resaNotes";
 
     const pay = $("btnSendResaPay");
     if(pay) pay.href = buildResaPayDraftUrl(null);
@@ -2341,6 +2339,756 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+-
+ 
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
