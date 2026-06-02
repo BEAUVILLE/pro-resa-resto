@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Accès RESA • DIGIY</title>
   <meta name="theme-color" content="#020617"/>
+  <meta name="digiy-build" content="resa-pin-slug-phone-fix-20260602"/>
 
   <!-- CONFIG — changer ces 5 lignes par module -->
   <script>
@@ -15,7 +16,7 @@
    window.DIGIY_MODULE       = "RESA";
 window.DIGIY_MODULE_LABEL = "Je réserve";
 window.DIGIY_MODULE_ICON  = "📅";
-window.DIGIY_INDEX_URL    = "./index.html";
+window.DIGIY_INDEX_URL    = "./hub.html";
 window.DIGIY_SLUG_PREFIX  = "resa";
   </script>
 
@@ -165,7 +166,11 @@ document.title=`Accès ${MODULE_LABEL} • DIGIY`;
 
 let pin="",confirmedPhone="";
 
-function norm(p){return String(p||"").replace(/\D/g,"")}
+function norm(p){
+  const d = String(p||"").replace(/\D/g,"");
+  if(d.length === 9) return "221" + d;
+  return d;
+}
 function fmt(d){if(d.length===12&&d.startsWith("221"))return`${d.slice(0,3)} ${d.slice(3,5)} ${d.slice(5,8)} ${d.slice(8,10)} ${d.slice(10)}`;return d}
 function slug(p){return SLUG_PREFIX&&p?`${SLUG_PREFIX}-${p}`:""}
 function qp(n){try{return new URL(location.href).searchParams.get(n)||""}catch(_){return""}}
@@ -329,7 +334,15 @@ async function doLogin(){
     if(error)throw new Error(error.message||"Erreur serveur");
     /* Le RPC retourne un tableau → on prend la première ligne */
     const row=Array.isArray(data)?data[0]:data;
-    const ok=row===true||row?.ok===true||row?.access===true||row?.status==="ok";
+    const ok =
+      row === true ||
+      row?.ok === true ||
+      row?.access === true ||
+      row?.access_ok === true ||
+      row?.valid === true ||
+      row?.has_access === true ||
+      row?.status === "ok";
+
     if(!ok){
       pin="";updateDots();updateEnterBtn();
       for(let i=0;i<4;i++)$("d"+i).classList.add("err");
@@ -337,9 +350,11 @@ async function doLogin(){
       showSt("status2","❌ Code incorrect.\nVérifie tes 4 chiffres et réessaie.","err");
       return;
     }
-    const rpcSlug=row?.slug||row?.identifiant||"";
-    const finalSlug=rpcSlug||"";
-    writeSession(confirmedPhone,finalSlug,row?.session_token||"");
+
+    const rpcSlug = row?.slug || row?.identifiant || row?.owner_slug || row?.workspace_slug || "";
+    const finalSlug = rpcSlug || slug(confirmedPhone);
+
+    writeSession(confirmedPhone, finalSlug, row?.session_token || "");
     showSt("status2","✅ Accès ouvert. Redirection…","ok");
     setTimeout(()=>redirect(finalSlug),700);
   }catch(err){
@@ -352,6 +367,18 @@ async function doLogin(){
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
