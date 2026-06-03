@@ -399,13 +399,76 @@
     }
   }
 
+  function firstCleanSlugFrom(obj){
+    if(!obj || typeof obj !== "object") return "";
+
+    const keys = [
+      "public_slug", "slug_public", "fiche_slug", "resa_slug",
+      "etablissement_slug", "establishment_slug",
+      "business_slug", "merchant_slug", "commerce_slug",
+      "profile_slug", "pro_slug", "site_slug",
+      "resto_slug", "restaurant_slug",
+      "slug"
+    ];
+
+    for(const k of keys){
+      const candidate = normalizeSlug(obj[k] || "");
+      if(candidate && !isSensitiveSlug(candidate)) return candidate;
+    }
+
+    const nestedKeys = [
+      "etablissement", "establishment", "business", "merchant",
+      "profile", "fiche", "resto", "restaurant", "pro"
+    ];
+
+    for(const k of nestedKeys){
+      const candidate = firstCleanSlugFrom(obj[k]);
+      if(candidate) return candidate;
+    }
+
+    return "";
+  }
+
+  function readStoredGuardCandidates(){
+    const out = [];
+    const keys = [
+      "DIGIY_GUARD_SESSION",
+      "digiy_guard_session",
+      "DIGIY_SESSION_RESA",
+      "digiy_session_resa",
+      "DIGIY_RESA_SESSION",
+      "digiy_resa_session"
+    ];
+
+    for(const store of [sessionStorage, localStorage]){
+      for(const key of keys){
+        try{
+          const raw = store.getItem(key);
+          if(!raw) continue;
+          out.push(JSON.parse(raw));
+        }catch(_){}
+      }
+    }
+    return out;
+  }
+
   function getSession(){
     const st = window.DIGIY_GUARD?.state || {};
     const raw = window.DIGIY_GUARD?.getSession?.() || {};
-    const slug = normalizeSlug(st.slug || raw.slug || "");
+    const storedCandidates = readStoredGuardCandidates();
+    const sources = [st, raw, ...storedCandidates];
+    const slug = sources.map(firstCleanSlugFrom).find(Boolean) || "";
+
+    const moduleName = String(
+      st.module || raw.module ||
+      st.module_code || raw.module_code ||
+      st.digiy_module || raw.digiy_module ||
+      window.DIGIY_MODULE || ""
+    ).toUpperCase();
+
     return {
       ok: !!(st.access_ok || raw.access_ok || raw.access),
-      module: String(st.module || raw.module || "").toUpperCase(),
+      module: moduleName,
       slug,
       slug_ok: !!slug && !isSensitiveSlug(slug)
     };
@@ -536,6 +599,25 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
