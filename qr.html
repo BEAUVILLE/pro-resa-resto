@@ -183,6 +183,7 @@
 
   const PUBLIC_BASE_URL = "https://resa-table-resto.digiylyfe.com/";
   const DASHBOARD_PATH = "./dashboard-pro.html";
+  const TABLE = "digiy_resa_public_fiches";
 
   const qrImg = document.getElementById("qrImg");
   const qrAnchor = document.getElementById("qrAnchor");
@@ -399,31 +400,122 @@
     }
   }
 
+  const SLUG_KEYS = [
+    "public_slug", "slug_public", "fiche_slug", "resa_slug",
+    "internal_slug", "etablissement_slug", "establishment_slug",
+    "business_slug", "merchant_slug", "commerce_slug",
+    "profile_slug", "pro_slug", "site_slug",
+    "resto_slug", "restaurant_slug", "slug"
+  ];
+
+  const PHONE_KEYS = [
+    "phone", "tel", "telephone", "whatsapp", "resa_phone",
+    "resa_tel", "business_phone", "owner_phone", "p_phone"
+  ];
+
+  const NESTED_KEYS = [
+    "etablissement", "establishment", "business", "merchant",
+    "profile", "fiche", "resto", "restaurant", "pro", "payload"
+  ];
+
   function firstCleanSlugFrom(obj){
     if(!obj || typeof obj !== "object") return "";
 
-    const keys = [
-      "public_slug", "slug_public", "fiche_slug", "resa_slug",
-      "etablissement_slug", "establishment_slug",
-      "business_slug", "merchant_slug", "commerce_slug",
-      "profile_slug", "pro_slug", "site_slug",
-      "resto_slug", "restaurant_slug",
-      "slug"
-    ];
-
-    for(const k of keys){
+    for(const k of SLUG_KEYS){
       const candidate = normalizeSlug(obj[k] || "");
       if(candidate && !isSensitiveSlug(candidate)) return candidate;
     }
 
-    const nestedKeys = [
-      "etablissement", "establishment", "business", "merchant",
-      "profile", "fiche", "resto", "restaurant", "pro"
-    ];
-
-    for(const k of nestedKeys){
+    for(const k of NESTED_KEYS){
       const candidate = firstCleanSlugFrom(obj[k]);
       if(candidate) return candidate;
+    }
+
+    return "";
+  }
+
+  function firstAnySlugFrom(obj){
+    if(!obj || typeof obj !== "object") return "";
+
+    for(const k of SLUG_KEYS){
+      const candidate = normalizeSlug(obj[k] || "");
+      if(candidate) return candidate;
+    }
+
+    for(const k of NESTED_KEYS){
+      const candidate = firstAnySlugFrom(obj[k]);
+      if(candidate) return candidate;
+    }
+
+    return "";
+  }
+
+  function firstPhoneFrom(obj){
+    if(!obj || typeof obj !== "object") return "";
+
+    for(const k of PHONE_KEYS){
+      const digits = String(obj[k] || "").replace(/\D/g, "");
+      if(digits.length >= 8) return digits;
+    }
+
+    for(const k of NESTED_KEYS){
+      const digits = firstPhoneFrom(obj[k]);
+      if(digits) return digits;
+    }
+
+    return "";
+  }
+
+  function escapeOrValue(value){
+    return String(value || "").replaceAll('"', '\\"');
+  }
+
+  async function resolvePublicSlug(session){
+    const safeSessionSlug = normalizeSlug(session.slug || "");
+    const rawSlug = normalizeSlug(session.raw_slug || "");
+    const phone = String(session.phone || "").replace(/\D/g, "");
+
+    // Si la session donne déjà un slug public propre, on peut l'utiliser directement.
+    if(safeSessionSlug && !isSensitiveSlug(safeSessionSlug)) return safeSessionSlug;
+
+    // Sinon on résout depuis Supabase : slug interne RESA / téléphone -> slug public client.
+    const candidates = Array.from(new Set([rawSlug, phone].filter(Boolean)));
+    if(!candidates.length) return "";
+
+    if(!window.supabase?.createClient) return "";
+    const client = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY);
+
+    for(const candidate of candidates){
+      const parts = [
+        `slug.eq.${escapeOrValue(candidate)}`,
+        `public_slug.eq.${escapeOrValue(candidate)}`,
+        `internal_slug.eq.${escapeOrValue(candidate)}`,
+        `resa_slug.eq.${escapeOrValue(candidate)}`
+      ];
+
+      const digits = String(candidate || "").replace(/\D/g, "");
+      if(digits.length >= 8){
+        parts.push(`phone.eq.${digits}`);
+        parts.push(`whatsapp.eq.${digits}`);
+      }
+
+      const { data, error } = await client
+        .from(TABLE)
+        .select("slug,public_slug,internal_slug,resa_slug,phone,whatsapp,is_active,status,module")
+        .eq("module", "RESA")
+        .eq("is_active", true)
+        .in("status", ["published", "active"])
+        .or(parts.join(","))
+        .limit(1)
+        .maybeSingle();
+
+      if(error){
+        console.warn("resolvePublicSlug failed", error);
+        continue;
+      }
+
+      const publicSlug = normalizeSlug(data?.public_slug || data?.slug || "");
+      if(publicSlug && !isSensitiveSlug(publicSlug)) return publicSlug;
     }
 
     return "";
@@ -458,6 +550,8 @@
     const storedCandidates = readStoredGuardCandidates();
     const sources = [st, raw, ...storedCandidates];
     const slug = sources.map(firstCleanSlugFrom).find(Boolean) || "";
+    const rawSlug = sources.map(firstAnySlugFrom).find(Boolean) || "";
+    const phone = sources.map(firstPhoneFrom).find(Boolean) || "";
 
     const moduleName = String(
       st.module || raw.module ||
@@ -470,6 +564,8 @@
       ok: !!(st.access_ok || raw.access_ok || raw.access),
       module: moduleName,
       slug,
+      raw_slug: rawSlug,
+      phone,
       slug_ok: !!slug && !isSensitiveSlug(slug)
     };
   }
@@ -500,54 +596,60 @@
   pillState.textContent = hasResaSession ? "Session : ouverte 8h" : "Session : à ouvrir par PIN";
 
   if(!hasResaSession){
-    clientUrlText.textContent = "Lien réservation : ouvre d’abord ta session RESA.";
-    ficheUrlText.textContent = "Lien fiche / clip : ouvre d’abord ta session RESA.";
-    note("🔐 Entre par ton code PIN pour préparer ton QR réservation.","warn");
+    clientUrlText.textContent = "Lien réservation : session RESA à ouvrir.";
+    ficheUrlText.textContent = "Lien fiche / clip : session RESA à ouvrir.";
+    note("🔐 Session RESA absente : retour au PIN.","warn");
     setAssistant(
-      "Accès requis",
-      "Le QR réservation se prépare depuis une session RESA ouverte.",
+      "PIN requis",
+      "Le QR est une page PRO. Sans session RESA ouverte, retour au PIN.",
       ["Code PIN","Session 8h","Coffre protégé"],
       [
-        {title:"Action utile",text:"Retourne à l’accès et entre ton code PIN."},
-        {title:"Sécurité",text:"Sans session ouverte, on ne fabrique pas de QR à partir d’un contexte incertain."}
+        {title:"Action utile",text:"Entre ton code PIN pour retrouver le slug RESA et préparer le QR."},
+        {title:"Sécurité",text:"Aucun QR n’est fabriqué sans session professionnelle."}
       ]
     );
     setBusy(false);
-    btnBack.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
-    btnCopy.onclick = () => note("Ouvre d’abord ta session RESA.","warn");
-    btnOpen.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
-    btnFiche.onclick = () => { location.href = buildSafeUrl("./pin.html"); };
-    btnDownload.onclick = (e) => { e.preventDefault(); note("Ouvre d’abord ta session RESA.","warn"); };
-    btnSticker.onclick = (e) => { e.preventDefault(); note("Ouvre d’abord ta session RESA.","warn"); };
+    setTimeout(() => { location.replace(buildSafeUrl("./pin.html")); }, 350);
     return;
   }
 
-  if(!session.slug_ok){
-    clientUrlText.textContent = "Lien réservation : slug public absent ou invalide.";
-    ficheUrlText.textContent = "Lien fiche / clip : slug public absent ou invalide.";
-    note("🛡️ Sécurité : le QR n’est pas fabriqué, car le slug public est absent ou ressemble à un numéro/téléphone. Repasse par le PIN ou vérifie la fiche établissement.", "bad");
+  const publicSlug = await resolvePublicSlug(session);
+
+  if(!publicSlug){
+    if(!session.raw_slug && !session.phone){
+      clientUrlText.textContent = "Lien réservation : slug RESA absent.";
+      ficheUrlText.textContent = "Lien fiche / clip : slug RESA absent.";
+      note("🔐 Session RESA ouverte mais slug absent : retour au PIN pour recharger proprement.", "warn");
+      setBusy(false);
+      setTimeout(() => { location.replace(buildSafeUrl("./pin.html")); }, 350);
+      return;
+    }
+
+    clientUrlText.textContent = "Lien réservation : fiche publique non reliée.";
+    ficheUrlText.textContent = "Lien fiche / clip : fiche publique non reliée.";
+    note("🛡️ Sécurité : le QR n’est pas fabriqué, car la session RESA n’a pas encore été reliée à une fiche publique. Exécute/vérifie le SQL DIGIYLYFE : public_slug + internal_slug RESA + téléphone.", "bad");
     setAssistant(
-      "Slug public à corriger",
-      "Le QR client doit porter un slug public propre, jamais un téléphone ni une donnée privée.",
-      ["QR bloqué", "Slug sécurisé", "Aucune fuite"],
+      "Fiche publique à relier",
+      "Le QR client doit sortir avec un slug public propre. Le slug interne RESA et le téléphone restent côté gestion.",
+      ["QR bloqué", "Fiche SQL", "Aucune fuite"],
       [
-        {title:"Protection", text:"DIGIY refuse de créer un QR si l’identifiant ressemble à un numéro ou à une donnée sensible."},
-        {title:"Action utile", text:"Ouvre la session proprement par PIN, puis vérifie que la fiche établissement possède un slug public lisible."},
-        {title:"Règle", text:"Le client reçoit seulement une porte publique, pas l’identité technique du pro."}
+        {title:"Protection", text:"DIGIY refuse de mettre un slug qui ressemble à un téléphone dans le QR client."},
+        {title:"Action utile", text:"Vérifie que la fiche SQL contient public_slug = digiylyfe, internal_slug = resa-221771342889 et phone = 221771342889."},
+        {title:"Règle", text:"Le client reçoit une porte publique ; le module garde les repères de gestion."}
       ]
     );
     setBusy(false);
     btnBack.onclick = () => { location.href = buildSafeUrl(DASHBOARD_PATH); };
-    btnCopy.onclick = () => note("QR bloqué : slug public absent ou invalide.", "bad");
-    btnOpen.onclick = () => note("QR bloqué : vérifie le slug public RESA.", "bad");
-    btnFiche.onclick = () => note("Fiche bloquée : vérifie le slug public RESA.", "bad");
+    btnCopy.onclick = () => note("QR bloqué : fiche publique RESA non reliée.", "bad");
+    btnOpen.onclick = () => note("QR bloqué : vérifie le SQL fiche RESA.", "bad");
+    btnFiche.onclick = () => note("Fiche bloquée : vérifie le SQL fiche RESA.", "bad");
     btnDownload.onclick = (e) => { e.preventDefault(); note("QR bloqué : aucun QR sensible n’est généré.", "bad"); };
     btnSticker.onclick = (e) => { e.preventDefault(); note("Sticker bloqué : aucun QR sensible n’est généré.", "bad"); };
     return;
   }
 
-  reservationUrl = publicPageUrl("reserver.html", session.slug);
-  ficheUrl = publicPageUrl("fiche.html", session.slug);
+  reservationUrl = publicPageUrl("reserver.html", publicSlug);
+  ficheUrl = publicPageUrl("fiche.html", publicSlug);
 
   if(!reservationUrl || !ficheUrl){
     note("🛡️ Sécurité : lien public non construit. Vérifie le slug RESA.", "bad");
@@ -599,6 +701,25 @@
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
