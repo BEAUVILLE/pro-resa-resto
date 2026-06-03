@@ -1,31 +1,37 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Fiche réservation · DIGIY RESA</title>
-  <meta name="theme-color" content="#1e7a46" />
-  <meta name="robots" content="index,follow" />
-  <meta name="description" content="Fiche publique de réservation DIGIY RESA." />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Je réserve — Ma fiche établissement</title>
+  <meta name="theme-color" content="#1e7a46"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <meta name="description" content="DIGIY RESA PRO — fiche établissement gérée côté pro avec QR réservation."/>
+  <meta name="digiy-build" content="resa-fiche-pro-moule-neutre-20260603"/>
 
   <script>
-    window.DIGIY_MODULE = "RESA";
-    window.DIGIY_PUBLIC_BASE_URL = window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/";
     window.DIGIY_SUPABASE_URL = window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "RESA";
+    window.DIGIY_LOGIN_URL = "./pin.html";
+    window.DIGIY_PUBLIC_BASE_URL = window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/";
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-guard-20260531"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet"/>
 
   <style>
     :root{
       --bg:#1e7a46;--bg2:#155a34;--bg3:#0e4226;--bar:rgba(8,50,24,.96);
-      --gold:#c4973f;--gold2:#fff0a8;--green:#22c55e;--blue:#38bdf8;
-      --text:#f8fafc;--muted:rgba(248,250,252,.78);--line:rgba(255,255,255,.16);
-      --shadow:0 18px 48px rgba(0,0,0,.30);--r:22px;--hdrH:52px;--barH:78px;--max:980px;
+      --gold:#c4973f;--gold2:#fff0a8;--green:#22c55e;--blue:#38bdf8;--red:#fb7185;
+      --text:#f0fff5;--muted:rgba(240,255,245,.76);--line:rgba(255,255,255,.18);
+      --card:rgba(255,255,255,.09);--shadow:0 16px 40px rgba(0,0,0,.22);
+      --r:18px;--max:1040px;--hdrH:52px;--barH:78px;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -34,120 +40,225 @@
       font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
       font-size:19px;font-weight:950;
       background:
-        radial-gradient(620px 390px at 10% 0%,rgba(196,151,63,.16),transparent 58%),
-        radial-gradient(430px 280px at 92% 10%,rgba(56,189,248,.10),transparent 52%),
-        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 55%,var(--bg3) 100%);
+        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
+        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
+        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
       padding:calc(var(--hdrH) + 14px) 12px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
     }
     a{color:inherit;text-decoration:none}
-    button{font:inherit;cursor:pointer;color:inherit}
-    .topHeader{position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;background:var(--bar);border-bottom:1px solid rgba(196,151,63,.26);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-    .hdrBack{min-height:36px;display:inline-flex;align-items:center;justify-content:center;color:rgba(248,250,252,.72);font-size:14px;font-weight:1000;white-space:nowrap}
+    button,input,textarea,select{font:inherit}
+    button{color:inherit;cursor:pointer}
+    .topHeader{
+      position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:0 14px;background:var(--bar);border-bottom:1px solid rgba(196,151,63,.26);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+    .hdrBack{min-height:36px;display:inline-flex;align-items:center;justify-content:center;color:rgba(240,255,245,.72);font-size:14px;font-weight:1000;white-space:nowrap}
     .hdrTitle{font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);white-space:nowrap}
     .hdrPill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--muted);font-size:12px;font-weight:1000;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis}
+    .hdrPill.ok{color:#bbf7d0;border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.12)}
+    .hdrPill.warn{color:#fde68a;border-color:rgba(245,158,11,.38);background:rgba(245,158,11,.12)}
     .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:16px}
-    .hero,.panel{border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.07);box-shadow:var(--shadow);overflow:hidden}
-    .hero{padding:18px;background:radial-gradient(760px 280px at 100% 0%,rgba(196,151,63,.16),transparent 60%),rgba(255,255,255,.065)}
-    .brand{display:flex;align-items:center;gap:14px}
-    .logoBox{width:100px;height:100px;border-radius:26px;background:rgba(255,255,255,.12);border:1px solid rgba(196,151,63,.34);box-shadow:0 12px 26px rgba(0,0,0,.24);display:grid;place-items:center;overflow:hidden;flex:0 0 auto;color:#fff0a8;font-size:38px;font-weight:1000}
-    .logoBox img{width:100%;height:100%;object-fit:contain;background:#fff;padding:8px;display:block}
-    .kicker{color:var(--gold2);font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
-    h1{margin:0 0 8px;font-size:clamp(36px,8.5vw,58px);font-weight:1000;line-height:.94;letter-spacing:-.05em}
-    .lead{color:var(--muted);font-size:17px;font-weight:900;line-height:1.55;max-width:76ch}
-    .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:16px}
-    .cardBody{padding:18px}
-    .sectionTitle{margin:0 0 8px;font-size:30px;font-weight:1000;letter-spacing:-.035em;line-height:1.08}
-    .sectionSub{margin:0 0 14px;color:var(--muted);font-size:16px;font-weight:900;line-height:1.5}
-    .poster{border-radius:24px;overflow:hidden;border:1px solid rgba(196,151,63,.28);background:rgba(0,0,0,.18);min-height:260px;display:grid;place-items:center;padding:18px;color:var(--muted);font-weight:1000;text-align:center}
-    .poster img{width:100%;height:330px;object-fit:cover;display:block;border-radius:18px}
-    .badgeRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .badge{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-size:12px;font-weight:1000;color:#fff8dc}
-    .ficheTitle{font-size:34px;font-weight:1000;line-height:1.05;letter-spacing:-.04em;margin-top:12px}
-    .ficheText{color:var(--muted);font-size:17px;font-weight:900;line-height:1.6;margin-top:10px;white-space:pre-line}
-    .infoGrid{display:grid;gap:10px;margin-top:14px}
-    .infoLine{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);border-radius:18px;padding:13px 14px;color:rgba(248,250,252,.86);font-size:15px;font-weight:950;line-height:1.45}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .btn{min-height:58px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;font-size:16px;font-weight:1000;text-align:center;flex:1 1 210px}
-    .btn.primary{background:linear-gradient(135deg,var(--green),var(--gold2));color:#13200d;border:none}
-    .btn.blue{background:rgba(56,189,248,.14);color:#d9f4ff;border-color:rgba(56,189,248,.24)}
-    .btn.green{background:rgba(34,197,94,.16);color:#dffcea;border-color:rgba(34,197,94,.25)}
-    .btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
-    .qrBox{border:1px solid rgba(196,151,63,.32);border-radius:24px;background:radial-gradient(260px 160px at 100% 0%,rgba(196,151,63,.16),transparent 58%),rgba(255,255,255,.055);padding:16px;display:grid;gap:12px}
-    .qrHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
-    .qrTitle{font-size:22px;font-weight:1000;line-height:1.1;letter-spacing:-.03em}
-    .qrHint{color:var(--muted);font-size:14px;font-weight:900;line-height:1.45;margin-top:4px}
-    .qrBadge{min-height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:7px 11px;background:#fff0a8;color:#3a2a05;font-size:12px;font-weight:1000;letter-spacing:.07em;text-transform:uppercase}
-    .qrPreview{width:100%;min-height:248px;border-radius:22px;background:#fff;display:grid;place-items:center;padding:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
-    .qrPreview img{width:220px;height:220px;object-fit:contain;display:block}
-    .qrEmpty{color:#13200d;text-align:center;font-size:15px;font-weight:1000;line-height:1.35;max-width:30ch}
-    .qrLinkText{padding:11px 12px;border-radius:16px;background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.10);color:rgba(248,250,252,.82);font-size:13px;font-weight:900;line-height:1.45;word-break:break-all}
-    .status{padding:14px 15px;border-radius:20px;border:1px solid rgba(250,204,21,.30);background:rgba(250,204,21,.10);color:#fff0a8;font-size:15px;font-weight:1000;line-height:1.45;margin-top:12px;display:none;white-space:pre-line}
+    .hero{padding:2px 2px 4px}
+    .eyebrow{color:#fff0a8;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:1000;margin-bottom:8px}
+    h1{margin:0 0 8px;font-size:clamp(34px,8.5vw,54px);font-weight:1000;line-height:.94;letter-spacing:-.05em}
+    .sub{color:var(--muted);font-size:17px;font-weight:1000;line-height:1.38;max-width:860px}
+    .rule{margin-top:10px;padding:12px 14px;border-radius:18px;border:1px dashed rgba(255,255,255,.22);background:rgba(5,31,17,.32);color:rgba(240,255,245,.90);font-size:14px;font-weight:1000;line-height:1.35}
+    .rule b{color:#fff0a8}
+    .grid{display:grid;grid-template-columns:1fr .86fr;gap:14px;align-items:start}
+    .card{border:1px solid rgba(255,255,255,.15);background:var(--card);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+    .cardHead{padding:15px;border-bottom:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .cardTitle{font-size:22px;font-weight:1000;line-height:1.06;color:#fff}
+    .cardSub{margin-top:5px;color:var(--muted);font-size:14px;font-weight:1000;line-height:1.35}
+    .tag{min-height:30px;display:inline-flex;align-items:center;justify-content:center;padding:6px 9px;border-radius:999px;border:1px solid rgba(196,151,63,.35);background:rgba(196,151,63,.12);color:#fff0a8;font-size:10px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+    .form{padding:15px;display:grid;gap:13px}
+    .formGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .field{display:grid;gap:7px}
+    .field label{color:#fff;font-size:14px;font-weight:1000}
+    .field input,.field textarea,.field select{
+      width:100%;min-height:54px;border-radius:17px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);color:var(--text);padding:13px 14px;outline:none;font-size:16px;font-weight:950;
+    }
+    .field textarea{min-height:108px;resize:vertical;line-height:1.45}
+    .field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(250,204,21,.46);box-shadow:0 0 0 4px rgba(250,204,21,.10)}
+    .hint{color:rgba(240,255,245,.62);font-size:12.5px;font-weight:900;line-height:1.35}
+    .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:2px}
+    .btn{min-height:56px;border-radius:18px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text);font-size:16px;font-weight:1000;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.13)}
+    .btn.primary{color:#052215;border-color:rgba(34,197,94,.38);background:linear-gradient(135deg,#22c55e,#bbf7d0)}
+    .btn.gold{color:#241a0d;border-color:rgba(196,151,63,.38);background:linear-gradient(135deg,#c4973f,#fff0a8)}
+    .btn.blue{border-color:rgba(56,189,248,.32);background:rgba(56,189,248,.12)}
+    .btn.danger{border-color:rgba(251,113,133,.34);background:rgba(251,113,133,.10);color:#fecaca}
+    .preview{display:grid;gap:12px;padding:15px}
+    .photoBox{min-height:240px;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:radial-gradient(400px 180px at 30% 0%,rgba(250,204,21,.18),transparent 60%),linear-gradient(135deg,rgba(34,197,94,.20),rgba(0,0,0,.20));position:relative;display:grid;place-items:center;text-align:center;color:rgba(240,255,245,.78);font-size:17px;font-weight:1000;padding:18px}
+    .photoBox img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+    .photoBadge{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap;z-index:2}
+    .pill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:rgba(5,31,17,.70);color:#fff;font-size:12px;font-weight:1000;backdrop-filter:blur(8px)}
+    .publicCard{border-radius:24px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);padding:15px;display:grid;gap:10px}
+    .publicName{color:#fff;font-size:29px;font-weight:1000;line-height:.98;letter-spacing:-.04em}
+    .publicMeta,.publicBio{color:var(--muted);font-size:15px;font-weight:1000;line-height:1.42;white-space:pre-wrap}
+    .linkGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .publicLink{min-height:48px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:1000;color:var(--text);text-align:center;padding:10px;overflow:hidden;text-overflow:ellipsis}
+    .qrBox{border-radius:24px;border:1px solid rgba(196,151,63,.32);background:rgba(196,151,63,.10);padding:15px;display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:center}
+    .qrImg{width:132px;height:132px;border-radius:18px;background:#fff;padding:8px;object-fit:contain}
+    .qrText{display:grid;gap:6px}
+    .qrTitle{color:#fff;font-size:19px;font-weight:1000;line-height:1.1}
+    .qrUrl{color:var(--muted);font-size:13px;font-weight:900;line-height:1.35;word-break:break-word}
+    .note{display:none;padding:13px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--muted);font-size:14px;font-weight:1000;line-height:1.45;white-space:pre-wrap}
+    .note.show{display:block}.note.ok{border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.11);color:#bbf7d0}.note.warn{border-color:rgba(245,158,11,.32);background:rgba(245,158,11,.11);color:#fde68a}.note.bad{border-color:rgba(251,113,133,.32);background:rgba(251,113,133,.11);color:#fecaca}
     .bottomBar{position:fixed;left:0;right:0;bottom:0;height:var(--barH);z-index:100;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(6,38,18,.97);border-top:1px solid rgba(196,151,63,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-    .bottomInner{width:min(760px,100%);height:100%;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-    .bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(248,250,252,.65);font-size:11px;font-weight:1000;text-align:center;background:rgba(255,255,255,.04)}
-    .bottomInner a.active{color:#13200d;background:linear-gradient(135deg,var(--green),var(--gold2))}
-    @media(max-width:760px){.grid{grid-template-columns:1fr}.logoBox{width:88px;height:88px}.actions .btn{width:100%}}
-    @media(max-width:520px){body{font-size:19px}.hero,.cardBody{padding:16px}h1{font-size:38px}.ficheTitle{font-size:29px}.brand{align-items:flex-start}}
+    .bottomInner{width:min(100%,760px);height:100%;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(240,255,245,.56);font-size:11px;font-weight:1000;text-align:center;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04)}
+    .bottomInner a.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8);border-color:rgba(34,197,94,.32)}
+    .bottomInner .bi{font-size:19px;line-height:1}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    @media(max-width:620px){
+      body{padding:calc(var(--hdrH) + 12px) 10px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);font-size:19px}
+      .topHeader{padding:0 10px;gap:7px}.hdrBack{font-size:13px}.hdrTitle{font-size:11px;letter-spacing:.12em}.hdrPill{font-size:11px;padding:6px 8px;max-width:36vw}
+      h1{font-size:34px}.sub{font-size:16px}.formGrid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.linkGrid{grid-template-columns:1fr}.qrBox{grid-template-columns:1fr;text-align:center}.qrImg{margin:0 auto}.cardTitle{font-size:20px}
+    }
   </style>
 </head>
+
 <body>
   <header class="topHeader">
-    <a class="hdrBack" href="./hub.html">← HUB</a>
-    <div class="hdrTitle">RESA · FICHE</div>
-    <div class="hdrPill" id="statePill">chargement</div>
+    <a class="hdrBack" id="hdrBack" href="./hub.html">← HUB</a>
+    <div class="hdrTitle">RESA · Ma fiche</div>
+    <div class="hdrPill warn" id="sessionPill">session…</div>
   </header>
 
   <main class="wrap">
     <section class="hero">
-      <div class="brand">
-        <div class="logoBox" id="logoBox">📅</div>
-        <div>
-          <div class="kicker">📅 RÉSERVATION</div>
-          <h1 id="heroTitle">Fiche établissement</h1>
-          <div class="lead" id="heroLead">Chargement de la fiche publique…</div>
-        </div>
-      </div>
+      <div class="eyebrow">📅 JE RÉSERVE</div>
+      <h1>Ma fiche établissement.</h1>
+      <div class="sub">Ici le professionnel prépare la fiche utile : nom, activité, horaires, téléphone public, slug client et QR de réservation.</div>
+      <div class="rule"><b>Côté PRO :</b> si le slug/session RESA n’est pas trouvé, retour PIN. <b>Côté client :</b> seul le slug public propre part dans le lien.</div>
     </section>
 
     <section class="grid">
-      <article class="panel">
-        <div class="cardBody">
-          <div class="poster" id="posterBox">Visuel établissement</div>
-          <div class="badgeRow">
-            <span class="badge" id="badgeActivity">Réservation</span>
-            <span class="badge" id="badgeZone">Zone</span>
-            <span class="badge" id="badgeHours">Horaires</span>
+      <section class="card" aria-label="Réglages de la fiche RESA">
+        <div class="cardHead">
+          <div>
+            <div class="cardTitle">📝 Renseignements établissement</div>
+            <div class="cardSub">Moule neutre : aucune entreprise écrite en dur. La donnée vient du PIN, de Supabase ou du téléphone.</div>
           </div>
-          <div class="ficheTitle" id="businessName">Établissement</div>
-          <div class="ficheText" id="summaryText">La présentation apparaîtra ici.</div>
-          <div class="infoGrid" id="infoGrid"></div>
-          <div class="actions">
-            <a class="btn primary" id="reserveLink" href="#" target="_blank" rel="noopener noreferrer">📅 Réserver</a>
-            <a class="btn green" id="contactLink" href="#" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
-            <button class="btn blue" id="copyLinkBtn" type="button">📋 Copier le lien</button>
-          </div>
-          <div class="status" id="statusBox"></div>
+          <span class="tag" id="proSlugTag">RESA</span>
         </div>
-      </article>
 
-      <aside class="panel">
-        <div class="cardBody">
-          <h2 class="sectionTitle">QR réservation</h2>
-          <p class="sectionSub">Le client scanne et ouvre directement la demande de réservation publique.</p>
-          <div class="qrBox">
-            <div class="qrHead">
-              <div>
-                <div class="qrTitle">QR client</div>
-                <div class="qrHint">Lien public sans téléphone, sans PIN, sans donnée privée.</div>
-              </div>
-              <div class="qrBadge">RESA</div>
+        <div class="form">
+          <div class="formGrid">
+            <div class="field">
+              <label for="businessName">Nom visible</label>
+              <input id="businessName" autocomplete="organization" placeholder="Nom de l’établissement"/>
             </div>
-            <div class="qrPreview" id="qrPreview"><div class="qrEmpty">QR en préparation.</div></div>
-            <div class="qrLinkText" id="qrLinkText">Lien en préparation.</div>
+            <div class="field">
+              <label for="activity">Activité</label>
+              <input id="activity" placeholder="Restaurant, table, salon, activité…"/>
+            </div>
           </div>
+
+          <div class="formGrid">
+            <div class="field">
+              <label for="city">Ville / zone</label>
+              <input id="city" placeholder="Ville, quartier ou zone"/>
+            </div>
+            <div class="field">
+              <label for="hours">Horaires</label>
+              <input id="hours" placeholder="Jours et heures utiles"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="address">Adresse / repère</label>
+            <input id="address" placeholder="Repère utile pour trouver l’établissement"/>
+          </div>
+
+          <div class="formGrid">
+            <div class="field">
+              <label for="whatsapp">WhatsApp / téléphone client</label>
+              <input id="whatsapp" inputmode="tel" placeholder="Indicatif + numéro public"/>
+              <div class="hint">Le téléphone peut être dans la donnée. Il n’est pas mis dans l’URL QR.</div>
+            </div>
+            <div class="field">
+              <label for="publicSlug">Slug public client</label>
+              <input id="publicSlug" placeholder="ex : digiylyfe"/>
+              <div class="hint">Slug propre visible dans l’URL client. Pas un numéro.</div>
+            </div>
+          </div>
+
+          <div class="formGrid">
+            <div class="field">
+              <label for="reservationUrl">Lien public réservation</label>
+              <input id="reservationUrl" inputmode="url" placeholder="https://.../reserver.html?slug=..."/>
+            </div>
+            <div class="field">
+              <label for="publicFicheUrl">Lien fiche / clip public</label>
+              <input id="publicFicheUrl" inputmode="url" placeholder="https://.../fiche.html?slug=..."/>
+            </div>
+          </div>
+
+          <div class="formGrid">
+            <div class="field">
+              <label for="logoUrl">Logo URL</label>
+              <input id="logoUrl" inputmode="url" placeholder="https://..."/>
+            </div>
+            <div class="field">
+              <label for="coverUrl">Photo / visuel URL</label>
+              <input id="coverUrl" inputmode="url" placeholder="https://..."/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="summary">Présentation courte</label>
+            <textarea id="summary" placeholder="Présente l’établissement en deux phrases simples."></textarea>
+          </div>
+
           <div class="actions">
-            <a class="btn blue" id="openQrBtn" href="#" target="_blank" rel="noopener noreferrer">🔳 Ouvrir QR</a>
-            <a class="btn" id="openFicheBtn" href="#" target="_blank" rel="noopener noreferrer">🪪 Ouvrir fiche</a>
+            <button class="btn primary" id="btnSave" type="button">💾 Enregistrer local</button>
+            <button class="btn gold" id="btnCopy" type="button">📋 Copier résumé</button>
+            <button class="btn blue" id="btnOpenResa" type="button">📅 Ouvrir réservation</button>
+            <button class="btn" id="btnOpenQr" type="button">🔳 Ouvrir QR</button>
+            <button class="btn" id="btnReloadSql" type="button">🔎 Relire SQL</button>
+            <button class="btn danger" id="btnReset" type="button">🧹 Vider local</button>
+          </div>
+
+          <div class="note" id="notice"></div>
+        </div>
+      </section>
+
+      <aside class="card" aria-label="Aperçu fiche RESA">
+        <div class="cardHead">
+          <div>
+            <div class="cardTitle">👁️ Aperçu client</div>
+            <div class="cardSub">Ce que le client comprend vite avant de réserver.</div>
+          </div>
+          <span class="tag">QR</span>
+        </div>
+
+        <div class="preview">
+          <div class="photoBox" id="photoBox">
+            <span id="photoFallback">📅 Photo établissement</span>
+            <div class="photoBadge">
+              <span class="pill" id="pvCityPill">Ville</span>
+              <span class="pill" id="pvActivityPill">Activité</span>
+            </div>
+          </div>
+
+          <div class="publicCard">
+            <div class="publicName" id="pvName">Mon établissement</div>
+            <div class="publicMeta" id="pvMeta">Ville · activité · horaires</div>
+            <div class="publicBio" id="pvBio">Présentation courte de l’établissement.</div>
+
+            <div class="linkGrid" id="linksBox"></div>
+          </div>
+
+          <div class="qrBox">
+            <img class="qrImg" id="qrImg" alt="QR réservation RESA"/>
+            <div class="qrText">
+              <div class="qrTitle">QR réservation</div>
+              <div class="qrUrl" id="qrUrl">Lien en préparation.</div>
+              <button class="btn gold" id="btnCopyUrl" type="button">🔗 Copier lien QR</button>
+            </div>
           </div>
         </div>
       </aside>
@@ -156,340 +267,430 @@
 
   <nav class="bottomBar" aria-label="Navigation rapide RESA">
     <div class="bottomInner">
-      <a href="./hub.html"><span>🧭</span><span>HUB</span></a>
-      <a class="active" id="bottomFiche" href="./fiche.html"><span>🪪</span><span>Fiche</span></a>
-      <a id="bottomReserve" href="./reserver.html"><span>📅</span><span>Réserver</span></a>
-      <a href="./session.html"><span>🛡️</span><span>Session</span></a>
+      <a href="./hub.html"><span class="bi">🧭</span><span>HUB</span></a>
+      <a href="./dashboard-pro.html"><span class="bi">🏠</span><span>Accueil</span></a>
+      <a href="./cockpit.html"><span class="bi">📋</span><span>Réserv.</span></a>
+      <a class="active" href="./fiche.html"><span class="bi">🪪</span><span>Fiche</span></a>
+      <a href="./session.html"><span class="bi">🛡️</span><span>Session</span></a>
     </div>
   </nav>
 
   <script>
-    (async () => {
+    (() => {
       "use strict";
 
-      const TABLE = "digiy_resa_public_fiches";
       const MODULE = "RESA";
-      const PUBLIC_BASE_URL = String(window.DIGIY_PUBLIC_BASE_URL || location.origin + "/");
-      const SENSITIVE_KEYS = ["phone","tel","owner_phone","owner_id","business_code","access_note","keybox_code","keybox_location","pin","token","session_token","return","from","redirect","url","v","module"];
+      const TABLE = "digiy_resa_public_fiches";
+      const PUBLIC_BASE = String(window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/");
+      const LOGIN_URL = String(window.DIGIY_LOGIN_URL || "./pin.html");
+
+      const SENSITIVE_URL_KEYS = [
+        "phone","tel","p_phone","owner_phone","owner_id","slug",
+        "resa_phone","resa_tel","business_phone","whatsapp","msisdn",
+        "subscription_phone","checkout_phone","subscription_slug","pro_slug","source_slug",
+        "pin","pin4","token","session_token","module","return","redirect","redirect_url","url","from","v"
+      ];
+
+      const FIELDS = [
+        "businessName","activity","city","hours","address","whatsapp","publicSlug",
+        "reservationUrl","publicFicheUrl","logoUrl","coverUrl","summary"
+      ];
+
       const $ = id => document.getElementById(id);
+      let proSlug = "";
 
-      let ficheUrl = "";
-      let reservationUrl = "";
-      let qrUrl = "";
-
-      function showStatus(txt, kind){
-        const box = $("statusBox");
-        box.textContent = txt || "";
-        box.style.display = txt ? "block" : "none";
-        box.style.borderColor = kind === "bad" ? "rgba(239,68,68,.35)" : "rgba(250,204,21,.30)";
-        box.style.background = kind === "bad" ? "rgba(239,68,68,.10)" : "rgba(250,204,21,.10)";
-        box.style.color = kind === "bad" ? "#fecaca" : "#fff0a8";
-      }
-
-      function escapeHtml(v){
-        return String(v ?? "")
-          .replaceAll("&","&amp;")
-          .replaceAll("<","&lt;")
-          .replaceAll(">","&gt;")
-          .replaceAll('"',"&quot;")
-          .replaceAll("'","&#39;");
-      }
-
+      function safe(v){ return String(v || "").trim(); }
       function normalizeSlug(v){
         return String(v || "")
-          .trim()
-          .toLowerCase()
+          .trim().toLowerCase()
           .replace(/\s+/g,"-")
           .replace(/[^a-z0-9-]/g,"")
           .replace(/-+/g,"-")
           .replace(/^-|-$/g,"");
       }
-
-      function isSensitiveSlug(v){
-        const s = String(v || "").trim();
+      function isPublicSlugSensitive(v){
+        const s = safe(v);
         if(!s) return true;
         if(/\d{7,}/.test(s)) return true;
-        if(/^(\+?221|221|00221)?(70|75|76|77|78)\d{6,}$/i.test(s.replace(/[^\d+]/g,""))) return true;
         if(/token|session|pin|phone|tel|whatsapp/i.test(s)) return true;
         return false;
       }
-
-      function cleanUrlButKeepSlug(){
+      function cleanHttps(v){
+        const raw = safe(v);
+        if(!raw) return "";
+        if(!/^https:\/\//i.test(raw)) return "";
+        return raw;
+      }
+      function normPhone(v){
+        return String(v || "").replace(/[^\d+]/g,"").trim();
+      }
+      function esc(v){
+        return String(v ?? "")
+          .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+          .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+      }
+      function publicUrl(page, slug){
+        const s = normalizeSlug(slug);
+        if(!s || isPublicSlugSensitive(s)) return "";
+        const u = new URL(page, PUBLIC_BASE);
+        u.searchParams.set("slug", s);
+        return u.toString();
+      }
+      function qrUrl(target){
+        return "https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=12&data=" + encodeURIComponent(target || PUBLIC_BASE);
+      }
+      function storageKey(){
+        return "DIGIY_RESA_FICHE_V2_" + (proSlug || "NO_SLUG");
+      }
+      function show(msg,type){
+        const el = $("notice");
+        if(!el) return;
+        el.className = "note show " + (type || "warn");
+        el.textContent = msg || "";
+      }
+      function goPin(reason){
+        try{
+          sessionStorage.setItem("DIGIY_RESA_RETURN_AFTER_PIN", "fiche.html");
+          if(reason) sessionStorage.setItem("DIGIY_RESA_PIN_REASON", reason);
+        }catch(_){}
+        document.body.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#0e4226;color:#f0fff5;font-family:system-ui,sans-serif;text-align:center"><div><h1>🔐 Retour PIN</h1><p style="font-weight:800">Session ou slug RESA absent. On repasse par le coffre.</p></div></main>';
+        setTimeout(() => { location.replace(LOGIN_URL); }, 250);
+      }
+      function cleanVisibleUrl(){
         try{
           const url = new URL(location.href);
           let changed = false;
-          SENSITIVE_KEYS.forEach(k => {
-            if(url.searchParams.has(k)){
-              url.searchParams.delete(k);
+          SENSITIVE_URL_KEYS.forEach(key => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
               changed = true;
             }
           });
           if(changed) history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-        }catch(_ ){}
+        }catch(_){}
       }
-
-      const SLUG_KEYS = [
-        "slug","public_slug","slug_public","fiche_slug","resa_slug",
-        "etablissement_slug","business_slug","resto_slug","restaurant_slug",
-        "pro_slug","client_slug","publicSlug","ficheSlug","resaSlug"
-      ];
-
-      function safeCandidate(value){
-        const slug = normalizeSlug(value);
-        return slug && !isSensitiveSlug(slug) ? slug : "";
+      function cleanInternalLinks(){
+        try{
+          document.querySelectorAll("a[href]").forEach(link => {
+            const href = link.getAttribute("href") || "";
+            if(!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+            const url = new URL(href, location.href);
+            if(url.origin !== location.origin) return;
+            SENSITIVE_URL_KEYS.forEach(key => url.searchParams.delete(key));
+            const file = url.pathname.split("/").pop() || "index.html";
+            link.setAttribute("href","./" + file + (url.search || "") + (url.hash || ""));
+          });
+        }catch(_){}
       }
-
-      function slugFromSearchParams(params){
-        for(const key of SLUG_KEYS){
-          const direct = params.get(key);
-          const clean = safeCandidate(direct);
-          if(clean) return clean;
-        }
-        return "";
-      }
-
-      function readJson(value){
-        try{ return JSON.parse(value || "{}"); }catch(_){ return {}; }
-      }
-
-      function slugFromObject(obj, depth=0){
-        if(!obj || typeof obj !== "object" || depth > 3) return "";
-        for(const key of SLUG_KEYS){
-          const clean = safeCandidate(obj[key]);
-          if(clean) return clean;
-        }
-        for(const key of Object.keys(obj)){
-          const v = obj[key];
-          if(v && typeof v === "object"){
-            const nested = slugFromObject(v, depth + 1);
-            if(nested) return nested;
+      async function waitGuard(){
+        try{
+          const guard = window.DIGIY_GUARD;
+          if(!guard) return {};
+          if(typeof guard.ready === "function"){
+            const out = guard.ready({ redirect:false, preserve_validation:true });
+            if(out && typeof out.then === "function") await out;
+          }else if(guard.ready && typeof guard.ready.then === "function"){
+            await guard.ready;
           }
+          if(typeof guard.getSession === "function") return guard.getSession() || guard.state || {};
+          return guard.state || {};
+        }catch(e){
+          console.warn("[RESA FICHE] guard", e);
+          return {};
         }
-        return "";
       }
-
-      function slugFromLocalStorage(){
-        const keys = [
-          "digiy_resa_public_slug",
-          "digiy_resa_slug",
-          "digiy_resa_fiche",
-          "digiy_resa_session",
-          "digiy_session_RESA",
-          "digiy_guard_session",
-          "DIGIY_GUARD_SESSION",
-          "DIGIY_RESA_SESSION"
+      function collectLocalSlug(){
+        try{
+          return normalizeSlug(
+            localStorage.getItem("digiy_resa_slug") ||
+            localStorage.getItem("digiy_resa_last_slug") ||
+            localStorage.getItem("resa_slug") ||
+            localStorage.getItem("DIGIY_RESA_SLUG") ||
+            localStorage.getItem("digiy_abos_slug") ||
+            ""
+          );
+        }catch(_){ return ""; }
+      }
+      function resolveProSlug(state){
+        const st = state || {};
+        const candidates = [
+          st.slug, st.resa_slug, st.internal_slug, st.pro_slug, st.subscription_slug,
+          st.public_slug, st.business_slug, st.etablissement_slug,
+          st.payload && st.payload.slug,
+          st.payload && st.payload.resa_slug,
+          st.payload && st.payload.internal_slug,
+          collectLocalSlug()
         ];
-        for(const key of keys){
-          try{
-            const raw = localStorage.getItem(key);
-            if(!raw) continue;
-            const direct = safeCandidate(raw);
-            if(direct && !raw.trim().startsWith("{") && !raw.trim().startsWith("[")) return direct;
-            const nested = slugFromObject(readJson(raw));
-            if(nested) return nested;
-          }catch(_ ){}
+        for(const c of candidates){
+          const s = normalizeSlug(c);
+          if(s) return s;
         }
         return "";
       }
-
-      function cleanCandidate(value){
-        return normalizeSlug(value);
-      }
-
-      function firstSlugFromParams(params){
-        for(const key of SLUG_KEYS){
-          const v = cleanCandidate(params.get(key));
-          if(v) return v;
-        }
-        return "";
-      }
-
-      function extractSlugCandidate(){
-        try{
-          const url = new URL(location.href);
-          const fromQuery = firstSlugFromParams(url.searchParams);
-          if(fromQuery) return { slug: fromQuery, source: "url" };
-
-          if(url.hash && url.hash.length > 1){
-            const hash = url.hash.startsWith("#?") ? url.hash.slice(2) : url.hash.slice(1);
-            const fromHash = firstSlugFromParams(new URLSearchParams(hash));
-            if(fromHash) return { slug: fromHash, source: "hash" };
-          }
-
-          const pathParts = url.pathname.split("/").filter(Boolean);
-          const last = pathParts[pathParts.length - 1] || "";
-          const prev = pathParts[pathParts.length - 2] || "";
-          if(/^(fiche|restaurant|resa|reservation)$/i.test(prev)){
-            const fromPath = cleanCandidate(last.replace(/\.html?$/i,""));
-            if(fromPath && !/^fiche$/i.test(fromPath)) return { slug: fromPath, source: "path" };
-          }
-        }catch(_ ){}
-
-        const guardState = slugFromObject(window.DIGIY_GUARD?.state || {}) || slugFromObject(window.DIGIY_GUARD?.getSession?.() || {});
-        if(guardState) return { slug: guardState, source: "session" };
-
-        const local = slugFromLocalStorage();
-        if(local) return { slug: local, source: "local" };
-
-        return { slug: "", source: "absent" };
-      }
-
-      function buildPublicUrl(page, slug){
-        const u = new URL(page, PUBLIC_BASE_URL);
-        u.searchParams.set("slug", slug);
-        return u.toString();
-      }
-
-      function qrImageUrl(value, size){
-        const s = Math.max(160, Number(size) || 260);
-        return "https://api.qrserver.com/v1/create-qr-code/?size=" + s + "x" + s + "&margin=12&data=" + encodeURIComponent(value);
-      }
-
-      function whatsappHref(v){
-        const digits = String(v || "").replace(/[^\d]/g,"");
-        if(!digits) return "#";
-        return "https://wa.me/" + digits;
-      }
-
-      function setDisabledLink(el, disabled){
-        if(!el) return;
-        if(disabled) el.setAttribute("aria-disabled","true");
-        else el.removeAttribute("aria-disabled");
-      }
-
-      async function fetchFiche(slug){
-        if(!window.supabase?.createClient) throw new Error("Client Supabase indisponible");
-        const client = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY);
-        const clean = normalizeSlug(slug);
-        const { data, error } = await client
-          .from(TABLE)
-          .select("*")
-          .eq("module", MODULE)
-          .eq("is_active", true)
-          .in("status", ["published","active"])
-          .or(`slug.eq.${clean},public_slug.eq.${clean},internal_slug.eq.${clean},resa_slug.eq.${clean}`)
-          .limit(1)
-          .maybeSingle();
-        if(error) throw error;
-        return data;
-      }
-
-      function applyFiche(row, slug){
-        const businessName = row.business_name || row.name || "Établissement";
-        const activity = row.activity || row.type || "Réservation";
-        const zone = row.zone || row.city || "Zone";
-        const hours = row.hours || row.horaires || "Horaires";
-        const summary = row.summary || row.description || "Réservation simple et directe.";
-        const coverUrl = row.cover_url || row.photo_url || row.image_url || "";
-        const logoUrl = row.logo_url || "";
-        const phone = row.whatsapp || row.phone || row.contact || "";
-        const payload = row.payload && typeof row.payload === "object" ? row.payload : {};
-
-        const publicSlug = normalizeSlug(row.public_slug || row.slug || slug);
-        ficheUrl = row.fiche_url || buildPublicUrl("fiche.html", publicSlug);
-        reservationUrl = row.reservation_url || buildPublicUrl("reserver.html", publicSlug);
-        qrUrl = qrImageUrl(reservationUrl, 720);
-        try{
-          if(publicSlug && !isSensitiveSlug(publicSlug)){
-            const u = new URL(location.href);
-            if(u.searchParams.get("slug") !== publicSlug){
-              u.searchParams.set("slug", publicSlug);
-              history.replaceState({}, document.title, u.pathname + "?" + u.searchParams.toString() + u.hash);
-            }
-          }
-        }catch(_ ){}
-
-        document.title = businessName + " · Réservation";
-        $("statePill").textContent = "fiche active";
-        $("heroTitle").textContent = businessName;
-        $("heroLead").textContent = summary;
-        $("businessName").textContent = businessName;
-        $("summaryText").textContent = summary;
-        $("badgeActivity").textContent = activity;
-        $("badgeZone").textContent = zone;
-        $("badgeHours").textContent = hours;
-
-        if(logoUrl){
-          $("logoBox").innerHTML = '<img src="' + escapeHtml(logoUrl) + '" alt="Logo" />';
-        }
-
-        if(coverUrl){
-          $("posterBox").innerHTML = '<img src="' + escapeHtml(coverUrl) + '" alt="Visuel établissement" onerror="this.parentNode.textContent=\'Visuel non chargé\';" />';
+      function setPill(state){
+        const el = $("sessionPill");
+        const module = String((state && state.module) || MODULE).toUpperCase();
+        const ok = !!proSlug && (!module || module === MODULE || module === "RESA");
+        if(ok){
+          el.textContent = "slug : " + proSlug;
+          el.className = "hdrPill ok";
+          $("proSlugTag").textContent = proSlug;
         }else{
-          $("posterBox").textContent = activity;
+          el.textContent = "PIN requis";
+          el.className = "hdrPill warn";
+        }
+      }
+      function getData(){
+        const d = {};
+        FIELDS.forEach(id => d[id] = safe($(id)?.value));
+        d.whatsapp = normPhone(d.whatsapp);
+        d.publicSlug = normalizeSlug(d.publicSlug);
+        d.logoUrl = cleanHttps(d.logoUrl);
+        d.coverUrl = cleanHttps(d.coverUrl);
+
+        if(d.publicSlug && !isPublicSlugSensitive(d.publicSlug)){
+          d.reservationUrl = cleanHttps(d.reservationUrl) || publicUrl("reserver.html", d.publicSlug);
+          d.publicFicheUrl = cleanHttps(d.publicFicheUrl) || publicUrl("fiche.html", d.publicSlug);
+        }else{
+          d.reservationUrl = cleanHttps(d.reservationUrl);
+          d.publicFicheUrl = cleanHttps(d.publicFicheUrl);
+        }
+        return d;
+      }
+      function setForm(d){
+        d = d || {};
+        $("businessName").value = d.businessName || d.business_name || d.name || "";
+        $("activity").value = d.activity || "";
+        $("city").value = d.city || d.zone || "";
+        $("hours").value = d.hours || d.horaires || "";
+        $("address").value = d.address || "";
+        $("whatsapp").value = d.whatsapp || d.phone || "";
+        $("publicSlug").value = normalizeSlug(d.publicSlug || d.public_slug || d.slug || "");
+        $("reservationUrl").value = d.reservationUrl || d.reservation_url || "";
+        $("publicFicheUrl").value = d.publicFicheUrl || d.fiche_url || "";
+        $("logoUrl").value = d.logoUrl || d.logo_url || "";
+        $("coverUrl").value = d.coverUrl || d.cover_url || "";
+        $("summary").value = d.summary || d.description || "";
+      }
+      function link(label, url, icon){
+        if(!url) return "";
+        return `<a class="publicLink" href="${esc(url)}" target="_blank" rel="noopener">${esc(icon || "🔗")} ${esc(label)}</a>`;
+      }
+      function render(){
+        const d = getData();
+        const publicSlugOk = d.publicSlug && !isPublicSlugSensitive(d.publicSlug);
+        const name = d.businessName || "Mon établissement";
+        const activity = d.activity || "Réservation";
+        const city = d.city || "Ville / zone";
+        const hours = d.hours || "Horaires à préciser";
+        const address = d.address || "Adresse / repère";
+        const summary = d.summary || "Présentation courte de l’établissement.";
+
+        $("pvName").textContent = name;
+        $("pvMeta").textContent = [city, activity, hours, address].filter(Boolean).join(" · ");
+        $("pvBio").textContent = summary;
+        $("pvCityPill").textContent = city;
+        $("pvActivityPill").textContent = activity;
+
+        const photoBox = $("photoBox");
+        const oldImg = photoBox.querySelector("img");
+        if(oldImg) oldImg.remove();
+
+        const imgUrl = d.coverUrl || d.logoUrl;
+        if(imgUrl){
+          const img = document.createElement("img");
+          img.src = imgUrl;
+          img.alt = name;
+          img.onerror = () => img.remove();
+          photoBox.prepend(img);
         }
 
-        const info = [
-          zone ? "📍 " + zone : "",
-          hours ? "🕒 " + hours : "",
-          payload.capacity ? "👥 Capacité : " + payload.capacity : "",
-          payload.note_client ? "ℹ️ " + payload.note_client : ""
-        ].filter(Boolean);
-        $("infoGrid").innerHTML = info.map(x => '<div class="infoLine">' + escapeHtml(x) + '</div>').join("");
+        const whats = d.whatsapp ? "https://wa.me/" + encodeURIComponent(d.whatsapp.replace(/^\+/,"")) : "";
+        $("linksBox").innerHTML = [
+          link("WhatsApp", whats, "💬"),
+          link("Réserver", d.reservationUrl, "📅"),
+          link("Fiche / clip", d.publicFicheUrl, "🎬")
+        ].filter(Boolean).join("") || `<div class="publicMeta">Ajoute WhatsApp ou slug public pour activer les boutons client.</div>`;
 
-        const contactLink = $("contactLink");
-        contactLink.href = whatsappHref(phone);
-        setDisabledLink(contactLink, !phone);
+        if(publicSlugOk && !cleanHttps($("reservationUrl").value)){
+          $("reservationUrl").value = publicUrl("reserver.html", d.publicSlug);
+        }
+        if(publicSlugOk && !cleanHttps($("publicFicheUrl").value)){
+          $("publicFicheUrl").value = publicUrl("fiche.html", d.publicSlug);
+        }
 
-        $("reserveLink").href = reservationUrl;
-        $("bottomReserve").href = reservationUrl;
-        const bottomFiche = $("bottomFiche");
-        if(bottomFiche) bottomFiche.href = ficheUrl;
-        $("openFicheBtn").href = ficheUrl;
-        $("openQrBtn").href = qrUrl;
-        $("qrPreview").innerHTML = '<img src="' + escapeHtml(qrImageUrl(reservationUrl, 260)) + '" alt="QR réservation" />';
-        $("qrLinkText").textContent = reservationUrl;
-        showStatus("");
+        const target = getData().reservationUrl || "";
+        $("qrUrl").textContent = target || "Renseigne un slug public propre pour préparer le QR.";
+        $("qrImg").src = qrUrl(target || PUBLIC_BASE);
       }
-
-      cleanUrlButKeepSlug();
-      const extracted = extractSlugCandidate();
-      const slug = extracted.slug;
-
-      if(!slug){
-        $("statePill").textContent = "slug absent";
-        $("heroLead").textContent = "Lien public absent ou incomplet.";
-        showStatus(
-          "🛡️ Fiche non affichée : aucun slug RESA n'a été trouvé. Ouvre la fiche avec ?slug=digiylyfe ou depuis la session PIN.",
-          "bad"
-        );
-        ["reserveLink","contactLink","openQrBtn","openFicheBtn"].forEach(id => setDisabledLink($(id), true));
-        $("qrPreview").innerHTML = '<div class="qrEmpty">Slug absent.</div>';
-        $("qrLinkText").textContent = "Exemple attendu : fiche.html?slug=digiylyfe";
-        return;
+      async function findSqlRow(slug){
+        if(!slug || !window.supabase?.createClient) return null;
+        const client = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY);
+        const cols = ["internal_slug","resa_slug","slug","public_slug"];
+        for(const col of cols){
+          try{
+            const { data, error } = await client
+              .from(TABLE)
+              .select("*")
+              .eq("module", MODULE)
+              .eq("is_active", true)
+              .in("status", ["published","active"])
+              .eq(col, slug)
+              .limit(1)
+              .maybeSingle();
+            if(error) continue;
+            if(data) return data;
+          }catch(_){}
+        }
+        return null;
       }
-
-      try{
-        $("statePill").textContent = isSensitiveSlug(slug) ? "slug interne" : (extracted.source === "url" ? "slug public" : "slug " + extracted.source);
-        const row = await fetchFiche(slug);
-        if(!row){
-          $("statePill").textContent = "introuvable";
-          $("heroLead").textContent = "Aucune fiche active trouvée pour ce slug public.";
-          showStatus("Fiche introuvable ou non publiée. Vérifie le SQL : slug public digiylyfe + slug interne resa-221771342889 + téléphone 221771342889.", "bad");
-          $("qrPreview").innerHTML = '<div class="qrEmpty">Fiche introuvable.</div>';
-          $("qrLinkText").textContent = buildPublicUrl("reserver.html", slug);
+      function loadLocal(){
+        try{
+          const raw = localStorage.getItem(storageKey());
+          if(!raw) return false;
+          const d = JSON.parse(raw);
+          setForm(d);
+          show("✅ Fiche locale retrouvée pour : " + proSlug, "ok");
+          return true;
+        }catch(_){ return false; }
+      }
+      function saveLocal(){
+        const d = getData();
+        if(!d.businessName){
+          show("Ajoute au moins le nom visible de l’établissement.", "warn");
+          $("businessName")?.focus();
           return;
         }
-        applyFiche(row, slug);
-      }catch(e){
-        console.error(e);
-        $("statePill").textContent = "erreur";
-        showStatus("Erreur de lecture de la fiche. Vérifie la table Supabase et la policy SELECT publique.", "bad");
+        if(!d.publicSlug || isPublicSlugSensitive(d.publicSlug)){
+          show("Ajoute un slug public propre. Exemple : digiylyfe. Pas de téléphone dans le slug public.", "warn");
+          $("publicSlug")?.focus();
+          return;
+        }
+        try{
+          localStorage.setItem(storageKey(), JSON.stringify(d));
+          localStorage.setItem("digiy_resa_slug", proSlug);
+          localStorage.setItem("digiy_resa_last_slug", proSlug);
+          localStorage.setItem("digiy_resa_public_slug", d.publicSlug);
+          localStorage.setItem("digiy_resa_last_public_slug", d.publicSlug);
+          localStorage.setItem("digiy_resa_public_url", d.reservationUrl);
+        }catch(_){}
+        show("✅ Fiche RESA gardée sur cet appareil. QR et liens prêts.", "ok");
+        render();
+      }
+      async function loadSql(){
+        show("🔎 Lecture Supabase en cours…", "warn");
+        const row = await findSqlRow(proSlug);
+        if(!row){
+          show("Aucune fiche SQL trouvée pour ce slug RESA. Tu peux remplir ici, puis garder localement.", "warn");
+          return false;
+        }
+        setForm(row);
+        try{
+          localStorage.setItem(storageKey(), JSON.stringify(getData()));
+          localStorage.setItem("digiy_resa_slug", proSlug);
+          localStorage.setItem("digiy_resa_last_slug", proSlug);
+          localStorage.setItem("digiy_resa_public_slug", getData().publicSlug);
+          localStorage.setItem("digiy_resa_last_public_slug", getData().publicSlug);
+        }catch(_){}
+        render();
+        show("✅ Fiche SQL chargée et reliée au slug PRO : " + proSlug, "ok");
+        return true;
+      }
+      async function copyText(text){
+        try{
+          if(navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+        }catch(_){}
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly","");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        let ok = false;
+        try{ ok = document.execCommand("copy"); }catch(_){}
+        ta.remove();
+        if(!ok) throw new Error("copy_failed");
+      }
+      function summary(){
+        const d = getData();
+        return [
+          "FICHE RESA",
+          "Slug PRO : " + (proSlug || "—"),
+          "Slug public : " + (d.publicSlug || "—"),
+          "Établissement : " + (d.businessName || "—"),
+          "Activité : " + (d.activity || "—"),
+          "Ville / zone : " + (d.city || "—"),
+          "Adresse : " + (d.address || "—"),
+          "Horaires : " + (d.hours || "—"),
+          "WhatsApp : " + (d.whatsapp ? "renseigné" : "—"),
+          "Réservation : " + (d.reservationUrl || "—"),
+          "Fiche / clip : " + (d.publicFicheUrl || "—"),
+          "",
+          "Présentation :",
+          d.summary || "—"
+        ].join("\n");
+      }
+      function resetLocal(){
+        try{ localStorage.removeItem(storageKey()); }catch(_){}
+        FIELDS.forEach(id => { if($(id)) $(id).value = ""; });
+        show("Fiche locale vidée. Le SQL n’est pas touché.", "warn");
+        render();
+      }
+      async function boot(){
+        cleanVisibleUrl();
+        cleanInternalLinks();
+
+        const state = await waitGuard();
+        proSlug = resolveProSlug(state);
+        setPill(state);
+
+        if(!proSlug){
+          goPin("slug RESA absent");
+          return;
+        }
+
+        FIELDS.forEach(id => {
+          const el = $(id);
+          if(!el) return;
+          el.addEventListener("input", render);
+          el.addEventListener("change", render);
+        });
+
+        $("btnSave")?.addEventListener("click", saveLocal);
+        $("btnReset")?.addEventListener("click", resetLocal);
+        $("btnReloadSql")?.addEventListener("click", loadSql);
+        $("btnOpenQr")?.addEventListener("click", () => { location.href = "./qr.html"; });
+        $("btnOpenResa")?.addEventListener("click", () => {
+          const url = getData().reservationUrl;
+          if(!url){ show("Renseigne d’abord un slug public propre.", "warn"); return; }
+          window.open(url, "_blank", "noopener,noreferrer");
+        });
+        $("btnCopy")?.addEventListener("click", async () => {
+          try{ await copyText(summary()); show("✅ Résumé fiche copié.", "ok"); }
+          catch(_){ show(summary(), "warn"); }
+        });
+        $("btnCopyUrl")?.addEventListener("click", async () => {
+          const url = getData().reservationUrl;
+          if(!url){ show("Renseigne d’abord un slug public propre.", "warn"); return; }
+          try{ await copyText(url); show("✅ Lien QR copié.", "ok"); }
+          catch(_){ show("Impossible de copier automatiquement. Le lien est visible sous le QR.", "warn"); }
+        });
+
+        const foundLocal = loadLocal();
+        render();
+        if(!foundLocal) await loadSql();
+
+        cleanVisibleUrl();
+        cleanInternalLinks();
       }
 
-      $("copyLinkBtn").addEventListener("click", async () => {
-        const value = reservationUrl || ficheUrl || location.href;
-        try{
-          await navigator.clipboard.writeText(value);
-          showStatus("✅ Lien copié.");
-        }catch(_){
-          showStatus("Lien à copier : " + value);
-        }
-      });
+      boot();
     })();
   </script>
 </body>
 </html>
+
 
 
 
