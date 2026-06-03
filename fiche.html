@@ -1,23 +1,24 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Je réserve — Ma fiche établissement</title>
-  <meta name="theme-color" content="#1e7a46"/>
-  <meta name="robots" content="noindex,nofollow"/>
-  <meta name="description" content="Je réserve — Ma fiche établissement — fiche pro DIGIY avec QR intégré."/>
-  <meta name="digiy-build" content="resa-fiche-qr-grand-gras-20260519"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Fiche réservation · DIGIY RESA</title>
+  <meta name="theme-color" content="#1e7a46" />
+  <meta name="robots" content="index,follow" />
+  <meta name="description" content="Fiche publique de réservation DIGIY RESA." />
 
   <script>
     window.DIGIY_MODULE = "RESA";
-    window.DIGIY_LOGIN_URL = "./pin.html";
+    window.DIGIY_PUBLIC_BASE_URL = window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/";
+    window.DIGIY_SUPABASE_URL = window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <link rel="preload" as="image" href="https://digiylyfe.net/wp-content/uploads/2026/05/metier-pro-1.png"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet" />
 
   <style>
     :root{
@@ -26,485 +27,84 @@
       --text:#f8fafc;--muted:rgba(248,250,252,.78);--line:rgba(255,255,255,.16);
       --shadow:0 18px 48px rgba(0,0,0,.30);--r:22px;--hdrH:52px;--barH:78px;--max:980px;
     }
-
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-
     body{
-      margin:0;
-      min-height:100dvh;
-      color:var(--text);
+      margin:0;min-height:100dvh;color:var(--text);
       font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
-      font-size:19px;
-      font-weight:950;
+      font-size:19px;font-weight:950;
       background:
         radial-gradient(620px 390px at 10% 0%,rgba(196,151,63,.16),transparent 58%),
         radial-gradient(430px 280px at 92% 10%,rgba(56,189,248,.10),transparent 52%),
         linear-gradient(180deg,var(--bg) 0%,var(--bg2) 55%,var(--bg3) 100%);
       padding:calc(var(--hdrH) + 14px) 12px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
     }
-
     a{color:inherit;text-decoration:none}
-    button,input,textarea,select{font:inherit}
-    button{cursor:pointer;color:inherit}
-
-    .topHeader{
-      position:fixed;
-      top:0;left:0;right:0;
-      height:var(--hdrH);
-      z-index:100;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:0 14px;
-      background:var(--bar);
-      border-bottom:1px solid rgba(196,151,63,.26);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-    }
-
-    .hdrBack{
-      min-height:36px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      color:rgba(248,250,252,.72);
-      font-size:14px;
-      font-weight:1000;
-      white-space:nowrap;
-    }
-
-    .hdrTitle{
-      font-size:12px;
-      font-weight:1000;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:var(--gold2);
-      white-space:nowrap;
-    }
-
-    .hdrPill{
-      min-height:32px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:1000;
-      white-space:nowrap;
-      max-width:38vw;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .wrap{
-      width:min(var(--max),100%);
-      margin:0 auto;
-      display:grid;
-      gap:16px;
-    }
-
-    .hero,.panel{
-      border:1px solid var(--line);
-      border-radius:var(--r);
-      background:rgba(255,255,255,.07);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .hero{
-      padding:18px;
-      background:
-        radial-gradient(760px 280px at 100% 0%,rgba(196,151,63,.16),transparent 60%),
-        rgba(255,255,255,.065);
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-
-    .brand img{
-      width:100px;
-      height:100px;
-      object-fit:contain;
-      border-radius:26px;
-      background:#fff;
-      padding:8px;
-      box-shadow:0 12px 26px rgba(0,0,0,.24);
-      border:1px solid rgba(196,151,63,.34);
-      flex:0 0 auto;
-    }
-
-    .kicker{
-      color:var(--gold2);
-      font-size:12px;
-      font-weight:1000;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      margin-bottom:8px;
-    }
-
-    h1{
-      margin:0 0 8px;
-      font-size:clamp(36px,8.5vw,58px);
-      font-weight:1000;
-      line-height:.94;
-      letter-spacing:-.05em;
-    }
-
-    .lead{
-      color:var(--muted);
-      font-size:17px;
-      font-weight:900;
-      line-height:1.55;
-      max-width:76ch;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1.02fr .98fr;
-      gap:16px;
-    }
-
+    button{font:inherit;cursor:pointer;color:inherit}
+    .topHeader{position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;background:var(--bar);border-bottom:1px solid rgba(196,151,63,.26);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+    .hdrBack{min-height:36px;display:inline-flex;align-items:center;justify-content:center;color:rgba(248,250,252,.72);font-size:14px;font-weight:1000;white-space:nowrap}
+    .hdrTitle{font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);white-space:nowrap}
+    .hdrPill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--muted);font-size:12px;font-weight:1000;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis}
+    .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:16px}
+    .hero,.panel{border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.07);box-shadow:var(--shadow);overflow:hidden}
+    .hero{padding:18px;background:radial-gradient(760px 280px at 100% 0%,rgba(196,151,63,.16),transparent 60%),rgba(255,255,255,.065)}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logoBox{width:100px;height:100px;border-radius:26px;background:rgba(255,255,255,.12);border:1px solid rgba(196,151,63,.34);box-shadow:0 12px 26px rgba(0,0,0,.24);display:grid;place-items:center;overflow:hidden;flex:0 0 auto;color:#fff0a8;font-size:38px;font-weight:1000}
+    .logoBox img{width:100%;height:100%;object-fit:contain;background:#fff;padding:8px;display:block}
+    .kicker{color:var(--gold2);font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+    h1{margin:0 0 8px;font-size:clamp(36px,8.5vw,58px);font-weight:1000;line-height:.94;letter-spacing:-.05em}
+    .lead{color:var(--muted);font-size:17px;font-weight:900;line-height:1.55;max-width:76ch}
+    .grid{display:grid;grid-template-columns:1.02fr .98fr;gap:16px}
     .cardBody{padding:18px}
-
-    .sectionTitle{
-      margin:0 0 8px;
-      font-size:30px;
-      font-weight:1000;
-      letter-spacing:-.035em;
-      line-height:1.08;
-    }
-
-    .sectionSub{
-      margin:0 0 14px;
-      color:var(--muted);
-      font-size:16px;
-      font-weight:900;
-      line-height:1.5;
-    }
-
-    label{
-      display:block;
-      margin:12px 0 6px;
-      color:#fff8dc;
-      font-size:13px;
-      font-weight:1000;
-      letter-spacing:.04em;
-      text-transform:uppercase;
-    }
-
-    input,textarea,select{
-      width:100%;
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:17px;
-      background:rgba(0,0,0,.18);
-      color:var(--text);
-      padding:14px 14px;
-      outline:none;
-      font-weight:900;
-      line-height:1.45;
-    }
-
-    textarea{
-      min-height:116px;
-      resize:vertical;
-    }
-
-    input:focus,textarea:focus,select:focus{
-      border-color:rgba(196,151,63,.48);
-      box-shadow:0 0 0 4px rgba(196,151,63,.12);
-    }
-
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:14px;
-    }
-
-    .btn{
-      min-height:58px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:0 16px;
-      font-size:16px;
-      font-weight:1000;
-      text-align:center;
-    }
-
-    .btn.primary{
-      background:linear-gradient(135deg,var(--green),var(--gold2));
-      color:#13200d;
-      border:none;
-    }
-
-    .btn.blue{
-      background:rgba(56,189,248,.14);
-      color:#d9f4ff;
-      border-color:rgba(56,189,248,.24);
-    }
-
-    .btn.green{
-      background:rgba(34,197,94,.16);
-      color:#dffcea;
-      border-color:rgba(34,197,94,.25);
-    }
-
-    .btn.warn{
-      background:rgba(245,158,11,.14);
-      color:#fef3c7;
-      border-color:rgba(245,158,11,.24);
-    }
-
-    .preview{
-      display:grid;
-      gap:12px;
-    }
-
-    .poster{
-      border-radius:24px;
-      overflow:hidden;
-      border:1px solid rgba(196,151,63,.28);
-      background:rgba(0,0,0,.18);
-      min-height:220px;
-      display:grid;
-      place-items:center;
-      padding:18px;
-      color:var(--muted);
-      font-weight:1000;
-      text-align:center;
-    }
-
-    .poster img{
-      width:100%;
-      height:270px;
-      object-fit:cover;
-      display:block;
-      border-radius:18px;
-    }
-
-    .badgeRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:7px;
-      min-height:36px;
-      padding:8px 11px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      font-size:12px;
-      font-weight:1000;
-      color:#fff8dc;
-    }
-
-    .ficheTitle{
-      font-size:32px;
-      font-weight:1000;
-      line-height:1.05;
-      letter-spacing:-.04em;
-    }
-
-    .ficheText{
-      color:var(--muted);
-      font-size:16px;
-      font-weight:900;
-      line-height:1.6;
-    }
-
-    .qrBox{
-      border:1px solid rgba(196,151,63,.32);
-      border-radius:24px;
-      background:
-        radial-gradient(260px 160px at 100% 0%,rgba(196,151,63,.16),transparent 58%),
-        rgba(255,255,255,.055);
-      padding:16px;
-      display:grid;
-      gap:12px;
-    }
-
-    .qrHead{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .qrTitle{
-      font-size:22px;
-      font-weight:1000;
-      line-height:1.1;
-      letter-spacing:-.03em;
-    }
-
-    .qrHint{
-      color:var(--muted);
-      font-size:14px;
-      font-weight:900;
-      line-height:1.45;
-      margin-top:4px;
-    }
-
-    .qrBadge{
-      min-height:34px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      padding:7px 11px;
-      background:#fff0a8;
-      color:#3a2a05;
-      font-size:12px;
-      font-weight:1000;
-      letter-spacing:.07em;
-      text-transform:uppercase;
-    }
-
-    .qrPreview{
-      width:100%;
-      min-height:248px;
-      border-radius:22px;
-      background:#fff;
-      display:grid;
-      place-items:center;
-      padding:14px;
-      box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);
-    }
-
-    .qrPreview img{
-      width:220px;
-      height:220px;
-      object-fit:contain;
-      display:block;
-    }
-
-    .qrEmpty{
-      color:#13200d;
-      text-align:center;
-      font-size:15px;
-      font-weight:1000;
-      line-height:1.35;
-      max-width:28ch;
-    }
-
-    .qrLinkText{
-      padding:11px 12px;
-      border-radius:16px;
-      background:rgba(0,0,0,.16);
-      border:1px solid rgba(255,255,255,.10);
-      color:rgba(248,250,252,.82);
-      font-size:13px;
-      font-weight:900;
-      line-height:1.45;
-      word-break:break-all;
-    }
-
-    .status{
-      padding:13px 14px;
-      border-radius:18px;
-      border:1px solid rgba(34,197,94,.28);
-      background:rgba(34,197,94,.08);
-      color:#d7ffe1;
-      font-size:14px;
-      font-weight:1000;
-      line-height:1.45;
-      display:none;
-      margin-top:12px;
-    }
-
-    .bottomBar{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      height:var(--barH);
-      z-index:100;
-      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-      background:rgba(6,38,18,.97);
-      border-top:1px solid rgba(196,151,63,.18);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-    }
-
-    .bottomInner{
-      width:min(760px,100%);
-      height:100%;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:6px;
-    }
-
-    .bottomInner a{
-      min-height:58px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      align-content:center;
-      gap:3px;
-      color:rgba(248,250,252,.65);
-      font-size:11px;
-      font-weight:1000;
-      text-align:center;
-      background:rgba(255,255,255,.04);
-    }
-
-    .bottomInner a.active{
-      color:#13200d;
-      background:linear-gradient(135deg,var(--green),var(--gold2));
-    }
-
-    @media(max-width:760px){
-      .grid{grid-template-columns:1fr}
-      .brand img{width:88px;height:88px}
-      .actions .btn{width:100%}
-    }
-
-    @media(max-width:520px){
-      body{font-size:19px}
-      .hero,.cardBody{padding:16px}
-      h1{font-size:38px}
-      .ficheTitle{font-size:29px}
-      .brand{align-items:flex-start}
-    }
+    .sectionTitle{margin:0 0 8px;font-size:30px;font-weight:1000;letter-spacing:-.035em;line-height:1.08}
+    .sectionSub{margin:0 0 14px;color:var(--muted);font-size:16px;font-weight:900;line-height:1.5}
+    .poster{border-radius:24px;overflow:hidden;border:1px solid rgba(196,151,63,.28);background:rgba(0,0,0,.18);min-height:260px;display:grid;place-items:center;padding:18px;color:var(--muted);font-weight:1000;text-align:center}
+    .poster img{width:100%;height:330px;object-fit:cover;display:block;border-radius:18px}
+    .badgeRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .badge{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:8px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);font-size:12px;font-weight:1000;color:#fff8dc}
+    .ficheTitle{font-size:34px;font-weight:1000;line-height:1.05;letter-spacing:-.04em;margin-top:12px}
+    .ficheText{color:var(--muted);font-size:17px;font-weight:900;line-height:1.6;margin-top:10px;white-space:pre-line}
+    .infoGrid{display:grid;gap:10px;margin-top:14px}
+    .infoLine{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.14);border-radius:18px;padding:13px 14px;color:rgba(248,250,252,.86);font-size:15px;font-weight:950;line-height:1.45}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .btn{min-height:58px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;font-size:16px;font-weight:1000;text-align:center;flex:1 1 210px}
+    .btn.primary{background:linear-gradient(135deg,var(--green),var(--gold2));color:#13200d;border:none}
+    .btn.blue{background:rgba(56,189,248,.14);color:#d9f4ff;border-color:rgba(56,189,248,.24)}
+    .btn.green{background:rgba(34,197,94,.16);color:#dffcea;border-color:rgba(34,197,94,.25)}
+    .btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
+    .qrBox{border:1px solid rgba(196,151,63,.32);border-radius:24px;background:radial-gradient(260px 160px at 100% 0%,rgba(196,151,63,.16),transparent 58%),rgba(255,255,255,.055);padding:16px;display:grid;gap:12px}
+    .qrHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .qrTitle{font-size:22px;font-weight:1000;line-height:1.1;letter-spacing:-.03em}
+    .qrHint{color:var(--muted);font-size:14px;font-weight:900;line-height:1.45;margin-top:4px}
+    .qrBadge{min-height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:7px 11px;background:#fff0a8;color:#3a2a05;font-size:12px;font-weight:1000;letter-spacing:.07em;text-transform:uppercase}
+    .qrPreview{width:100%;min-height:248px;border-radius:22px;background:#fff;display:grid;place-items:center;padding:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+    .qrPreview img{width:220px;height:220px;object-fit:contain;display:block}
+    .qrEmpty{color:#13200d;text-align:center;font-size:15px;font-weight:1000;line-height:1.35;max-width:30ch}
+    .qrLinkText{padding:11px 12px;border-radius:16px;background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.10);color:rgba(248,250,252,.82);font-size:13px;font-weight:900;line-height:1.45;word-break:break-all}
+    .status{padding:14px 15px;border-radius:20px;border:1px solid rgba(250,204,21,.30);background:rgba(250,204,21,.10);color:#fff0a8;font-size:15px;font-weight:1000;line-height:1.45;margin-top:12px;display:none;white-space:pre-line}
+    .bottomBar{position:fixed;left:0;right:0;bottom:0;height:var(--barH);z-index:100;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(6,38,18,.97);border-top:1px solid rgba(196,151,63,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+    .bottomInner{width:min(760px,100%);height:100%;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(248,250,252,.65);font-size:11px;font-weight:1000;text-align:center;background:rgba(255,255,255,.04)}
+    .bottomInner a.active{color:#13200d;background:linear-gradient(135deg,var(--green),var(--gold2))}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.logoBox{width:88px;height:88px}.actions .btn{width:100%}}
+    @media(max-width:520px){body{font-size:19px}.hero,.cardBody{padding:16px}h1{font-size:38px}.ficheTitle{font-size:29px}.brand{align-items:flex-start}}
   </style>
 </head>
-
 <body>
   <header class="topHeader">
     <a class="hdrBack" href="./hub.html">← HUB</a>
     <div class="hdrTitle">RESA · FICHE</div>
-    <div class="hdrPill" id="savePill">fiche locale</div>
+    <div class="hdrPill" id="statePill">chargement</div>
   </header>
 
   <main class="wrap">
     <section class="hero">
       <div class="brand">
-        <img src="https://digiylyfe.net/wp-content/uploads/2026/05/metier-pro-1.png" alt="DIGIYLYFE — Métiers pro"/>
+        <div class="logoBox" id="logoBox">📅</div>
         <div>
-          <div class="kicker">📅 JE RÉSERVE</div>
-          <h1>Ma fiche établissement.</h1>
-          <div class="lead">Une fiche claire pour présenter l’établissement : nom, type, horaires, contact, lien public et QR. Le client scanne et réserve sans se perdre.</div>
+          <div class="kicker">📅 RÉSERVATION</div>
+          <h1 id="heroTitle">Fiche établissement</h1>
+          <div class="lead" id="heroLead">Chargement de la fiche publique…</div>
         </div>
       </div>
     </section>
@@ -512,71 +112,42 @@
     <section class="grid">
       <article class="panel">
         <div class="cardBody">
-          <h2 class="sectionTitle">Identité</h2>
-          <p class="sectionSub">Le pro complète les repères simples. DIGIY met en forme la fiche et le QR.</p>
-
-          <label for="proName">Nom établissement</label>
-          <input id="proName" placeholder="Ex : Restaurant Chez Awa"/>
-          <label for="activity">Type d’établissement</label>
-          <input id="activity" placeholder="Ex : Restaurant, table, salon, activité"/>
-          <label for="zone">Ville / zone</label>
-          <input id="zone" placeholder="Ex : Saly, Mbour, Dakar"/>
-          <label for="horaires">Horaires / règle utile</label>
-          <input id="horaires" placeholder="Ex : Ouvert 12h-23h · réservation conseillée"/>
-          <label for="contact">WhatsApp / téléphone</label>
-          <input id="contact" placeholder="+221..."/>
-          <label for="publicUrl">Lien public de réservation</label>
-          <input id="publicUrl" placeholder="https://..."/>
-          <label for="photoUrl">Photo établissement URL</label>
-          <input id="photoUrl" placeholder="https://..."/>
-
-          <label for="note">Présentation courte</label>
-          <textarea id="note" placeholder="Ex : Réservation simple, accueil direct, confirmation rapide par WhatsApp."></textarea>
-
-          <div class="actions">
-            <button class="btn primary" id="saveBtn" type="button">💾 Enregistrer</button>
-            <button class="btn green" id="previewBtn" type="button">👁️ Actualiser</button>
-            <button class="btn warn" id="clearBtn" type="button">🧹 Vider</button>
+          <div class="poster" id="posterBox">Visuel établissement</div>
+          <div class="badgeRow">
+            <span class="badge" id="badgeActivity">Réservation</span>
+            <span class="badge" id="badgeZone">Zone</span>
+            <span class="badge" id="badgeHours">Horaires</span>
           </div>
-
+          <div class="ficheTitle" id="businessName">Établissement</div>
+          <div class="ficheText" id="summaryText">La présentation apparaîtra ici.</div>
+          <div class="infoGrid" id="infoGrid"></div>
+          <div class="actions">
+            <a class="btn primary" id="reserveLink" href="#" target="_blank" rel="noopener noreferrer">📅 Réserver</a>
+            <a class="btn green" id="contactLink" href="#" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
+            <button class="btn blue" id="copyLinkBtn" type="button">📋 Copier le lien</button>
+          </div>
           <div class="status" id="statusBox"></div>
         </div>
       </article>
 
       <aside class="panel">
-        <div class="cardBody preview">
-          <h2 class="sectionTitle">Aperçu client</h2>
-
-          <div class="poster" id="posterBox">Photo ou visuel métier</div>
-
-          <div class="badgeRow">
-            <span class="badge" id="badgeActivity">Réservation</span>
-            <span class="badge" id="badgeZone">Zone</span>
-            <span class="badge" id="badgeExtra">Info utile</span>
-          </div>
-
-          <div class="ficheTitle" id="previewName">Nom professionnel</div>
-          <div class="ficheText" id="previewText">La présentation courte apparaîtra ici.</div>
-
+        <div class="cardBody">
+          <h2 class="sectionTitle">QR réservation</h2>
+          <p class="sectionSub">Le client scanne et ouvre directement la demande de réservation publique.</p>
           <div class="qrBox">
             <div class="qrHead">
               <div>
-                <div class="qrTitle">QR de la fiche</div>
-                <div class="qrHint">Le client scanne et ouvre directement cette fiche.</div>
+                <div class="qrTitle">QR client</div>
+                <div class="qrHint">Lien public sans téléphone, sans PIN, sans donnée privée.</div>
               </div>
-              <div class="qrBadge">QR PRO</div>
+              <div class="qrBadge">RESA</div>
             </div>
-            <div class="qrPreview" id="qrPreview">
-              <div class="qrEmpty">Ajoute un lien public pour afficher le QR.</div>
-            </div>
-            <div class="qrLinkText" id="qrLinkText">Lien public non renseigné.</div>
+            <div class="qrPreview" id="qrPreview"><div class="qrEmpty">QR en préparation.</div></div>
+            <div class="qrLinkText" id="qrLinkText">Lien en préparation.</div>
           </div>
-
           <div class="actions">
-            <a class="btn green" id="contactLink" href="#" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
-            <a class="btn blue" id="qrDirectLink" href="./qr.html">🔳 Ouvrir QR</a>
-            <button class="btn" id="copyQrLinkBtn" type="button">📋 Copier lien</button>
-            <a class="btn" href="./dashboard-pro.html">🏠 Accueil</a>
+            <a class="btn blue" id="openQrBtn" href="#" target="_blank" rel="noopener noreferrer">🔳 Ouvrir QR</a>
+            <a class="btn" id="openFicheBtn" href="#" target="_blank" rel="noopener noreferrer">🪪 Ouvrir fiche</a>
           </div>
         </div>
       </aside>
@@ -586,22 +157,64 @@
   <nav class="bottomBar" aria-label="Navigation rapide RESA">
     <div class="bottomInner">
       <a href="./hub.html"><span>🧭</span><span>HUB</span></a>
-      <a href="./dashboard-pro.html"><span>🏠</span><span>Accueil</span></a>
       <a class="active" href="./fiche.html"><span>🪪</span><span>Fiche</span></a>
-      <a href="./qr.html"><span>🔳</span><span>QR</span></a>
+      <a id="bottomReserve" href="./reserver.html"><span>📅</span><span>Réserver</span></a>
       <a href="./session.html"><span>🛡️</span><span>Session</span></a>
     </div>
   </nav>
 
   <script>
-    (() => {
+    (async () => {
       "use strict";
 
-      const KEY = "digiy_resa_fiche";
-      const SENSITIVE_KEYS = ["slug","phone","tel","owner_phone","owner_id","business_code","access_note","keybox_code","keybox_location","pin","token","session_token","return","from","redirect","url","v","module"];
+      const TABLE = "digiy_resa_public_fiches";
+      const MODULE = "RESA";
+      const PUBLIC_BASE_URL = String(window.DIGIY_PUBLIC_BASE_URL || location.origin + "/");
+      const SENSITIVE_KEYS = ["phone","tel","owner_phone","owner_id","business_code","access_note","keybox_code","keybox_location","pin","token","session_token","return","from","redirect","url","v","module"];
       const $ = id => document.getElementById(id);
 
-      function cleanUrl(){
+      let ficheUrl = "";
+      let reservationUrl = "";
+      let qrUrl = "";
+
+      function showStatus(txt, kind){
+        const box = $("statusBox");
+        box.textContent = txt || "";
+        box.style.display = txt ? "block" : "none";
+        box.style.borderColor = kind === "bad" ? "rgba(239,68,68,.35)" : "rgba(250,204,21,.30)";
+        box.style.background = kind === "bad" ? "rgba(239,68,68,.10)" : "rgba(250,204,21,.10)";
+        box.style.color = kind === "bad" ? "#fecaca" : "#fff0a8";
+      }
+
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#39;");
+      }
+
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
+      }
+
+      function isSensitiveSlug(v){
+        const s = String(v || "").trim();
+        if(!s) return true;
+        if(/\d{7,}/.test(s)) return true;
+        if(/^(\+?221|221|00221)?(70|75|76|77|78)\d{6,}$/i.test(s.replace(/[^\d+]/g,""))) return true;
+        if(/token|session|pin|phone|tel|whatsapp/i.test(s)) return true;
+        return false;
+      }
+
+      function cleanUrlButKeepSlug(){
         try{
           const url = new URL(location.href);
           let changed = false;
@@ -615,30 +228,15 @@
         }catch(_ ){}
       }
 
-      function formData(){
-        return {
-          proName: $("proName").value.trim(),
-          activity: $("activity").value.trim(),
-          zone: $("zone").value.trim(),
-          horaires: $("horaires").value.trim(),
-          contact: $("contact").value.trim(),
-          publicUrl: $("publicUrl").value.trim(),
-          photoUrl: $("photoUrl").value.trim(),
-          note: $("note").value.trim(),
-          module: "RESA",
-          updated_at: new Date().toISOString()
-        };
+      function buildPublicUrl(page, slug){
+        const u = new URL(page, PUBLIC_BASE_URL);
+        u.searchParams.set("slug", slug);
+        return u.toString();
       }
 
-      function setForm(data){
-        $("proName").value = data.proName || "";
-        $("activity").value = data.activity || "";
-        $("zone").value = data.zone || "";
-        $("horaires").value = data.horaires || "";
-        $("contact").value = data.contact || "";
-        $("publicUrl").value = data.publicUrl || "";
-        $("photoUrl").value = data.photoUrl || "";
-        $("note").value = data.note || "";
+      function qrImageUrl(value, size){
+        const s = Math.max(160, Number(size) || 260);
+        return "https://api.qrserver.com/v1/create-qr-code/?size=" + s + "x" + s + "&margin=12&data=" + encodeURIComponent(value);
       }
 
       function whatsappHref(v){
@@ -647,104 +245,126 @@
         return "https://wa.me/" + digits;
       }
 
-      function qrImageUrl(value){
-        return "https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=12&data=" + encodeURIComponent(value);
+      function setDisabledLink(el, disabled){
+        if(!el) return;
+        if(disabled) el.setAttribute("aria-disabled","true");
+        else el.removeAttribute("aria-disabled");
       }
 
-      function showStatus(txt){
-        const box = $("statusBox");
-        box.textContent = txt;
-        box.style.display = "block";
-        setTimeout(() => box.style.display = "none", 2800);
+      async function fetchFiche(slug){
+        if(!window.supabase?.createClient) throw new Error("Client Supabase indisponible");
+        const client = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY);
+        const { data, error } = await client
+          .from(TABLE)
+          .select("*")
+          .eq("module", MODULE)
+          .eq("is_active", true)
+          .in("status", ["published","active"])
+          .or(`slug.eq.${slug},public_slug.eq.${slug}`)
+          .limit(1)
+          .maybeSingle();
+        if(error) throw error;
+        return data;
       }
 
-      function renderQr(value){
-        const publicUrl = String(value || "").trim();
-        const box = $("qrPreview");
-        const txt = $("qrLinkText");
-        const direct = $("qrDirectLink");
+      function applyFiche(row, slug){
+        const businessName = row.business_name || row.name || "Établissement";
+        const activity = row.activity || row.type || "Réservation";
+        const zone = row.zone || row.city || "Zone";
+        const hours = row.hours || row.horaires || "Horaires";
+        const summary = row.summary || row.description || "Réservation simple et directe.";
+        const coverUrl = row.cover_url || row.photo_url || row.image_url || "";
+        const logoUrl = row.logo_url || "";
+        const phone = row.whatsapp || row.phone || row.contact || "";
+        const payload = row.payload && typeof row.payload === "object" ? row.payload : {};
 
-        if(!publicUrl){
-          box.innerHTML = '<div class="qrEmpty">Ajoute un lien public pour afficher le QR.</div>';
-          txt.textContent = "Lien public non renseigné.";
-          direct.href = "./qr.html";
+        ficheUrl = row.fiche_url || buildPublicUrl("fiche.html", slug);
+        reservationUrl = row.reservation_url || buildPublicUrl("reserver.html", slug);
+        qrUrl = qrImageUrl(reservationUrl, 720);
+
+        document.title = businessName + " · Réservation";
+        $("statePill").textContent = "fiche active";
+        $("heroTitle").textContent = businessName;
+        $("heroLead").textContent = summary;
+        $("businessName").textContent = businessName;
+        $("summaryText").textContent = summary;
+        $("badgeActivity").textContent = activity;
+        $("badgeZone").textContent = zone;
+        $("badgeHours").textContent = hours;
+
+        if(logoUrl){
+          $("logoBox").innerHTML = '<img src="' + escapeHtml(logoUrl) + '" alt="Logo" />';
+        }
+
+        if(coverUrl){
+          $("posterBox").innerHTML = '<img src="' + escapeHtml(coverUrl) + '" alt="Visuel établissement" onerror="this.parentNode.textContent=\'Visuel non chargé\';" />';
+        }else{
+          $("posterBox").textContent = activity;
+        }
+
+        const info = [
+          zone ? "📍 " + zone : "",
+          hours ? "🕒 " + hours : "",
+          payload.capacity ? "👥 Capacité : " + payload.capacity : "",
+          payload.note_client ? "ℹ️ " + payload.note_client : ""
+        ].filter(Boolean);
+        $("infoGrid").innerHTML = info.map(x => '<div class="infoLine">' + escapeHtml(x) + '</div>').join("");
+
+        const contactLink = $("contactLink");
+        contactLink.href = whatsappHref(phone);
+        setDisabledLink(contactLink, !phone);
+
+        $("reserveLink").href = reservationUrl;
+        $("bottomReserve").href = reservationUrl;
+        $("openFicheBtn").href = ficheUrl;
+        $("openQrBtn").href = qrUrl;
+        $("qrPreview").innerHTML = '<img src="' + escapeHtml(qrImageUrl(reservationUrl, 260)) + '" alt="QR réservation" />';
+        $("qrLinkText").textContent = reservationUrl;
+        showStatus("");
+      }
+
+      cleanUrlButKeepSlug();
+      const rawSlug = new URLSearchParams(location.search).get("slug") || "";
+      const slug = normalizeSlug(rawSlug);
+
+      if(!slug || isSensitiveSlug(slug)){
+        $("statePill").textContent = "slug absent";
+        $("heroLead").textContent = "Lien public absent ou invalide.";
+        showStatus("🛡️ Fiche non affichée : le slug public est absent ou ressemble à une donnée sensible.", "bad");
+        ["reserveLink","contactLink","openQrBtn","openFicheBtn"].forEach(id => setDisabledLink($(id), true));
+        $("qrPreview").innerHTML = '<div class="qrEmpty">Slug public absent.</div>';
+        $("qrLinkText").textContent = "Aucun lien public utilisable.";
+        return;
+      }
+
+      try{
+        const row = await fetchFiche(slug);
+        if(!row){
+          $("statePill").textContent = "introuvable";
+          $("heroLead").textContent = "Aucune fiche active trouvée pour ce slug public.";
+          showStatus("Fiche introuvable ou non publiée pour : " + slug, "bad");
+          $("qrPreview").innerHTML = '<div class="qrEmpty">Fiche introuvable.</div>';
+          $("qrLinkText").textContent = buildPublicUrl("reserver.html", slug);
           return;
         }
-
-        box.innerHTML = '<img src="' + qrImageUrl(publicUrl).replace(/"/g,"&quot;") + '" alt="QR de la fiche RESA"/>';
-        txt.textContent = publicUrl;
-        direct.href = "./qr.html?url=" + encodeURIComponent(publicUrl);
+        applyFiche(row, slug);
+      }catch(e){
+        console.error(e);
+        $("statePill").textContent = "erreur";
+        showStatus("Erreur de lecture de la fiche. Vérifie la table Supabase et la policy SELECT publique.", "bad");
       }
 
-      function render(data){
-        const d = data || formData();
-
-        $("previewName").textContent = d.proName || "Nom professionnel";
-        $("previewText").textContent = d.note || "La présentation courte apparaîtra ici.";
-        $("badgeActivity").textContent = d.activity || "Réservation";
-        $("badgeZone").textContent = d.zone || "Zone";
-        $("badgeExtra").textContent = d.horaires || "Info utile";
-
-        const poster = $("posterBox");
-        if(d.photoUrl){
-          poster.innerHTML = '<img src="' + d.photoUrl.replace(/"/g,"&quot;") + '" alt="Visuel fiche RESA" onerror="this.parentNode.textContent=\'Photo non chargée\';"/>';
-        }else{
-          poster.textContent = "Photo ou visuel métier";
-        }
-
-        const contact = $("contactLink");
-        contact.href = whatsappHref(d.contact);
-        contact.style.opacity = d.contact ? "1" : ".55";
-
-        renderQr(d.publicUrl);
-      }
-
-      function save(){
-        const data = formData();
-        localStorage.setItem(KEY, JSON.stringify(data));
-        render(data);
-        $("savePill").textContent = "fiche gardée";
-        showStatus("Fiche RESA gardée sur ce téléphone.");
-      }
-
-      function load(){
+      $("copyLinkBtn").addEventListener("click", async () => {
+        const value = reservationUrl || ficheUrl || location.href;
         try{
-          const data = JSON.parse(localStorage.getItem(KEY) || "{}");
-          setForm(data);
-          render(data);
-          if(data.proName) $("savePill").textContent = "fiche trouvée";
-        }catch(_ ){ render({}); }
-      }
-
-      function clear(){
-        localStorage.removeItem(KEY);
-        setForm({});
-        render({});
-        $("savePill").textContent = "fiche locale";
-        showStatus("Fiche locale vidée.");
-      }
-
-      cleanUrl();
-      $("saveBtn").addEventListener("click", save);
-      $("previewBtn").addEventListener("click", () => render());
-      $("clearBtn").addEventListener("click", clear);
-      $("copyQrLinkBtn").addEventListener("click", async () => {
-        const url = $("publicUrl").value.trim();
-        if(!url){ showStatus("Ajoute d’abord le lien public de la fiche."); return; }
-        try{
-          await navigator.clipboard.writeText(url);
-          showStatus("Lien QR copié.");
+          await navigator.clipboard.writeText(value);
+          showStatus("✅ Lien copié.");
         }catch(_){
-          showStatus("Lien à copier : " + url);
+          showStatus("Lien à copier : " + value);
         }
       });
-
-      ["proName","activity","zone","horaires","contact","publicUrl","photoUrl","note"].forEach(id => {
-        $(id).addEventListener("input", () => render());
-      });
-
-      load();
     })();
   </script>
 </body>
 </html>
+
