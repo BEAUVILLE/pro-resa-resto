@@ -157,7 +157,7 @@
   <nav class="bottomBar" aria-label="Navigation rapide RESA">
     <div class="bottomInner">
       <a href="./hub.html"><span>🧭</span><span>HUB</span></a>
-      <a class="active" href="./fiche.html"><span>🪪</span><span>Fiche</span></a>
+      <a class="active" id="bottomFiche" href="./fiche.html"><span>🪪</span><span>Fiche</span></a>
       <a id="bottomReserve" href="./reserver.html"><span>📅</span><span>Réserver</span></a>
       <a href="./session.html"><span>🛡️</span><span>Session</span></a>
     </div>
@@ -228,6 +228,112 @@
         }catch(_ ){}
       }
 
+      const SLUG_KEYS = [
+        "slug","public_slug","slug_public","fiche_slug","resa_slug",
+        "etablissement_slug","business_slug","resto_slug","restaurant_slug",
+        "pro_slug","client_slug","publicSlug","ficheSlug","resaSlug"
+      ];
+
+      function safeCandidate(value){
+        const slug = normalizeSlug(value);
+        return slug && !isSensitiveSlug(slug) ? slug : "";
+      }
+
+      function slugFromSearchParams(params){
+        for(const key of SLUG_KEYS){
+          const direct = params.get(key);
+          const clean = safeCandidate(direct);
+          if(clean) return clean;
+        }
+        return "";
+      }
+
+      function readJson(value){
+        try{ return JSON.parse(value || "{}"); }catch(_){ return {}; }
+      }
+
+      function slugFromObject(obj, depth=0){
+        if(!obj || typeof obj !== "object" || depth > 3) return "";
+        for(const key of SLUG_KEYS){
+          const clean = safeCandidate(obj[key]);
+          if(clean) return clean;
+        }
+        for(const key of Object.keys(obj)){
+          const v = obj[key];
+          if(v && typeof v === "object"){
+            const nested = slugFromObject(v, depth + 1);
+            if(nested) return nested;
+          }
+        }
+        return "";
+      }
+
+      function slugFromLocalStorage(){
+        const keys = [
+          "digiy_resa_public_slug",
+          "digiy_resa_slug",
+          "digiy_resa_fiche",
+          "digiy_resa_session",
+          "digiy_session_RESA",
+          "digiy_guard_session",
+          "DIGIY_GUARD_SESSION",
+          "DIGIY_RESA_SESSION"
+        ];
+        for(const key of keys){
+          try{
+            const raw = localStorage.getItem(key);
+            if(!raw) continue;
+            const direct = safeCandidate(raw);
+            if(direct && !raw.trim().startsWith("{") && !raw.trim().startsWith("[")) return direct;
+            const nested = slugFromObject(readJson(raw));
+            if(nested) return nested;
+          }catch(_ ){}
+        }
+        return "";
+      }
+
+      function cleanCandidate(value){
+        return normalizeSlug(value);
+      }
+
+      function firstSlugFromParams(params){
+        for(const key of SLUG_KEYS){
+          const v = cleanCandidate(params.get(key));
+          if(v) return v;
+        }
+        return "";
+      }
+
+      function extractSlugCandidate(){
+        try{
+          const url = new URL(location.href);
+          const fromQuery = firstSlugFromParams(url.searchParams);
+          if(fromQuery) return { slug: fromQuery, source: "url" };
+
+          if(url.hash && url.hash.length > 1){
+            const hash = url.hash.startsWith("#?") ? url.hash.slice(2) : url.hash.slice(1);
+            const fromHash = firstSlugFromParams(new URLSearchParams(hash));
+            if(fromHash) return { slug: fromHash, source: "hash" };
+          }
+
+          const pathParts = url.pathname.split("/").filter(Boolean);
+          const last = pathParts[pathParts.length - 1] || "";
+          const prev = pathParts[pathParts.length - 2] || "";
+          if(/^(fiche|restaurant|resa|reservation)$/i.test(prev)){
+            const fromPath = cleanCandidate(last.replace(/\.html?$/i,""));
+            if(fromPath && !/^fiche$/i.test(fromPath)) return { slug: fromPath, source: "path" };
+          }
+        }catch(_ ){}
+
+        const guardState = slugFromObject(window.DIGIY_GUARD?.state || {}) || slugFromObject(window.DIGIY_GUARD?.getSession?.() || {});
+        if(guardState) return { slug: guardState, source: "session" };
+
+        const local = slugFromLocalStorage();
+        if(local) return { slug: local, source: "local" };
+
+        return { slug: "", source: "absent" };
+      }
+
       function buildPublicUrl(page, slug){
         const u = new URL(page, PUBLIC_BASE_URL);
         u.searchParams.set("slug", slug);
@@ -254,13 +360,14 @@
       async function fetchFiche(slug){
         if(!window.supabase?.createClient) throw new Error("Client Supabase indisponible");
         const client = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY);
+        const clean = normalizeSlug(slug);
         const { data, error } = await client
           .from(TABLE)
           .select("*")
           .eq("module", MODULE)
           .eq("is_active", true)
           .in("status", ["published","active"])
-          .or(`slug.eq.${slug},public_slug.eq.${slug}`)
+          .or(`slug.eq.${clean},public_slug.eq.${clean},internal_slug.eq.${clean},resa_slug.eq.${clean}`)
           .limit(1)
           .maybeSingle();
         if(error) throw error;
@@ -278,9 +385,19 @@
         const phone = row.whatsapp || row.phone || row.contact || "";
         const payload = row.payload && typeof row.payload === "object" ? row.payload : {};
 
-        ficheUrl = row.fiche_url || buildPublicUrl("fiche.html", slug);
-        reservationUrl = row.reservation_url || buildPublicUrl("reserver.html", slug);
+        const publicSlug = normalizeSlug(row.public_slug || row.slug || slug);
+        ficheUrl = row.fiche_url || buildPublicUrl("fiche.html", publicSlug);
+        reservationUrl = row.reservation_url || buildPublicUrl("reserver.html", publicSlug);
         qrUrl = qrImageUrl(reservationUrl, 720);
+        try{
+          if(publicSlug && !isSensitiveSlug(publicSlug)){
+            const u = new URL(location.href);
+            if(u.searchParams.get("slug") !== publicSlug){
+              u.searchParams.set("slug", publicSlug);
+              history.replaceState({}, document.title, u.pathname + "?" + u.searchParams.toString() + u.hash);
+            }
+          }
+        }catch(_ ){}
 
         document.title = businessName + " · Réservation";
         $("statePill").textContent = "fiche active";
@@ -316,6 +433,8 @@
 
         $("reserveLink").href = reservationUrl;
         $("bottomReserve").href = reservationUrl;
+        const bottomFiche = $("bottomFiche");
+        if(bottomFiche) bottomFiche.href = ficheUrl;
         $("openFicheBtn").href = ficheUrl;
         $("openQrBtn").href = qrUrl;
         $("qrPreview").innerHTML = '<img src="' + escapeHtml(qrImageUrl(reservationUrl, 260)) + '" alt="QR réservation" />';
@@ -324,25 +443,29 @@
       }
 
       cleanUrlButKeepSlug();
-      const rawSlug = new URLSearchParams(location.search).get("slug") || "";
-      const slug = normalizeSlug(rawSlug);
+      const extracted = extractSlugCandidate();
+      const slug = extracted.slug;
 
-      if(!slug || isSensitiveSlug(slug)){
+      if(!slug){
         $("statePill").textContent = "slug absent";
-        $("heroLead").textContent = "Lien public absent ou invalide.";
-        showStatus("🛡️ Fiche non affichée : le slug public est absent ou ressemble à une donnée sensible.", "bad");
+        $("heroLead").textContent = "Lien public absent ou incomplet.";
+        showStatus(
+          "🛡️ Fiche non affichée : aucun slug RESA n'a été trouvé. Ouvre la fiche avec ?slug=digiylyfe ou depuis la session PIN.",
+          "bad"
+        );
         ["reserveLink","contactLink","openQrBtn","openFicheBtn"].forEach(id => setDisabledLink($(id), true));
-        $("qrPreview").innerHTML = '<div class="qrEmpty">Slug public absent.</div>';
-        $("qrLinkText").textContent = "Aucun lien public utilisable.";
+        $("qrPreview").innerHTML = '<div class="qrEmpty">Slug absent.</div>';
+        $("qrLinkText").textContent = "Exemple attendu : fiche.html?slug=digiylyfe";
         return;
       }
 
       try{
+        $("statePill").textContent = isSensitiveSlug(slug) ? "slug interne" : (extracted.source === "url" ? "slug public" : "slug " + extracted.source);
         const row = await fetchFiche(slug);
         if(!row){
           $("statePill").textContent = "introuvable";
           $("heroLead").textContent = "Aucune fiche active trouvée pour ce slug public.";
-          showStatus("Fiche introuvable ou non publiée pour : " + slug, "bad");
+          showStatus("Fiche introuvable ou non publiée. Vérifie le SQL : slug public digiylyfe + slug interne resa-221771342889 + téléphone 221771342889.", "bad");
           $("qrPreview").innerHTML = '<div class="qrEmpty">Fiche introuvable.</div>';
           $("qrLinkText").textContent = buildPublicUrl("reserver.html", slug);
           return;
@@ -367,5 +490,6 @@
   </script>
 </body>
 </html>
+
 
 
