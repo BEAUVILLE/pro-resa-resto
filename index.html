@@ -1,453 +1,1525 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-
-  <title>Je réserve — Entrée RESA</title>
-
-  <meta name="theme-color" content="#1e7a46"/>
-  <meta name="description" content="DIGIY RESA PRO — porte d’entrée courte vers le HUB RESA, avec secours anti-404."/>
-  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
-  <meta name="digiy-build" content="resa-index-porte-hub-anti-404-20260519"/>
+  <meta charset="utf-8" />
+  <title>DIGIY RESA — Réserver à Saly simplement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="DIGIY RESA — Réserver à Saly simplement. Découvre un lieu, choisis le bon moment et envoie ta demande au professionnel." />
+  <meta name="theme-color" content="#061b14" />
+  <meta name="robots" content="index,follow" />
+  <meta name="digiy-audio-pronunciation" content="diji-i-diji-laife-wave-oueve-qr-sms-20260604" />
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_MODULE = "RESA";
-    window.DIGIY_LOGIN_URL = "./pin.html";
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-guard-20260531"></script>
-
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 
   <style>
     :root{
-      --bg:#1e7a46;
-      --bg2:#155a34;
-      --bg3:#0e4226;
-      --bar:rgba(8,50,24,.96);
-      --gold:#c4973f;
+      --bg:#061b14;
+      --ink:#F4FFF8;
+      --muted:#CFE9D7;
+      --line:rgba(148,163,184,.20);
+      --gold:#facc15;
       --green:#22c55e;
-      --line:rgba(255,255,255,.18);
-      --text:#f0fff5;
-      --muted:rgba(240,255,245,.78);
-      --shadow:0 18px 46px rgba(0,0,0,.24);
-      --r:26px;
-      --max:760px;
+      --orange:#f97316;
+      --blue:#60a5fa;
+      --shadow:0 18px 55px rgba(0,0,0,.42);
+      --fs-hero:38px;
+      --fs-sub:16px;
+      --lh:1.55;
+      --fontA:"Outfit",system-ui,-apple-system,sans-serif;
     }
 
-    *{box-sizing:border-box}
-
-    html{
-      -webkit-text-size-adjust:100%;
-      text-size-adjust:100%;
-    }
-
+    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--fontA)}
+    html{scroll-behavior:smooth}
     body{
-      margin:0;
-      min-height:100dvh;
-      display:grid;
-      place-items:center;
-      padding:16px;
-      color:var(--text);
-      font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
-      font-size:19px;
-      font-weight:950;
+      min-height:100vh;
+      padding-bottom:calc(84px + env(safe-area-inset-bottom,0px));
       background:
-        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
-        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
-        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
+        radial-gradient(circle at top, rgba(250,204,21,.10) 0, transparent 55%),
+        radial-gradient(circle at 18% 10%, rgba(34,197,94,.10) 0, transparent 55%),
+        radial-gradient(circle at 85% 12%, rgba(96,165,250,.08) 0, transparent 45%),
+        radial-gradient(circle at top,#0b2218 0,#061b14 50%,#04110d 100%);
+      color:var(--ink);
     }
 
-    a{
-      color:inherit;
-      text-decoration:none;
-    }
+    a{color:inherit;text-decoration:none}
 
-    button{
-      font:inherit;
-      color:inherit;
-      cursor:pointer;
-    }
-
-    .door{
-      width:min(var(--max),100%);
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:var(--r);
-      background:
-        radial-gradient(500px 220px at 100% 0%,rgba(196,151,63,.12),transparent 70%),
-        rgba(8,50,24,.78);
-      box-shadow:var(--shadow);
-      padding:22px;
-      display:grid;
-      gap:16px;
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-    }
-
-    .brand{
+    .floating-returns{
+      position:fixed;
+      top:calc(env(safe-area-inset-top,0px) + 12px);
+      left:calc(env(safe-area-inset-left,0px) + 12px);
+      z-index:99999;
       display:flex;
+      gap:8px;
+      flex-wrap:wrap;
       align-items:center;
-      gap:13px;
     }
 
-    .badge{
-      width:58px;
-      height:58px;
-      border-radius:20px;
-      display:grid;
-      place-items:center;
-      background:rgba(196,151,63,.16);
-      border:1px solid rgba(196,151,63,.32);
-      font-size:30px;
-      flex:0 0 auto;
+    .floating-back{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;
+      border-radius:999px;border:1px solid rgba(255,255,255,.24);
+      background:linear-gradient(135deg,var(--gold),var(--orange));color:#04110d;
+      font-size:14px;font-weight:900;line-height:1;
+      box-shadow:0 16px 40px rgba(0,0,0,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      transition:transform .18s ease, box-shadow .18s ease;
     }
+    .floating-back:hover{transform:translateY(-1px);box-shadow:0 20px 46px rgba(0,0,0,.34)}
+    .floating-back.hub{background:rgba(250,204,21,.14);color:#fde68a;border-color:rgba(250,204,21,.28);box-shadow:0 16px 40px rgba(0,0,0,.24)}
 
-    .kicker{
-      color:#fff0a8;
-      font-size:12px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
+    .page{max-width:1140px;margin:0 auto;padding:16px 14px 42px}
+
+    @media(max-width:860px){:root{--fs-hero:32px}}
+    @media(max-width:600px){:root{--fs-hero:28px;--fs-sub:15px}.page{padding:14px 12px 38px}}
+
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 14px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:14px;flex-wrap:wrap}
+    .nav-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo-badge{width:42px;height:42px;border-radius:16px;background:radial-gradient(circle at 30% 20%,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;color:#04110d;font-weight:900;font-size:18px;box-shadow:0 10px 26px rgba(250,204,21,.40);flex:0 0 auto}
+    .logo-title{font-size:16px;font-weight:900;letter-spacing:.10em;text-transform:uppercase;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(62vw,520px)}
+    .logo-sub{font-size:12px;color:var(--muted);font-weight:800;margin-top:2px}
+    .nav-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .pill{border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900;border:1px solid rgba(203,213,225,.35);color:rgba(234,255,241,.92);display:inline-flex;align-items:center;gap:8px;background:rgba(2,6,23,.22)}
+    .pill .dot{width:8px;height:8px;border-radius:999px;background:var(--green);box-shadow:0 0 0 4px rgba(34,197,94,.12)}
+    a.btn-small,.btn-small{border-radius:999px;padding:10px 14px;font-size:13px;font-weight:900;border:1px solid rgba(203,213,225,.32);background:rgba(15,23,42,.32);color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;line-height:1}
+    a.btn-small.primary,.btn-small.primary{border:none;background:linear-gradient(135deg,var(--gold),var(--orange));color:#04110d;box-shadow:0 10px 26px rgba(250,204,21,.35)}
+
+    .hero{margin-top:16px;border-radius:24px;border:1px solid rgba(255,255,255,.10);background:rgba(7,24,17,.55);box-shadow:var(--shadow);padding:18px 16px;overflow:hidden;position:relative}
+    .hero:before{content:"";position:absolute;inset:-1px;background:radial-gradient(700px 360px at 20% -10%, rgba(34,197,94,.18), transparent 65%),radial-gradient(700px 360px at 110% 0%, rgba(250,204,21,.14), transparent 60%),radial-gradient(600px 300px at 60% 10%, rgba(96,165,250,.10), transparent 50%);pointer-events:none}
+    .hero-inner{position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:14px;align-items:center}
+    @media(max-width:900px){.hero-inner{grid-template-columns:1fr}}
+    .hero h1{font-size:var(--fs-hero);line-height:1.12;font-weight:900;letter-spacing:-.01em;margin-bottom:10px}
+    .hero h1 .hl{background:linear-gradient(135deg,var(--gold),var(--green));-webkit-background-clip:text;color:transparent}
+    .hero p{font-size:var(--fs-sub);color:var(--muted);line-height:var(--lh);font-weight:800;max-width:70ch}
+    .hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .hero-badge{border-radius:999px;padding:8px 12px;border:1px solid rgba(203,213,225,.28);color:var(--muted);font-weight:900;background:rgba(2,6,23,.25);font-size:12px}
+    .hero-badge b{color:var(--green);font-weight:900}
+    .hero-actions-main{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .hero-box{border-radius:18px;border:1px solid rgba(203,213,225,.16);background:rgba(2,6,23,.28);padding:14px}
+    .muted{color:var(--muted)}
+    .hero-box .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .kpi .chip{border-radius:14px;border:1px solid rgba(203,213,225,.16);background:rgba(15,23,42,.30);padding:10px;font-size:12px;color:var(--muted);font-weight:900;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .kpi .chip .v{color:var(--gold);font-weight:900;white-space:nowrap}
+
+    .how-strip{margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .how-step{border-radius:16px;border:1px solid rgba(203,213,225,.16);background:rgba(2,6,23,.28);padding:12px;display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px;font-weight:900}
+    .how-step b{width:28px;height:28px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--orange));color:#04110d;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+    .client-box h2{font-size:24px;line-height:1.1;margin:10px 0 8px;color:var(--gold);font-weight:900;letter-spacing:-.01em}
+    .client-box p{color:var(--muted);font-size:14px;line-height:1.55;font-weight:800}
+    .client-promise{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .client-promise span{border-radius:999px;padding:7px 10px;border:1px solid rgba(34,197,94,.22);background:rgba(34,197,94,.10);color:#bbf7d0;font-size:12px;font-weight:900}
+    @media(max-width:720px){.how-strip{grid-template-columns:1fr 1fr}.how-step{padding:10px;font-size:12px}}
+
+    .statsbar{margin-top:12px;border-radius:18px;border:1px solid rgba(203,213,225,.14);background:rgba(2,6,23,.24);padding:10px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .statsbar .left{font-weight:900;color:rgba(234,255,241,.92);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .statsbar .left .sep{opacity:.5}
+    .statsbar .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .stats-pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.28);color:var(--muted);font-weight:900}
+    .stats-pill.good{border-color:rgba(34,197,94,.30);color:#bfffe0}
+    .stats-pill.warn{border-color:rgba(249,115,22,.30);color:#ffe0c2}
+
+    .controls{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .searchRow{display:flex;gap:10px;flex:1;min-width:260px}
+    .input{flex:1;background:rgba(2,6,23,.28);border:1px solid rgba(203,213,225,.20);color:var(--ink);border-radius:14px;padding:12px;outline:none;font-weight:800;font-size:14px}
+    .input:focus{border-color:rgba(250,204,21,.55);box-shadow:0 0 0 3px rgba(250,204,21,.12)}
+    .select{background:rgba(2,6,23,.28);border:1px solid rgba(203,213,225,.20);color:var(--ink);border-radius:14px;padding:12px;outline:none;font-weight:800;font-size:14px;min-width:190px;font-family:var(--fontA)}
+
+    .section{margin-top:18px}
+    .section-card{border-radius:24px;border:1px solid rgba(255,255,255,.10);background:rgba(7,24,17,.50);box-shadow:0 14px 40px rgba(0,0,0,.28);padding:16px}
+    .section-head{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px}
+    .section-title{font-size:20px;font-weight:900;letter-spacing:-.01em}
+    .section-note{color:var(--muted);font-weight:800;line-height:1.55;max-width:72ch;font-size:14px}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .legend-pill{border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;border:1px solid rgba(255,255,255,.12);background:rgba(2,6,23,.28);color:var(--muted)}
+    .legend-pill.live{border-color:rgba(34,197,94,.28);color:#c7ffe1}
+    .legend-pill.vitrine{border-color:rgba(250,204,21,.28);color:#ffe8a3}
+
+    .grid{margin-top:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+    .card{border-radius:22px;border:1px solid rgba(255,255,255,.10);background:rgba(7,24,17,.55);box-shadow:0 14px 40px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column;min-height:100%;transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;position:relative}
+    .card:hover{transform:translateY(-3px);border-color:rgba(250,204,21,.28);box-shadow:0 18px 48px rgba(0,0,0,.45)}
+    .card[data-kind="live"]{border-color:rgba(34,197,94,.16)}
+    .card[data-kind="demo"]{border-color:rgba(250,204,21,.16)}
+    .photo{position:relative;width:100%;height:210px;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.25)}
+    .photo img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;transform:scale(1.01);transition:transform .25s ease, filter .25s ease;filter:saturate(1.05)}
+    .card:hover .photo img{transform:scale(1.04);filter:saturate(1.10) contrast(1.02)}
+    .badgeTop{position:absolute;top:10px;left:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;max-width:calc(100% - 20px)}
+    .chip{border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900;border:1px solid rgba(255,255,255,.14);background:rgba(2,6,23,.55);color:rgba(234,255,241,.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(6px)}
+    .chip.gold{border-color:rgba(250,204,21,.30)}
+    .chip.green{border-color:rgba(34,197,94,.30)}
+    .chip.new{border-color:rgba(249,115,22,.30)}
+    .chip.blue{border-color:rgba(96,165,250,.30)}
+    .body{padding:14px;display:flex;flex-direction:column;gap:10px;flex:1}
+    .name{font-size:18px;font-weight:900;color:var(--gold);line-height:1.15}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--muted);font-weight:800}
+    .meta span{display:inline-flex;gap:6px;align-items:center}
+    .bio{font-size:14px;color:rgba(234,255,241,.90);font-weight:800;line-height:1.45}
+    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+    .tag{border-radius:999px;padding:6px 10px;border:1px solid rgba(203,213,225,.22);color:var(--muted);background:rgba(2,6,23,.35);font-size:11px;font-weight:900}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}
+    a.btn{flex:1;min-width:150px;min-height:56px;border-radius:999px;padding:15px 16px;font-size:15px;font-weight:1000;border:0;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:9px;line-height:1.08;white-space:nowrap;transition:transform .15s ease, filter .15s ease, box-shadow .15s ease}
+    .btn.primary{background:linear-gradient(135deg,var(--gold),var(--orange));color:#04110d;box-shadow:0 12px 30px rgba(250,204,21,.34);font-size:16px;letter-spacing:.01em}
+    .btn.secondary{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.30);color:#bbf7d0}
+    .btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--ink)}
+    .status{margin-top:12px;border-radius:16px;border:1px solid rgba(203,213,225,.14);background:rgba(2,6,23,.45);padding:12px;font-size:13px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .empty-state{border-radius:18px;border:1px dashed rgba(255,255,255,.16);background:rgba(2,6,23,.22);padding:18px;color:var(--muted);font-weight:900;line-height:1.6}
+    .return-house{margin-top:18px;border-radius:24px;border:1px solid rgba(255,255,255,.10);background:rgba(7,24,17,.50);box-shadow:0 14px 40px rgba(0,0,0,.28);padding:16px}
+    .return-house h2{font-size:20px;font-weight:900;letter-spacing:-.01em;margin:0 0 8px}
+    .return-house p{color:var(--muted);font-weight:800;line-height:1.55;max-width:72ch;font-size:14px;margin:0}
+    .return-actions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+    .signature{margin-top:24px;text-align:center;font-weight:900;color:var(--muted);line-height:1.6;padding:0 10px}
+    .signature strong{color:var(--gold);font-weight:900}
+    .footer{margin-top:26px;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;font-size:12px;color:var(--muted);text-align:center;font-weight:800;line-height:1.5}
+    .footer .brand{color:var(--gold);font-weight:900}
+    .footer .zero{color:var(--green);font-weight:900}
+    .toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(2,6,23,.86);border:1px solid rgba(255,255,255,.12);color:#fff;padding:10px 14px;border-radius:14px;font-weight:900;font-size:13px;display:none;z-index:9999;box-shadow:var(--shadow);max-width:92vw;text-align:center}
+    .toast.show{display:block}
+    .skeleton{animation:shimmer 1.2s infinite linear;background:linear-gradient(90deg,rgba(255,255,255,.05) 0%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.05) 100%);background-size:200% 100%}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .sk-photo{height:210px}.sk-line{height:12px;border-radius:999px;margin-top:10px}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:9998;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(6,27,20,.94);border-top:1px solid rgba(255,255,255,.10);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .bottom-nav-inner{width:min(760px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .bottom-nav a,.bottom-nav button{min-height:54px;border-radius:14px;display:grid;place-items:center;align-content:center;gap:2px;color:rgba(234,255,241,.78);font-size:11px;font-weight:1000;text-align:center;border:1px solid transparent;text-decoration:none;background:transparent;padding:0 4px;font-family:inherit;cursor:pointer}
+    .bottom-nav .ico{font-size:18px;line-height:1}
+    .bottom-nav a.active,.bottom-nav button.active{background:linear-gradient(135deg,var(--gold),var(--orange));color:#04110d}
+    #digiy-audio-btn{bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+    @media(max-width:640px){.actions a.btn{width:100%;min-width:100%;font-size:16px}.actions{gap:8px}}
+    @media(max-width:768px){
+      .floating-returns{top:calc(env(safe-area-inset-top,0px) + 10px);left:calc(env(safe-area-inset-left,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 10px)}
+      .floating-back{padding:11px 14px;font-size:13px}
+    }
+  
+    /* Bloc premium Chez Astou et Baptiste — logiciel client public */
+    .logiciel-public-card{
+      margin-top:18px;
+      border-radius:26px;
+      border:1px solid rgba(250,204,21,.24);
+      background:
+        radial-gradient(780px 320px at 10% -20%,rgba(250,204,21,.16),transparent 62%),
+        radial-gradient(620px 280px at 95% 120%,rgba(34,197,94,.12),transparent 62%),
+        rgba(7,24,17,.58);
+      box-shadow:0 18px 55px rgba(0,0,0,.38);
+      padding:18px;
+      overflow:hidden;
+      position:relative;
+    }
+    .logiciel-public-card:before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:linear-gradient(135deg,rgba(250,204,21,.08),transparent 35%,rgba(34,197,94,.07));
+      pointer-events:none;
+    }
+    .logiciel-public-inner{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:center}
+    .logiciel-public-kicker{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 12px;border-radius:999px;
+      border:1px solid rgba(34,197,94,.28);
+      background:rgba(34,197,94,.10);
+      color:#bbf7d0;
+      font-size:13px;font-weight:1000;
+      margin-bottom:10px;
+    }
+    .logiciel-public-title{
+      font-size:clamp(28px,4.4vw,42px);
+      line-height:1.05;
       font-weight:1000;
+      letter-spacing:-.02em;
+      color:var(--gold);
+      margin-bottom:8px;
     }
-
-    .brandTitle{
-      color:#fff;
-      font-size:18px;
-      font-weight:1000;
-      margin-top:2px;
-    }
-
-    h1{
-      margin:0;
-      color:#fff;
-      font-size:clamp(36px,9vw,62px);
-      line-height:.96;
-      letter-spacing:-.055em;
-      font-weight:1000;
-    }
-
-    h1 span{
-      color:#fff0a8;
-    }
-
-    .lead{
-      margin:0;
+    .logiciel-public-text{
       color:var(--muted);
-      font-size:17px;
-      font-weight:1000;
-      line-height:1.42;
+      font-size:18px;
+      line-height:1.62;
+      font-weight:850;
+      max-width:62ch;
     }
-
-    .status{
-      min-height:54px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:12px 14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.15);
-      background:rgba(255,255,255,.08);
-      color:rgba(240,255,245,.92);
-      font-size:15px;
-      font-weight:1000;
-      line-height:1.35;
-    }
-
-    .dot{
-      width:13px;
-      height:13px;
-      border-radius:50%;
-      background:#f59e0b;
-      box-shadow:0 0 0 6px rgba(245,158,11,.12);
-      flex:0 0 auto;
-    }
-
-    .status.ok .dot{
-      background:#22c55e;
-      box-shadow:0 0 0 6px rgba(34,197,94,.12);
-    }
-
-    .status.bad .dot{
-      background:#ef4444;
-      box-shadow:0 0 0 6px rgba(239,68,68,.12);
-    }
-
-    .actions{
+    .logiciel-public-actions{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+      grid-template-columns:1fr;
       gap:10px;
     }
-
-    .btn{
-      min-height:60px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.09);
-      display:flex;
-      align-items:center;
+    .logiciel-public-actions .btn-small{
+      min-height:62px;
       justify-content:center;
-      gap:9px;
-      padding:13px 14px;
-      color:var(--text);
-      font-size:17px;
+      border-radius:18px;
+      font-size:18px;
+      text-align:center;
+      white-space:normal;
+    }
+    .logiciel-public-actions .primary{
+      font-size:20px;
+      box-shadow:0 16px 38px rgba(250,204,21,.34);
+    }
+    .logiciel-public-mini{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .logiciel-public-mini span{
+      border-radius:14px;
+      border:1px solid rgba(203,213,225,.16);
+      background:rgba(2,6,23,.28);
+      padding:10px 8px;
+      color:rgba(234,255,241,.86);
+      font-size:13px;
       font-weight:1000;
       text-align:center;
-      box-shadow:0 10px 24px rgba(0,0,0,.13);
+      line-height:1.25;
+    }
+    @media(max-width:820px){
+      .logiciel-public-inner{grid-template-columns:1fr}
+      .logiciel-public-mini{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:520px){
+      .logiciel-public-card{padding:15px}
+      .logiciel-public-text{font-size:17px}
+      .logiciel-public-actions .btn-small{font-size:17px}
+      .logiciel-public-actions .primary{font-size:19px}
     }
 
-    .btn.primary{
-      color:#052215;
-      border-color:rgba(34,197,94,.38);
-      background:linear-gradient(135deg,#22c55e,#bbf7d0);
-    }
+  </style>
 
-    .btn.gold{
-      color:#241a0d;
-      border-color:rgba(196,151,63,.38);
-      background:linear-gradient(135deg,#c4973f,#fff0a8);
-    }
 
-    .btn.ghost{
-      color:rgba(240,255,245,.88);
-      background:rgba(255,255,255,.06);
+  <style id="digiy-mobile-lisibilite-v3">
+    /* Doctrine DIGIYLYFE — mobile lisible : beau mais petit = perdu. */
+    :root{
+      --fs-hero:clamp(40px,8.8vw,58px);
+      --fs-sub:20px;
+      --lh:1.68;
     }
+    body{font-size:18px;}
+    .page{padding:18px 16px 52px;}
+    .logo-badge{width:50px;height:50px;font-size:22px;}
+    .logo-title{font-size:19px;line-height:1.15;}
+    .logo-sub{font-size:15px;line-height:1.35;}
+    .floating-back,.pill,.hero-badge,.legend-pill,.chip,.tag,.stats-pill{font-size:15px;}
+    a.btn-small,.btn-small{min-height:56px;padding:15px 18px;font-size:17px;line-height:1.15;}
+    .hero{padding:22px 18px;}
+    .hero h1{font-size:var(--fs-hero);line-height:1.08;}
+    .hero p{font-size:20px;line-height:1.68;}
+    .hero-badges{gap:12px;}
+    .hero-badge{padding:10px 14px;}
+    .how-step{font-size:16px;padding:14px;line-height:1.35;}
+    .how-step b{width:36px;height:36px;font-size:18px;}
+    .client-box h2{font-size:clamp(30px,5vw,38px);line-height:1.08;}
+    .client-box p,.section-note,.return-house p,.signature{font-size:18px;line-height:1.68;}
+    .client-promise span{font-size:15px;padding:9px 12px;}
+    .input,.select{min-height:58px;font-size:18px;padding:15px 16px;}
+    .section-card{padding:20px;}
+    .section-title{font-size:clamp(30px,5vw,38px);line-height:1.12;}
+    .legend-pill{padding:10px 13px;}
+    .grid{gap:18px;}
+    .photo{height:250px;}
+    .body{padding:20px;gap:14px;}
+    .name{font-size:30px;line-height:1.08;}
+    .meta{font-size:18px;line-height:1.45;gap:12px;}
+    .bio{font-size:18px;line-height:1.65;}
+    .tags{gap:10px;}
+    .tag{padding:9px 12px;line-height:1.25;}
+    .actions{gap:12px;margin-top:6px;}
+    a.btn{min-height:68px;min-width:180px;padding:18px 20px;font-size:19px;line-height:1.15;}
+    .btn.primary{font-size:22px;font-weight:1000;box-shadow:0 16px 38px rgba(250,204,21,.40);}
+    .status{font-size:17px;line-height:1.55;padding:15px 16px;}
+    .return-house h2{font-size:30px;}
+    .footer{font-size:15px;line-height:1.55;}
+    .bottom-nav a,.bottom-nav button{min-height:66px;font-size:13px;}
+    .bottom-nav .ico{font-size:23px;}
+    #digiy-audio-btn{font-size:19px!important;padding:18px 28px!important;}
 
-    .rule{
-      padding:12px 14px;
-      border-radius:18px;
-      border:1px dashed rgba(255,255,255,.22);
-      background:rgba(0,0,0,.14);
-      color:rgba(240,255,245,.86);
-      font-size:14px;
-      font-weight:1000;
-      line-height:1.4;
-    }
-
-    .rule b{
-      color:#fff0a8;
-    }
-
-    @media(max-width:540px){
-      body{padding:10px}
-      .door{padding:18px;border-radius:24px}
-      .actions{grid-template-columns:1fr}
-      .btn{font-size:18px}
-      .lead{font-size:16px}
-      .rule{font-size:13px}
+    @media(max-width:640px){
+      body{font-size:18px;}
+      .page{padding:12px 10px 42px;}
+      .floating-returns{gap:7px;}
+      .floating-back{font-size:15px;padding:12px 14px;}
+      .nav{padding-top:58px;}
+      .logo-title{font-size:18px;white-space:normal;max-width:100%;}
+      .logo-sub{font-size:15px;}
+      .nav-right{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+      .nav-right .pill,.nav-right .btn-small{width:100%;justify-content:center;text-align:center;}
+      .hero{padding:18px 14px;border-radius:22px;}
+      .hero h1{font-size:clamp(38px,11vw,48px);}
+      .hero p{font-size:19px;}
+      .hero-badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+      .hero-badge{font-size:14px;text-align:center;}
+      .hero-actions-main{display:grid;grid-template-columns:1fr;gap:10px;}
+      .hero-actions-main .btn-small{width:100%;justify-content:center;font-size:18px;}
+      .how-strip{grid-template-columns:1fr;gap:9px;}
+      .how-step{font-size:17px;}
+      .client-box h2{font-size:32px;}
+      .client-box p,.section-note,.return-house p,.signature{font-size:18px;}
+      .controls{display:grid;grid-template-columns:1fr;gap:10px;}
+      .searchRow{display:grid;grid-template-columns:1fr;min-width:0;}
+      .controls > div:last-child{display:grid!important;grid-template-columns:1fr;gap:10px;}
+      .section-card{padding:18px 14px;border-radius:22px;}
+      .section-title{font-size:31px;}
+      .legend{gap:8px;}
+      .legend-pill{font-size:15px;}
+      .photo{height:220px;}
+      .body{padding:18px 15px;}
+      .name{font-size:31px;}
+      .meta,.bio{font-size:18px;}
+      .chip{font-size:13px;}
+      .tag{font-size:15px;}
+      .actions{display:grid;grid-template-columns:1fr;gap:10px;}
+      .actions a.btn{width:100%;min-width:100%;min-height:72px;font-size:20px;white-space:normal;text-align:center;}
+      .actions .btn.primary{font-size:23px;}
+      .bottom-nav-inner{gap:5px;}
+      .bottom-nav a,.bottom-nav button{font-size:12px;min-height:62px;}
+      #digiy-audio-btn{left:12px!important;right:12px!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;justify-content:center;font-size:18px!important;}
     }
   </style>
+
 </head>
 
 <body>
-  <main class="door" aria-label="Entrée RESA">
-    <div class="brand">
-      <div class="badge">📅</div>
-      <div>
-        <div class="kicker">DIGIY PRO · RESA</div>
-        <div class="brandTitle">Porte d’entrée</div>
+  <div class="floating-returns" aria-label="Retours DIGIY">
+    <a class="floating-back" id="floatingSiteBtn" href="https://digiylyfe.com/" aria-label="Retour au site DIGIYLYFE">🌍 Site</a>
+    <a class="floating-back hub" href="https://digiy-hub.digiylyfe.com/" aria-label="Retour au HUB DIGIY">🧭 HUB</a>
+  </div>
+
+  <div class="page">
+    <header class="nav">
+      <div class="nav-left">
+        <div class="logo-badge">📅</div>
+        <div class="logo-text">
+          <div class="logo-title">DIGIY RESA • SALY</div>
+          <div class="logo-sub">Lieux, tables, services • Demande simple • Contact direct</div>
+        </div>
       </div>
+      <div class="nav-right">
+        <div class="pill"><span class="dot"></span> Réservation simple</div>
+        <div class="pill">📍 Saly</div>
+        <a class="btn-small" href="https://digiylyfe.com/">🌍 Site</a>
+        <a class="btn-small" id="btnHub" href="https://digiy-hub.digiylyfe.com/" rel="noopener">🧭 HUB DIGIY</a>
+        <a class="btn-small primary" id="btnJoinTop" href="https://resa-table-resto.digiylyfe.com/inscription-resa.html" rel="noopener">🤝 Proposer un lieu</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <h1><span class="hl">Réserver à Saly</span><br />simplement</h1>
+          <p>
+            Restaurants, salons, services, activités : découvre le lieu, regarde l’ambiance,
+            choisis le bon moment et envoie ta demande. Le professionnel reprend la main directement.
+          </p>
+          <div class="hero-badges">
+            <div class="hero-badge">📍 Saly</div>
+            <div class="hero-badge">📄 Voir la fiche</div>
+            <div class="hero-badge">📅 Faire une demande</div>
+            <div class="hero-badge">🤝 Contact direct</div>
+          </div>
+
+          <div class="hero-actions-main">
+            <a class="btn-small primary" href="#gridLive">📅 Voir les lieux à réserver</a>
+            <a class="btn-small" href="#comment-ca-marche">🧭 Comment ça marche</a>
+            <a class="btn-small" href="https://digiy-hub.digiylyfe.com/">🧭 HUB DIGIY</a>
+            <a class="btn-small" href="https://digiylyfe.com/">🌍 Site DIGIYLYFE</a>
+          </div>
+
+          <div class="how-strip" id="comment-ca-marche" aria-label="Comment réserver avec DIGIY RESA">
+            <div class="how-step"><b>1</b><span>Choisis un lieu</span></div>
+            <div class="how-step"><b>2</b><span>Regarde la fiche</span></div>
+            <div class="how-step"><b>3</b><span>Envoie ta demande</span></div>
+            <div class="how-step"><b>4</b><span>Le pro confirme</span></div>
+          </div>
+        </div>
+
+        <aside class="hero-box client-box" aria-label="Promesse DIGIY RESA">
+          <div class="muted" style="font-weight:900;">🌿 Ici, on réserve sans confusion</div>
+          <h2>Un lieu. Un moment. Une demande claire.</h2>
+          <p>
+            DIGIY RESA ne remplace pas le professionnel. Il prépare la rencontre :
+            le client comprend vite, demande proprement, puis le pro confirme avec sa vérité.
+          </p>
+          <div class="client-promise">
+            <span>✅ Pas de faux bouton</span>
+            <span>✅ Pas de jargon technique</span>
+            <span>✅ Relation directe</span>
+          </div>
+          <div class="status" style="margin-top:12px;"><span id="statusText">✨ Inspirations visibles · vérification des lieux réels en cours</span></div>
+          <div class="kpi" aria-label="Température DIGIY RESA">
+            <div class="chip"><span>Cartes visibles</span><span class="v" id="kpiCount">6</span></div>
+            <div class="chip"><span>Fiches réelles</span><span class="v" id="kpiLive">0</span></div>
+            <div class="chip"><span>Inspirations</span><span class="v" id="kpiVitrine">6</span></div>
+            <div class="chip"><span>Nouveau 7j</span><span class="v" id="kpiNew7d">0</span></div>
+          </div>
+          <div class="status" style="margin-top:10px;"><span>Dernier repère : <strong id="kpiLast">Inspiration recommandée visible</strong></span></div>
+        </aside>
+      </div>
+
+      <div class="controls">
+        <div class="searchRow">
+          <input id="q" class="input" type="search" placeholder="Rechercher (nom, activité, ville…)" autocomplete="off" />
+          <select id="cat" class="select" title="Filtrer par activité">
+            <option value="">Toutes les activités</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <a class="btn-small" id="btnRefresh" href="#">🔄 Rafraîchir</a>
+          <a class="btn-small" id="btnSupport" href="https://digiy-hub.digiylyfe.com/" rel="noopener">🧭 Maison DIGIY</a>
+        </div>
+      </div>
+
+      <div class="statsbar" aria-label="Température publique DIGIY RESA">
+        <div class="left">
+          <span><strong id="msTotal">6</strong> cartes visibles</span>
+          <span class="sep">•</span>
+          <span><strong id="msLive">0</strong> fiches réelles</span>
+          <span class="sep">•</span>
+          <span><strong id="msVitrine">6</strong> inspirations</span>
+        </div>
+        <div class="right">
+          <span class="stats-pill good"><strong id="msPublic">0</strong> demandes publiques</span>
+          <span class="stats-pill"><strong id="msCats">6</strong> activités</span>
+          <span class="stats-pill warn"><strong id="ms7d">0</strong> nouveautés 7j</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="logiciel-public-card" id="chez-baptiste-loc">
+      <div class="logiciel-public-inner">
+        <div>
+          <div class="logiciel-public-kicker">🏡 DIGIY LOC · Appartement à Saly</div>
+          <div class="logiciel-public-title">Chez Baptiste — appartement à Saly.</div>
+          <p class="logiciel-public-text">
+            Ici, on ne force pas RESA. Chez Baptiste est une vraie porte LOC :
+            dates d’arrivée et de départ, 4 personnes max, quartier paisible,
+            Sénélec en sus, paiement Wave direct au propriétaire.
+          </p>
+          <div class="logiciel-public-mini">
+            <span>🏡 Appartement</span>
+            <span>👥 4 pers. max</span>
+            <span>💳 Wave direct</span>
+            <span>💬 WhatsApp</span>
+          </div>
+        </div>
+        <div class="logiciel-public-actions">
+          <a class="btn-small primary" href="https://part-chez-baptiste.digiylyfe.com/">👁️ Voir l’appartement</a>
+          <a class="btn-small" href="https://wa.me/221771342889?text=Bonjour%20Jean%20Baptiste%2C%20je%20viens%20de%20la%20fiche%20DIGIY%20LOC%20et%20je%20souhaite%20r%C3%A9server%20l%27appartement%20Chez%20Baptiste%20%C3%A0%20Saly." target="_blank" rel="noopener">💬 Réserver par WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+
+<section class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">📅 Lieux à réserver</div>
+            <div class="section-note">
+              Ici, le client voit les fiches RESA réellement publiées. Le pavé Chez Baptiste reste volontairement côté LOC : logement, dates d’arrivée/départ, propriétaire direct.
+            </div>
+          </div>
+          <div class="legend">
+            <span class="legend-pill live">Fiche publique</span>
+            <span class="legend-pill live">Demande simple</span>
+          </div>
+        </div>
+        <div id="gridLive" class="grid"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <div class="section-title">✨ Inspiration recommandée · Dans l’air du temps</div>
+            <div class="section-note">
+              Ici, on partage les idées, tendances et ambiances utiles du moment. Ces cartes inspirent le regard, montrent les usages du moment
+              et donnent des repères vivants sans ouvrir de fausse réservation.
+            </div>
+          </div>
+          <div class="legend">
+            <span class="legend-pill vitrine">✨ Inspiration recommandée</span>
+            <span class="legend-pill vitrine">🌍 Dans l’air du temps</span>
+          </div>
+        </div>
+        <div id="gridVitrine" class="grid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="retours-digiy">
+      <div class="return-house">
+        <h2>Revenir dans la maison DIGIY</h2>
+        <p>Cette page ouvre la réservation côté client. Pour découvrir l’écosystème, proposer un lieu ou voir les offres professionnelles, utilise les portes ci-dessous.</p>
+        <div class="return-actions">
+          <a class="btn-small" href="https://digiylyfe.com/">🌍 Site DIGIYLYFE</a>
+          <a class="btn-small primary" href="https://digiy-hub.digiylyfe.com/">🧭 HUB DIGIY</a>
+          <a class="btn-small" id="btnJoinBottom" href="https://resa-table-resto.digiylyfe.com/inscription-resa.html">🤝 Proposer un lieu</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="signature">
+      Le client ne voit pas un logiciel.<br />
+      <strong>Il voit un lieu, un moment, puis il fait sa demande simplement.</strong>
     </div>
 
-    <h1>Entrée courte.<br><span>Direction HUB.</span></h1>
+    <footer class="footer">
+      DIGIY RESA • Saly • <span class="zero">Réservation simple</span> • <span class="brand">contact direct, terrain vivant</span> ∞
+    </footer>
+  </div>
 
-    <p class="lead">
-      Cette page ouvre le HUB RESA quand il existe.
-      Si le fichier HUB n’est pas encore posé, elle évite le 404 et garde les portes secours.
-    </p>
+  <nav class="bottom-nav" aria-label="Navigation rapide DIGIY RESA">
+  <div class="bottom-nav-inner">
+    <a href="https://digiylyfe.com/"><span class="ico">🌍</span><span>Site</span></a>
+    <a href="https://digiy-hub.digiylyfe.com/"><span class="ico">🧭</span><span>HUB</span></a>
+    <a href="./galerie.html"><span class="ico">🧩</span><span>Usages</span></a>
+    <a class="active" href="#gridLive"><span class="ico">📅</span><span>Réserver</span></a>
+    <a id="bottomJoin" href="https://resa-table-resto.digiylyfe.com/inscription-resa.html"><span class="ico">📌</span><span>Proposer</span></a>
+  </div>
+</nav>
 
-    <div class="status" id="statusBox">
-      <span class="dot"></span>
-      <span id="statusText">Contrôle du HUB RESA…</span>
-    </div>
-
-    <div class="actions">
-      <button class="btn primary" id="btnHub" type="button">🧭 Ouvrir le HUB</button>
-      <a class="btn gold" id="btnPin" href="./pin.html">🔐 Mon accès</a>
-      <a class="btn ghost" id="btnDashboard" href="./dashboard-pro.html">🏠 Accueil</a>
-      <a class="btn ghost" id="btnCockpit" href="./cockpit.html">📥 Réservations</a>
-    </div>
-
-    <div class="rule">
-      Ordre propre : poser <b>hub.html</b> d’abord, puis poser cet <b>index.html</b>.
-      Si le HUB manque, cette porte ne force plus un 404.
-    </div>
-  </main>
+  <div id="toast" class="toast"></div>
 
   <script>
     (() => {
       "use strict";
 
-      const ROUTES = {
-        hub:"./hub.html",
-        pin:"./pin.html",
-        dashboard:"./dashboard-pro.html",
-        cockpit:"./cockpit.html"
-      };
+      const CITY_LOCK = "Saly";
+      const NEW_DAYS = 7;
 
-      const SENSITIVE_KEYS = [
-        "phone",
-        "tel",
-        "p_phone",
-        "owner_phone",
-        "owner_id",
-        "slug",
-        "resa_tel",
-        "resa_phone",
-        "business_phone",
-        "whatsapp",
-        "module",
-        "return",
-        "redirect",
-        "redirect_url",
-        "url",
-        "from",
-        "v"
+      const FALLBACK_PHOTO = "https://digiylyfe.net/wp-content/uploads/2026/03/digiylyfe_logo_qr.jpeg";
+      const HUB_URL = "https://digiy-hub.digiylyfe.com/";
+      const JOIN_MODULE_URL = "https://resa-table-resto.digiylyfe.com/inscription-resa.html";
+      const SITE_URL = "https://digiylyfe.com/";
+      const PUBLIC_BASE = "https://resa-table-resto.digiylyfe.com/";
+      const OFFICIAL_FICHE_URL = "https://vas-chez-digiy.digiylyfe.com/";
+
+      const CHEZ_BAPTISTE_LOC_URL = "https://part-chez-baptiste.digiylyfe.com/";
+      const CHEZ_BAPTISTE_WA_URL  = "https://wa.me/221771342889?text=Bonjour%20Jean%20Baptiste%2C%20je%20viens%20de%20la%20fiche%20DIGIY%20LOC%20et%20je%20souhaite%20r%C3%A9server%20l%27appartement%20Chez%20Baptiste%20%C3%A0%20Saly.";
+
+      const OFFICIAL_RESA_CARDS = [];
+
+      const SUPABASE_URL = window.DIGIY_SUPABASE_URL;
+      const SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON;
+
+      let sb = null;
+      let LIVE_ROWS = [];
+      let VITRINE_ROWS = [];
+      let FILTERED_LIVE = [];
+      let FILTERED_VITRINE = [];
+
+      const DEMO_CARDS = [
+        {
+          kind:"demo",
+          demo_id:"atelier-brushing-saly",
+          display_name:"Atelier Brushing Saly",
+          category:"Coiffure",
+          city:"Saly",
+          address:"Quartier central • rendez-vous beauté",
+          bio:"Coupe, brushing, teinture et soins. Une fiche pensée pour comprendre l'activité, voir l'ambiance et choisir sereinement.",
+          badge:"✨ À DÉCOUVRIR",
+          hub_badge:"💇 BEAUTÉ",
+          price_label:"Services sur rendez-vous",
+          tags:["Coiffure","Brushing","Teinture","Saly"],
+          photo_url:"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80",
+          created_at:new Date().toISOString()
+        },
+        {
+          kind:"demo",
+          demo_id:"garage-diagnostic-saly",
+          display_name:"Garage Diagnostic Saly",
+          category:"Garage",
+          city:"Saly",
+          address:"Axe principal • mécanique légère",
+          bio:"Diagnostic, vidange, freins et petites interventions avec une lecture propre du service proposé.",
+          badge:"✨ À DÉCOUVRIR",
+          hub_badge:"🔧 GARAGE",
+          price_label:"Diagnostic • Vidange • Freins",
+          tags:["Garage","Diagnostic","Vidange","Saly"],
+          photo_url:"https://images.unsplash.com/photo-1486006920555-c77dcf18193c?auto=format&fit=crop&w=1200&q=80",
+          created_at:new Date(Date.now()-86400000).toISOString()
+        },
+        {
+          kind:"demo",
+          demo_id:"terrasse-saveurs-saly",
+          display_name:"Terrasse Saveurs Saly",
+          category:"Restaurant",
+          city:"Saly",
+          address:"Terrasse • déjeuner & soirée",
+          bio:"Une table d'ambiance pour déjeuner tranquille, dîner simple ou recevoir des amis dans un cadre détendu.",
+          badge:"✨ À DÉCOUVRIR",
+          hub_badge:"🍽️ RESTAURANT",
+          price_label:"Horaires : 12:00 - 23:00",
+          tags:["Restaurant","Terrasse","Déjeuner","Saly"],
+          photo_url:"https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
+          created_at:new Date(Date.now()-2*86400000).toISOString()
+        },
+        {
+          kind:"demo",
+          demo_id:"studio-onglerie-saly",
+          display_name:"Studio Onglerie Saly",
+          category:"Beauté",
+          city:"Saly",
+          address:"Zone calme • soins esthétiques",
+          bio:"Pose, entretien, manucure et rendez-vous beauté avec présentation claire et rassurante.",
+          badge:"✨ À DÉCOUVRIR",
+          hub_badge:"💅 BEAUTÉ",
+          price_label:"Pose • Entretien • Manucure",
+          tags:["Beauté","Onglerie","Soin","Saly"],
+          photo_url:"https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
+          created_at:new Date(Date.now()-3*86400000).toISOString()
+        },
+        {
+          kind:"demo",
+          demo_id:"cabinet-conseil-saly",
+          display_name:"Cabinet Conseil Saly",
+          category:"Consultation",
+          city:"Saly",
+          address:"Bureau calme • rendez-vous pro",
+          bio:"Consultations, échanges posés et rendez-vous organisés sur des créneaux nets pour éviter les confusions.",
+          badge:"✨ À DÉCOUVRIR",
+          hub_badge:"🩺 CONSULTATION",
+          price_label:"Rendez-vous sur créneau",
+          tags:["Consultation","Conseil","Bureau","Saly"],
+          photo_url:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+          created_at:new Date(Date.now()-4*86400000).toISOString()
+        },
+        {
+          kind:"demo",
+          demo_id:"atelier-service-saly",
+          display_name:"Atelier Service Saly",
+          category:"Atelier",
+          city:"Saly",
+          address:"Service de quartier • rendez-vous utiles",
+          bio:"Un atelier pensé pour les rendez-vous techniques, petits dépannages et services du quotidien avec lecture simple.",
+          badge:"✨ À DÉCOUVRIR",
+          hub_badge:"🛠️ ATELIER",
+          price_label:"Service sur rendez-vous",
+          tags:["Atelier","Service","Quartier","Saly"],
+          photo_url:"https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1200&q=80",
+          created_at:new Date(Date.now()-5*86400000).toISOString()
+        }
       ];
 
-      const $ = (id) => document.getElementById(id);
-      let hubAvailable = false;
+      function initSupabase(){
+        if(!window.supabase || typeof window.supabase.createClient !== "function") return null;
+        if(window.DIGIY_SB) return window.DIGIY_SB;
 
-      function cleanVisibleUrl(){
-        try{
-          const url = new URL(location.href);
-          let changed = false;
+        window.DIGIY_SB = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
+          auth:{
+            persistSession:false,
+            autoRefreshToken:false,
+            detectSessionInUrl:false,
+            storage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}
+          },
+          global:{headers:{"X-Client-Info":"digiy-resa-public-saly"}}
+        });
 
-          SENSITIVE_KEYS.forEach((key) => {
-            if(url.searchParams.has(key)){
-              url.searchParams.delete(key);
-              changed = true;
-            }
-          });
-
-          if(changed){
-            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-          }
-        }catch(_){}
+        return window.DIGIY_SB;
       }
 
-      function cleanInternalLinks(){
-        try{
-          document.querySelectorAll("a[href]").forEach((link) => {
-            const href = link.getAttribute("href") || "";
-            if(!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
-
-            const url = new URL(href, location.href);
-            if(url.origin !== location.origin) return;
-
-            SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
-
-            const file = url.pathname.split("/").pop() || "index.html";
-            link.setAttribute("href","./" + file + (url.search || "") + (url.hash || ""));
-          });
-        }catch(_){}
+      function buildJoinUrl(){
+        return JOIN_MODULE_URL;
       }
 
-      async function waitGuard(){
+      function sanitizePublicUrl(raw){
+        const v = String(raw || "").trim();
+        if(!/^https:\/\/[a-z0-9.-]+/i.test(v)) return "";
+
         try{
-          const guard = window.DIGIY_GUARD;
-          if(!guard) return {};
+          const u = new URL(v);
+          ["phone","tel","resa_"+"tel","owner_"+"phone","owner_id","business_"+"code","keybox_"+"code","keybox_"+"location","access_"+"note","module","from"].forEach(k => u.searchParams.delete(k));
+          return u.toString();
+        }catch(_){
+          return "";
+        }
+      }
 
-          if(typeof guard.ready === "function"){
-            const out = guard.ready({ redirect:false, preserve_validation:true });
-            if(out && typeof out.then === "function") await out;
-          }else if(guard.ready && typeof guard.ready.then === "function"){
-            await guard.ready;
+      function isVasChezDigiyCard(r){
+        const hay = [
+          r?.display_name,
+          r?.business_name,
+          r?.name,
+          r?.establishment_name,
+          r?.business_type,
+          r?.category,
+          r?.type_label,
+          r?.city,
+          r?.address_text,
+          r?.address,
+          r?.location_text
+        ].map(v => String(v || "").trim().toLowerCase()).join(" | ");
+
+        return hay.includes("digiylyfe") &&
+               hay.includes("bon vivre") &&
+               hay.includes("saly");
+      }
+
+      function isSafePublicKey(v){
+        const s = String(v || "").trim();
+        if(!s) return false;
+        /* DIGIY RESA : les slugs publics peuvent être du type resa-221...
+           On les accepte pour que le bouton "Réserver maintenant" sorte directement
+           vers reserver.html, au lieu de retomber sur "Voir la fiche". */
+        if(/^resa-[0-9]{6,15}$/i.test(s)) return true;
+        if(/\d{6,}/.test(s)) return false;
+        return /^[a-z0-9-]{3,80}$/i.test(s);
+      }
+
+      function dynamicPublicPath(page, publicKey){
+        if(!isSafePublicKey(publicKey)) return "";
+        const u = new URL(page, PUBLIC_BASE);
+        u.searchParams.set("slug", publicKey);
+        return u.toString();
+      }
+
+      function first(...vals){
+        for(const v of vals){
+          if(v !== null && v !== undefined && String(v).trim() !== "") return v;
+        }
+        return "";
+      }
+
+      function mapLiveRow(r){
+        const publicKey = first(r.public_key,r.card_id,r.public_id,r.slug);
+        const profileUrl = sanitizePublicUrl(first(r.public_url,r.profile_url,r.fiche_url,r.page_url));
+        const reserveUrl = sanitizePublicUrl(first(r.reservation_url,r.booking_url));
+        const isOfficialDigiyCard = isVasChezDigiyCard(r);
+
+        return {
+          kind:"live",
+          public_key:publicKey,
+          display_name:first(r.display_name,r.business_name,r.name,r.establishment_name) || "Activité",
+          category:first(r.business_type,r.category,r.type_label) || "Service local",
+          city:first(r.city) || CITY_LOCK,
+          address:first(r.address_text,r.address,r.location_text) || "",
+          bio:first(r.bio,r.description,r.about,r.short_description) || "",
+          badge:"🟢 DISPONIBLE",
+          hub_badge:"DIGIY RESA",
+          price_label:first(r.opening_hours_text,r.open_hours,r.opening_hours) ? `Horaires : ${first(r.opening_hours_text,r.open_hours,r.opening_hours)}` : "",
+          tags:[
+            first(r.business_type,r.category,r.type_label) || "",
+            first(r.city) || "",
+            first(r.opening_hours_text,r.open_hours,r.opening_hours) ? `Horaires : ${first(r.opening_hours_text,r.open_hours,r.opening_hours)}` : ""
+          ].filter(Boolean),
+          photo_url:first(r.cover_url,r.cover_image_url,r.logo_url,r.image_url,r.photo_url) || "",
+          profile_url:isOfficialDigiyCard ? OFFICIAL_FICHE_URL : (profileUrl || dynamicPublicPath("fiche.html",publicKey)),
+          reservation_url:isOfficialDigiyCard ? OFFICIAL_FICHE_URL : (reserveUrl || dynamicPublicPath("reserver.html",publicKey)),
+          created_at:first(r.updated_at,r.created_at) || null
+        };
+      }
+
+      function initLinks(){
+        const floatingBtn = document.getElementById("floatingSiteBtn");
+        if(floatingBtn) floatingBtn.href = SITE_URL;
+
+        const join = buildJoinUrl();
+        const joinIds = ["btnJoinTop","btnJoinBottom","bottomJoin"];
+        joinIds.forEach(id => {
+          const el = document.getElementById(id);
+          if(el) el.href = join;
+        });
+
+        document.getElementById("btnHub").href = HUB_URL;
+        document.getElementById("btnSupport").href = HUB_URL;
+        document.getElementById("btnRefresh").addEventListener("click",(e) => {
+          e.preventDefault();
+          load();
+        });
+      }
+
+      function toast(msg){
+        const t = document.getElementById("toast");
+        if(!t) return;
+        t.textContent = msg || "";
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"),2200);
+      }
+
+      function setStatus(msg){
+        const el = document.getElementById("statusText");
+        if(el) el.textContent = msg || "";
+      }
+
+      function setText(id,value){
+        const el = document.getElementById(id);
+        if(el) el.textContent = value;
+      }
+
+      function esc(s){
+        return String(s ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+
+      function pick(arr,key){
+        const v = (arr || []).map(x => (x?.[key] ?? "")).filter(Boolean);
+        return Array.from(new Set(v)).sort((a,b) => String(a).localeCompare(String(b)));
+      }
+
+      function tagsToArray(tags){
+        if(Array.isArray(tags)) return tags.filter(Boolean).map(String);
+        const s = String(tags || "").trim();
+        if(!s) return [];
+        return s.split(",").map(x => x.trim()).filter(Boolean);
+      }
+
+      function isNew(dateIso){
+        if(!dateIso) return false;
+        const t = Date.parse(dateIso);
+        if(!Number.isFinite(t)) return false;
+        return (Date.now() - t) / (1000 * 60 * 60 * 24) <= NEW_DAYS;
+      }
+
+      function sameCity(a,b){
+        return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
+      }
+
+      function fillSelects(){
+        const catSel = document.getElementById("cat");
+        const cats = pick([...LIVE_ROWS,...VITRINE_ROWS],"category");
+        catSel.innerHTML = `<option value="">Toutes les activités</option>` + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+      }
+
+      function updateStatsBar(liveRows,vitrineRows){
+        const l = Array.isArray(liveRows) ? liveRows : [];
+        const v = Array.isArray(vitrineRows) ? vitrineRows : [];
+        const all = [...l,...v];
+        const new7d = l.filter(r => isNew(r.created_at)).length;
+        const cats = new Set(all.map(r => String(r.category || "").trim()).filter(Boolean)).size;
+
+        setText("msTotal",String(all.length));
+        setText("msLive",String(l.length));
+        setText("msVitrine",String(v.length));
+        setText("ms7d",String(new7d));
+        setText("msPublic",String(l.length));
+        setText("msCats",String(cats));
+      }
+
+      function updateKpisFiltered(liveFiltered,vitrineFiltered){
+        const l = Array.isArray(liveFiltered) ? liveFiltered : [];
+        const v = Array.isArray(vitrineFiltered) ? vitrineFiltered : [];
+        const all = [...l,...v];
+
+        setText("kpiCount",String(all.length));
+        setText("kpiNew7d",String(l.filter(x => isNew(x.created_at)).length));
+        setText("kpiLive",String(l.length));
+        setText("kpiVitrine",String(v.length));
+
+        const last = [...all].sort((a,b) => {
+          const ta = Date.parse(a.created_at || "") || 0;
+          const tb = Date.parse(b.created_at || "") || 0;
+          return tb - ta;
+        })[0];
+
+        setText("kpiLast",last ? `${last.display_name}${last.kind === "demo" ? " • à découvrir" : " • disponible"}` : "Inspiration recommandée visible");
+      }
+
+      function renderSkeleton(){
+        const skHtml = Array.from({length:3}).map(() => `
+          <div class="card">
+            <div class="photo skeleton sk-photo"></div>
+            <div class="body">
+              <div class="skeleton sk-line" style="width:70%"></div>
+              <div class="skeleton sk-line" style="width:48%"></div>
+              <div class="skeleton sk-line" style="width:90%"></div>
+              <div class="skeleton sk-line" style="width:60%"></div>
+              <div class="actions" style="margin-top:10px;">
+                <div class="skeleton sk-line" style="height:42px;width:100%"></div>
+                <div class="skeleton sk-line" style="height:42px;width:100%"></div>
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        document.getElementById("gridLive").innerHTML = skHtml;
+        document.getElementById("gridVitrine").innerHTML = skHtml;
+      }
+
+      function renderGrid(gridId,rows,mode){
+        const grid = document.getElementById(gridId);
+        if(!grid) return;
+
+        const list = Array.isArray(rows) ? rows : [];
+        if(!list.length){
+          grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">${mode === "live" ? "Aucune fiche disponible ne correspond au filtre pour l'instant. La partie à découvrir reste visible pour garder la page vivante." : "Aucune carte à découvrir ne correspond au filtre pour l'instant."}</div>`;
+          return;
+        }
+
+        grid.innerHTML = list.map(r => {
+          const name = esc(r.display_name || "Activité");
+          const category = esc(r.category || "Service local");
+          const city = esc(r.city || CITY_LOCK);
+          const address = esc(r.address || "");
+          const bio = esc(r.bio || "");
+          const badge = esc(r.badge || (mode === "live" ? "🟢 DISPONIBLE" : "✨ À DÉCOUVRIR"));
+          const hub = esc(r.hub_badge || (mode === "live" ? "DIGIY RESA" : "À DÉCOUVRIR"));
+          const price = esc(r.price_label || "");
+          const tags = tagsToArray(r.tags).slice(0,6);
+          const isNewCard = isNew(r.created_at);
+          const rawPhoto = String(r.photo_url || "").trim();
+          const basePhoto = rawPhoto || FALLBACK_PHOTO;
+          const photoFinal = esc(basePhoto + (basePhoto.includes("?") ? "&" : "?") + "v=13");
+
+          const ficheHref = r.kind === "live" ? (r.profile_url || "") : "";
+          const reserveHref = r.kind === "live" ? (r.reservation_url || "") : "";
+          const logicielHref = r.kind === "live" ? (r.client_software_url || "") : "";
+
+          const primaryHref = mode === "live" ? (logicielHref || ficheHref || reserveHref || "#retours-digiy") : "#retours-digiy";
+          const primaryLabel = mode === "live"
+            ? (logicielHref ? "📱 Ouvrir le logiciel client" : (ficheHref ? "📄 Voir la fiche" : (reserveHref ? "📅 Réserver maintenant" : "📄 Fiche bientôt prête")))
+            : "✨ Découvrir";
+
+          const secondaryBtn = mode === "live"
+            ? (reserveHref
+                ? `<a class="btn secondary" href="${esc(reserveHref)}">📅 Réserver</a>`
+                : (ficheHref ? `<a class="btn secondary" href="${esc(ficheHref)}">📄 Voir la fiche</a>` : `<a class="btn ghost" href="#retours-digiy">🌍 Dans l’air du temps</a>`))
+            : `<a class="btn ghost" href="#retours-digiy">✨ Inspiration recommandée</a>`;
+
+          return `
+            <article class="card" data-kind="${esc(r.kind || "")}">
+              <div class="photo">
+                <img src="${photoFinal}" alt="${name}" loading="lazy" onerror="this.onerror=null;this.src='${esc(FALLBACK_PHOTO)}';" />
+                <div class="badgeTop">
+                  <span class="chip gold">${badge}</span>
+                  <span class="chip blue">${hub}</span>
+                  ${isNewCard ? `<span class="chip new">🆕 Nouveau</span>` : ""}
+                </div>
+              </div>
+              <div class="body">
+                <div class="name">${name}</div>
+                <div class="meta">
+                  <span>🏷️ ${category}</span>
+                  <span>📍 ${city}${address ? " • " + address : ""}</span>
+                </div>
+                ${bio ? `<div class="bio">${bio}</div>` : `<div class="bio" style="color:var(--muted)">Fiche publique DIGIY RESA.</div>`}
+                <div class="tags">
+                  ${tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}
+                  ${price ? `<span class="tag" style="border-color:rgba(250,204,21,.22);color:#fde68a;">${price}</span>` : ""}
+                </div>
+                <div class="actions">
+                  <a class="btn primary" href="${esc(primaryHref)}">${primaryLabel}</a>
+                  ${secondaryBtn}
+                </div>
+              </div>
+            </article>`;
+        }).join("");
+      }
+
+      function rowMatchesFilters(r,q,cat){
+        const hay = [
+          r.display_name,
+          r.category,
+          r.city,
+          r.address,
+          r.bio,
+          r.badge,
+          r.hub_badge,
+          r.price_label,
+          ...tagsToArray(r.tags)
+        ].join(" ").toLowerCase();
+
+        return (!q || hay.includes(q)) && (!cat || String(r.category || "").toLowerCase() === cat);
+      }
+
+      function applyFilters(){
+        const q = (document.getElementById("q").value || "").trim().toLowerCase();
+        const cat = (document.getElementById("cat").value || "").trim().toLowerCase();
+
+        FILTERED_LIVE = LIVE_ROWS.filter(r => rowMatchesFilters(r,q,cat));
+        FILTERED_VITRINE = VITRINE_ROWS.filter(r => rowMatchesFilters(r,q,cat));
+
+        renderGrid("gridLive",FILTERED_LIVE,"live");
+        renderGrid("gridVitrine",FILTERED_VITRINE,"vitrine");
+        updateKpisFiltered(FILTERED_LIVE,FILTERED_VITRINE);
+      }
+
+      async function load(){
+        // Première impression propre : les inspirations sortent tout de suite.
+        // Supabase enrichit ensuite les vraies fiches RESA quand il répond.
+        VITRINE_ROWS = [...DEMO_CARDS];
+        LIVE_ROWS = [...OFFICIAL_RESA_CARDS];
+        fillSelects();
+        updateStatsBar(LIVE_ROWS,VITRINE_ROWS);
+        applyFilters();
+        setStatus("✨ Inspirations affichées · vérification des fiches réelles en cours");
+
+        try{
+          sb = initSupabase();
+          if(!sb) throw new Error("supabase_unavailable");
+
+          const {data,error} = await sb
+            .from("digiy_resa_public_profiles_v2")
+            .select("*")
+            .order("updated_at",{ascending:false});
+
+          if(error) throw error;
+
+          const raw = Array.isArray(data) ? data : [];
+          const liveFromSupabase = raw
+            .filter(r => sameCity(first(r.city),CITY_LOCK))
+            .map(mapLiveRow)
+            .filter(r => r.profile_url || r.reservation_url);
+
+          const officialKeys = new Set(OFFICIAL_RESA_CARDS.map(r => String(r.public_key || "").toLowerCase()));
+          LIVE_ROWS = [
+            ...OFFICIAL_RESA_CARDS,
+            ...liveFromSupabase.filter(r => !officialKeys.has(String(r.public_key || "").toLowerCase()) && !/chez\s+astou\s+et\s+baptiste/i.test(String(r.display_name || "")))
+          ];
+
+          fillSelects();
+          updateStatsBar(LIVE_ROWS,VITRINE_ROWS);
+          applyFilters();
+
+          if(LIVE_ROWS.length){
+            setStatus("✅ Fiches réelles disponibles · les inspirations restent en complément.");
+            toast("✅ Fiches RESA réelles prêtes");
+          }else{
+            setStatus("✨ Pas encore de fiche RESA réelle publiée · les inspirations recommandées restent visibles.");
+            toast("✨ Partie à découvrir active");
           }
-
-          if(typeof guard.getSession === "function"){
-            return guard.getSession() || guard.state || {};
-          }
-
-          return guard.state || {};
         }catch(e){
-          console.warn("[RESA INDEX] guard", e);
-          return {};
+          console.error(e);
+          LIVE_ROWS = [...OFFICIAL_RESA_CARDS];
+          fillSelects();
+          updateStatsBar(LIVE_ROWS,VITRINE_ROWS);
+          applyFilters();
+          setStatus("✨ Inspirations visibles · les fiches RESA réelles seront ajoutées dès disponibilité.");
+          toast("✨ Inspirations affichées");
         }
       }
 
-      function setStatus(text, kind){
-        const box = $("statusBox");
-        const el = $("statusText");
-        if(el) el.textContent = text;
-        if(box) box.className = kind ? "status " + kind : "status";
+      function bind(){
+        const q = document.getElementById("q");
+        const cat = document.getElementById("cat");
+        let t = null;
+
+        q.addEventListener("input",() => {
+          clearTimeout(t);
+          t = setTimeout(applyFilters,120);
+        });
+
+        cat.addEventListener("change",applyFilters);
       }
 
-      function safeGo(path){
-        try{
-          const url = new URL(path, location.href);
-          SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
-          const file = url.pathname.split("/").pop() || "index.html";
-          location.href = "./" + file + (url.search || "") + (url.hash || "");
-        }catch(_){
-          location.href = path;
-        }
+      initLinks();
+      bind();
+      load();
+    })();
+  </script>
+
+  
+<script>
+/* DIGIY — phonétique audio terrain */
+window.digiySpeakText = window.digiySpeakText || function(text){
+  return String(text || "")
+    .replace(/\bWave\b/g, "Ouève")
+    .replace(/\bWouève\b/g, "Ouève")
+    .replace(/\bWhatsApp\b/g, "Ouatsap")
+    .replace(/\bDIGIYLYFE\b/g, "diji laïfe")
+    .replace(/\bDIGIY\b/g, "diji i")
+    .replace(/\bQR\b/g, "Q R")
+    .replace(/\bSMS\b/g, "S M S")
+    .replace(/\bRESA\b/g, "réservation")
+    .replace(/\bRÉSA\b/g, "réservation");
+};
+</script>
+
+  <script>
+    window.DIGIY_AUDIO_CONFIG = {
+      label:"Écouter réservation",
+      stopLabel:"Arrêter",
+      text:"Bienvenue sur DIGIY réservation. Ici, le client ne voit pas un logiciel. Il voit un lieu, une table, un service, une activité, puis il fait une demande simple. Tu regardes la fiche, tu choisis le bon moment, tu laisses ton contact, et le professionnel confirme directement. DIGIY prépare la rencontre, mais la relation reste entre le client et le professionnel. Simple, clair, humain.",
+      buttonBg:"linear-gradient(135deg,#d4af37,#b78b34)",
+      buttonColor:"#111827",
+      bottom:"24px",
+      left:"24px",
+      rate:0.82,
+      pitch:1,
+      volume:1,
+      zIndex:99999,
+      shadow:"0 10px 30px rgba(0,0,0,.26)"
+    };
+  </script>
+
+  <style>
+    #digiy-audio-btn{
+      position:fixed;display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border:none;border-radius:999px;cursor:pointer;
+      font-family:'Outfit',system-ui,sans-serif;font-weight:900;font-size:17px;line-height:1;-webkit-tap-highlight-color:transparent;
+      user-select:none;transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;
+    }
+    #digiy-audio-btn:hover{transform:translateY(-2px)}
+    #digiy-audio-btn:active{transform:scale(.97)}
+    #digiy-audio-btn:disabled{opacity:.65;cursor:not-allowed}
+    #digiy-audio-btn .digiy-audio-ico{font-size:18px;line-height:1}
+    #digiy-audio-progress-wrap{position:fixed;left:0;right:0;bottom:0;height:3px;opacity:0;pointer-events:none;transition:opacity .25s ease}
+    #digiy-audio-progress{width:0%;height:100%;transition:width .18s linear}
+    @media(max-width:600px){
+      #digiy-audio-btn{font-size:16px;padding:15px 22px;gap:11px}
+      #digiy-audio-btn .digiy-audio-ico{font-size:17px}
+    }
+  </style>
+
+  <button id="digiy-audio-btn" type="button" aria-label="Écouter RESA">
+    <span class="digiy-audio-ico">&#9654;</span>
+    <span class="digiy-audio-lbl">Écouter RESA</span>
+  </button>
+
+  <div id="digiy-audio-progress-wrap" aria-hidden="true">
+    <div id="digiy-audio-progress"></div>
+  </div>
+
+  <script>
+    (function(){
+      var cfg = window.DIGIY_AUDIO_CONFIG || {};
+
+      var config = {
+        label:cfg.label || "Écouter DIGIY",
+        stopLabel:cfg.stopLabel || "Arrêter",
+        text:cfg.text || "Bienvenue sur DIGIYLYFE.",
+        buttonBg:cfg.buttonBg || "linear-gradient(135deg,#d4af37,#b78b34)",
+        buttonColor:cfg.buttonColor || "#111827",
+        bottom:cfg.bottom || "24px",
+        left:cfg.left || "24px",
+        rate:typeof cfg.rate === "number" ? cfg.rate : 0.82,
+        pitch:typeof cfg.pitch === "number" ? cfg.pitch : 1,
+        volume:typeof cfg.volume === "number" ? cfg.volume : 1,
+        zIndex:cfg.zIndex || 99999,
+        shadow:cfg.shadow || "0 8px 28px rgba(0,0,0,.24)"
+      };
+
+      var btn = document.getElementById("digiy-audio-btn");
+      var lbl = btn ? btn.querySelector(".digiy-audio-lbl") : null;
+      var ico = btn ? btn.querySelector(".digiy-audio-ico") : null;
+      var progressWrap = document.getElementById("digiy-audio-progress-wrap");
+      var progressBar = document.getElementById("digiy-audio-progress");
+
+      if(!btn || !lbl || !ico || !progressWrap || !progressBar) return;
+
+      btn.style.bottom = config.bottom;
+      btn.style.left = config.left;
+      btn.style.zIndex = String(config.zIndex);
+      btn.style.background = config.buttonBg;
+      btn.style.color = config.buttonColor;
+      btn.style.boxShadow = config.shadow;
+
+      progressWrap.style.zIndex = String(config.zIndex - 1);
+      progressWrap.style.background = "rgba(212,175,55,.2)";
+      progressBar.style.background = "linear-gradient(90deg,#d4af37,#b78b34)";
+
+      if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){
+        btn.style.display = "none";
+        return;
       }
 
-      async function checkHub(){
-        try{
-          const res = await fetch(ROUTES.hub + "?check=" + Date.now(), {
-            method:"HEAD",
-            cache:"no-store"
-          });
-          return !!(res && res.ok);
-        }catch(_){
-          return false;
-        }
+      var synth = window.speechSynthesis;
+      var utterance = null;
+      var playing = false;
+      var timer = null;
+      var launchId = 0;
+
+      function getFrenchVoice(){
+        var voices = synth.getVoices() || [];
+        if(!voices.length) return null;
+
+        return (
+          voices.find(function(v){ return /fr[-_]?FR/i.test(v.lang) && /google/i.test(v.name); }) ||
+          voices.find(function(v){ return /fr[-_]?FR/i.test(v.lang); }) ||
+          voices.find(function(v){ return /^fr/i.test(v.lang); }) ||
+          null
+        );
       }
 
-      async function boot(){
-        cleanVisibleUrl();
-        cleanInternalLinks();
-
-        const state = await waitGuard();
-        const accessOk = !!(state && (state.access_ok || state.access || state.pin_session_ok));
-
-        hubAvailable = await checkHub();
-
-        if(hubAvailable){
-          setStatus(accessOk ? "Session RESA reconnue. Ouverture du HUB…" : "HUB trouvé. Ouverture propre…", "ok");
-          window.setTimeout(() => safeGo(ROUTES.hub), accessOk ? 350 : 650);
-          return;
-        }
-
-        setStatus("HUB RESA introuvable : hub.html n’est pas encore posé. Aucun 404 forcé.", "bad");
+      function setIdle(){
+        playing = false;
+        ico.innerHTML = "&#9654;";
+        lbl.textContent = config.label;
+        btn.setAttribute("aria-label",config.label);
+        clearInterval(timer);
+        timer = null;
+        progressWrap.style.opacity = "0";
+        progressBar.style.width = "0%";
       }
 
-      $("btnHub")?.addEventListener("click", () => {
-        if(hubAvailable){
-          safeGo(ROUTES.hub);
-          return;
-        }
-        setStatus("Impossible d’ouvrir : pose d’abord le fichier hub.html dans le dépôt.", "bad");
+      function setPlaying(){
+        playing = true;
+        ico.innerHTML = "&#9632;";
+        lbl.textContent = config.stopLabel;
+        btn.setAttribute("aria-label",config.stopLabel);
+      }
+
+      function stop(){
+        clearInterval(timer);
+        timer = null;
+        try{synth.cancel();}catch(e){}
+        utterance = null;
+        setIdle();
+      }
+
+      function startProgress(text,currentId){
+        var words = (text.trim().match(/\S+/g) || []).length;
+        var estimatedDuration = Math.max(2500, words * 520);
+        var elapsed = 0;
+
+        clearInterval(timer);
+        progressBar.style.width = "0%";
+        progressWrap.style.opacity = "1";
+
+        timer = setInterval(function(){
+          if(!playing || currentId !== launchId){
+            clearInterval(timer);
+            timer = null;
+            return;
+          }
+          elapsed += 150;
+          var pct = Math.min((elapsed / estimatedDuration) * 100, 97);
+          progressBar.style.width = pct + "%";
+        },150);
+      }
+
+      function launch(){
+        launchId += 1;
+        var currentId = launchId;
+
+        try{synth.cancel();}catch(e){}
+
+        utterance = new SpeechSynthesisUtterance(window.digiySpeakText ? window.digiySpeakText(config.text) : config.text);
+        utterance.lang = "fr-FR";
+        utterance.rate = config.rate;
+        utterance.pitch = config.pitch;
+        utterance.volume = config.volume;
+
+        var voice = getFrenchVoice();
+        if(voice) utterance.voice = voice;
+
+        utterance.onstart = function(){
+          if(currentId !== launchId) return;
+          setPlaying();
+          startProgress(config.text,currentId);
+        };
+
+        utterance.onend = function(){
+          if(currentId !== launchId) return;
+          clearInterval(timer);
+          timer = null;
+          progressBar.style.width = "100%";
+          setTimeout(function(){
+            if(currentId === launchId) setIdle();
+          },250);
+        };
+
+        utterance.onerror = function(){
+          if(currentId !== launchId) return;
+          setIdle();
+        };
+
+        synth.speak(utterance);
+
+        setTimeout(function(){
+          if(currentId === launchId && !playing){
+            setPlaying();
+            startProgress(config.text,currentId);
+          }
+        },250);
+      }
+
+      if(synth.onvoiceschanged !== undefined){
+        synth.onvoiceschanged = function(){ getFrenchVoice(); };
+      }
+
+      btn.addEventListener("click",function(){
+        if(playing) stop();
+        else launch();
       });
 
-      $("btnPin")?.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        safeGo(ROUTES.pin);
+      window.addEventListener("pagehide",stop);
+      document.addEventListener("visibilitychange",function(){
+        if(document.hidden && playing) stop();
       });
-
-      $("btnDashboard")?.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        safeGo(ROUTES.dashboard);
-      });
-
-      $("btnCockpit")?.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        safeGo(ROUTES.cockpit);
-      });
-
-      boot();
     })();
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
