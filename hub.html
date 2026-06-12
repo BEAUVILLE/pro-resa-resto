@@ -4,20 +4,19 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 
-  <title>Je réserve — Navigation RESA</title>
-
+  <title>Je réserve — Menu RESA</title>
   <meta name="theme-color" content="#1e7a46"/>
-  <meta name="description" content="DIGIY RESA PRO — Hub mobile terrain en conteneur DRIVER : pavés larges, écriture grande, routes propres."/>
+  <meta name="description" content="DIGIY RESA PRO — menu compact : accueil, oreille, réservations, planning, fiche, QR, PAY, Wolof et session."/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
-  <meta name="digiy-build" content="resa-hub-lexique-wolof-20260607"/>
+  <meta name="digiy-build" content="resa-menu-compact-plus-pay-ok-20260612"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
     window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
     window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
     window.DIGIY_SUPABASE_KEY = window.DIGIY_SUPABASE_ANON_KEY;
-
     window.DIGIY_MODULE = "RESA";
+    window.DIGIY_ABOS_MODULE = "RESA";
     window.DIGIY_LOGIN_URL = "./pin.html";
   </script>
 
@@ -26,6 +25,7 @@
   <script src="./guard.js?v=resa-guard-20260531"></script>
   <script src="./assets/js/digiy-module-bridge.js?v=bridge-20260520" defer></script>
   <script src="./assets/js/digiy-resa-memory.js?v=resa-memory-20260520" defer></script>
+
   <link rel="preload" as="image" href="https://digiylyfe.net/wp-content/uploads/2026/05/metier-pro-1.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -33,919 +33,173 @@
 
   <style>
     :root{
-      --bg:#1e7a46;
-      --bg2:#155a34;
-      --bg3:#0e4226;
-      --bar:rgba(8,50,24,.96);
-      --gold:#c4973f;
-      --green:#22c55e;
-      --blue:#8b8cff;
-      --line:rgba(255,255,255,.18);
-      --text:#f0fff5;
-      --muted:rgba(240,255,245,.76);
-      --soft:rgba(255,255,255,.09);
-      --shadow:0 16px 40px rgba(0,0,0,.22);
-      --r:18px;
-      --max:960px;
-      --hdrH:52px;
-      --barH:78px;
+      --bg:#1e7a46;--bg2:#155a34;--bg3:#0e4226;--bar:rgba(8,50,24,.96);
+      --gold:#c4973f;--gold2:#fff0a8;--green:#22c55e;--blue:#8b8cff;
+      --text:#f0fff5;--muted:rgba(240,255,245,.76);--line:rgba(255,255,255,.18);
+      --shadow:0 16px 40px rgba(0,0,0,.22);--r:18px;--max:960px;--hdrH:52px;--barH:78px
     }
-
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
     body{
-      margin:0;
-      min-height:100dvh;
-      color:var(--text);
-      font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
-      font-size:19px;
-      font-weight:950;
-      background:
-        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
-        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
-        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
-      padding:
-        calc(var(--hdrH) + 14px)
-        12px
-        calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
+      margin:0;min-height:100dvh;color:var(--text);font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
+      font-size:19px;font-weight:950;
+      background:radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
+      radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
+      linear-gradient(180deg,var(--bg),var(--bg2) 60%,var(--bg3));
+      padding:calc(var(--hdrH) + 12px) 10px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px)
     }
-
-    a{color:inherit;text-decoration:none}
-    button{font:inherit;color:inherit;cursor:pointer}
-
-    /* ══ HEADER DRIVER-LIKE ══ */
+    a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
     .topHeader{
-      position:fixed;
-      top:0;
-      left:0;
-      right:0;
-      height:var(--hdrH);
-      z-index:100;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:0 14px;
-      background:var(--bar);
-      border-bottom:1px solid rgba(196,151,63,.26);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
+      position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:0 12px;background:var(--bar);border-bottom:1px solid rgba(196,151,63,.26);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
     }
-
-    .hdrBack{
-      min-height:36px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      color:rgba(240,255,245,.72);
-      font-size:14px;
-      font-weight:1000;
-      white-space:nowrap;
-    }
-
-    .hdrTitle{
-      font-size:12px;
-      font-weight:1000;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:var(--gold);
-      white-space:nowrap;
-    }
-
-    .hdrPill{
-      min-height:32px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.08);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:1000;
-      white-space:nowrap;
-      max-width:38vw;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .hdrPill.ok{
-      color:#bbf7d0;
-      border-color:rgba(34,197,94,.38);
-      background:rgba(34,197,94,.12);
-    }
-
-    .hdrPill.warn{
-      color:#fde68a;
-      border-color:rgba(245,158,11,.38);
-      background:rgba(245,158,11,.12);
-    }
-
-    .hdrPill.bad{
-      color:#fecaca;
-      border-color:rgba(251,113,133,.38);
-      background:rgba(251,113,133,.10);
-    }
-
-    /* ══ WRAP ══ */
-    .wrap{
-      width:min(var(--max),100%);
-      margin:0 auto;
-      display:grid;
-      gap:16px;
-    }
-
-    /* ══ HEAD ══ */
-    .hubHead{
-      padding:2px 2px 4px;
-    }
-
-    .eyebrow{
-      color:#fff0a8;
-      font-size:12px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      font-weight:1000;
-      margin-bottom:8px;
-    }
-
-    h1{
-      margin:0 0 8px;
-      font-size:clamp(34px,8.5vw,54px);
-      font-weight:1000;
-      line-height:.94;
-      letter-spacing:-.05em;
-    }
-
-    .hubSub{
-      color:var(--muted);
-      font-size:17px;
-      font-weight:1000;
-      line-height:1.38;
-      max-width:760px;
-    }
-
-    .rule{
-      margin-top:10px;
-      padding:12px 14px;
-      border-radius:18px;
-      border:1px dashed rgba(255,255,255,.22);
-      background:rgba(5,31,17,.32);
-      color:rgba(240,255,245,.90);
-      font-size:14px;
-      font-weight:1000;
-      line-height:1.35;
-    }
-
-    .rule b{color:#fff0a8}
-
-    /* ══ GROUPS ══ */
-    .group{
-      display:grid;
-      gap:8px;
-    }
-
-    .groupLabel{
-      font-size:11px;
-      font-weight:1000;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      color:rgba(240,255,245,.50);
-      padding:0 2px;
-    }
-
-    /* ══ PAVÉS DRIVER-LIKE ══ */
-    .tileGrid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:9px;
-    }
-
+    .hdrBack{min-height:36px;display:inline-flex;align-items:center;color:rgba(240,255,245,.72);font-size:13px;font-weight:1000;white-space:nowrap}
+    .hdrTitle{font-size:11px;font-weight:1000;letter-spacing:.13em;text-transform:uppercase;color:var(--gold2);white-space:nowrap}
+    .hdrPill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:6px 9px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--muted);font-size:11px;font-weight:1000;white-space:nowrap;max-width:36vw;overflow:hidden;text-overflow:ellipsis}
+    .hdrPill.ok{color:#bbf7d0;border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.12)}
+    .hdrPill.warn{color:#fde68a;border-color:rgba(245,158,11,.38);background:rgba(245,158,11,.12)}
+    .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:12px}
+    .hero{padding:2px 2px 4px}
+    .eyebrow{color:var(--gold2);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:1000;margin-bottom:8px}
+    h1{margin:0 0 7px;font-size:clamp(34px,8.5vw,52px);font-weight:1000;line-height:.94;letter-spacing:-.05em}
+    .sub{color:var(--muted);font-size:16px;font-weight:1000;line-height:1.35;max-width:760px}
+    .rule{margin-top:9px;padding:11px 13px;border-radius:18px;border:1px dashed rgba(255,255,255,.22);background:rgba(5,31,17,.32);color:rgba(240,255,245,.90);font-size:13px;font-weight:1000;line-height:1.34}
+    .rule b{color:var(--gold2)}
+    .group{display:grid;gap:8px}.label{font-size:11px;font-weight:1000;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,255,245,.55);padding:0 2px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
     .tile{
-      min-height:136px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px;
-      border-radius:var(--r);
-      border:1px solid rgba(255,255,255,.15);
-      background:rgba(255,255,255,.09);
-      box-shadow:var(--shadow);
-      transition:transform .12s ease,background .12s ease,border-color .12s ease;
-      -webkit-tap-highlight-color:transparent;
+      min-height:116px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;padding:13px;border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.09);box-shadow:var(--shadow);-webkit-tap-highlight-color:transparent
     }
-
-    .tile:hover{
-      transform:translateY(-1px);
-      background:rgba(255,255,255,.14);
-      border-color:rgba(255,255,255,.25);
-    }
-
-    .tile:active{transform:none}
-
-    .tileTop{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:8px;
-    }
-
-    .tileIcon{
-      width:48px;
-      height:48px;
-      border-radius:15px;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      font-size:25px;
-      flex:0 0 auto;
-    }
-
-    .tileTag{
-      min-height:27px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.08);
-      color:#fff0a8;
-      font-size:10px;
-      font-weight:1000;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      white-space:nowrap;
-    }
-
-    .tile b{
-      display:block;
-      font-size:20px;
-      font-weight:1000;
-      line-height:1.06;
-      letter-spacing:-.025em;
-      color:#fff;
-    }
-
-    .tile span{
-      display:block;
-      margin-top:5px;
-      color:var(--muted);
-      font-size:14px;
-      font-weight:1000;
-      line-height:1.28;
-    }
-
-    .tile.primary{
-      border-color:rgba(34,197,94,.38);
-      background:rgba(34,197,94,.14);
-    }
-
-    .tile.primary .tileIcon{
-      background:rgba(34,197,94,.16);
-      border-color:rgba(34,197,94,.28);
-    }
-
-    .tile.gold{
-      border-color:rgba(196,151,63,.42);
-      background:rgba(196,151,63,.12);
-    }
-
-    .tile.gold .tileIcon,
-    .tile.pay .tileIcon{
-      background:rgba(196,151,63,.15);
-      border-color:rgba(196,151,63,.30);
-    }
-
-    .tile.blue{
-      border-color:rgba(139,140,255,.32);
-      background:rgba(139,140,255,.12);
-    }
-
-    .tile.pay{
-      border-color:rgba(196,151,63,.48);
-      background:linear-gradient(180deg,rgba(196,151,63,.18),rgba(255,255,255,.08));
-    }
-
-    .tile.pay .tileTag{
-      color:var(--gold);
-      border-color:rgba(196,151,63,.35);
-      background:rgba(196,151,63,.12);
-    }
-
-    .tileLogoImg{
-      width:96px;
-      height:96px;
-      object-fit:contain;
-      border-radius:24px;
-      background:#fff;
-      padding:8px;
-      box-shadow:0 12px 26px rgba(0,0,0,.24);
-      border:1px solid rgba(196,151,63,.34);
-      flex:0 0 auto;
-    }
-
-    .blasonTile{
-      min-height:168px!important;
-      border-color:rgba(196,151,63,.62)!important;
-      background:linear-gradient(180deg,rgba(255,240,168,.30),rgba(255,255,255,.15))!important;
-    }
-
-    .blasonTile b{color:#fffdf3!important}
-    .blasonTile span{color:rgba(255,248,220,.94)!important}
-    .blasonTile .tileTag{
-      color:#3a2a05!important;
-      border-color:rgba(196,151,63,.40)!important;
-      background:#fff0a8!important;
-    }
-
-    .metierTileClair{
-      border-color:rgba(255,240,168,.48)!important;
-      background:linear-gradient(180deg,rgba(255,240,168,.22),rgba(255,255,255,.14))!important;
-    }
-
-    .metierTileClair b{color:#fffdf3!important}
-    .metierTileClair span{color:rgba(255,248,220,.92)!important}
-    .metierTileClair .tileIcon{
-      background:#fff7d6!important;
-      color:#171717!important;
-      border-color:rgba(196,151,63,.38)!important;
-      box-shadow:0 10px 22px rgba(0,0,0,.14);
-    }
-
-    /* ══ BOTTOM BAR SIMPLE RESA ══ */
-    .bottomBar{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      height:var(--barH);
-      z-index:100;
-      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
-      background:rgba(6,38,18,.97);
-      border-top:1px solid rgba(196,151,63,.18);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-    }
-
-    .bottomInner{
-      width:min(100%,760px);
-      height:100%;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:repeat(6,1fr);
-      gap:6px;
-    }
-
-    .bottomInner a{
-      min-height:58px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      align-content:center;
-      gap:3px;
-      color:rgba(240,255,245,.56);
-      font-size:11px;
-      font-weight:1000;
-      text-align:center;
-      border:1px solid rgba(255,255,255,.06);
-      background:rgba(255,255,255,.04);
-    }
-
-    .bottomInner a.active{
-      color:#052215;
-      background:linear-gradient(135deg,#22c55e,#fff0a8);
-      border-color:rgba(34,197,94,.32);
-    }
-
-    .bottomInner .bi{
-      font-size:19px;
-      line-height:1;
-    }
-
-    /* ══ RESPONSIVE ══ */
-    @media(max-width:860px){
-      .tileGrid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-    }
-
-    @media(max-width:520px){
-      body{
-        padding:
-          calc(var(--hdrH) + 12px)
-          10px
-          calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);
-        font-size:19px;
-      }
-
-      .topHeader{
-        padding:0 10px;
-        gap:7px;
-      }
-
-      .hdrBack{
-        font-size:13px;
-      }
-
-      .hdrTitle{
-        font-size:11px;
-        letter-spacing:.12em;
-      }
-
-      .hdrPill{
-        font-size:11px;
-        padding:6px 8px;
-        max-width:34vw;
-      }
-
-      h1{
-        font-size:34px;
-      }
-
-      .hubSub{
-        font-size:16px;
-      }
-
-      .tile{
-        min-height:132px;
-        padding:13px;
-      }
-
-      .tileIcon{
-        width:46px;
-        height:46px;
-        font-size:24px;
-      }
-
-      .tileLogoImg{width:92px;height:92px;border-radius:22px}
-
-      .tile b{
-        font-size:19px;
-        line-height:1.05;
-      }
-
-      .tile span{
-        font-size:13.5px;
-        line-height:1.25;
-      }
-
-      .tileTag{
-        font-size:9px;
-        padding:4px 7px;
-      }
-    }
-
-    @media(prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
-      .tile{transition:none}
-    }
+    .tileTop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:24px;flex:0 0 auto}
+    .tag{min-height:25px;display:inline-flex;align-items:center;justify-content:center;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--gold2);font-size:9px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+    .tile b{display:block;font-size:18px;font-weight:1000;line-height:1.05;color:#fff;letter-spacing:-.02em}
+    .tile span{display:block;margin-top:4px;color:var(--muted);font-size:13px;font-weight:1000;line-height:1.24}
+    .primary{border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.15)}
+    .gold{border-color:rgba(196,151,63,.42);background:rgba(196,151,63,.13)}
+    .blue{border-color:rgba(139,140,255,.32);background:rgba(139,140,255,.12)}
+    .pay{border-color:rgba(196,151,63,.48);background:linear-gradient(180deg,rgba(196,151,63,.19),rgba(255,255,255,.08))}
+    .pay .tag{color:var(--gold);border-color:rgba(196,151,63,.35);background:rgba(196,151,63,.12)}
+    .morePanel{display:none;border-radius:24px;border:1px solid rgba(196,151,63,.30);background:rgba(5,31,17,.45);box-shadow:var(--shadow);padding:13px;gap:10px}
+    .morePanel.open{display:grid}
+    .reader{display:grid;gap:10px;padding:13px;border-radius:20px;border:1px solid rgba(250,204,21,.28);background:radial-gradient(360px 160px at 100% 0%,rgba(250,204,21,.16),transparent 70%),rgba(255,255,255,.08)}
+    .reader h2{margin:0;font-size:24px;line-height:1;font-weight:1000;letter-spacing:-.04em}
+    .reader p{margin:0;color:rgba(240,255,245,.82);font-size:14px;line-height:1.38;font-weight:950}
+    .readerBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .readerBtns button,.bottomInner button{min-height:52px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);font-size:14px;font-weight:1000}
+    .readerBtns .play{background:linear-gradient(135deg,#22c55e,#fff0a8);color:#052215;border-color:rgba(34,197,94,.32)}
+    .readerBtns .stop{background:rgba(251,113,133,.12);color:#fecaca;border-color:rgba(251,113,133,.32)}
+    .bottomBar{position:fixed;left:0;right:0;bottom:0;height:var(--barH);z-index:100;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(6,38,18,.97);border-top:1px solid rgba(196,151,63,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+    .bottomInner{width:min(100%,760px);height:100%;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .bottomInner a,.bottomInner button{border-radius:18px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(240,255,245,.80);text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:1000}
+    .bottomInner a.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8)}
+    @media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tile{min-height:118px}.tile b{font-size:18px}}
+    @media(max-width:380px){.grid{grid-template-columns:1fr}.tile{min-height:104px}}
   </style>
 </head>
 
 <body>
   <header class="topHeader">
-    <a class="hdrBack" id="hdrBack" href="./dashboard-pro.html">← Accueil</a>
-    <div class="hdrTitle">Navigation RESA</div>
+    <a class="hdrBack" href="./dashboard-pro.html">← Accueil</a>
+    <div class="hdrTitle">MENU RESA</div>
     <div class="hdrPill warn" id="sessionPill">session…</div>
   </header>
 
   <main class="wrap">
-    <section class="hubHead">
+    <section class="hero">
       <div class="eyebrow">📅 JE RÉSERVE</div>
-      <h1>Toutes tes portes.</h1>
-      <div class="hubSub" id="hubSub">
-        Chaque pavé a un seul geste. Le pro ouvre, agit, revient.
-      </div>
-      <div class="rule">
-        <b>Accueil</b> = vue du jour. <b>Réservations</b> = liste et traitement. Pas de doublon entre dashboard et cockpit.
-      </div>
+      <h1>Choisis ton geste.</h1>
+      <div class="sub" id="hubSub">Réservation, planning, fiche, QR, message client, PAY. Chaque pavé ouvre une action claire.</div>
+      <div class="rule"><b>Règle :</b> RESA prépare la demande. Le pro vérifie le planning, confirme ou refuse. PAY trace seulement l’argent réel.</div>
     </section>
 
-    <section class="group" aria-label="Vue du jour">
-      <div class="groupLabel">Vue du jour</div>
-      <div class="tileGrid">
-        <a class="tile gold blasonTile" href="https://digiylyfe.com/" aria-label="DIGIYLYFE Métiers pro">
-          <div class="tileTop">
-            <img
-              class="tileLogoImg"
-              src="https://digiylyfe.net/wp-content/uploads/2026/05/metier-pro-1.png"
-              alt="DIGIYLYFE — Métiers pro"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="tileTag">DIGIY</div>
-          </div>
-          <div>
-            <b>Métiers pro</b>
-            <span>Le blason commun des portes métier.</span>
-          </div>
+    <section class="group" aria-label="Départ rapide RESA">
+      <div class="label">Départ rapide</div>
+      <div class="grid">
+        <a class="tile primary" href="./dashboard-pro.html">
+          <div class="tileTop"><div class="icon">🏠</div><div class="tag">Accueil</div></div>
+          <div><b>Vue du jour</b><span>Résumé, alertes, notes.</span></div>
         </a>
-
-        <a class="tile primary metierTileClair" id="goDashboard" href="./dashboard-pro.html">
-          <div class="tileTop">
-            <div class="tileIcon">🏠</div>
-            <div class="tileTag">Accueil</div>
-          </div>
-          <div>
-            <b>Accueil RESA</b>
-            <span>Résumé, alertes, notes rapides.</span>
-          </div>
+        <a class="tile gold" href="./oreille.html?mode=reservation">
+          <div class="tileTop"><div class="icon">🎙️</div><div class="tag">Parler</div></div>
+          <div><b>Oreille RESA</b><span>Dicter client, date, heure.</span></div>
         </a>
-
-        <a class="tile blue" id="goNotes" href="./dashboard-pro.html#resaNotes">
-          <div class="tileTop">
-            <div class="tileIcon">✍️</div>
-            <div class="tileTag">Note</div>
-          </div>
-          <div>
-            <b>Note rapide</b>
-            <span>Trace client, acompte ou rappel.</span>
-          </div>
-        </a>
-
-        <a class="tile pay" id="goOreille" href="./oreille.html">
-          <div class="tileTop">
-            <div class="tileIcon">🎙️</div>
-            <div class="tileTag">Oreille</div>
-          </div>
-          <div>
-            <b>Oreille RESA</b>
-            <span>Dicter une demande : client, téléphone, date, heure.</span>
-          </div>
-        </a>
-
-        <a class="tile gold" id="goLexiqueResa" href="https://resa-table-resto.digiylyfe.com/lexique-resa.html?cache=lexique-resa-v2-mobile-20260607">
-          <div class="tileTop">
-            <div class="tileIcon">🇸🇳</div>
-            <div class="tileTag">Wolof</div>
-          </div>
-          <div>
-            <b>Lexique Wolof RESA</b>
-            <span>Réserver, confirmer, date, attente, annulation.</span>
-          </div>
-        </a>
-
-        <a class="tile" id="goQr" href="./qr.html">
-          <div class="tileTop">
-            <div class="tileIcon">📱</div>
-            <div class="tileTag">QR</div>
-          </div>
-          <div>
-            <b>QR client</b>
-            <span>Partager la porte de réservation.</span>
-          </div>
-        </a>
-
-        <a class="tile gold" id="goFiche" href="./fiche.html">
-          <div class="tileTop">
-            <div class="tileIcon">🪪</div>
-            <div class="tileTag">Fiche</div>
-          </div>
-          <div>
-            <b>Ma fiche établissement</b>
-            <span>Présentation, contact, QR client.</span>
-          </div>
-        </a>
-
-        <a class="tile" id="goClaw" href="./claw.html">
-          <div class="tileTop">
-            <div class="tileIcon">💬</div>
-            <div class="tileTag">Aide</div>
-          </div>
-          <div>
-            <b>Messages prêts</b>
-            <span>Réponse, relance, confirmation.</span>
-          </div>
+        <a class="tile blue" href="./cockpit.html">
+          <div class="tileTop"><div class="icon">📥</div><div class="tag">Liste</div></div>
+          <div><b>Réservations</b><span>Traiter demandes et statuts.</span></div>
         </a>
       </div>
     </section>
 
-    <section class="group" aria-label="Traitement">
-      <div class="groupLabel">Traitement</div>
-      <div class="tileGrid">
-        <a class="tile gold" id="goCockpit" href="./cockpit.html">
-          <div class="tileTop">
-            <div class="tileIcon">📥</div>
-            <div class="tileTag">Liste</div>
-          </div>
-          <div>
-            <b>Réservations</b>
-            <span>Clients, statuts, filtres, actions.</span>
-          </div>
+    <section class="group" aria-label="Portes utiles RESA">
+      <div class="label">Portes utiles</div>
+      <div class="grid">
+        <a class="tile" href="./planning.html">
+          <div class="tileTop"><div class="icon">🗓️</div><div class="tag">Dates</div></div>
+          <div><b>Planning</b><span>Créneaux, arrivées, service.</span></div>
         </a>
-
-        <a class="tile" id="goPlanning" href="./planning.html">
-          <div class="tileTop">
-            <div class="tileIcon">🗓️</div>
-            <div class="tileTag">Planning</div>
-          </div>
-          <div>
-            <b>Planning</b>
-            <span>Créneaux, arrivées, service.</span>
-          </div>
+        <a class="tile gold" href="./fiche.html">
+          <div class="tileTop"><div class="icon">🪪</div><div class="tag">Fiche</div></div>
+          <div><b>Fiche établissement</b><span>Présenter et rassurer.</span></div>
         </a>
-
-        <a class="tile" id="goEtablissement" href="./etablissement.html">
-          <div class="tileTop">
-            <div class="tileIcon">🏢</div>
-            <div class="tileTag">Étab.</div>
-          </div>
-          <div>
-            <b>Établissement</b>
-            <span>Horaires, règles, infos utiles.</span>
-          </div>
+        <a class="tile" href="./qr.html">
+          <div class="tileTop"><div class="icon">🔳</div><div class="tag">QR</div></div>
+          <div><b>QR client</b><span>Partager la porte réservation.</span></div>
         </a>
-
-        <a class="tile gold" id="goRythme" href="./rythme.html">
-          <div class="tileTop">
-            <div class="tileIcon">🧭</div>
-            <div class="tileTag">Rythme</div>
-          </div>
-          <div>
-            <b>Mes créneaux métier</b>
-            <span>Restaurant, santé, beauté, garage : chaque activité a son tempo.</span>
-          </div>
+        <a class="tile pay" href="https://pay.digiylyfe.com/">
+          <div class="tileTop"><div class="icon">💰</div><div class="tag">PAY</div></div>
+          <div><b>Mon argent</b><span>Acomptes, soldes, restes.</span></div>
         </a>
-
-        <a class="tile pay" id="goPay" href="https://pro-pay.digiylyfe.com/admin.html">
-          <div class="tileTop">
-            <div class="tileIcon">💰</div>
-            <div class="tileTag">PAY</div>
-          </div>
-          <div>
-            <b>Mon argent</b>
-            <span>Acomptes, soldes, restes.</span>
-          </div>
+        <a class="tile gold" href="https://resa-table-resto.digiylyfe.com/lexique-resa.html?cache=lexique-resa-v2-mobile-20260607">
+          <div class="tileTop"><div class="icon">🇸🇳</div><div class="tag">Wolof</div></div>
+          <div><b>Wolof RESA</b><span>Confirmer, attendre, annuler.</span></div>
+        </a>
+        <a class="tile blue" href="./rythme.html">
+          <div class="tileTop"><div class="icon">🧭</div><div class="tag">Rythme</div></div>
+          <div><b>Créneaux métier</b><span>Adapter selon l’activité.</span></div>
         </a>
       </div>
     </section>
 
-    <section class="group" aria-label="Accès">
-      <div class="groupLabel">Accès · session</div>
-      <div class="tileGrid">
-        <a class="tile blue" id="goSession" href="./session.html">
-          <div class="tileTop">
-            <div class="tileIcon">🛡️</div>
-            <div class="tileTag">Session</div>
-          </div>
-          <div>
-            <b>Ma session</b>
-            <span>État d’accès, nettoyage local.</span>
-          </div>
-        </a>
-
-        <a class="tile" id="goPin" href="./pin.html">
-          <div class="tileTop">
-            <div class="tileIcon">🔐</div>
-            <div class="tileTag">PIN</div>
-          </div>
-          <div>
-            <b>Mon accès</b>
-            <span>Rouvrir proprement la session.</span>
-          </div>
-        </a>
-
-        <a class="tile" id="goGoPin" href="./pin.html">
-          <div class="tileTop">
-            <div class="tileIcon">🛂</div>
-            <div class="tileTag">Entrée</div>
-          </div>
-          <div>
-            <b>Retour accès</b>
-            <span>Chemin court vers le PIN.</span>
-          </div>
-        </a>
-
-        <a class="tile" id="goSite" href="https://digiylyfe.com/">
-          <div class="tileTop">
-            <div class="tileIcon">🌍</div>
-            <div class="tileTag">Site</div>
-          </div>
-          <div>
-            <b>Site DIGIY</b>
-            <span>Maison publique DIGIYLYFE.</span>
-          </div>
-        </a>
+    <section class="morePanel" id="morePanel" aria-label="Plus RESA">
+      <div class="reader">
+        <h2>🎧 Comprendre RESA</h2>
+        <p>RESA aide à préparer une demande : client, téléphone, date, heure, nombre, service et statut. Le pro vérifie le planning avant toute réponse.</p>
+        <div class="readerBtns">
+          <button class="play" id="voicePlay" type="button">▶ Écouter</button>
+          <button class="stop" id="voiceStop" type="button">⏹ Stop</button>
+        </div>
+      </div>
+      <div class="grid">
+        <a class="tile" href="./claw.html"><div class="tileTop"><div class="icon">💬</div><div class="tag">Messages</div></div><div><b>Messages prêts</b><span>Réponse, relance, confirmation.</span></div></a>
+        <a class="tile" href="./etablissement.html"><div class="tileTop"><div class="icon">🏢</div><div class="tag">Infos</div></div><div><b>Établissement</b><span>Horaires, règles, utiles.</span></div></a>
+        <a class="tile" href="./dashboard-pro.html#resaNotes"><div class="tileTop"><div class="icon">✍️</div><div class="tag">Note</div></div><div><b>Note rapide</b><span>Trace client ou rappel.</span></div></a>
+        <a class="tile blue" href="./session.html"><div class="tileTop"><div class="icon">🛡️</div><div class="tag">Session</div></div><div><b>Ma session</b><span>État d’accès, nettoyage local.</span></div></a>
+        <a class="tile" href="./pin.html"><div class="tileTop"><div class="icon">🔐</div><div class="tag">PIN</div></div><div><b>Mon accès</b><span>Rouvrir la session.</span></div></a>
+        <a class="tile" href="https://digiylyfe.com/"><div class="tileTop"><div class="icon">🌍</div><div class="tag">DIGIY</div></div><div><b>Site DIGIY</b><span>Maison publique.</span></div></a>
       </div>
     </section>
   </main>
 
   <nav class="bottomBar" aria-label="Navigation rapide RESA">
     <div class="bottomInner">
-      <a class="active" href="./hub.html"><span class="bi">🧭</span><span>HUB</span></a>
-      <a href="./dashboard-pro.html"><span class="bi">🏠</span><span>Accueil</span></a>
-      <a href="./cockpit.html"><span class="bi">📥</span><span>Réserv.</span></a>
-      <a href="./planning.html"><span class="bi">🗓️</span><span>Planning</span></a>
-      <a href="./oreille.html"><span class="bi">🎙️</span><span>Oreille</span></a>
-      <a href="https://resa-table-resto.digiylyfe.com/lexique-resa.html?cache=lexique-resa-v2-mobile-20260607"><span class="bi">🇸🇳</span><span>Wolof</span></a>
+      <a class="active" href="./hub.html"><span>🧭</span><span>Menu</span></a>
+      <button id="moreBtn" type="button"><span>➕</span><span>Plus</span></button>
     </div>
   </nav>
-
-  <!-- ══ DIGIY VOICE — HUB RESA ══ -->
-  <style>
-    .audioCoachFab{
-      position:fixed;
-      right:14px;
-      top:calc(var(--hdrH) + 12px + env(safe-area-inset-top,0px));
-      z-index:90;
-      min-height:52px;
-      min-width:52px;
-      max-width:148px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(196,151,63,.42);
-      background:linear-gradient(135deg,rgba(196,151,63,.96),rgba(180,135,50,.96));
-      color:#1a0e00;
-      box-shadow:0 16px 34px rgba(0,0,0,.22);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:7px;
-      font-size:14px;
-      font-weight:1000;
-      font-family:inherit;
-      cursor:pointer;
-    }
-    .audioCoachFab .ico{font-size:20px;line-height:1}
-    @media(max-width:520px){
-      .audioCoachFab span:not(.ico){display:none}
-      .audioCoachFab{right:10px;min-width:48px;min-height:48px;padding:9px 10px}
-    }
-
-    .audioCoachPanel{
-      position:fixed;
-      left:12px;right:12px;
-      top:calc(var(--hdrH) + 72px + env(safe-area-inset-top,0px));
-      z-index:89;
-      width:min(calc(100% - 24px),680px);
-      margin:0 auto;
-      display:none;
-      border-radius:24px;
-      border:1px solid rgba(196,151,63,.32);
-      background:
-        radial-gradient(480px 180px at 100% 0%,rgba(196,151,63,.16),transparent 72%),
-        linear-gradient(180deg,rgba(8,50,24,.98),rgba(5,33,16,.98));
-      box-shadow:0 22px 56px rgba(0,0,0,.32);
-      padding:16px;
-    }
-    .audioCoachPanel.open{display:block}
-    .audioCoachTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-    .audioCoachKicker{color:#fff0a8;font-size:11px;font-weight:1000;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
-    .audioCoachTitle{margin:0;font-size:22px;line-height:1.06;font-weight:1000;letter-spacing:-.03em;color:#fff}
-    .audioCoachText{margin-top:10px;color:rgba(240,255,245,.82);font-size:15px;font-weight:900;line-height:1.45}
-    .audioCoachClose{width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#f0fff5;font-size:18px;font-weight:1000;cursor:pointer;font-family:inherit}
-    .audioCoachActions{display:grid;gap:9px;grid-template-columns:1fr 1fr;margin-top:12px}
-    .audioCoachActions button{min-height:46px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#f0fff5;font-weight:1000;font-size:14px;font-family:inherit;cursor:pointer}
-    .audioCoachActions button.primary{background:linear-gradient(135deg,var(--gold),#b38a30);color:#1a0e00;border-color:transparent}
-    .audioCoachHint{margin-top:10px;padding:11px;border-radius:16px;border:1px dashed rgba(255,255,255,.20);background:rgba(255,255,255,.05);color:rgba(240,255,245,.72);font-size:13px;font-weight:900;line-height:1.38}
-  </style>
-
-  <button class="audioCoachFab" id="digiyAudioFab" type="button" aria-label="Écouter DIGIY">
-    <span class="ico">🎧</span><span>Écouter</span>
-  </button>
-
-  <section class="audioCoachPanel" id="digiyAudioPanel" aria-label="Lecteur DIGIY RESA">
-    <div class="audioCoachTop">
-      <div>
-        <div class="audioCoachKicker">Lecteur DIGIY · Je réserve</div>
-        <h2 class="audioCoachTitle">DIGIY explique le geste</h2>
-      </div>
-      <button class="audioCoachClose" id="digiyAudioClose" type="button" aria-label="Fermer">×</button>
-    </div>
-    <div class="audioCoachText" id="digiyAudioText">
-      Toutes tes portes sont là. Le pavé Lexique Wolof RESA aide le pro à accueillir, confirmer, demander la date et gérer l’attente. Mes créneaux métier ouvre le rythme de réservation. Chaque pavé a un seul geste. Ouvre, agis, reviens.
-    </div>
-    <div class="audioCoachActions">
-      <button class="primary" id="digiyAudioPlay" type="button">▶ Écouter</button>
-      <button id="digiyAudioStop" type="button">⏹ Stop</button>
-    </div>
-    <div class="audioCoachHint">Doctrine : une voix courte vaut mieux qu'un long mode d'emploi.</div>
-  </section>
-
-  <script>
-  (function(){
-    var SPEAK = "Hub RESA ouvert. Toutes tes portes sont ici. Accueil pour la vue du jour. Oreille RESA pour dicter une demande avec client, téléphone, date, heure et nombre. Lexique Wolof RESA pour accueillir, confirmer, demander la date, gérer l’attente ou l’annulation avec des phrases terrain. Réservations pour la liste et le traitement. Planning pour les créneaux. Mes créneaux métier pour choisir le rythme de réservation selon l’activité. QR pour partager ta porte client. Chaque pavé a un seul geste : ouvre, agis, reviens.";
-
-    var fab   = document.getElementById("digiyAudioFab");
-    var panel = document.getElementById("digiyAudioPanel");
-    var close = document.getElementById("digiyAudioClose");
-    var play  = document.getElementById("digiyAudioPlay");
-    var stop  = document.getElementById("digiyAudioStop");
-
-    function openPanel(){ panel.classList.add("open"); }
-    function closePanel(){ panel.classList.remove("open"); stopSpeech(); }
-
-    function canSpeak(){ return "speechSynthesis" in window; }
-
-    function stopSpeech(){
-      if(canSpeak()) window.speechSynthesis.cancel();
-    }
-
-    function digiySpeakText(text){
-      return String(text || "")
-        .replace(/\bWave\b/g, "Ouève")
-        .replace(/\bWouève\b/g, "Ouève")
-        .replace(/\bWhatsApp\b/g, "Ouatsap")
-        .replace(/\bDIGIYLYFE\b/g, "diji laïfe")
-        .replace(/\bRESA\b/g, "réservation")
-        .replace(/\bRÉSA\b/g, "réservation");
-    }
-
-    function speak(){
-      if(!canSpeak()) return;
-      stopSpeech();
-      var u = new SpeechSynthesisUtterance(digiySpeakText(SPEAK));
-      u.lang = "fr-FR";
-      u.rate = 0.88;
-      u.pitch = 1.02;
-      window.speechSynthesis.speak(u);
-    }
-
-    fab.addEventListener("click", function(){
-      panel.classList.contains("open") ? closePanel() : openPanel();
-    });
-    close.addEventListener("click", closePanel);
-    play.addEventListener("click", speak);
-    stop.addEventListener("click", stopSpeech);
-    window.addEventListener("pagehide", stopSpeech);
-  })();
-  </script>
-  <!-- ══ FIN DIGIY VOICE — HUB RESA ══ -->
 
   <script>
     (() => {
       "use strict";
-
-      const SENSITIVE_KEYS = [
-        "phone","tel","p_phone","owner_phone","owner_id","slug",
-        "resa_tel","resa_phone","business_phone","whatsapp",
-        "module","return","redirect","redirect_url","url","from","v"
-      ];
-
+      const SENSITIVE_KEYS = ["phone","tel","p_phone","owner_phone","owner_id","slug","resa_tel","resa_phone","business_phone","whatsapp","module","return","redirect","redirect_url","url","from","v","pin","token","session_token"];
       const $ = id => document.getElementById(id);
-
-      function normSlug(v){
-        return String(v || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g,"-")
-          .replace(/[^a-z0-9-]/g,"")
-          .replace(/-+/g,"-")
-          .replace(/^-|-$/g,"");
-      }
-
-      function isSensitiveSlug(v){
-        return /\d{7,}/.test(String(v || ""));
-      }
 
       function cleanVisibleUrl(){
         try{
           const url = new URL(location.href);
           let changed = false;
-
-          SENSITIVE_KEYS.forEach((key) => {
-            if(url.searchParams.has(key)){
-              url.searchParams.delete(key);
-              changed = true;
-            }
-          });
-
-          const s = normSlug(url.searchParams.get("slug") || "");
-          if(s && isSensitiveSlug(s)){
-            url.searchParams.delete("slug");
-            changed = true;
-          }
-
-          if(changed){
-            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-          }
-        }catch(_){}
-      }
-
-      function cleanInternalLinks(){
-        try{
-          document.querySelectorAll("a[href]").forEach((link) => {
-            const href = link.getAttribute("href") || "";
-            if(!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
-
-            const url = new URL(href, location.href);
-            if(url.origin !== location.origin) return;
-
-            SENSITIVE_KEYS.forEach((key) => url.searchParams.delete(key));
-
-            const s = normSlug(url.searchParams.get("slug") || "");
-            if(s && isSensitiveSlug(s)){
-              url.searchParams.delete("slug");
-            }
-
-            const file = url.pathname.split("/").pop() || "index.html";
-            link.setAttribute("href","./" + file + (url.search || "") + (url.hash || ""));
-          });
+          SENSITIVE_KEYS.forEach(key => { if(url.searchParams.has(key)){ url.searchParams.delete(key); changed = true; } });
+          if(changed) history.replaceState({}, document.title, url.pathname + url.search + url.hash);
         }catch(_){}
       }
 
@@ -953,68 +207,57 @@
         try{
           const guard = window.DIGIY_GUARD;
           if(!guard) return {};
-
           if(typeof guard.ready === "function"){
             const out = guard.ready({ redirect:false, preserve_validation:true });
             if(out && typeof out.then === "function") await out;
-          }else if(guard.ready && typeof guard.ready.then === "function"){
-            await guard.ready;
-          }
-
-          if(typeof guard.getSession === "function"){
-            return guard.getSession() || guard.state || {};
-          }
-
+          }else if(guard.ready && typeof guard.ready.then === "function"){ await guard.ready; }
+          if(typeof guard.getSession === "function") return guard.getSession() || guard.state || {};
           return guard.state || {};
-        }catch(e){
-          console.warn("[RESA HUB] guard", e);
-          return {};
-        }
+        }catch(e){ console.warn("[RESA MENU]", e); return {}; }
       }
 
       function updatePill(state){
-        const el = $("sessionPill");
-        if(!el) return;
-
+        const el = $("sessionPill"); if(!el) return;
         const ok = !!(state && (state.access_ok || state.access || state.pin_session_ok));
-
-        if(ok){
-          el.textContent = state.pin_session_ok ? "session ouverte" : "accès ouvert";
-          el.className = "hdrPill ok";
-          return;
-        }
-
-        el.textContent = "accès à vérifier";
-        el.className = "hdrPill warn";
+        el.textContent = ok ? (state.pin_session_ok ? "session ouverte" : "accès ouvert") : "accès à vérifier";
+        el.className = "hdrPill " + (ok ? "ok" : "warn");
       }
 
-      function updateHubSub(state){
-        const el = $("hubSub");
-        if(!el) return;
-        const ok = !!(state && (state.access_ok || state.access || state.pin_session_ok));
-        el.textContent = ok
-          ? "Compte reconnu. Chaque pavé a un seul geste. Le pro ouvre, agit, revient."
-          : "Accès à vérifier. Les portes restent visibles, mais le PIN protège le travail.";
+      function toggleMore(){
+        const panel = $("morePanel");
+        if(!panel) return;
+        panel.classList.toggle("open");
+        if(panel.classList.contains("open")) panel.scrollIntoView({behavior:"smooth", block:"start"});
       }
+
+      const VOICE_TEXT = "Hub RESA ouvert. Accueil pour la vue du jour. Oreille RESA pour dicter une demande avec client, téléphone, date, heure et nombre. Réservations pour la liste. Planning pour les créneaux. Fiche et QR pour la porte client. PAY garde les acomptes, les soldes et les restes. RESA prépare, le pro confirme.";
+      function speak(){
+        if(!("speechSynthesis" in window)) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(VOICE_TEXT);
+        u.lang = "fr-FR"; u.rate = 0.86; u.pitch = 1.02; u.volume = 1;
+        window.speechSynthesis.speak(u);
+      }
+      function stop(){ if("speechSynthesis" in window) window.speechSynthesis.cancel(); }
 
       async function boot(){
         cleanVisibleUrl();
-        cleanInternalLinks();
-
         const state = await waitGuard();
         updatePill(state || {});
-        updateHubSub(state || {});
-
         cleanVisibleUrl();
-        cleanInternalLinks();
       }
 
+      $("moreBtn")?.addEventListener("click", toggleMore);
+      $("voicePlay")?.addEventListener("click", speak);
+      $("voiceStop")?.addEventListener("click", stop);
+      window.addEventListener("pagehide", stop);
       boot();
     })();
   </script>
   <script src="./assets/js/action-digiy-pro-orient.js?v=action-digiy-pro-orient-20260606" defer></script>
 </body>
 </html>
+
 
 
 
