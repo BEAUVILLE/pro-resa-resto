@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>JE RÉSERVE — Planning horaire RESA V2</title>
+  <title>JE RÉSERVE — Planning multi-métier RESA V2</title>
   <meta name="theme-color" content="#1e7a46"/>
-  <meta name="description" content="DIGIY RESA PRO V2 — planning vivant en ouverture, réservation directe, menu secondaire caché."/>
+  <meta name="description" content="DIGIY RESA PRO V2 — planning multi-métier en ouverture, durées variables, réservation directe, menu secondaire caché."/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
-  <meta name="digiy-build" content="resa-v2-planning-horaire-public-sync-20260613"/>
+  <meta name="digiy-build" content="resa-v2-planning-multimetier-duree-public-sync-20260613"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -97,13 +97,13 @@
         <div class="heroText">
           <div class="eyebrow">RESA V2 · LE PRO CONFIRME</div>
           <div class="h1">Réserver maintenant.</div>
-          <p id="bizLine">Client, date, heure, nombre, statut. Le planning est devant.</p>
+          <p id="bizLine">Client, date, heure de début, durée, quantité/personnes, statut. Multi-métier.</p>
         </div>
         <div class="dateBox"><span>Aujourd’hui</span><b id="todayLabel">—</b></div>
       </div>
 
       <div class="panel">
-        <div class="panelTitle"><b>🗓️ Planning horaire</b><span id="selectedTimeLabel">touche une heure</span></div>
+        <div class="panelTitle"><b>🗓️ Planning multi-métier</b><span id="selectedTimeLabel">touche un début</span></div>
         <div class="dateTools" aria-label="Choisir le jour du planning">
           <button type="button" onclick="RESA.shiftDate(-1)">← Jour</button>
           <button type="button" onclick="RESA.setToday()">Aujourd’hui</button>
@@ -112,7 +112,7 @@
           <button type="button" onclick="RESA.setTomorrow()">Demain</button>
           <button type="button" onclick="syncPublicBookings(false)">↻ Public</button>
         </div>
-        <div class="slotLegend"><span>Horaires visibles</span><b>08:00 → 23:00</b></div>
+        <div class="slotLegend"><span>Débuts visibles · durée libre</span><b>08:00 → 23:00 · pas imposé à 1h</b></div>
         <div class="slots" id="slotGrid"></div>
       </div>
     </section>
@@ -121,7 +121,7 @@
       <div class="stats" aria-label="Température RESA">
         <div class="stat"><span>Réservations</span><b id="statCount">0</b></div>
         <div class="stat"><span>Confirmées</span><b id="statOk">0</b></div>
-        <div class="stat"><span>Personnes</span><b id="statGuests">0</b></div>
+        <div class="stat"><span>Quantité</span><b id="statGuests">0</b></div>
         <div class="stat gold"><span>Acomptes</span><b id="statDeposit">0</b></div>
       </div>
 
@@ -133,22 +133,23 @@
   </main>
 
   <section class="payBar" aria-label="Ajouter une réservation">
-    <div class="barBox"><span>Heure</span><b id="barTime">—</b></div>
+    <div class="barBox"><span>Début</span><b id="barTime">—</b></div>
     <div class="barBox"><span>Client</span><b id="barClient">—</b></div>
     <button class="validate" type="button" onclick="openQuickAdd()">➕ Ajouter réservation</button>
   </section>
 
   <div class="overlay" id="quickOverlay" aria-hidden="true">
     <div class="ovBox">
-      <div class="ovTop"><div><div class="ovTitle">Nouvelle réservation</div><div style="color:var(--muted);font-size:13px;font-weight:1000;margin-top:6px">Un geste terrain : client, téléphone, moment, nombre. Le pro confirme.</div></div><button class="close" onclick="closeQuickAdd()">×</button></div>
+      <div class="ovTop"><div><div class="ovTitle">Nouvelle réservation</div><div style="color:var(--muted);font-size:13px;font-weight:1000;margin-top:6px">Un geste terrain : client, téléphone, début, durée, quantité. Le pro confirme.</div></div><button class="close" onclick="closeQuickAdd()">×</button></div>
       <div class="sectionBox">
         <div class="quickForm">
           <input class="input" id="clientName" placeholder="Nom client" autocomplete="name"/>
           <input class="input" id="clientPhone" placeholder="Téléphone" inputmode="tel" autocomplete="tel"/>
           <input class="input" id="bookingDate" type="date"/>
           <input class="input" id="bookingTime" type="time"/>
-          <input class="input" id="bookingGuests" type="number" min="1" step="1" placeholder="Nombre"/>
-          <select class="select" id="bookingService"><option>Table</option><option>Chambre</option><option>Rendez-vous</option><option>Service</option><option>Visite</option></select>
+          <select class="select" id="bookingDuration" aria-label="Durée de la réservation"><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1h</option><option value="90">1h30</option><option value="120">2h</option><option value="180">3h</option><option value="240">4h</option><option value="480">Journée</option><option value="1440">Nuit / 24h</option></select>
+          <input class="input" id="bookingGuests" type="number" min="1" step="1" placeholder="Pers./unités"/>
+          <select class="select" id="bookingService"><option>Rendez-vous</option><option>Table</option><option>Chambre / nuitée</option><option>Salon / beauté</option><option>Consultation</option><option>Visite</option><option>Location</option><option>Atelier / cours</option><option>Service libre</option></select>
           <select class="select" id="bookingStatus"><option>Demande</option><option>Confirmée</option><option>Acompte reçu</option><option>Annulée</option></select>
           <input class="input" id="bookingDeposit" type="number" min="0" step="500" placeholder="Acompte FCFA"/>
           <textarea class="area wide" id="bookingNote" placeholder="Note : préférence, table, chambre, rappel…"></textarea>
@@ -165,7 +166,7 @@
       <div class="menuGrid">
         <button class="menuCard gold" onclick="showPanel('admin')"><span class="ico">🏢</span><div><b>Admin établissement</b><span>Nom, activité, téléphone, adresse.</span></div></button>
         <button class="menuCard" onclick="showPanel('all')"><span class="ico">📚</span><div><b>Toutes les réservations</b><span>Historique et statuts.</span></div></button>
-        <button class="menuCard" onclick="showPanel('services')"><span class="ico">🧭</span><div><b>Services / Créneaux</b><span>Types, horaires, rythme.</span></div></button>
+        <button class="menuCard" onclick="showPanel('services')"><span class="ico">🧭</span><div><b>Services / Durées</b><span>Multi-métier, durées variables.</span></div></button>
         <button class="menuCard gold" onclick="showPanel('pay')"><span class="ico">💰</span><div><b>PAY RESA</b><span>Acomptes, restes, argent réel.</span></div></button>
         <button class="menuCard" onclick="showPanel('qr')"><span class="ico">🔳</span><div><b>Fiche / QR</b><span>Porte client et partage.</span></div></button>
         <button class="menuCard" onclick="showPanel('settings')"><span class="ico">🛡️</span><div><b>Session / Secours</b><span>Export, import, anciens liens.</span></div></button>
@@ -175,11 +176,12 @@
         <h2>🏢 Admin établissement</h2>
         <div class="adminGrid">
           <input class="input" id="bizName" placeholder="Nom établissement"/>
-          <input class="input" id="bizActivity" placeholder="Activité : resto, salon, logement…"/>
+          <input class="input" id="bizActivity" placeholder="Activité : resto, salon, logement, visite…"/>
           <input class="input" id="bizOwner" placeholder="Responsable"/>
           <input class="input" id="bizPhone" placeholder="Téléphone établissement" inputmode="tel"/>
           <input class="input full" id="bizAddress" placeholder="Adresse / quartier"/>
           <input class="input" id="bizCity" placeholder="Ville / zone"/>
+          <input class="input" id="bizUnitLabel" placeholder="Unité : personnes, nuits, places, clients…"/>
           <input class="input" id="bizPublic" placeholder="Lien fiche publique"/>
         </div>
         <button class="validate" style="min-height:54px" onclick="saveBusinessFromForm()">Enregistrer admin</button>
@@ -192,12 +194,12 @@
       </div>
 
       <div class="sectionBox" id="panelServices" hidden>
-        <h2>🧭 Services / Créneaux</h2>
+        <h2>🧭 Services / Durées</h2>
         <div class="rows">
-          <div class="row"><div><b>Table</b><br><span>Réservation restaurant ou lieu.</span></div><span>actif</span></div>
-          <div class="row"><div><b>Chambre</b><br><span>Logement, arrivée, nuit.</span></div><span>actif</span></div>
-          <div class="row"><div><b>Rendez-vous</b><br><span>Salon, service, visite.</span></div><span>actif</span></div>
-          <div class="row"><div><b>Créneaux</b><br><span>08:00 à 23:00 par défaut, modifiable plus tard.</span></div><span>V2</span></div>
+          <div class="row"><div><b>Table</b><br><span>Restaurant, lounge, événement — durée au choix.</span></div><span>actif</span></div>
+          <div class="row"><div><b>Chambre / nuitée</b><br><span>Logement, arrivée, nuit ou séjour.</span></div><span>actif</span></div>
+          <div class="row"><div><b>Rendez-vous</b><br><span>Salon, soin, consultation, visite, service.</span></div><span>actif</span></div>
+          <div class="row"><div><b>Durée variable</b><br><span>15 min, 30 min, 1h, 2h, journée, nuit : RESA ne force pas 1h.</span></div><span>V2</span></div>
         </div>
       </div>
 
@@ -249,12 +251,12 @@
       const LS_BOOKINGS="digiy_resa_v2_bookings";
       const LS_BUSINESS="digiy_resa_v2_business";
       const SENSITIVE_KEYS=["phone","tel","p_phone","owner_phone","owner_id","slug","resa_tel","resa_phone","business_phone","whatsapp","module","return","redirect","redirect_url","url","from","v","pin","token","session_token"];
-      const defaultBusiness={name:"JE RÉSERVE",activity:"Réservation",owner:"",phone:"",address:"",city:"",publicLink:"https://resa-table-resto.digiylyfe.com/"};
+      const defaultBusiness={name:"JE RÉSERVE",activity:"Réservation multi-métier",owner:"",phone:"",address:"",city:"",unitLabel:"personne(s)",publicLink:"https://resa-table-resto.digiylyfe.com/"};
       let selectedDate=todayKey();
       let selectedTime="";
       let business={...defaultBusiness,...load(LS_BUSINESS,{})};
       let bookings=load(LS_BOOKINGS, seedBookings());
-      const slotHours=["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"];
+      const slotHours=(()=>{const out=[];for(let m=8*60;m<=23*60;m+=30){out.push(`${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`)}return out;})();
 
       function load(k,f){try{const raw=localStorage.getItem(k);return raw?JSON.parse(raw):f}catch(e){return f}}
       function save(){localStorage.setItem(LS_BOOKINGS,JSON.stringify(bookings));localStorage.setItem(LS_BUSINESS,JSON.stringify(business));}
@@ -308,6 +310,21 @@
         try{const d=new Date(x); if(!isNaN(d))return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;}catch(_){ }
         return "19:00";
       }
+      function timeToMin(t){
+        const m=String(t||"").match(/(\d{1,2}):(\d{2})/); if(!m)return 0;
+        return Math.max(0,Math.min(24*60,Number(m[1])*60+Number(m[2])));
+      }
+      function minToTime(m){m=Math.max(0,Math.min(24*60,Math.round(Number(m)||0)));return `${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`;}
+      function durationMins(b){return Math.max(5,Math.round(Number(b&&b.duration)||60)||60);}
+      function endTime(b){return minToTime(timeToMin(b&&b.time)+durationMins(b));}
+      function timeRange(b){const t=b&&b.time?b.time:"—";return `${t} → ${endTime(b)}`;}
+      function durationFromRemote(start,end,raw){
+        const n=Math.round(Number(raw)||0); if(n>0)return n;
+        const a=timeOnly(start), z=timeOnly(end); const da=timeToMin(a), dz=timeToMin(z);
+        if(dz>da)return dz-da;
+        return 60;
+      }
+      function unitLabel(){return String(business.unitLabel||"personne(s)").trim()||"personne(s)";}
       function statusFromRemote(v){
         const s=String(v||"").toLowerCase();
         if(/annul|cancel|refus/.test(s)) return "Annulée";
@@ -323,6 +340,8 @@
         const client=pick(row,["client_name","customer_name","name","full_name","nom","client","customer"]);
         const phone=pick(row,["client_phone","customer_phone","phone","tel","telephone","whatsapp","phone_number"]);
         const start=pick(row,["starts_at","start_at","start_time","datetime","booking_at","reservation_at"]);
+        const end=pick(row,["ends_at","end_at","end_time","finish_time","reservation_end","booking_end"]);
+        const rawDuration=pick(row,["duration","duration_min","duration_minutes","minutes","duree","duree_minutes","length_minutes"]);
         const date=pick(row,["booking_date","reservation_date","date","day","resa_date"]);
         const time=pick(row,["booking_time","reservation_time","time","hour","resa_time"]);
         const note=pick(row,["note","message","details","comment","commentaire","special_request"]);
@@ -338,6 +357,7 @@
           client:String(client||"Client public").trim(),
           phone:String(phone||"").trim(),
           guests:Math.max(1,Math.round(Number(guests||1)||1)),
+          duration:durationFromRemote(start||time,end,rawDuration),
           service:String(service||"Réservation publique").trim(),
           status:statusFromRemote(pick(row,["status","state","etat","booking_status","reservation_status"])),
           deposit:Math.max(0,Math.round(Number(deposit||0)||0)),
@@ -385,13 +405,13 @@
         const m=mergeRemote(found.rows,found.source);
         if(!silent)toast(`${m.added} nouvelle(s) · ${m.updated} mise(s) à jour`);
       }
-      function seedBookings(){return [{id:uid(),date:todayKey(),time:"19:00",client:"Client test",phone:"",guests:2,service:"Table",status:"Demande",deposit:0,note:"Exemple à remplacer"}];}
+      function seedBookings(){return [{id:uid(),date:todayKey(),time:"19:00",duration:90,client:"Client test",phone:"",guests:2,service:"Rendez-vous",status:"Demande",deposit:0,note:"Exemple multi-métier à remplacer"}];}
       function esc(s){return String(s??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));}
       function toast(msg){const el=$("toast"); if(!el)return; el.textContent=msg; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),1800);}
       function cleanVisibleUrl(){try{const url=new URL(location.href);let changed=false;SENSITIVE_KEYS.forEach(k=>{if(url.searchParams.has(k)){url.searchParams.delete(k);changed=true;}});if(changed) history.replaceState({},document.title,url.pathname+url.search+url.hash);}catch(_){}}
       function dayBookings(){return bookings.filter(b=>b.date===selectedDate).sort((a,b)=>(a.time||"").localeCompare(b.time||""));}
       function stats(){const ds=dayBookings();const ok=ds.filter(x=>x.status==="Confirmée"||x.status==="Acompte reçu").length;const guests=ds.reduce((s,x)=>s+(Number(x.guests)||0),0);const deposit=ds.reduce((s,x)=>s+(Number(x.deposit)||0),0);return {count:ds.length,ok,guests,deposit};}
-      function slotItems(t){return dayBookings().filter(b=>b.time===t);}
+      function slotItems(t){const m=timeToMin(t);return dayBookings().filter(b=>{const a=timeToMin(b.time);const z=a+durationMins(b);return m>=a&&m<z;});}
       function slotCount(t){return slotItems(t).length;}
       function addDays(dateStr,n){const d=new Date((dateStr||todayKey())+"T12:00:00"); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10);}
       function setPlanningDate(v){selectedDate=dateOnly(v||todayKey()); const d=$("bookingDate"); if(d)d.value=selectedDate; render();}
@@ -405,7 +425,7 @@
         const d=new Date(selectedDate+"T12:00:00");
         $("todayLabel").textContent=d.toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
         if($("planningDate")) $("planningDate").value=selectedDate;
-        $("selectedTimeLabel").textContent=selectedTime?`heure ${selectedTime}`:"touche une heure";
+        $("selectedTimeLabel").textContent=selectedTime?`début ${selectedTime}`:"touche un début";
         $("barTime").textContent=selectedTime||"—";
         $("barClient").textContent=($("clientName")?.value||"").trim()||"—";
         const s=stats();
@@ -415,20 +435,21 @@
           const n=items.length;
           const people=items.reduce((sum,b)=>sum+(Number(b.guests)||0),0);
           const first=items[0]||{};
-          return `<button class="slot${selectedTime===t?' active':''}${n?' busy':''}" onclick="RESA.setSelectedTime('${t}')"><div class="slotHead"><b>${t}</b><em>${n?'occupé':'libre'}</em></div><span>${n? n+' résa · '+fmt(people)+' pers.':'Libre'}</span><small>${n? esc(first.client||'Client')+' · '+esc(first.status||'Demande'):'Toucher pour réserver'}</small></button>`;
+          return `<button class="slot${selectedTime===t?' active':''}${n?' busy':''}" onclick="RESA.setSelectedTime('${t}')"><div class="slotHead"><b>${t}</b><em>${n?'pris':'libre'}</em></div><span>${n? n+' résa · '+fmt(people)+' '+esc(unitLabel()):'Début libre'}</span><small>${n? esc(first.client||'Client')+' · '+timeRange(first)+' · '+esc(first.status||'Demande'):'Toucher pour démarrer'}</small></button>`;
         }).join("");
         const list=dayBookings();
-        $("bookingList").innerHTML=list.length?list.map(bookingTpl).join(""):`<div class="empty">Aucune réservation aujourd’hui.<br>Touche une heure puis ajoute le client.</div>`;
+        $("bookingList").innerHTML=list.length?list.map(bookingTpl).join(""):`<div class="empty">Aucune réservation aujourd’hui.<br>Touche un début, choisis la durée, puis ajoute le client.</div>`;
         renderPanels();
       }
       function bookingTpl(b){return `<article class="booking">
-        <div class="bookingTop"><div><div class="bookingName">${esc(b.time||'—')} · ${esc(b.client||'Client')}</div><div class="bookingMeta">${esc(b.service||'Service')} · ${fmt(b.guests||1)} personne(s)${b.phone?' · '+esc(b.phone):''}${b.deposit?'<br>Acompte '+money(b.deposit):''}${b.note?'<br>'+esc(b.note):''}</div></div><span class="statusTag ${statusClass(b.status)}">${esc(b.status||'Demande')}</span></div>
+        <div class="bookingTop"><div><div class="bookingName">${timeRange(b)} · ${esc(b.client||'Client')}</div><div class="bookingMeta">${esc(b.service||'Service')} · durée ${durationMins(b)} min · ${fmt(b.guests||1)} ${esc(unitLabel())}${b.phone?' · '+esc(b.phone):''}${b.deposit?'<br>Acompte '+money(b.deposit):''}${b.note?'<br>'+esc(b.note):''}</div></div><span class="statusTag ${statusClass(b.status)}">${esc(b.status||'Demande')}</span></div>
         <div class="bookingBtns"><button class="miniBtn ok" onclick="RESA.setStatus('${b.id}','Confirmée')">Confirmer</button><button class="miniBtn warn" onclick="RESA.deposit('${b.id}')">Acompte</button><button class="miniBtn red" onclick="RESA.setStatus('${b.id}','Annulée')">Annuler</button><button class="miniBtn red" onclick="RESA.remove('${b.id}')">×</button></div>
       </article>`;}
       function openQuickAdd(){
         const d=$("bookingDate"); if(d) d.value=selectedDate;
         const t=$("bookingTime"); if(t) t.value=selectedTime || "19:00";
-        const g=$("bookingGuests"); if(g && !g.value) g.value=2;
+        const dur=$("bookingDuration"); if(dur && !dur.value) dur.value="60";
+        const g=$("bookingGuests"); if(g && !g.value) g.value=1;
         $("quickOverlay")?.classList.add("open");
       }
       function closeQuickAdd(){ $("quickOverlay")?.classList.remove("open"); }
@@ -438,8 +459,9 @@
         const date=($("bookingDate")?.value||selectedDate).trim();
         const time=($("bookingTime")?.value||selectedTime||"").trim();
         const guests=Math.max(1,Math.round(Number($("bookingGuests")?.value||1)||1));
+        const duration=Math.max(5,Math.round(Number($("bookingDuration")?.value||60)||60));
         if(!client || !date || !time){toast("Client, date et heure nécessaires");return;}
-        const item={id:uid(),date,time,client,phone,guests,service:($("bookingService")?.value||"Table"),status:($("bookingStatus")?.value||"Demande"),deposit:Math.max(0,Math.round(Number($("bookingDeposit")?.value||0)||0)),note:($("bookingNote")?.value||"").trim()};
+        const item={id:uid(),date,time,duration,client,phone,guests,service:($("bookingService")?.value||"Rendez-vous"),status:($("bookingStatus")?.value||"Demande"),deposit:Math.max(0,Math.round(Number($("bookingDeposit")?.value||0)||0)),note:($("bookingNote")?.value||"").trim()};
         selectedDate=date; selectedTime=time; bookings.unshift(item); save(); closeQuickAdd(); ["clientName","clientPhone","bookingDeposit","bookingNote"].forEach(id=>{if($(id))$(id).value=""}); toast("Réservation enregistrée"); render();
       }
       function setStatus(id,status){const b=bookings.find(x=>x.id===id); if(!b)return; b.status=status; save(); toast(status); render();}
@@ -450,14 +472,14 @@
         const sub=`${business.activity||"Réservation"} · planning vivant`;
         const line=[business.name||"Établissement",business.activity||"Réservation",business.phone,business.city].filter(Boolean).join(" · ");
         if($("bizTitle"))$("bizTitle").textContent=line1; if($("bizSub"))$("bizSub").textContent=sub; if($("bizLine"))$("bizLine").textContent=line;
-        ["Name","Activity","Owner","Phone","Address","City","Public"].forEach(k=>{const id="biz"+k; const key=k.toLowerCase()==="public"?"publicLink":k.toLowerCase(); if($(id))$(id).value=business[key]||"";});
+        ["Name","Activity","Owner","Phone","Address","City","UnitLabel","Public"].forEach(k=>{const id="biz"+k; const key=k==="UnitLabel"?"unitLabel":(k.toLowerCase()==="public"?"publicLink":k.toLowerCase()); if($(id))$(id).value=business[key]||"";});
         if($("publicLink"))$("publicLink").value=business.publicLink||defaultBusiness.publicLink;
         const html=businessHtml(); if($("businessPreview"))$("businessPreview").innerHTML=html; if($("qrBusinessPreview"))$("qrBusinessPreview").innerHTML=html;
       }
-      function businessHtml(){return `<div class="row"><div><b>${esc(business.name||'Établissement')}</b><br><span>${esc(business.activity||'Réservation')}${business.city?' · '+esc(business.city):''}</span><br><span>${business.owner?'Responsable : '+esc(business.owner):'Responsable à compléter'}${business.phone?' · Tél : '+esc(business.phone):''}</span><br><span>${business.address?esc(business.address):'Adresse à compléter'}</span></div><span>admin</span></div>`;}
-      function saveBusinessFromForm(){business={name:($("bizName")?.value||"").trim()||"JE RÉSERVE",activity:($("bizActivity")?.value||"").trim()||"Réservation",owner:($("bizOwner")?.value||"").trim(),phone:($("bizPhone")?.value||"").trim(),address:($("bizAddress")?.value||"").trim(),city:($("bizCity")?.value||"").trim(),publicLink:($("bizPublic")?.value||"").trim()||defaultBusiness.publicLink}; save(); renderBusiness(); toast("Admin enregistré");}
+      function businessHtml(){return `<div class="row"><div><b>${esc(business.name||'Établissement')}</b><br><span>${esc(business.activity||'Réservation')}${business.city?' · '+esc(business.city):''}</span><br><span>${business.owner?'Responsable : '+esc(business.owner):'Responsable à compléter'}${business.phone?' · Tél : '+esc(business.phone):''}</span><br><span>${business.address?esc(business.address):'Adresse à compléter'}</span><br><span>Unité : ${esc(unitLabel())}</span></div><span>admin</span></div>`;}
+      function saveBusinessFromForm(){business={name:($("bizName")?.value||"").trim()||"JE RÉSERVE",activity:($("bizActivity")?.value||"").trim()||"Réservation multi-métier",owner:($("bizOwner")?.value||"").trim(),phone:($("bizPhone")?.value||"").trim(),address:($("bizAddress")?.value||"").trim(),city:($("bizCity")?.value||"").trim(),unitLabel:($("bizUnitLabel")?.value||"").trim()||"personne(s)",publicLink:($("bizPublic")?.value||"").trim()||defaultBusiness.publicLink}; save(); renderBusiness(); toast("Admin enregistré");}
       function renderPanels(){
-        const rows=bookings.slice(0,40).map(b=>`<div class="row"><div><b>${esc(b.date)} · ${esc(b.time)} · ${esc(b.client)}</b><br><span>${esc(b.service)} · ${fmt(b.guests)} pers. · ${esc(b.status)}${b.deposit?' · '+money(b.deposit):''}</span></div><span>${esc(b.phone||'')}</span></div>`).join("")||`<div class="row"><div><b>Aucune réservation</b><br><span>Le planning va se remplir ici.</span></div><span>RESA</span></div>`;
+        const rows=bookings.slice(0,40).map(b=>`<div class="row"><div><b>${esc(b.date)} · ${timeRange(b)} · ${esc(b.client)}</b><br><span>${esc(b.service)} · durée ${durationMins(b)} min · ${fmt(b.guests)} ${esc(unitLabel())} · ${esc(b.status)}${b.deposit?' · '+money(b.deposit):''}</span></div><span>${esc(b.phone||'')}</span></div>`).join("")||`<div class="row"><div><b>Aucune réservation</b><br><span>Le planning va se remplir ici.</span></div><span>RESA</span></div>`;
         if($("allBookings"))$("allBookings").innerHTML=rows;
         const s=stats();
         if($("paySummary"))$("paySummary").innerHTML=`<div class="row"><div><b>Acomptes reçus aujourd’hui</b><br><span>Argent réel, traçable dans PAY.</span></div><b>${money(s.deposit)}</b></div><div class="row"><div><b>Réservations confirmées</b><br><span>À préparer / honorer.</span></div><b>${fmt(s.ok)}</b></div><div class="row"><div><b>Conseil RESA</b><br><span>${esc(payAdvice(s))}</span></div><span>terrain</span></div>`;
@@ -482,6 +504,7 @@
   </script>
 </body>
 </html>
+
 
 
 
