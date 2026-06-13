@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>JE RÉSERVE — Cockpit RESA V2</title>
+  <title>JE RÉSERVE — Planning horaire RESA V2</title>
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="DIGIY RESA PRO V2 — planning vivant en ouverture, réservation directe, menu secondaire caché."/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
-  <meta name="digiy-build" content="resa-v2-planning-first-public-sync-20260613"/>
+  <meta name="digiy-build" content="resa-v2-planning-horaire-public-sync-20260613"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -55,6 +55,7 @@
 
     .screen{position:fixed;top:var(--topH);bottom:var(--payH);left:0;right:0;z-index:1;padding:10px;display:grid;grid-template-columns:1.05fr .95fr;gap:10px;overflow:hidden}
     .left,.right{min-height:0;display:grid;gap:8px}.left{grid-template-rows:auto minmax(0,1fr)}.right{grid-template-rows:auto minmax(0,1fr)}
+    .dateTools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}.dateTools button,.dateTools input{height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.10);color:#fff;font-size:12px;font-weight:1000;text-align:center}.dateTools input{background:rgba(255,255,255,.92);color:#052215}.slotLegend{display:flex;align-items:center;justify-content:space-between;gap:8px;color:rgba(240,255,245,.66);font-size:11px;font-weight:1000;text-transform:uppercase;letter-spacing:.07em}.slotLegend b{color:#fff0a8}
     .heroLine{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(196,151,63,.28);background:rgba(255,255,255,.08);border-radius:20px;padding:9px 10px;box-shadow:var(--shadow)}
     .heroText{min-width:0}.eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);font-weight:1000}.h1{font-size:clamp(22px,4.2vw,38px);line-height:.94;letter-spacing:-.045em;font-weight:1000;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.heroText p{margin:3px 0 0;color:var(--muted);font-size:12px;line-height:1.18;font-weight:1000}.dateBox{text-align:right;min-width:116px}.dateBox span{display:block;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}.dateBox b{font-size:20px;letter-spacing:-.04em;color:#fff}
 
@@ -62,7 +63,7 @@
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.stat{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);border-radius:16px;padding:9px 8px;min-height:66px;display:flex;flex-direction:column;justify-content:center}.stat span{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}.stat b{font-size:20px;line-height:1;color:#fff;margin-top:4px}.stat.gold{border-color:rgba(196,151,63,.38);background:rgba(196,151,63,.13)}
 
     .quickForm{display:grid;grid-template-columns:1fr 1fr;gap:7px}.quickForm .wide{grid-column:1/-1}.input,.select,.area{width:100%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.92);border-radius:14px;height:42px;padding:0 10px;font-size:13px;font-weight:900;outline:none}.area{height:54px;resize:none;padding-top:9px}.input:focus,.select:focus,.area:focus{border-color:rgba(255,240,168,.70);box-shadow:0 0 0 3px rgba(255,240,168,.16)}
-    .slots{min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:62px;gap:7px;padding-right:2px;overscroll-behavior:contain}.slot{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.09);border-radius:16px;padding:7px;display:flex;flex-direction:column;justify-content:space-between;text-align:left}.slot b{font-size:15px;color:#fff}.slot span{font-size:10px;color:var(--muted);font-weight:1000}.slot.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8);border-color:rgba(34,197,94,.35)}.slot.active b,.slot.active span{color:#052215}.slot.busy{border-color:rgba(196,151,63,.38);background:rgba(196,151,63,.13)}
+    .slots{min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:82px;gap:7px;padding-right:2px;overscroll-behavior:contain}.slot{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.09);border-radius:16px;padding:8px;display:flex;flex-direction:column;justify-content:space-between;text-align:left}.slotHead{display:flex;align-items:center;justify-content:space-between;gap:6px}.slot b{font-size:16px;color:#fff}.slot em{font-style:normal;border-radius:999px;padding:3px 6px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.08);font-size:8.5px;color:var(--soft);font-weight:1000;text-transform:uppercase;letter-spacing:.06em}.slot span{font-size:11px;color:var(--gold2);font-weight:1000;line-height:1.05}.slot small{display:block;font-size:9.5px;color:rgba(240,255,245,.68);font-weight:1000;line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.slot.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8);border-color:rgba(34,197,94,.35)}.slot.active b,.slot.active span,.slot.active small,.slot.active em{color:#052215}.slot.busy{border-color:rgba(196,151,63,.46);background:rgba(196,151,63,.15)}.slot.busy em{color:#fff0a8;border-color:rgba(196,151,63,.36);background:rgba(196,151,63,.18)}
 
     .bookings{min-height:0;overflow:auto;display:grid;align-content:start;gap:7px;padding-right:2px;overscroll-behavior:contain}.empty{height:100%;min-height:150px;border:1px dashed rgba(255,255,255,.18);border-radius:16px;display:grid;place-items:center;text-align:center;color:rgba(240,255,245,.64);font-size:14px;line-height:1.25;padding:18px}.booking{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.09);border-radius:16px;padding:9px;display:grid;gap:7px}.bookingTop{display:flex;justify-content:space-between;gap:8px}.bookingName{font-size:15px;color:#fff;font-weight:1000;line-height:1.05}.bookingMeta{font-size:11px;color:var(--muted);line-height:1.25}.statusTag{border-radius:999px;padding:6px 8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);font-size:10px;color:var(--gold2);white-space:nowrap}.statusTag.ok{color:#bbf7d0;border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.12)}.statusTag.wait{color:#fde68a;border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.12)}.statusTag.cancel{color:#fecaca;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.12)}
     .bookingBtns{display:grid;grid-template-columns:1fr 1fr 1fr 42px;gap:6px}.miniBtn{height:36px;border-radius:13px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.10);font-size:11px;font-weight:1000}.miniBtn.ok{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.35)}.miniBtn.warn{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.35)}.miniBtn.red{background:rgba(239,68,68,.13);border-color:rgba(239,68,68,.35)}
@@ -73,8 +74,8 @@
     .overlay{position:fixed;inset:0;z-index:250;display:none;background:rgba(4,22,12,.98);padding:16px 12px calc(18px + env(safe-area-inset-bottom,0px));overflow:auto}.overlay.open{display:block}.ovBox{width:min(900px,100%);margin:0 auto;display:grid;gap:12px}.ovTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.ovTitle{font-size:34px;font-weight:1000;letter-spacing:-.05em;line-height:.95;color:#fff}.close{width:46px;height:46px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);font-size:24px;color:#fff}.menuGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.menuCard{min-height:112px;border-radius:20px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);padding:13px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;text-align:left;color:#fff}.menuCard.gold{border-color:rgba(196,151,63,.45);background:rgba(196,151,63,.14)}.menuCard .ico{font-size:28px}.menuCard b{font-size:17px}.menuCard span{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:1.22}.sectionBox{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);border-radius:20px;padding:12px;display:grid;gap:9px}.sectionBox h2{margin:0;color:#fff;font-size:24px;letter-spacing:-.04em}.rows{display:grid;gap:7px}.row{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);border-radius:15px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}.row b{font-size:14px}.row span{font-size:12px;color:var(--muted)}.adminGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.adminGrid .full{grid-column:1/-1}.toast{position:fixed;left:50%;bottom:calc(var(--payH) + 12px);transform:translateX(-50%) translateY(20px);z-index:400;border-radius:999px;background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.18);color:#fff;padding:10px 14px;font-size:13px;font-weight:1000;opacity:0;pointer-events:none;transition:.22s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
     @media(max-width:760px){
-      :root{--topH:58px;--payH:104px}.screen{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:8px}.left{grid-template-rows:auto minmax(0,1fr)}.right{grid-template-rows:minmax(0,1fr)}.right .panelTitle,.right .stats{display:none}.quickForm{grid-template-columns:1fr 1fr}.slots{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:58px}.payBar{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:var(--payH)}.validate{grid-column:1/-1}.menuGrid{grid-template-columns:1fr 1fr}.adminGrid{grid-template-columns:1fr}.h1{font-size:clamp(22px,7vw,34px)}.dateBox b{font-size:17px}.topActions .pill:not(.gold){display:none}}
-    @media(max-width:420px){.quickForm{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:1fr 1fr}.menuGrid{grid-template-columns:1fr}}
+      :root{--topH:58px;--payH:104px}.screen{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:8px}.left{grid-template-rows:auto minmax(0,1fr)}.right{grid-template-rows:minmax(0,1fr)}.right .panelTitle,.right .stats{display:none}.quickForm{grid-template-columns:1fr 1fr}.slots{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:78px}.payBar{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:var(--payH)}.validate{grid-column:1/-1}.menuGrid{grid-template-columns:1fr 1fr}.adminGrid{grid-template-columns:1fr}.h1{font-size:clamp(22px,7vw,34px)}.dateBox b{font-size:17px}.topActions .pill:not(.gold){display:none}}
+    @media(max-width:420px){.quickForm{grid-template-columns:1fr}.dateTools{grid-template-columns:1fr 1fr}.dateTools input{grid-column:1/-1}.slots{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:76px}.stats{grid-template-columns:1fr 1fr}.menuGrid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -102,7 +103,16 @@
       </div>
 
       <div class="panel">
-        <div class="panelTitle"><b>🕐 Créneaux tactiles</b><span id="selectedTimeLabel">touche une heure</span></div>
+        <div class="panelTitle"><b>🗓️ Planning horaire</b><span id="selectedTimeLabel">touche une heure</span></div>
+        <div class="dateTools" aria-label="Choisir le jour du planning">
+          <button type="button" onclick="RESA.shiftDate(-1)">← Jour</button>
+          <button type="button" onclick="RESA.setToday()">Aujourd’hui</button>
+          <button type="button" onclick="RESA.shiftDate(1)">Jour →</button>
+          <input id="planningDate" type="date" aria-label="Date du planning"/>
+          <button type="button" onclick="RESA.setTomorrow()">Demain</button>
+          <button type="button" onclick="syncPublicBookings(false)">↻ Public</button>
+        </div>
+        <div class="slotLegend"><span>Horaires visibles</span><b>08:00 → 23:00</b></div>
         <div class="slots" id="slotGrid"></div>
       </div>
     </section>
@@ -381,19 +391,32 @@
       function cleanVisibleUrl(){try{const url=new URL(location.href);let changed=false;SENSITIVE_KEYS.forEach(k=>{if(url.searchParams.has(k)){url.searchParams.delete(k);changed=true;}});if(changed) history.replaceState({},document.title,url.pathname+url.search+url.hash);}catch(_){}}
       function dayBookings(){return bookings.filter(b=>b.date===selectedDate).sort((a,b)=>(a.time||"").localeCompare(b.time||""));}
       function stats(){const ds=dayBookings();const ok=ds.filter(x=>x.status==="Confirmée"||x.status==="Acompte reçu").length;const guests=ds.reduce((s,x)=>s+(Number(x.guests)||0),0);const deposit=ds.reduce((s,x)=>s+(Number(x.deposit)||0),0);return {count:ds.length,ok,guests,deposit};}
-      function slotCount(t){return dayBookings().filter(b=>b.time===t).length;}
+      function slotItems(t){return dayBookings().filter(b=>b.time===t);}
+      function slotCount(t){return slotItems(t).length;}
+      function addDays(dateStr,n){const d=new Date((dateStr||todayKey())+"T12:00:00"); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10);}
+      function setPlanningDate(v){selectedDate=dateOnly(v||todayKey()); const d=$("bookingDate"); if(d)d.value=selectedDate; render();}
+      function shiftDate(n){setPlanningDate(addDays(selectedDate,n));}
+      function setToday(){setPlanningDate(todayKey());}
+      function setTomorrow(){setPlanningDate(addDays(todayKey(),1));}
       function setSelectedTime(t){selectedTime=t; const bt=$("bookingTime"); if(bt) bt.value=t; render();}
       function statusClass(s){if(s==="Confirmée"||s==="Acompte reçu")return "ok"; if(s==="Annulée")return "cancel"; return "wait";}
       function render(){
         renderBusiness();
         const d=new Date(selectedDate+"T12:00:00");
         $("todayLabel").textContent=d.toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
+        if($("planningDate")) $("planningDate").value=selectedDate;
         $("selectedTimeLabel").textContent=selectedTime?`heure ${selectedTime}`:"touche une heure";
         $("barTime").textContent=selectedTime||"—";
         $("barClient").textContent=($("clientName")?.value||"").trim()||"—";
         const s=stats();
         $("statCount").textContent=fmt(s.count); $("statOk").textContent=fmt(s.ok); $("statGuests").textContent=fmt(s.guests); $("statDeposit").textContent=fmt(s.deposit).replace(/\s/g," ");
-        $("slotGrid").innerHTML=slotHours.map(t=>{const n=slotCount(t);return `<button class="slot${selectedTime===t?' active':''}${n?' busy':''}" onclick="RESA.setSelectedTime('${t}')"><b>${t}</b><span>${n? n+' résa':'libre'}</span></button>`}).join("");
+        $("slotGrid").innerHTML=slotHours.map(t=>{
+          const items=slotItems(t);
+          const n=items.length;
+          const people=items.reduce((sum,b)=>sum+(Number(b.guests)||0),0);
+          const first=items[0]||{};
+          return `<button class="slot${selectedTime===t?' active':''}${n?' busy':''}" onclick="RESA.setSelectedTime('${t}')"><div class="slotHead"><b>${t}</b><em>${n?'occupé':'libre'}</em></div><span>${n? n+' résa · '+fmt(people)+' pers.':'Libre'}</span><small>${n? esc(first.client||'Client')+' · '+esc(first.status||'Demande'):'Toucher pour réserver'}</small></button>`;
+        }).join("");
         const list=dayBookings();
         $("bookingList").innerHTML=list.length?list.map(bookingTpl).join(""):`<div class="empty">Aucune réservation aujourd’hui.<br>Touche une heure puis ajoute le client.</div>`;
         renderPanels();
@@ -449,8 +472,8 @@
       function clearDemo(){if(!confirm("Vider les réservations locales de démonstration ?"))return; bookings=[]; save(); render(); toast("Démo vidée");}
       async function waitGuard(){try{const guard=window.DIGIY_GUARD;if(!guard)return{}; if(typeof guard.ready==="function"){const out=guard.ready({redirect:false,preserve_validation:true}); if(out&&typeof out.then==="function")await out;}else if(guard.ready&&typeof guard.ready.then==="function")await guard.ready; if(typeof guard.getSession==="function")return guard.getSession()||guard.state||{}; return guard.state||{};}catch(e){return{};}}
       function updatePill(state){const el=$("sessionPill"); if(!el)return; const ok=!!(state&&(state.access_ok||state.access||state.pin_session_ok)); el.textContent=ok?"session ouverte":"accès local"; el.className="pill "+(ok?"ok":"");}
-      async function boot(){cleanVisibleUrl(); const d=$("bookingDate"); if(d)d.value=selectedDate; const g=$("bookingGuests"); if(g)g.value=2; const state=await waitGuard(); guardState=state||{}; updatePill(guardState); render(); await syncPublicBookings(true); cleanVisibleUrl();}
-      window.RESA={setSelectedTime,setStatus,deposit,remove};
+      async function boot(){cleanVisibleUrl(); const d=$("bookingDate"); if(d)d.value=selectedDate; const pd=$("planningDate"); if(pd){pd.value=selectedDate; pd.addEventListener("change",e=>setPlanningDate(e.target.value));} const g=$("bookingGuests"); if(g)g.value=2; const state=await waitGuard(); guardState=state||{}; updatePill(guardState); render(); await syncPublicBookings(true); cleanVisibleUrl();}
+      window.RESA={setSelectedTime,setStatus,deposit,remove,shiftDate,setPlanningDate,setToday,setTomorrow};
       Object.assign(window,{openQuickAdd,closeQuickAdd,openMenu,closeMenu,addBookingFromForm,showPanel,saveBusinessFromForm,copyPublicLink,exportData,importData,clearDemo,syncPublicBookings});
       document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeQuickAdd();closeMenu();}});
       ["clientName","clientPhone","bookingGuests","bookingService"].forEach(id=>$(id)?.addEventListener("input",()=>{if($("barClient"))$("barClient").textContent=($("clientName")?.value||"").trim()||"—";}));
@@ -459,6 +482,7 @@
   </script>
 </body>
 </html>
+
 
 
 
