@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="description" content="DIGIY RESA PRO V2 — planning multi-métier en ouverture, durées variables, réservation directe, menu secondaire caché."/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
-  <meta name="digiy-build" content="resa-v2-planning-multimetier-duree-public-sync-20260613"/>
+  <meta name="digiy-build" content="resa-v2-planning-multimetier-action-directe-plus-fix-20260618"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -169,6 +169,7 @@
         <button class="menuCard" onclick="showPanel('services')"><span class="ico">🧭</span><div><b>Services / Durées</b><span>Multi-métier, durées variables.</span></div></button>
         <button class="menuCard gold" onclick="showPanel('pay')"><span class="ico">💰</span><div><b>PAY RESA</b><span>Acomptes, restes, argent réel.</span></div></button>
         <button class="menuCard" onclick="showPanel('qr')"><span class="ico">🔳</span><div><b>Fiche / QR</b><span>Porte client et partage.</span></div></button>
+        <button class="menuCard gold" onclick="showPanel('direct')"><span class="ico">📲</span><div><b>Action directe</b><span>Chaque fiche pro prépare une demande claire.</span></div></button>
         <button class="menuCard" onclick="showPanel('settings')"><span class="ico">🛡️</span><div><b>Session / Secours</b><span>Export, import, anciens liens.</span></div></button>
       </div>
 
@@ -219,6 +220,39 @@
         </div>
       </div>
 
+      <div class="sectionBox" id="panelDirect" hidden>
+        <h2>📲 Action directe client</h2>
+        <div class="row">
+          <div>
+            <b>Doctrine fiche PRO</b><br>
+            <span>La fiche ne sert pas seulement à regarder. Elle doit préparer une demande, puis le pro confirme.</span>
+          </div>
+          <span>DIGIY</span>
+        </div>
+        <div class="rows">
+          <div class="row"><div><b>1 · Voir</b><br><span>Le client comprend le service, le lieu, le contact et la règle : confirmation par le pro.</span></div><span>public</span></div>
+          <div class="row"><div><b>2 · Demander</b><br><span>Date, heure, personnes/unités, service, message libre.</span></div><span>action</span></div>
+          <div class="row"><div><b>3 · Confirmer</b><br><span>Le responsable valide la réservation, l’acompte éventuel et le créneau réel.</span></div><span>pro</span></div>
+        </div>
+        <div class="adminGrid">
+          <input class="input" id="directService" placeholder="Service demandé : table, chambre, rendez-vous…"/>
+          <input class="input" id="directDate" placeholder="Date souhaitée"/>
+          <input class="input" id="directTime" placeholder="Heure souhaitée"/>
+          <input class="input" id="directPeople" placeholder="Personnes / unités"/>
+          <textarea class="area full" id="directNote" placeholder="Message client : besoin, préférence, budget, remarque…"></textarea>
+          <button class="miniBtn ok" onclick="copyDirectAction()">Copier modèle demande</button>
+          <button class="miniBtn" onclick="openDirectPublic()">Ouvrir fiche publique</button>
+        </div>
+        <div class="row">
+          <div>
+            <b>Phrase publique à garder</b><br>
+            <span>DIGIY prépare la demande. L’établissement confirme la disponibilité.</span>
+          </div>
+          <span>sécurité</span>
+        </div>
+      </div>
+
+
       <div class="sectionBox" id="panelSettings" hidden>
         <h2>🛡️ Session / Secours</h2>
         <div class="menuGrid">
@@ -254,6 +288,7 @@
       const defaultBusiness={name:"JE RÉSERVE",activity:"Réservation multi-métier",owner:"",phone:"",address:"",city:"",unitLabel:"personne(s)",publicLink:"https://resa-table-resto.digiylyfe.com/"};
       let selectedDate=todayKey();
       let selectedTime="";
+      let guardState={};
       let business={...defaultBusiness,...load(LS_BUSINESS,{})};
       let bookings=load(LS_BOOKINGS, seedBookings());
       const slotHours=(()=>{const out=[];for(let m=8*60;m<=23*60;m+=30){out.push(`${String(Math.floor(m/60)).padStart(2,"0")}:${String(m%60).padStart(2,"0")}`)}return out;})();
@@ -485,9 +520,32 @@
         if($("paySummary"))$("paySummary").innerHTML=`<div class="row"><div><b>Acomptes reçus aujourd’hui</b><br><span>Argent réel, traçable dans PAY.</span></div><b>${money(s.deposit)}</b></div><div class="row"><div><b>Réservations confirmées</b><br><span>À préparer / honorer.</span></div><b>${fmt(s.ok)}</b></div><div class="row"><div><b>Conseil RESA</b><br><span>${esc(payAdvice(s))}</span></div><span>terrain</span></div>`;
       }
       function payAdvice(s){if(s.count===0)return "Le planning est calme. Partage la fiche ou le QR client."; if(s.deposit===0 && s.count>2)return "Plusieurs demandes sans acompte : confirme clairement avant de bloquer trop de place."; if(s.ok>=3)return "Bonne traction : protège les créneaux confirmés et évite les doubles réservations."; return "Le planning avance. Garde demande, confirmation et acompte séparés.";}
-      function showPanel(name){["Admin","All","Services","Pay","Qr","Settings"].forEach(n=>{const el=$("panel"+n); if(el)el.hidden=true;}); const map={admin:"panelAdmin",all:"panelAll",services:"panelServices",pay:"panelPay",qr:"panelQr",settings:"panelSettings"}; const el=$(map[name]); if(el)el.hidden=false; renderPanels();}
+      function showPanel(name){["Admin","All","Services","Pay","Qr","Direct","Settings"].forEach(n=>{const el=$("panel"+n); if(el)el.hidden=true;}); const map={admin:"panelAdmin",all:"panelAll",services:"panelServices",pay:"panelPay",qr:"panelQr",direct:"panelDirect",settings:"panelSettings"}; const el=$(map[name]); if(el)el.hidden=false; renderPanels();}
       function openMenu(){ $("menuPanel")?.classList.add("open"); showPanel("admin"); }
       function closeMenu(){ $("menuPanel")?.classList.remove("open"); }
+      function directActionText(){
+        const service=($("directService")?.value||"Service à préciser").trim();
+        const date=($("directDate")?.value||"Date à préciser").trim();
+        const time=($("directTime")?.value||"Heure à préciser").trim();
+        const people=($("directPeople")?.value||unitLabel()).trim();
+        const note=($("directNote")?.value||"Message client à préciser.").trim();
+        return [
+          "DIGIY RESA · Demande client",
+          "Établissement : "+(business.name||"À préciser"),
+          "Service : "+service,
+          "Date : "+date,
+          "Heure : "+time,
+          "Personnes / unités : "+people,
+          "",
+          "Message :",
+          note,
+          "",
+          "Merci de confirmer la disponibilité.",
+          "DIGIY prépare la demande. Le pro confirme."
+        ].join("\n");
+      }
+      async function copyDirectAction(){const txt=directActionText(); try{await navigator.clipboard?.writeText(txt); toast("Modèle demande copié");}catch(_){toast(txt);}}
+      function openDirectPublic(){window.open(business.publicLink||defaultBusiness.publicLink,"_blank","noopener,noreferrer");}
       function copyPublicLink(){const v=(business.publicLink||defaultBusiness.publicLink); navigator.clipboard?.writeText(v); toast("Lien copié");}
       function exportData(){const blob=new Blob([JSON.stringify({business,bookings},null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="digiy-resa-v2-export.json"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
       function importData(e){const f=e.target.files&&e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{try{const data=JSON.parse(r.result||"{}"); if(data.business)business={...defaultBusiness,...data.business}; if(Array.isArray(data.bookings))bookings=data.bookings; save(); render(); toast("Import OK");}catch(_){toast("Import impossible")}}; r.readAsText(f);}
@@ -496,14 +554,418 @@
       function updatePill(state){const el=$("sessionPill"); if(!el)return; const ok=!!(state&&(state.access_ok||state.access||state.pin_session_ok)); el.textContent=ok?"session ouverte":"accès local"; el.className="pill "+(ok?"ok":"");}
       async function boot(){cleanVisibleUrl(); const d=$("bookingDate"); if(d)d.value=selectedDate; const pd=$("planningDate"); if(pd){pd.value=selectedDate; pd.addEventListener("change",e=>setPlanningDate(e.target.value));} const g=$("bookingGuests"); if(g)g.value=2; const state=await waitGuard(); guardState=state||{}; updatePill(guardState); render(); await syncPublicBookings(true); cleanVisibleUrl();}
       window.RESA={setSelectedTime,setStatus,deposit,remove,shiftDate,setPlanningDate,setToday,setTomorrow};
-      Object.assign(window,{openQuickAdd,closeQuickAdd,openMenu,closeMenu,addBookingFromForm,showPanel,saveBusinessFromForm,copyPublicLink,exportData,importData,clearDemo,syncPublicBookings});
+      Object.assign(window,{openQuickAdd,closeQuickAdd,openMenu,closeMenu,addBookingFromForm,showPanel,saveBusinessFromForm,copyPublicLink,copyDirectAction,openDirectPublic,exportData,importData,clearDemo,syncPublicBookings});
       document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeQuickAdd();closeMenu();}});
       ["clientName","clientPhone","bookingGuests","bookingService"].forEach(id=>$(id)?.addEventListener("input",()=>{if($("barClient"))$("barClient").textContent=($("clientName")?.value||"").trim()||"—";}));
-      boot();
+      boot().catch(()=>{try{render()}catch(_){}});
     })();
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
