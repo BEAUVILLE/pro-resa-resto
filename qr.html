@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#07140f" />
   <title>DIGIY RESA — QR réservation</title>
-  <meta name="digiy-build" content="resa-qr-sans-bouton-fiche-pro-20260618"/>
+  <meta name="digiy-build" content="resa-qr-dedie-sans-fiche-pro-20260618"/>
 
   <script>
     window.DIGIY_MODULE       = "RESA";
@@ -54,7 +54,7 @@
     <a class="btn" id="openResa" href="#" target="_blank" rel="noopener">📅 Ouvrir réservation client</a>
     <button class="btn gold" id="printBtn" type="button">🖨️ Imprimer le QR</button>
     <button class="btn gold" id="copyBtn" type="button">📋 Copier lien réservation</button>
-    <a class="btn dark" href="./cockpit.html">← Retour cockpit</a>
+    <a class="btn dark" href="./index.html#admin">← Retour admin RESA</a>
     <p class="small" id="targetUrl"></p>
     <div class="note warn" id="note"></div>
   </main>
@@ -230,15 +230,14 @@
       if(!publicSlug){
         $("publicPill").textContent = "slug public absent";
         $("qrImg").src = qrApi(PUBLIC_BASE, 520);
-        $("openResa").href = "./fiche.html";
-        $("targetUrl").textContent = "Slug public absent. Ouvre la fiche PRO pour renseigner le slug public.";
-        note("⚠️ Session PRO trouvée, mais aucun slug public propre n’est disponible. Ouvre la fiche PRO, renseigne le slug public, puis reviens ici.", "warn");
+        $("openResa").href = "./index.html#admin";
+        $("targetUrl").textContent = "Slug public absent. Retourne dans Admin RESA pour renseigner le lien/slug public.";
+        note("⚠️ Session PRO trouvée, mais aucun slug public propre n’est disponible. Retourne dans Admin RESA, renseigne le slug ou lien public, puis reviens ici.", "warn");
         return;
       }
 
       const businessName = safe((row && (row.business_name || row.name)) || local.businessName || "Mon établissement");
       const reservationUrl = safe((row && row.reservation_url) || local.reservationUrl) || publicUrl("reserver.html", publicSlug);
-      const ficheUrl = safe((row && row.fiche_url) || local.publicFicheUrl) || publicUrl("fiche.html", publicSlug);
 
       try{
         localStorage.setItem("digiy_resa_slug", proSlug);
@@ -269,56 +268,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
