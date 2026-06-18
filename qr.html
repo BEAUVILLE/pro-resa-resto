@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#07140f" />
   <title>DIGIY RESA — QR réservation</title>
+  <meta name="digiy-build" content="resa-qr-sans-bouton-fiche-pro-20260618"/>
 
   <script>
     window.DIGIY_MODULE       = "RESA";
@@ -51,7 +52,6 @@
     </div>
 
     <a class="btn" id="openResa" href="#" target="_blank" rel="noopener">📅 Ouvrir réservation client</a>
-    <a class="btn blue" id="openFiche" href="./fiche.html">🪪 Ouvrir ma fiche PRO</a>
     <button class="btn gold" id="printBtn" type="button">🖨️ Imprimer le QR</button>
     <button class="btn gold" id="copyBtn" type="button">📋 Copier lien réservation</button>
     <a class="btn dark" href="./cockpit.html">← Retour cockpit</a>
@@ -253,7 +253,6 @@
       $("qrLabel").textContent = businessName;
       $("targetUrl").textContent = reservationUrl;
       $("openResa").href = reservationUrl;
-      $("openFiche").href = "./fiche.html";
       $("qrImg").src = qrApi(reservationUrl, 520);
       note("✅ QR réservation prêt. Teste-le sur téléphone avant impression.", "ok");
 
@@ -270,10 +269,6 @@
   </script>
 </body>
 </html>
-
-
-
-
 
 
 
