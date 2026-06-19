@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#1e7a46"/>
   <meta name="robots" content="noindex,nofollow"/>
   <meta name="description" content="DIGIY RESA PRO — fiche établissement gérée côté pro avec QR réservation."/>
-  <meta name="digiy-build" content="resa-fiche-pro-moule-neutre-20260603"/>
+  <meta name="digiy-build" content="resa-fiche-pro-qr-integre-20260618"/>
 
   <script>
     window.DIGIY_SUPABASE_URL = window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
@@ -76,10 +76,7 @@
     .formGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .field{display:grid;gap:7px}
     .field label{color:#fff;font-size:14px;font-weight:1000}
-    .field input,.field textarea,.field select{
-      width:100%;min-height:54px;border-radius:17px;border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);color:var(--text);padding:13px 14px;outline:none;font-size:16px;font-weight:950;
-    }
+    .field input,.field textarea,.field select{width:100%;min-height:54px;border-radius:17px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);color:var(--text);padding:13px 14px;outline:none;font-size:16px;font-weight:950}
     .field textarea{min-height:108px;resize:vertical;line-height:1.45}
     .field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(250,204,21,.46);box-shadow:0 0 0 4px rgba(250,204,21,.10)}
     .hint{color:rgba(240,255,245,.62);font-size:12.5px;font-weight:900;line-height:1.35}
@@ -101,596 +98,52 @@
     .publicLink{min-height:48px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:1000;color:var(--text);text-align:center;padding:10px;overflow:hidden;text-overflow:ellipsis}
     .qrBox{border-radius:24px;border:1px solid rgba(196,151,63,.32);background:rgba(196,151,63,.10);padding:15px;display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:center}
     .qrImg{width:132px;height:132px;border-radius:18px;background:#fff;padding:8px;object-fit:contain}
-    .qrText{display:grid;gap:6px}
-    .qrTitle{color:#fff;font-size:19px;font-weight:1000;line-height:1.1}
-    .qrUrl{color:var(--muted);font-size:13px;font-weight:900;line-height:1.35;word-break:break-word}
+    .qrText{display:grid;gap:6px}.qrTitle{color:#fff;font-size:19px;font-weight:1000;line-height:1.1}.qrUrl{color:var(--muted);font-size:13px;font-weight:900;line-height:1.35;word-break:break-word}
     .note{display:none;padding:13px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--muted);font-size:14px;font-weight:1000;line-height:1.45;white-space:pre-wrap}
     .note.show{display:block}.note.ok{border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.11);color:#bbf7d0}.note.warn{border-color:rgba(245,158,11,.32);background:rgba(245,158,11,.11);color:#fde68a}.note.bad{border-color:rgba(251,113,133,.32);background:rgba(251,113,133,.11);color:#fecaca}
     .bottomBar{position:fixed;left:0;right:0;bottom:0;height:var(--barH);z-index:100;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(6,38,18,.97);border-top:1px solid rgba(196,151,63,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-    .bottomInner{width:min(100%,760px);height:100%;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-    .bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(240,255,245,.56);font-size:11px;font-weight:1000;text-align:center;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04)}
-    .bottomInner a.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8);border-color:rgba(34,197,94,.32)}
-    .bottomInner .bi{font-size:19px;line-height:1}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}
-    @media(max-width:620px){
-      body{padding:calc(var(--hdrH) + 12px) 10px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);font-size:19px}
-      .topHeader{padding:0 10px;gap:7px}.hdrBack{font-size:13px}.hdrTitle{font-size:11px;letter-spacing:.12em}.hdrPill{font-size:11px;padding:6px 8px;max-width:36vw}
-      h1{font-size:34px}.sub{font-size:16px}.formGrid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.linkGrid{grid-template-columns:1fr}.qrBox{grid-template-columns:1fr;text-align:center}.qrImg{margin:0 auto}.cardTitle{font-size:20px}
-    }
+    .bottomInner{width:min(100%,760px);height:100%;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(240,255,245,.56);font-size:11px;font-weight:1000;text-align:center;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04)}.bottomInner a.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8);border-color:rgba(34,197,94,.32)}.bottomInner .bi{font-size:19px;line-height:1}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}@media(max-width:620px){body{padding:calc(var(--hdrH) + 12px) 10px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);font-size:19px}.topHeader{padding:0 10px;gap:7px}.hdrBack{font-size:13px}.hdrTitle{font-size:11px;letter-spacing:.12em}.hdrPill{font-size:11px;padding:6px 8px;max-width:36vw}h1{font-size:34px}.sub{font-size:16px}.formGrid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.linkGrid{grid-template-columns:1fr}.qrBox{grid-template-columns:1fr;text-align:center}.qrImg{margin:0 auto}.cardTitle{font-size:20px}}
   </style>
 </head>
 
 <body>
-  <header class="topHeader">
-    <a class="hdrBack" id="hdrBack" href="./hub.html">← HUB</a>
-    <div class="hdrTitle">RESA · Ma fiche</div>
-    <div class="hdrPill warn" id="sessionPill">session…</div>
-  </header>
-
-  <main class="wrap">
-    <section class="hero">
-      <div class="eyebrow">📅 JE RÉSERVE</div>
-      <h1>Ma fiche établissement.</h1>
-      <div class="sub">Ici le professionnel prépare la fiche utile : nom, activité, horaires, téléphone public, slug client et QR de réservation.</div>
-      <div class="rule"><b>Côté PRO :</b> si le slug/session RESA n’est pas trouvé, retour PIN. <b>Côté client :</b> seul le slug public propre part dans le lien.</div>
-    </section>
-
-    <section class="grid">
-      <section class="card" aria-label="Réglages de la fiche RESA">
-        <div class="cardHead">
-          <div>
-            <div class="cardTitle">📝 Renseignements établissement</div>
-            <div class="cardSub">Moule neutre : aucune entreprise écrite en dur. La donnée vient du PIN, de Supabase ou du téléphone.</div>
-          </div>
-          <span class="tag" id="proSlugTag">RESA</span>
-        </div>
-
-        <div class="form">
-          <div class="formGrid">
-            <div class="field">
-              <label for="businessName">Nom visible</label>
-              <input id="businessName" autocomplete="organization" placeholder="Nom de l’établissement"/>
-            </div>
-            <div class="field">
-              <label for="activity">Activité</label>
-              <input id="activity" placeholder="Restaurant, table, salon, activité…"/>
-            </div>
-          </div>
-
-          <div class="formGrid">
-            <div class="field">
-              <label for="city">Ville / zone</label>
-              <input id="city" placeholder="Ville, quartier ou zone"/>
-            </div>
-            <div class="field">
-              <label for="hours">Horaires</label>
-              <input id="hours" placeholder="Jours et heures utiles"/>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="address">Adresse / repère</label>
-            <input id="address" placeholder="Repère utile pour trouver l’établissement"/>
-          </div>
-
-          <div class="formGrid">
-            <div class="field">
-              <label for="whatsapp">WhatsApp / téléphone client</label>
-              <input id="whatsapp" inputmode="tel" placeholder="Indicatif + numéro public"/>
-              <div class="hint">Le téléphone peut être dans la donnée. Il n’est pas mis dans l’URL QR.</div>
-            </div>
-            <div class="field">
-              <label for="publicSlug">Slug public client</label>
-              <input id="publicSlug" placeholder="ex : digiylyfe"/>
-              <div class="hint">Slug propre visible dans l’URL client. Pas un numéro.</div>
-            </div>
-          </div>
-
-          <div class="formGrid">
-            <div class="field">
-              <label for="reservationUrl">Lien public réservation</label>
-              <input id="reservationUrl" inputmode="url" placeholder="https://.../reserver.html?slug=..."/>
-            </div>
-            <div class="field">
-              <label for="publicFicheUrl">Lien fiche / clip public</label>
-              <input id="publicFicheUrl" inputmode="url" placeholder="https://.../fiche.html?slug=..."/>
-            </div>
-          </div>
-
-          <div class="formGrid">
-            <div class="field">
-              <label for="logoUrl">Logo URL</label>
-              <input id="logoUrl" inputmode="url" placeholder="https://..."/>
-            </div>
-            <div class="field">
-              <label for="coverUrl">Photo / visuel URL</label>
-              <input id="coverUrl" inputmode="url" placeholder="https://..."/>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="summary">Présentation courte</label>
-            <textarea id="summary" placeholder="Présente l’établissement en deux phrases simples."></textarea>
-          </div>
-
-          <div class="actions">
-            <button class="btn primary" id="btnSave" type="button">💾 Enregistrer local</button>
-            <button class="btn gold" id="btnCopy" type="button">📋 Copier résumé</button>
-            <button class="btn blue" id="btnOpenResa" type="button">📅 Ouvrir réservation</button>
-            <button class="btn" id="btnOpenQr" type="button">🔳 Ouvrir QR</button>
-            <button class="btn" id="btnReloadSql" type="button">🔎 Relire SQL</button>
-            <button class="btn danger" id="btnReset" type="button">🧹 Vider local</button>
-          </div>
-
-          <div class="note" id="notice"></div>
-        </div>
-      </section>
-
-      <aside class="card" aria-label="Aperçu fiche RESA">
-        <div class="cardHead">
-          <div>
-            <div class="cardTitle">👁️ Aperçu client</div>
-            <div class="cardSub">Ce que le client comprend vite avant de réserver.</div>
-          </div>
-          <span class="tag">QR</span>
-        </div>
-
-        <div class="preview">
-          <div class="photoBox" id="photoBox">
-            <span id="photoFallback">📅 Photo établissement</span>
-            <div class="photoBadge">
-              <span class="pill" id="pvCityPill">Ville</span>
-              <span class="pill" id="pvActivityPill">Activité</span>
-            </div>
-          </div>
-
-          <div class="publicCard">
-            <div class="publicName" id="pvName">Mon établissement</div>
-            <div class="publicMeta" id="pvMeta">Ville · activité · horaires</div>
-            <div class="publicBio" id="pvBio">Présentation courte de l’établissement.</div>
-
-            <div class="linkGrid" id="linksBox"></div>
-          </div>
-
-          <div class="qrBox">
-            <img class="qrImg" id="qrImg" alt="QR réservation RESA"/>
-            <div class="qrText">
-              <div class="qrTitle">QR réservation</div>
-              <div class="qrUrl" id="qrUrl">Lien en préparation.</div>
-              <button class="btn gold" id="btnCopyUrl" type="button">🔗 Copier lien QR</button>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </section>
+  <header class="topHeader"><a class="hdrBack" id="hdrBack" href="./index.html">← RESA</a><div class="hdrTitle">RESA · Ma fiche</div><div class="hdrPill warn" id="sessionPill">session…</div></header>
+  <main class="wrap"><section class="hero"><div class="eyebrow">📅 JE RÉSERVE</div><h1>Ma fiche établissement.</h1><div class="sub">Ici le professionnel prépare la fiche utile : nom, activité, horaires, téléphone public, slug client et QR de réservation intégré.</div><div class="rule"><b>Côté PRO :</b> si le slug/session RESA n’est pas trouvé, retour PIN. <b>Côté client :</b> seul le slug public propre part dans le lien.</div></section>
+    <section class="grid"><section class="card" aria-label="Réglages de la fiche RESA"><div class="cardHead"><div><div class="cardTitle">📝 Renseignements établissement</div><div class="cardSub">Moule neutre : aucune entreprise écrite en dur. La donnée vient du PIN, de Supabase ou du téléphone.</div></div><span class="tag" id="proSlugTag">RESA</span></div>
+        <div class="form"><div class="formGrid"><div class="field"><label for="businessName">Nom visible</label><input id="businessName" autocomplete="organization" placeholder="Nom de l’établissement"/></div><div class="field"><label for="activity">Activité</label><input id="activity" placeholder="Restaurant, table, salon, activité…"/></div></div><div class="formGrid"><div class="field"><label for="city">Ville / zone</label><input id="city" placeholder="Ville, quartier ou zone"/></div><div class="field"><label for="hours">Horaires</label><input id="hours" placeholder="Jours et heures utiles"/></div></div><div class="field"><label for="address">Adresse / repère</label><input id="address" placeholder="Repère utile pour trouver l’établissement"/></div><div class="formGrid"><div class="field"><label for="whatsapp">WhatsApp / téléphone client</label><input id="whatsapp" inputmode="tel" placeholder="Indicatif + numéro public"/><div class="hint">Le téléphone peut être dans la donnée. Il n’est pas mis dans l’URL QR.</div></div><div class="field"><label for="publicSlug">Slug public client</label><input id="publicSlug" placeholder="ex : digiylyfe"/><div class="hint">Slug propre visible dans l’URL client. Pas un numéro.</div></div></div><div class="formGrid"><div class="field"><label for="reservationUrl">Lien public réservation</label><input id="reservationUrl" inputmode="url" placeholder="https://.../reserver.html?slug=..."/></div><div class="field"><label for="publicFicheUrl">Lien fiche / clip public</label><input id="publicFicheUrl" inputmode="url" placeholder="https://.../fiche.html?slug=..."/></div></div><div class="formGrid"><div class="field"><label for="logoUrl">Logo URL</label><input id="logoUrl" inputmode="url" placeholder="https://..."/></div><div class="field"><label for="coverUrl">Photo / visuel URL</label><input id="coverUrl" inputmode="url" placeholder="https://..."/></div></div><div class="field"><label for="summary">Présentation courte</label><textarea id="summary" placeholder="Présente l’établissement en deux phrases simples."></textarea></div><div class="actions"><button class="btn primary" id="btnSave" type="button">💾 Enregistrer local</button><button class="btn gold" id="btnCopy" type="button">📋 Copier résumé</button><button class="btn blue" id="btnOpenResa" type="button">📅 Ouvrir réservation</button><button class="btn" id="btnOpenQr" type="button">🔳 Ouvrir QR</button><button class="btn" id="btnReloadSql" type="button">🔎 Relire SQL</button><button class="btn danger" id="btnReset" type="button">🧹 Vider local</button></div><div class="note" id="notice"></div></div></section>
+      <aside class="card" aria-label="Aperçu fiche RESA"><div class="cardHead"><div><div class="cardTitle">👁️ Aperçu client</div><div class="cardSub">Ce que le client comprend vite avant de réserver.</div></div><span class="tag">QR intégré</span></div><div class="preview"><div class="photoBox" id="photoBox"><span id="photoFallback">📅 Photo établissement</span><div class="photoBadge"><span class="pill" id="pvCityPill">Ville</span><span class="pill" id="pvActivityPill">Activité</span></div></div><div class="publicCard"><div class="publicName" id="pvName">Mon établissement</div><div class="publicMeta" id="pvMeta">Ville · activité · horaires</div><div class="publicBio" id="pvBio">Présentation courte de l’établissement.</div><div class="linkGrid" id="linksBox"></div></div><div class="qrBox"><img class="qrImg" id="qrImg" alt="QR réservation RESA"/><div class="qrText"><div class="qrTitle">QR réservation</div><div class="qrUrl" id="qrUrl">Lien en préparation.</div><button class="btn gold" id="btnCopyUrl" type="button">🔗 Copier lien QR</button></div></div></div></aside></section>
   </main>
-
-  <nav class="bottomBar" aria-label="Navigation rapide RESA">
-    <div class="bottomInner">
-      <a href="./hub.html"><span class="bi">🧭</span><span>HUB</span></a>
-      <a href="./dashboard-pro.html"><span class="bi">🏠</span><span>Accueil</span></a>
-      <a href="./cockpit.html"><span class="bi">📋</span><span>Réserv.</span></a>
-      <a class="active" href="./fiche.html"><span class="bi">🪪</span><span>Fiche</span></a>
-      <a href="./session.html"><span class="bi">🛡️</span><span>Session</span></a>
-    </div>
-  </nav>
+  <nav class="bottomBar" aria-label="Navigation rapide RESA"><div class="bottomInner"><a href="./index.html"><span class="bi">🏠</span><span>Index</span></a><a href="./qr.html"><span class="bi">🔳</span><span>QR</span></a><a href="./cockpit.html"><span class="bi">📋</span><span>Réserv.</span></a><a class="active" href="./fiche.html"><span class="bi">🪪</span><span>Fiche</span></a><a href="./session.html"><span class="bi">🛡️</span><span>Session</span></a></div></nav>
 
   <script>
     (() => {
       "use strict";
-
-      const MODULE = "RESA";
-      const TABLE = "digiy_resa_public_fiches";
-      const PUBLIC_BASE = String(window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/");
-      const LOGIN_URL = String(window.DIGIY_LOGIN_URL || "./pin.html");
-
-      const SENSITIVE_URL_KEYS = [
-        "phone","tel","p_phone","owner_phone","owner_id","slug",
-        "resa_phone","resa_tel","business_phone","whatsapp","msisdn",
-        "subscription_phone","checkout_phone","subscription_slug","pro_slug","source_slug",
-        "pin","pin4","token","session_token","module","return","redirect","redirect_url","url","from","v"
-      ];
-
-      const FIELDS = [
-        "businessName","activity","city","hours","address","whatsapp","publicSlug",
-        "reservationUrl","publicFicheUrl","logoUrl","coverUrl","summary"
-      ];
-
-      const $ = id => document.getElementById(id);
-      let proSlug = "";
-
-      function safe(v){ return String(v || "").trim(); }
-      function normalizeSlug(v){
-        return String(v || "")
-          .trim().toLowerCase()
-          .replace(/\s+/g,"-")
-          .replace(/[^a-z0-9-]/g,"")
-          .replace(/-+/g,"-")
-          .replace(/^-|-$/g,"");
-      }
-      function isPublicSlugSensitive(v){
-        const s = safe(v);
-        if(!s) return true;
-        if(/\d{7,}/.test(s)) return true;
-        if(/token|session|pin|phone|tel|whatsapp/i.test(s)) return true;
-        return false;
-      }
-      function cleanHttps(v){
-        const raw = safe(v);
-        if(!raw) return "";
-        if(!/^https:\/\//i.test(raw)) return "";
-        return raw;
-      }
-      function normPhone(v){
-        return String(v || "").replace(/[^\d+]/g,"").trim();
-      }
-      function esc(v){
-        return String(v ?? "")
-          .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-          .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
-      }
-      function publicUrl(page, slug){
-        const s = normalizeSlug(slug);
-        if(!s || isPublicSlugSensitive(s)) return "";
-        const u = new URL(page, PUBLIC_BASE);
-        u.searchParams.set("slug", s);
-        return u.toString();
-      }
-      function qrUrl(target){
-        return "https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=12&data=" + encodeURIComponent(target || PUBLIC_BASE);
-      }
-      function storageKey(){
-        return "DIGIY_RESA_FICHE_V2_" + (proSlug || "NO_SLUG");
-      }
-      function show(msg,type){
-        const el = $("notice");
-        if(!el) return;
-        el.className = "note show " + (type || "warn");
-        el.textContent = msg || "";
-      }
-      function goPin(reason){
-        try{
-          sessionStorage.setItem("DIGIY_RESA_RETURN_AFTER_PIN", "fiche.html");
-          if(reason) sessionStorage.setItem("DIGIY_RESA_PIN_REASON", reason);
-        }catch(_){}
-        document.body.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#0e4226;color:#f0fff5;font-family:system-ui,sans-serif;text-align:center"><div><h1>🔐 Retour PIN</h1><p style="font-weight:800">Session ou slug RESA absent. On repasse par le coffre.</p></div></main>';
-        setTimeout(() => { location.replace(LOGIN_URL); }, 250);
-      }
-      function cleanVisibleUrl(){
-        try{
-          const url = new URL(location.href);
-          let changed = false;
-          SENSITIVE_URL_KEYS.forEach(key => {
-            if(url.searchParams.has(key)){
-              url.searchParams.delete(key);
-              changed = true;
-            }
-          });
-          if(changed) history.replaceState({}, document.title, url.pathname + url.search + url.hash);
-        }catch(_){}
-      }
-      function cleanInternalLinks(){
-        try{
-          document.querySelectorAll("a[href]").forEach(link => {
-            const href = link.getAttribute("href") || "";
-            if(!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
-            const url = new URL(href, location.href);
-            if(url.origin !== location.origin) return;
-            SENSITIVE_URL_KEYS.forEach(key => url.searchParams.delete(key));
-            const file = url.pathname.split("/").pop() || "index.html";
-            link.setAttribute("href","./" + file + (url.search || "") + (url.hash || ""));
-          });
-        }catch(_){}
-      }
-      async function waitGuard(){
-        try{
-          const guard = window.DIGIY_GUARD;
-          if(!guard) return {};
-          if(typeof guard.ready === "function"){
-            const out = guard.ready({ redirect:false, preserve_validation:true });
-            if(out && typeof out.then === "function") await out;
-          }else if(guard.ready && typeof guard.ready.then === "function"){
-            await guard.ready;
-          }
-          if(typeof guard.getSession === "function") return guard.getSession() || guard.state || {};
-          return guard.state || {};
-        }catch(e){
-          console.warn("[RESA FICHE] guard", e);
-          return {};
-        }
-      }
-      function collectLocalSlug(){
-        try{
-          return normalizeSlug(
-            localStorage.getItem("digiy_resa_slug") ||
-            localStorage.getItem("digiy_resa_last_slug") ||
-            localStorage.getItem("resa_slug") ||
-            localStorage.getItem("DIGIY_RESA_SLUG") ||
-            localStorage.getItem("digiy_abos_slug") ||
-            ""
-          );
-        }catch(_){ return ""; }
-      }
-      function resolveProSlug(state){
-        const st = state || {};
-        const candidates = [
-          st.slug, st.resa_slug, st.internal_slug, st.pro_slug, st.subscription_slug,
-          st.public_slug, st.business_slug, st.etablissement_slug,
-          st.payload && st.payload.slug,
-          st.payload && st.payload.resa_slug,
-          st.payload && st.payload.internal_slug,
-          collectLocalSlug()
-        ];
-        for(const c of candidates){
-          const s = normalizeSlug(c);
-          if(s) return s;
-        }
-        return "";
-      }
-      function setPill(state){
-        const el = $("sessionPill");
-        const module = String((state && state.module) || MODULE).toUpperCase();
-        const ok = !!proSlug && (!module || module === MODULE || module === "RESA");
-        if(ok){
-          el.textContent = "slug : " + proSlug;
-          el.className = "hdrPill ok";
-          $("proSlugTag").textContent = proSlug;
-        }else{
-          el.textContent = "PIN requis";
-          el.className = "hdrPill warn";
-        }
-      }
-      function getData(){
-        const d = {};
-        FIELDS.forEach(id => d[id] = safe($(id)?.value));
-        d.whatsapp = normPhone(d.whatsapp);
-        d.publicSlug = normalizeSlug(d.publicSlug);
-        d.logoUrl = cleanHttps(d.logoUrl);
-        d.coverUrl = cleanHttps(d.coverUrl);
-
-        if(d.publicSlug && !isPublicSlugSensitive(d.publicSlug)){
-          d.reservationUrl = cleanHttps(d.reservationUrl) || publicUrl("reserver.html", d.publicSlug);
-          d.publicFicheUrl = cleanHttps(d.publicFicheUrl) || publicUrl("fiche.html", d.publicSlug);
-        }else{
-          d.reservationUrl = cleanHttps(d.reservationUrl);
-          d.publicFicheUrl = cleanHttps(d.publicFicheUrl);
-        }
-        return d;
-      }
-      function setForm(d){
-        d = d || {};
-        $("businessName").value = d.businessName || d.business_name || d.name || "";
-        $("activity").value = d.activity || "";
-        $("city").value = d.city || d.zone || "";
-        $("hours").value = d.hours || d.horaires || "";
-        $("address").value = d.address || "";
-        $("whatsapp").value = d.whatsapp || d.phone || "";
-        $("publicSlug").value = normalizeSlug(d.publicSlug || d.public_slug || d.slug || "");
-        $("reservationUrl").value = d.reservationUrl || d.reservation_url || "";
-        $("publicFicheUrl").value = d.publicFicheUrl || d.fiche_url || "";
-        $("logoUrl").value = d.logoUrl || d.logo_url || "";
-        $("coverUrl").value = d.coverUrl || d.cover_url || "";
-        $("summary").value = d.summary || d.description || "";
-      }
-      function link(label, url, icon){
-        if(!url) return "";
-        return `<a class="publicLink" href="${esc(url)}" target="_blank" rel="noopener">${esc(icon || "🔗")} ${esc(label)}</a>`;
-      }
-      function render(){
-        const d = getData();
-        const publicSlugOk = d.publicSlug && !isPublicSlugSensitive(d.publicSlug);
-        const name = d.businessName || "Mon établissement";
-        const activity = d.activity || "Réservation";
-        const city = d.city || "Ville / zone";
-        const hours = d.hours || "Horaires à préciser";
-        const address = d.address || "Adresse / repère";
-        const summary = d.summary || "Présentation courte de l’établissement.";
-
-        $("pvName").textContent = name;
-        $("pvMeta").textContent = [city, activity, hours, address].filter(Boolean).join(" · ");
-        $("pvBio").textContent = summary;
-        $("pvCityPill").textContent = city;
-        $("pvActivityPill").textContent = activity;
-
-        const photoBox = $("photoBox");
-        const oldImg = photoBox.querySelector("img");
-        if(oldImg) oldImg.remove();
-
-        const imgUrl = d.coverUrl || d.logoUrl;
-        if(imgUrl){
-          const img = document.createElement("img");
-          img.src = imgUrl;
-          img.alt = name;
-          img.onerror = () => img.remove();
-          photoBox.prepend(img);
-        }
-
-        const whats = d.whatsapp ? "https://wa.me/" + encodeURIComponent(d.whatsapp.replace(/^\+/,"")) : "";
-        $("linksBox").innerHTML = [
-          link("WhatsApp", whats, "💬"),
-          link("Réserver", d.reservationUrl, "📅"),
-          link("Fiche / clip", d.publicFicheUrl, "🎬")
-        ].filter(Boolean).join("") || `<div class="publicMeta">Ajoute WhatsApp ou slug public pour activer les boutons client.</div>`;
-
-        if(publicSlugOk && !cleanHttps($("reservationUrl").value)){
-          $("reservationUrl").value = publicUrl("reserver.html", d.publicSlug);
-        }
-        if(publicSlugOk && !cleanHttps($("publicFicheUrl").value)){
-          $("publicFicheUrl").value = publicUrl("fiche.html", d.publicSlug);
-        }
-
-        const target = getData().reservationUrl || "";
-        $("qrUrl").textContent = target || "Renseigne un slug public propre pour préparer le QR.";
-        $("qrImg").src = qrUrl(target || PUBLIC_BASE);
-      }
-      async function findSqlRow(slug){
-        if(!slug || !window.supabase?.createClient) return null;
-        const client = window.supabase.createClient(window.DIGIY_SUPABASE_URL, window.DIGIY_SUPABASE_ANON_KEY);
-        const cols = ["internal_slug","resa_slug","slug","public_slug"];
-        for(const col of cols){
-          try{
-            const { data, error } = await client
-              .from(TABLE)
-              .select("*")
-              .eq("module", MODULE)
-              .eq("is_active", true)
-              .in("status", ["published","active"])
-              .eq(col, slug)
-              .limit(1)
-              .maybeSingle();
-            if(error) continue;
-            if(data) return data;
-          }catch(_){}
-        }
-        return null;
-      }
-      function loadLocal(){
-        try{
-          const raw = localStorage.getItem(storageKey());
-          if(!raw) return false;
-          const d = JSON.parse(raw);
-          setForm(d);
-          show("✅ Fiche locale retrouvée pour : " + proSlug, "ok");
-          return true;
-        }catch(_){ return false; }
-      }
-      function saveLocal(){
-        const d = getData();
-        if(!d.businessName){
-          show("Ajoute au moins le nom visible de l’établissement.", "warn");
-          $("businessName")?.focus();
-          return;
-        }
-        if(!d.publicSlug || isPublicSlugSensitive(d.publicSlug)){
-          show("Ajoute un slug public propre. Exemple : digiylyfe. Pas de téléphone dans le slug public.", "warn");
-          $("publicSlug")?.focus();
-          return;
-        }
-        try{
-          localStorage.setItem(storageKey(), JSON.stringify(d));
-          localStorage.setItem("digiy_resa_slug", proSlug);
-          localStorage.setItem("digiy_resa_last_slug", proSlug);
-          localStorage.setItem("digiy_resa_public_slug", d.publicSlug);
-          localStorage.setItem("digiy_resa_last_public_slug", d.publicSlug);
-          localStorage.setItem("digiy_resa_public_url", d.reservationUrl);
-        }catch(_){}
-        show("✅ Fiche RESA gardée sur cet appareil. QR et liens prêts.", "ok");
-        render();
-      }
-      async function loadSql(){
-        show("🔎 Lecture Supabase en cours…", "warn");
-        const row = await findSqlRow(proSlug);
-        if(!row){
-          show("Aucune fiche SQL trouvée pour ce slug RESA. Tu peux remplir ici, puis garder localement.", "warn");
-          return false;
-        }
-        setForm(row);
-        try{
-          localStorage.setItem(storageKey(), JSON.stringify(getData()));
-          localStorage.setItem("digiy_resa_slug", proSlug);
-          localStorage.setItem("digiy_resa_last_slug", proSlug);
-          localStorage.setItem("digiy_resa_public_slug", getData().publicSlug);
-          localStorage.setItem("digiy_resa_last_public_slug", getData().publicSlug);
-        }catch(_){}
-        render();
-        show("✅ Fiche SQL chargée et reliée au slug PRO : " + proSlug, "ok");
-        return true;
-      }
-      async function copyText(text){
-        try{
-          if(navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
-        }catch(_){}
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly","");
-        ta.style.position = "fixed";
-        ta.style.left = "-9999px";
-        document.body.appendChild(ta);
-        ta.select();
-        let ok = false;
-        try{ ok = document.execCommand("copy"); }catch(_){}
-        ta.remove();
-        if(!ok) throw new Error("copy_failed");
-      }
-      function summary(){
-        const d = getData();
-        return [
-          "FICHE RESA",
-          "Slug PRO : " + (proSlug || "—"),
-          "Slug public : " + (d.publicSlug || "—"),
-          "Établissement : " + (d.businessName || "—"),
-          "Activité : " + (d.activity || "—"),
-          "Ville / zone : " + (d.city || "—"),
-          "Adresse : " + (d.address || "—"),
-          "Horaires : " + (d.hours || "—"),
-          "WhatsApp : " + (d.whatsapp ? "renseigné" : "—"),
-          "Réservation : " + (d.reservationUrl || "—"),
-          "Fiche / clip : " + (d.publicFicheUrl || "—"),
-          "",
-          "Présentation :",
-          d.summary || "—"
-        ].join("\n");
-      }
-      function resetLocal(){
-        try{ localStorage.removeItem(storageKey()); }catch(_){}
-        FIELDS.forEach(id => { if($(id)) $(id).value = ""; });
-        show("Fiche locale vidée. Le SQL n’est pas touché.", "warn");
-        render();
-      }
-      async function boot(){
-        cleanVisibleUrl();
-        cleanInternalLinks();
-
-        const state = await waitGuard();
-        proSlug = resolveProSlug(state);
-        setPill(state);
-
-        if(!proSlug){
-          goPin("slug RESA absent");
-          return;
-        }
-
-        FIELDS.forEach(id => {
-          const el = $(id);
-          if(!el) return;
-          el.addEventListener("input", render);
-          el.addEventListener("change", render);
-        });
-
-        $("btnSave")?.addEventListener("click", saveLocal);
-        $("btnReset")?.addEventListener("click", resetLocal);
-        $("btnReloadSql")?.addEventListener("click", loadSql);
-        $("btnOpenQr")?.addEventListener("click", () => { location.href = "./qr.html"; });
-        $("btnOpenResa")?.addEventListener("click", () => {
-          const url = getData().reservationUrl;
-          if(!url){ show("Renseigne d’abord un slug public propre.", "warn"); return; }
-          window.open(url, "_blank", "noopener,noreferrer");
-        });
-        $("btnCopy")?.addEventListener("click", async () => {
-          try{ await copyText(summary()); show("✅ Résumé fiche copié.", "ok"); }
-          catch(_){ show(summary(), "warn"); }
-        });
-        $("btnCopyUrl")?.addEventListener("click", async () => {
-          const url = getData().reservationUrl;
-          if(!url){ show("Renseigne d’abord un slug public propre.", "warn"); return; }
-          try{ await copyText(url); show("✅ Lien QR copié.", "ok"); }
-          catch(_){ show("Impossible de copier automatiquement. Le lien est visible sous le QR.", "warn"); }
-        });
-
-        const foundLocal = loadLocal();
-        render();
-        if(!foundLocal) await loadSql();
-
-        cleanVisibleUrl();
-        cleanInternalLinks();
-      }
-
+      const MODULE = "RESA";const TABLE = "digiy_resa_public_fiches";const PUBLIC_BASE = String(window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/");const LOGIN_URL = String(window.DIGIY_LOGIN_URL || "./pin.html");
+      const SENSITIVE_URL_KEYS = ["phone","tel","p_phone","owner_phone","owner_id","slug","resa_phone","resa_tel","business_phone","whatsapp","msisdn","subscription_phone","checkout_phone","subscription_slug","pro_slug","source_slug","pin","pin4","token","session_token","module","return","redirect","redirect_url","url","from","v"];
+      const FIELDS = ["businessName","activity","city","hours","address","whatsapp","publicSlug","reservationUrl","publicFicheUrl","logoUrl","coverUrl","summary"];
+      const $ = id => document.getElementById(id);let proSlug = "";
+      function safe(v){ return String(v || "").trim(); }function normalizeSlug(v){return String(v || "").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,"");}function isPublicSlugSensitive(v){const s = safe(v);if(!s) return true;if(/\d{7,}/.test(s)) return true;if(/token|session|pin|phone|tel|whatsapp/i.test(s)) return true;return false;}function cleanHttps(v){const raw = safe(v);if(!raw) return "";if(!/^https:\/\//i.test(raw)) return "";return raw;}function normPhone(v){return String(v || "").replace(/[^\d+]/g,"").trim();}function esc(v){return String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}function publicUrl(page, slug){const s=normalizeSlug(slug);if(!s || isPublicSlugSensitive(s)) return "";const u=new URL(page,PUBLIC_BASE);u.searchParams.set("slug",s);return u.toString();}function qrUrl(target){return "https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=12&data=" + encodeURIComponent(target || PUBLIC_BASE);}function storageKey(){return "DIGIY_RESA_FICHE_V2_" + (proSlug || "NO_SLUG");}
+      function show(msg,type){const el=$("notice");if(!el)return;el.className="note show " + (type || "warn");el.textContent=msg || "";}function goPin(reason){try{sessionStorage.setItem("DIGIY_RESA_RETURN_AFTER_PIN","fiche.html");if(reason)sessionStorage.setItem("DIGIY_RESA_PIN_REASON",reason);}catch(_){}document.body.innerHTML='<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#0e4226;color:#f0fff5;font-family:system-ui,sans-serif;text-align:center"><div><h1>🔐 Retour PIN</h1><p style="font-weight:800">Session ou slug RESA absent. On repasse par le coffre.</p></div></main>';setTimeout(()=>{location.replace(LOGIN_URL);},250);}function cleanVisibleUrl(){try{const url=new URL(location.href);let changed=false;SENSITIVE_URL_KEYS.forEach(key=>{if(url.searchParams.has(key)){url.searchParams.delete(key);changed=true;}});if(changed)history.replaceState({},document.title,url.pathname+url.search+url.hash);}catch(_){}}
+      function cleanInternalLinks(){try{document.querySelectorAll("a[href]").forEach(link=>{const href=link.getAttribute("href")||"";if(!href||href.startsWith("#")||href.startsWith("mailto:")||href.startsWith("tel:"))return;const url=new URL(href,location.href);if(url.origin!==location.origin)return;SENSITIVE_URL_KEYS.forEach(key=>url.searchParams.delete(key));const file=url.pathname.split("/").pop()||"index.html";link.setAttribute("href","./"+file+(url.search||"")+(url.hash||""));});}catch(_){}}
+      async function waitGuard(){try{const guard=window.DIGIY_GUARD;if(!guard)return {};if(typeof guard.ready==="function"){const out=guard.ready({redirect:false,preserve_validation:true});if(out&&typeof out.then==="function")await out;}else if(guard.ready&&typeof guard.ready.then==="function"){await guard.ready;}if(typeof guard.getSession==="function")return guard.getSession()||guard.state||{};return guard.state||{};}catch(e){console.warn("[RESA FICHE] guard",e);return {};}}
+      function collectLocalSlug(){try{return normalizeSlug(localStorage.getItem("digiy_resa_slug")||localStorage.getItem("digiy_resa_last_slug")||localStorage.getItem("resa_slug")||localStorage.getItem("DIGIY_RESA_SLUG")||localStorage.getItem("digiy_abos_slug")||"");}catch(_){return "";}}
+      function resolveProSlug(state){const st=state||{};const candidates=[st.slug,st.resa_slug,st.internal_slug,st.pro_slug,st.subscription_slug,st.public_slug,st.business_slug,st.etablissement_slug,st.payload&&st.payload.slug,st.payload&&st.payload.resa_slug,st.payload&&st.payload.internal_slug,collectLocalSlug()];for(const c of candidates){const s=normalizeSlug(c);if(s)return s;}return "";}
+      function setPill(state){const el=$("sessionPill");const module=String((state&&state.module)||MODULE).toUpperCase();const ok=!!proSlug&&(!module||module===MODULE||module==="RESA");if(ok){el.textContent="slug : "+proSlug;el.className="hdrPill ok";$("proSlugTag").textContent=proSlug;}else{el.textContent="PIN requis";el.className="hdrPill warn";}}
+      function getData(){const d={};FIELDS.forEach(id=>d[id]=safe($(id)?.value));d.whatsapp=normPhone(d.whatsapp);d.publicSlug=normalizeSlug(d.publicSlug);d.logoUrl=cleanHttps(d.logoUrl);d.coverUrl=cleanHttps(d.coverUrl);if(d.publicSlug&&!isPublicSlugSensitive(d.publicSlug)){d.reservationUrl=cleanHttps(d.reservationUrl)||publicUrl("reserver.html",d.publicSlug);d.publicFicheUrl=cleanHttps(d.publicFicheUrl)||publicUrl("fiche.html",d.publicSlug);}else{d.reservationUrl=cleanHttps(d.reservationUrl);d.publicFicheUrl=cleanHttps(d.publicFicheUrl);}return d;}
+      function setForm(d){d=d||{};$("businessName").value=d.businessName||d.business_name||d.name||"";$("activity").value=d.activity||"";$("city").value=d.city||d.zone||"";$("hours").value=d.hours||d.horaires||"";$("address").value=d.address||"";$("whatsapp").value=d.whatsapp||d.phone||"";$("publicSlug").value=normalizeSlug(d.publicSlug||d.public_slug||d.slug||"");$("reservationUrl").value=d.reservationUrl||d.reservation_url||"";$("publicFicheUrl").value=d.publicFicheUrl||d.fiche_url||"";$("logoUrl").value=d.logoUrl||d.logo_url||"";$("coverUrl").value=d.coverUrl||d.cover_url||"";$("summary").value=d.summary||d.description||"";}
+      function link(label,url,icon){if(!url)return "";return `<a class="publicLink" href="${esc(url)}" target="_blank" rel="noopener">${esc(icon||"🔗")} ${esc(label)}</a>`;}
+      function render(){const d=getData();const publicSlugOk=d.publicSlug&&!isPublicSlugSensitive(d.publicSlug);const name=d.businessName||"Mon établissement";const activity=d.activity||"Réservation";const city=d.city||"Ville / zone";const hours=d.hours||"Horaires à préciser";const address=d.address||"Adresse / repère";const summary=d.summary||"Présentation courte de l’établissement.";$("pvName").textContent=name;$("pvMeta").textContent=[city,activity,hours,address].filter(Boolean).join(" · ");$("pvBio").textContent=summary;$("pvCityPill").textContent=city;$("pvActivityPill").textContent=activity;const photoBox=$("photoBox");const oldImg=photoBox.querySelector("img");if(oldImg)oldImg.remove();const imgUrl=d.coverUrl||d.logoUrl;if(imgUrl){const img=document.createElement("img");img.src=imgUrl;img.alt=name;img.onerror=()=>img.remove();photoBox.prepend(img);}const whats=d.whatsapp?"https://wa.me/"+encodeURIComponent(d.whatsapp.replace(/^\+/,"")):"";$("linksBox").innerHTML=[link("WhatsApp",whats,"💬"),link("Réserver",d.reservationUrl,"📅"),link("Fiche / clip",d.publicFicheUrl,"🎬")].filter(Boolean).join("")||`<div class="publicMeta">Ajoute WhatsApp ou slug public pour activer les boutons client.</div>`;if(publicSlugOk&&!cleanHttps($("reservationUrl").value))$("reservationUrl").value=publicUrl("reserver.html",d.publicSlug);if(publicSlugOk&&!cleanHttps($("publicFicheUrl").value))$("publicFicheUrl").value=publicUrl("fiche.html",d.publicSlug);const target=getData().reservationUrl||"";$("qrUrl").textContent=target||"Renseigne un slug public propre pour préparer le QR.";$("qrImg").src=qrUrl(target||PUBLIC_BASE);}
+      async function findSqlRow(slug){if(!slug||!window.supabase?.createClient)return null;const client=window.supabase.createClient(window.DIGIY_SUPABASE_URL,window.DIGIY_SUPABASE_ANON_KEY);const cols=["internal_slug","resa_slug","slug","public_slug"];for(const col of cols){try{const {data,error}=await client.from(TABLE).select("*").eq("module",MODULE).eq("is_active",true).in("status",["published","active"]).eq(col,slug).limit(1).maybeSingle();if(error)continue;if(data)return data;}catch(_){}}return null;}
+      function loadLocal(){try{const raw=localStorage.getItem(storageKey());if(!raw)return false;const d=JSON.parse(raw);setForm(d);show("✅ Fiche locale retrouvée pour : "+proSlug,"ok");return true;}catch(_){return false;}}
+      function saveLocal(){const d=getData();if(!d.businessName){show("Ajoute au moins le nom visible de l’établissement.","warn");$("businessName")?.focus();return;}if(!d.publicSlug||isPublicSlugSensitive(d.publicSlug)){show("Ajoute un slug public propre. Exemple : digiylyfe. Pas de téléphone dans le slug public.","warn");$("publicSlug")?.focus();return;}try{localStorage.setItem(storageKey(),JSON.stringify(d));localStorage.setItem("digiy_resa_slug",proSlug);localStorage.setItem("digiy_resa_last_slug",proSlug);localStorage.setItem("digiy_resa_public_slug",d.publicSlug);localStorage.setItem("digiy_resa_last_public_slug",d.publicSlug);localStorage.setItem("digiy_resa_public_url",d.reservationUrl);}catch(_){}show("✅ Fiche RESA gardée sur cet appareil. QR et liens prêts.","ok");render();}
+      async function loadSql(){show("🔎 Lecture Supabase en cours…","warn");const row=await findSqlRow(proSlug);if(!row){show("Aucune fiche SQL trouvée pour ce slug RESA. Tu peux remplir ici, puis garder localement.","warn");return false;}setForm(row);try{localStorage.setItem(storageKey(),JSON.stringify(getData()));localStorage.setItem("digiy_resa_slug",proSlug);localStorage.setItem("digiy_resa_last_slug",proSlug);localStorage.setItem("digiy_resa_public_slug",getData().publicSlug);localStorage.setItem("digiy_resa_last_public_slug",getData().publicSlug);}catch(_){}render();show("✅ Fiche SQL chargée et reliée au slug PRO : "+proSlug,"ok");return true;}
+      async function copyText(text){try{if(navigator.clipboard?.writeText)return navigator.clipboard.writeText(text);}catch(_){}const ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.left="-9999px";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy");}catch(_){}ta.remove();if(!ok)throw new Error("copy_failed");}
+      function summary(){const d=getData();return ["FICHE RESA","Slug PRO : "+(proSlug||"—"),"Slug public : "+(d.publicSlug||"—"),"Établissement : "+(d.businessName||"—"),"Activité : "+(d.activity||"—"),"Ville / zone : "+(d.city||"—"),"Adresse : "+(d.address||"—"),"Horaires : "+(d.hours||"—"),"WhatsApp : "+(d.whatsapp?"renseigné":"—"),"Réservation : "+(d.reservationUrl||"—"),"Fiche / clip : "+(d.publicFicheUrl||"—"),"","Présentation :",d.summary||"—"].join("\n");}
+      function resetLocal(){try{localStorage.removeItem(storageKey());}catch(_){}FIELDS.forEach(id=>{if($(id))$(id).value="";});show("Fiche locale vidée. Le SQL n’est pas touché.","warn");render();}
+      async function boot(){cleanVisibleUrl();cleanInternalLinks();const state=await waitGuard();proSlug=resolveProSlug(state);setPill(state);if(!proSlug){goPin("slug RESA absent");return;}FIELDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener("input",render);el.addEventListener("change",render);});$("btnSave")?.addEventListener("click",saveLocal);$("btnReset")?.addEventListener("click",resetLocal);$("btnReloadSql")?.addEventListener("click",loadSql);$("btnOpenQr")?.addEventListener("click",()=>{location.href="./qr.html";});$("btnOpenResa")?.addEventListener("click",()=>{const url=getData().reservationUrl;if(!url){show("Renseigne d’abord un slug public propre.","warn");return;}window.open(url,"_blank","noopener,noreferrer");});$("btnCopy")?.addEventListener("click",async()=>{try{await copyText(summary());show("✅ Résumé fiche copié.","ok");}catch(_){show(summary(),"warn");}});$("btnCopyUrl")?.addEventListener("click",async()=>{const url=getData().reservationUrl;if(!url){show("Renseigne d’abord un slug public propre.","warn");return;}try{await copyText(url);show("✅ Lien QR copié.","ok");}catch(_){show("Impossible de copier automatiquement. Le lien est visible sous le QR.","warn");}});const foundLocal=loadLocal();render();if(!foundLocal)await loadSql();cleanVisibleUrl();cleanInternalLinks();}
       boot();
     })();
   </script>
 </body>
 </html>
-
-
-
-
