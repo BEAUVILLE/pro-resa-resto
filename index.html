@@ -1,133 +1,181 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>JE RÉSERVE — RESA PRO stable</title>
-<meta name="theme-color" content="#1e7a46">
-<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
-<meta name="description" content="DIGIY RESA PRO — planning, réservations, fiche établissement avec QR intégré, QR réservation, action directe et gestion multi-métier.">
-<meta name="digiy-build" content="resa-pro-liens-pro-carnet-corriges-20260712">
-<script>
-window.DIGIY_MODULE="RESA";
-window.DIGIY_ABOS_MODULE="RESA";
-window.DIGIY_MODULE_LABEL="Je réserve";
-window.DIGIY_LOGIN_URL="./pin.html";
-window.DIGIY_SUPABASE_URL="https://wesqmwjjtsefyjnluosj.supabase.co";
-window.DIGIY_SUPABASE_ANON_KEY="sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
-window.DIGIY_SUPABASE_ANON=window.DIGIY_SUPABASE_ANON_KEY;
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./guard.js?v=resa-guard-20260710" onerror="location.replace('./pin.html')"></script>
-<style>
-:root{--bg:#0e4226;--bg2:#155a34;--green:#1e7a46;--gold:#c4973f;--gold2:#fff0a8;--ink:#f0fff5;--muted:rgba(240,255,245,.72);--line:rgba(255,255,255,.15);--card:rgba(255,255,255,.085);--shadow:0 18px 46px rgba(0,0,0,.24);--font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100svh;color:var(--ink);font-family:var(--font);font-weight:850;background:radial-gradient(780px 420px at 10% -6%,rgba(34,197,94,.23),transparent 60%),radial-gradient(680px 360px at 100% 0%,rgba(196,151,63,.22),transparent 56%),linear-gradient(180deg,#1e7a46,#155a34 54%,#0e4226);padding-bottom:84px}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}.wrap{width:min(1120px,calc(100% - 24px));margin:0 auto}.top{position:sticky;top:0;z-index:60;background:rgba(5,31,14,.96);border-bottom:1px solid rgba(255,240,168,.22);backdrop-filter:blur(14px)}.topin{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}.brand{display:flex;align-items:center;gap:10px;min-width:0}.logo{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#22c55e,#fff0a8);color:#052215;font-size:24px}.brand b{display:block;color:#fff0a8;font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:1000}.brand span{display:block;color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.toplinks{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{min-height:42px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);padding:0 13px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:1000;color:#fff}.pill.gold{background:linear-gradient(135deg,#fff0a8,#c4973f);color:#052215;border:0}.hero{padding:14px 0}.heroCard{border:1px solid rgba(255,240,168,.25);border-radius:30px;background:rgba(255,255,255,.08);box-shadow:var(--shadow);padding:18px}.kicker{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,240,168,.28);background:rgba(196,151,63,.12);color:#fff0a8;font-size:12px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}.hero h1{margin:12px 0 8px;font-size:clamp(36px,7vw,74px);line-height:.9;letter-spacing:-.06em;font-weight:1000}.hero p{margin:0;color:var(--muted);line-height:1.55;font-size:16px;max-width:78ch}.doors{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:9px;margin-top:14px}.door{min-height:88px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;gap:5px}.door strong:first-child{font-size:24px}.door b{font-size:13px;font-weight:1000}.door small{color:var(--muted);font-size:10.5px;font-weight:800}.door.gold{background:linear-gradient(135deg,#fff0a8,#c4973f);color:#052215;border:0}.door.gold small{color:rgba(5,34,21,.75)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panel{border:1px solid var(--line);border-radius:26px;background:var(--card);box-shadow:0 12px 34px rgba(0,0,0,.18);padding:14px;margin-bottom:12px}.panel h2{margin:0 0 10px;color:#fff0a8;font-size:26px;line-height:1;font-weight:1000;letter-spacing:-.03em}.panel p{margin:0 0 12px;color:var(--muted);line-height:1.5}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.stat{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.07);padding:12px}.stat span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}.stat b{display:block;margin-top:4px;font-size:24px;color:#fff}.form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#fff0a8;font-weight:1000;letter-spacing:.07em;text-transform:uppercase}.input,.select,.area{width:100%;min-height:48px;border-radius:16px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.93);color:#052215;padding:10px 12px;outline:none;font-weight:900}.area{min-height:92px;resize:vertical;line-height:1.45}.btn{min-height:50px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.09);color:#fff;font-weight:1000;display:inline-flex;align-items:center;justify-content:center;text-align:center;padding:0 14px}.btn.gold{background:linear-gradient(135deg,#fff0a8,#c4973f);color:#052215;border:0}.btn.red{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.35)}.btn.green{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.35);color:#bbf7d0}.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.slots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.slot{min-height:72px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.08);padding:8px;text-align:left}.slot b{display:block;color:#fff;font-size:15px}.slot span{display:block;margin-top:5px;color:var(--muted);font-size:11px;font-weight:900}.slot.busy{border-color:rgba(255,240,168,.42);background:rgba(196,151,63,.13)}.list{display:grid;gap:8px}.item{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.08);padding:12px}.itemTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.item b{color:#fff}.item small{display:block;color:var(--muted);line-height:1.45;margin-top:4px}.tag{border-radius:999px;border:1px solid rgba(255,240,168,.35);background:rgba(196,151,63,.13);color:#fff0a8;padding:6px 9px;font-size:11px;font-weight:1000;white-space:nowrap}.tag.ok{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.15);color:#bbf7d0}.mini{min-height:38px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.08);font-size:12px;font-weight:1000}.sectionTitle{padding-top:76px;margin-top:-64px}.preview{white-space:pre-wrap;border:1px solid rgba(255,240,168,.25);border-radius:18px;background:rgba(0,0,0,.18);padding:12px;color:#fff0a8;line-height:1.45;min-height:140px}.bottom{position:fixed;left:0;right:0;bottom:0;z-index:70;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(5,31,14,.97);border-top:1px solid rgba(255,240,168,.22);backdrop-filter:blur(12px)}.bottomin{width:min(820px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.bottom a{min-height:54px;border-radius:15px;display:grid;place-items:center;align-content:center;gap:2px;text-align:center;color:rgba(240,255,245,.78);font-size:11px;font-weight:1000}.bottom .active{background:linear-gradient(135deg,#fff0a8,#c4973f);color:#052215}.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:100;border-radius:999px;background:rgba(0,0,0,.82);border:1px solid var(--line);color:#fff;padding:12px 16px;font-weight:1000;transition:.18s;pointer-events:none}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}footer{padding:20px 0 34px;color:var(--muted);font-size:12px;text-align:center}@media(max-width:1020px){.doors{grid-template-columns:repeat(3,1fr)}}@media(max-width:900px){.grid{grid-template-columns:1fr}.slots{grid-template-columns:repeat(4,1fr)}}@media(max-width:560px){.toplinks{display:none}.doors{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,1fr)}.heroCard{padding:16px}.door{min-height:82px}}
-</style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>DIGIY RESA PRO — Accueil</title>
+  <meta name="theme-color" content="#0e4226"/>
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
+  <meta name="description" content="Accueil simple DIGIY RESA PRO : réservation, planning, fiche, QR et partage WhatsApp."/>
+  <meta name="digiy-resa" content="resa-pro-accueil-simple-20260716"/>
+
+  <script>
+    window.DIGIY_MODULE="RESA";
+    window.DIGIY_ABOS_MODULE="RESA";
+    window.DIGIY_MODULE_LABEL="Je réserve";
+    window.DIGIY_LOGIN_URL="./pin.html";
+    window.DIGIY_SUPABASE_URL="https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY="sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON=window.DIGIY_SUPABASE_ANON_KEY;
+  </script>
+
+  <style>
+    :root{
+      --green:#1e7a46;--green2:#155a34;--green3:#0e4226;
+      --gold:#c4973f;--gold2:#fff0a8;--ink:#f0fff5;
+      --muted:rgba(240,255,245,.74);--line:rgba(255,255,255,.15);
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{
+      margin:0;min-height:100dvh;padding:22px 14px calc(28px + env(safe-area-inset-bottom,0px));
+      display:grid;place-items:center;color:var(--ink);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(760px 430px at 10% -8%,rgba(34,197,94,.25),transparent 60%),
+        radial-gradient(650px 360px at 100% 0%,rgba(196,151,63,.22),transparent 58%),
+        linear-gradient(180deg,var(--green),var(--green2) 55%,var(--green3));
+    }
+    main{width:min(620px,100%)}
+    .brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px;color:var(--gold2);font-weight:1000;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+    .brand span:first-child{width:46px;height:46px;border-radius:17px;display:grid;place-items:center;background:linear-gradient(135deg,#22c55e,var(--gold2));color:#052215;font-size:24px;letter-spacing:0}
+    .card{padding:24px;border:1px solid rgba(255,240,168,.24);border-radius:32px;background:rgba(255,255,255,.085);box-shadow:0 24px 60px rgba(0,0,0,.24);backdrop-filter:blur(12px)}
+    h1{margin:0 0 20px;text-align:center;font-size:clamp(42px,10vw,72px);line-height:.95;letter-spacing:-.055em;font-weight:1000}
+    nav{display:grid;gap:10px}
+    a,button{
+      width:100%;min-height:64px;border-radius:20px;border:1px solid var(--line);
+      background:rgba(255,255,255,.09);color:#fff;text-decoration:none;
+      display:flex;align-items:center;justify-content:center;text-align:center;
+      padding:12px 16px;font:inherit;font-size:17px;font-weight:1000;cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+    }
+    a:first-child{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#052215;border:0}
+    a:nth-child(2){background:rgba(34,197,94,.17);border-color:rgba(34,197,94,.40)}
+    button{background:linear-gradient(135deg,#22c55e,#bbf7d0);color:#052215;border:0}
+    #status{margin:14px 0 0;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,240,168,.28);background:rgba(0,0,0,.18);color:var(--gold2);text-align:center;line-height:1.4;font-size:14px;font-weight:900}
+    #status[hidden]{display:none}
+    .foot{margin:16px 0 0;text-align:center;color:var(--muted);font-size:12px;font-weight:850;line-height:1.45}
+    @media(max-width:480px){.card{padding:18px;border-radius:26px}a,button{min-height:60px;font-size:16px}h1{margin-bottom:17px}}
+  </style>
 </head>
 <body>
-<header class="top"><div class="wrap topin"><a class="brand" href="#top"><div class="logo">📅</div><div><b>JE RÉSERVE</b><span>RESA PRO · fiche + QR intégré</span></div></a><div class="toplinks"><a class="pill gold" href="#add">➕ Ajouter</a><a class="pill gold" href="./fiche.html">🪪 Fiche</a><a class="pill gold" href="./qr.html">🔳 QR</a><a class="pill" href="./action-directe.html">📲 Action directe</a></div></div></header>
-<main class="wrap" id="top">
-<section class="hero"><div class="heroCard"><span class="kicker">RESA V2 · fiche PRO avec QR intégré</span><h1>Planning devant. Fiche prête. QR intégré.</h1><p>Chaque pro RESA peut avoir sa fiche établissement : nom visible, activité, zone, horaires, WhatsApp public, slug client et QR de réservation intégré. Le QR reste aussi disponible en page dédiée.</p><nav class="doors" aria-label="Portes RESA"><a class="door gold" href="#add"><strong>➕</strong><b>Ajouter</b><small>réservation</small></a><a class="door" href="#planning"><strong>🗓️</strong><b>Planning</b><small>créneaux du jour</small></a><a class="door" href="#admin"><strong>🏢</strong><b>Admin</b><small>établissement</small></a><a class="door" href="#all"><strong>📚</strong><b>Réservations</b><small>historique</small></a><a class="door" href="#carnet"><strong>📒</strong><b>PRO CARNET</b><small>option séparée</small></a><a class="door gold" href="./fiche.html"><strong>🪪</strong><b>Fiche</b><small>QR intégré</small></a><a class="door gold" href="./qr.html"><strong>🔳</strong><b>QR</b><small>page QR</small></a><a class="door gold" href="./action-directe.html"><strong>📲</strong><b>Action directe</b><small>page séparée</small></a><a class="door" href="#services"><strong>🧭</strong><b>Services</b><small>durées</small></a><a class="door" href="#data"><strong>🛡️</strong><b>Données</b><small>export / import</small></a></nav></div></section>
-<section class="panel"><div class="stats"><div class="stat"><span>Réservations</span><b id="statCount">0</b></div><div class="stat"><span>Confirmées</span><b id="statOk">0</b></div><div class="stat"><span>Personnes</span><b id="statGuests">0</b></div><div class="stat"><span>Acomptes</span><b id="statDeposit">0</b></div></div></section>
-<section class="grid"><div class="panel sectionTitle" id="add"><h2>➕ Ajouter réservation</h2><p>Client, date, heure, durée, quantité/personnes. Le pro confirme.</p><form class="form" id="resaForm"><div class="field"><label>Client</label><input class="input" id="clientName" placeholder="Nom client" required></div><div class="field"><label>Téléphone</label><input class="input" id="clientPhone" placeholder="Téléphone" inputmode="tel"></div><div class="field"><label>Date</label><input class="input" id="bookingDate" type="date" required></div><div class="field"><label>Heure</label><input class="input" id="bookingTime" type="time" value="09:00" step="900" required></div><div class="field"><label>Durée</label><select class="select" id="bookingDuration"><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1h</option><option value="90">1h30</option><option value="120">2h</option><option value="240">4h</option><option value="480">Journée</option><option value="1440">Nuit / 24h</option></select></div><div class="field"><label>Personnes / unités</label><input class="input" id="bookingGuests" type="number" min="1" value="1"></div><div class="field"><label>Service</label><select class="select" id="bookingService"><option>Mon entreprise / DIGIYLYFE</option><option>Rendez-vous entreprise</option><option>Docteur / médecin</option><option>Dentiste</option><option>Architecte</option><option>Garage / mécanicien</option><option>Onglerie</option><option>Coiffeur / barber</option><option>Artisan / intervention</option><option>Consultation / conseil</option><option>Table restaurant</option><option>Chambre / nuitée</option><option>Service libre</option></select></div><div class="field"><label>Statut</label><select class="select" id="bookingStatus"><option>Demande</option><option>Confirmée</option><option>Acompte reçu</option></select></div><div class="field"><label>Acompte</label><input class="input" id="bookingDeposit" type="number" min="0" value="0" inputmode="numeric"></div><div class="field full"><label>Note</label><textarea class="area" id="bookingNote" placeholder="Note courte"></textarea></div><div class="field full"><button class="btn gold" type="submit">Ajouter la réservation</button></div></form></div><div class="panel sectionTitle" id="planning"><h2>🗓️ Planning du jour</h2><p>Créneaux visibles. Les réservations du jour remontent ici.</p><div class="field"><label>Date planning</label><input class="input" id="planningDate" type="date"></div><div class="slots" id="slotGrid" style="margin-top:10px"></div></div></section>
-<section class="grid"><div class="panel sectionTitle" id="all"><h2>📚 Réservations</h2><div class="list" id="bookingList"></div></div><div class="panel sectionTitle" id="carnet"><h2>📒 PRO CARNET · abonnement séparé</h2><p>RESA PRO garde ici le suivi local des acomptes. PRO CARNET n’est pas inclus automatiquement dans l’abonnement RESA.</p><div class="preview" id="paySummary"></div><div class="btns"><a class="btn gold" href="https://digiy-carnet-pro.digiylyfe.com/inscription-pay.html" target="_blank" rel="noopener noreferrer">📒 S’inscrire à PRO CARNET</a></div></div></section>
-<section class="grid" id="plus"><div class="panel sectionTitle" id="admin"><h2>🏢 Admin établissement</h2><p>Pour préparer la visibilité client, ouvre la fiche PRO : elle contient le QR intégré.</p><div class="form"><div class="field"><label>Nom</label><input class="input" id="bizName" placeholder="Nom établissement"></div><div class="field"><label>Type</label><input class="input" id="bizType" placeholder="Restaurant, docteur, garage..."></div><div class="field"><label>Ville</label><input class="input" id="bizCity" placeholder="Saly, Mbour..."></div><div class="field"><label>Téléphone privé</label><input class="input" id="bizPhone" placeholder="Non public" inputmode="tel"></div><div class="field full"><label>Lien public</label><input class="input" id="bizPublic" placeholder="https://resa-table-resto.digiylyfe.com/"></div><div class="field full"><button class="btn gold" onclick="saveBusiness()">Enregistrer admin</button></div></div><div class="btns"><a class="btn gold" href="./fiche.html">🪪 Ouvrir fiche avec QR</a><a class="btn" href="./qr.html">🔳 Ouvrir QR seul</a></div></div><div class="panel sectionTitle" id="services"><h2>🧭 Services & durées</h2><div class="preview">RESA PRO est multi-métier : entreprise, santé, beauté, garage, architecte, artisan, table, chambre, service libre.\n\nFiche : fiche.html avec QR intégré.\nQR seul : qr.html pour impression rapide.</div><div class="btns"><a class="btn gold" href="./fiche.html">🪪 Fiche PRO</a><a class="btn gold" href="./qr.html">🔳 QR réservation</a></div></div><div class="panel sectionTitle" id="data"><h2>🛡️ Données</h2><p>Export/import local pour sauvegarde terrain.</p><div class="btns"><button class="btn" onclick="exportData()">Exporter</button><label class="btn">Importer<input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"></label><button class="btn red" onclick="resetAll()">Réinitialiser</button></div></div></section>
-</main><footer class="wrap">DIGIY RESA PRO · Planning · réservations · fiche PRO avec QR intégré · action directe.</footer><nav class="bottom"><div class="bottomin"><a class="active" href="#add"><span>➕</span><span>Ajouter</span></a><a href="#planning"><span>🗓️</span><span>Planning</span></a><a href="./fiche.html"><span>🪪</span><span>Fiche</span></a><a href="./qr.html"><span>🔳</span><span>QR</span></a><a href="./action-directe.html"><span>📲</span><span>Action</span></a></div></nav><div class="toast" id="toast">OK</div>
-<script>
-const $=id=>document.getElementById(id);
-const LS_B='digiy_resa_stable_bookings_v1';
-const LS_BIZ='digiy_resa_stable_biz_v1';
-let bookings=load(LS_B,[]);
-let business=Object.assign({name:'Mon établissement',type:'RESA',city:'',phone:'',publicLink:'https://resa-table-resto.digiylyfe.com/'},load(LS_BIZ,{}));
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-simple-home-20260716" onerror="location.replace('./pin.html')"></script>
 
-function load(k,f){try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(e){return f}}
-function save(){localStorage.setItem(LS_B,JSON.stringify(bookings));localStorage.setItem(LS_BIZ,JSON.stringify(business))}
-function uid(){return 'resa_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-function fmt(n){return Number(n||0).toLocaleString('fr-FR')}
-function money(n){return fmt(n)+' FCFA'}
-function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2200)}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-function minsToTime(m){const normalized=((m%1440)+1440)%1440;const h=String(Math.floor(normalized/60)).padStart(2,'0'),mm=String(normalized%60).padStart(2,'0');return h+':'+mm}
-function bookingDateTime(b){return String(b.date||'')+'T'+String(b.time||'00:00')}
-function localDateTimeMs(date,time){const parts=String(date||'').split('-').map(Number);const hm=String(time||'00:00').split(':').map(Number);if(parts.length!==3||parts.some(Number.isNaN))return NaN;return new Date(parts[0],parts[1]-1,parts[2],hm[0]||0,hm[1]||0,0,0).getTime()}
-function bookingInterval(b){const start=localDateTimeMs(b.date,b.time);const duration=Math.max(15,Number(b.duration||60));return {start,end:start+duration*60000}}
-function overlaps(a,b){return Number.isFinite(a.start)&&Number.isFinite(b.start)&&a.start<b.end&&b.start<a.end}
-function endLabel(b){const interval=bookingInterval(b);if(!Number.isFinite(interval.end))return '';const d=new Date(interval.end);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+  <main>
+    <div class="brand"><span>📅</span><span>DIGIY RESA PRO</span></div>
+    <section class="card">
+      <h1>Bonjour.</h1>
+      <nav aria-label="Actions RESA PRO">
+        <a href="./atelier.html#add">Nouvelle réservation</a>
+        <a href="./atelier.html#planning">Mon planning</a>
+        <a href="./fiche.html">Ma fiche établissement</a>
+        <a href="./qr.html">Mon QR</a>
+        <button id="shareWhatsApp" type="button">Partager sur WhatsApp</button>
+      </nav>
+      <p id="status" role="status" aria-live="polite" hidden></p>
+    </section>
+    <p class="foot">Paiement direct au professionnel · 0 % commission DIGIY</p>
+  </main>
 
-function renderStats(){
-  const total=bookings.length;
-  const ok=bookings.filter(b=>/confirm|acompte/i.test(b.status)).length;
-  const guests=bookings.reduce((a,b)=>a+Number(b.guests||0),0);
-  const dep=bookings.reduce((a,b)=>a+Number(b.deposit||0),0);
-  $('statCount').textContent=fmt(total);$('statOk').textContent=fmt(ok);$('statGuests').textContent=fmt(guests);$('statDeposit').textContent=fmt(dep)
-}
+  <script>
+    (()=>{
+      "use strict";
 
-function renderBookings(){
-  if(!bookings.length){$('bookingList').innerHTML='<div class="item"><b>Aucune réservation</b><small>Ajoute une demande pour démarrer.</small></div>';return}
-  $('bookingList').innerHTML=bookings.slice().sort((a,b)=>bookingDateTime(a).localeCompare(bookingDateTime(b))).map(b=>
-    '<div class="item"><div class="itemTop"><div><b>'+esc(b.client)+'</b><small>'+esc(b.date)+' · '+esc(b.time)+'–'+esc(endLabel(b))+' · '+fmt(b.guests)+' pers/unités · '+esc(b.service)+'</small><small>'+esc(b.note||'')+'</small></div><span class="tag '+(/confirm|acompte/i.test(b.status)?'ok':'')+'">'+esc(b.status)+'</span></div><div class="btns"><button class="mini" onclick="setStatus(\''+b.id+'\',\'Confirmée\')">Confirmer</button><button class="mini" onclick="setStatus(\''+b.id+'\',\'Acompte reçu\')">Acompte</button><button class="mini red" onclick="removeBooking(\''+b.id+'\')">Retirer</button></div></div>'
-  ).join('')
-}
+      const shareButton=document.getElementById("shareWhatsApp");
+      const statusBox=document.getElementById("status");
 
-function renderSlots(){
-  const date=$('planningDate').value||today();
-  const dayStart=localDateTimeMs(date,'00:00');
-  const dayEnd=dayStart+1440*60000;
-  const visible=bookings.filter(b=>{const i=bookingInterval(b);return i.start<dayEnd&&dayStart<i.end});
-  let html='';
-  for(let m=0;m<1440;m+=15){
-    const slotStart=dayStart+m*60000;
-    const slotEnd=slotStart+15*60000;
-    const hit=visible.find(b=>overlaps({start:slotStart,end:slotEnd},bookingInterval(b)));
-    const time=minsToTime(m);
-    html+='<div class="slot '+(hit?'busy':'')+'"><b>'+time+'</b><span>'+(hit?esc(hit.client)+' · '+esc(hit.service):'Libre')+'</span></div>'
-  }
-  $('slotGrid').innerHTML=html
-}
+      const SESSION_KEYS=[
+        "digiy_resa_session","digiy_resa_guard_session","digiy_guard_resa_session",
+        "DIGIY_RESA_SESSION","DIGIY_RESA_ACCESS","DIGIY_MODULE_ACCESS"
+      ];
+      const SLUG_KEYS=[
+        "digiy_resa_slug","digiy_resa_last_slug","resa_slug","DIGIY_RESA_SLUG",
+        "digiy_last_slug","DIGIY_SLUG","digiy_slug"
+      ];
 
-function renderBiz(){if($('bizName'))$('bizName').value=business.name||'';if($('bizType'))$('bizType').value=business.type||'';if($('bizCity'))$('bizCity').value=business.city||'';if($('bizPhone'))$('bizPhone').value=business.phone||'';if($('bizPublic'))$('bizPublic').value=business.publicLink||''}
-function renderPay(){const dep=bookings.reduce((a,b)=>a+Number(b.deposit||0),0),ok=bookings.filter(b=>/confirm|acompte/i.test(b.status)).length;$('paySummary').textContent='Acomptes notés dans RESA PRO : '+money(dep)+'\nRéservations confirmées/acompte : '+ok+'\n\nPaiement direct au professionnel. PRO CARNET est un abonnement séparé. DIGIY ne prend pas de commission.'}
-function render(){renderStats();renderBookings();renderSlots();renderBiz();renderPay()}
-function setStatus(id,st){const b=bookings.find(x=>x.id===id);if(b){b.status=st;save();render();toast(st)}}
-function removeBooking(id){bookings=bookings.filter(b=>b.id!==id);save();render();toast('Réservation retirée')}
-function saveBusiness(){business={name:$('bizName').value.trim()||'Mon établissement',type:$('bizType').value.trim()||'RESA',city:$('bizCity').value.trim(),phone:$('bizPhone').value.trim(),publicLink:$('bizPublic').value.trim()||'https://resa-table-resto.digiylyfe.com/'};save();render();toast('Admin enregistré')}
-function exportData(){const blob=new Blob([JSON.stringify({business,bookings},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='digiy-resa-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function importData(e){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result||'{}');if(d.business)business=Object.assign(business,d.business);if(Array.isArray(d.bookings))bookings=d.bookings;save();render();toast('Import OK')}catch(_){toast('Import impossible')}};r.readAsText(f)}
-function resetAll(){if(!confirm('Réinitialiser les données locales RESA ?'))return;bookings=[];save();render();toast('Réinitialisé')}
+      function setStatus(message){
+        statusBox.textContent=message||"";
+        statusBox.hidden=!message;
+      }
 
-function resolveConflict(candidate){
-  const interval=bookingInterval(candidate);
-  const conflict=bookings.find(existing=>overlaps(interval,bookingInterval(existing)));
-  if(!conflict) return {save:true,status:candidate.status};
-  const answer=prompt(
-    '⚠️ Chevauchement détecté avec '+conflict.client+' ('+conflict.date+' · '+conflict.time+'–'+endLabel(conflict)+').\n\n'+
-    'Tape 1 pour annuler.\nTape 2 pour enregistrer en attente.\nTape 3 pour confirmer quand même.',
-    '1'
-  );
-  if(answer==='2') return {save:true,status:'Demande en attente — chevauchement'};
-  if(answer==='3') return {save:true,status:candidate.status};
-  return {save:false,status:candidate.status};
-}
+      function read(storage,key){
+        try{return storage.getItem(key)||""}catch(_){return ""}
+      }
 
-$('bookingDate').value=today();
-$('planningDate').value=today();
-$('planningDate').addEventListener('input',renderSlots);
-$('resaForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const candidate={
-    id:uid(),client:$('clientName').value.trim()||'Client',phone:$('clientPhone').value.trim(),date:$('bookingDate').value,time:$('bookingTime').value,
-    duration:Number($('bookingDuration').value||60),guests:Number($('bookingGuests').value||1),service:$('bookingService').value,
-    status:$('bookingStatus').value,deposit:Number($('bookingDeposit').value||0),note:$('bookingNote').value.trim(),createdAt:new Date().toISOString()
-  };
-  const decision=resolveConflict(candidate);
-  if(!decision.save){toast('Ajout annulé · créneau déjà occupé');return}
-  candidate.status=decision.status;
-  bookings.unshift(candidate);
-  e.target.reset();
-  $('bookingDate').value=today();$('bookingTime').value='09:00';$('bookingGuests').value='1';$('bookingDuration').value='60';$('bookingDeposit').value='0';
-  save();render();toast(candidate.status.includes('chevauchement')?'Ajouté en attente':'Réservation ajoutée')
-});
-render();
-</script>
+      function parse(raw){
+        try{return JSON.parse(raw||"null")}catch(_){return null}
+      }
+
+      function normalizeSlug(value){
+        return String(value||"").trim().toLowerCase()
+          .replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-").replace(/^-|-$/g,"");
+      }
+
+      function cleanHttps(value){
+        const raw=String(value||"").trim();
+        if(!raw)return "";
+        try{
+          const url=new URL(raw);
+          return url.protocol==="https:"?url.toString():"";
+        }catch(_){return ""}
+      }
+
+      function internalSlug(){
+        for(const storage of [localStorage,sessionStorage]){
+          for(const key of SESSION_KEYS){
+            const session=parse(read(storage,key));
+            const value=normalizeSlug(session?.slug||session?.pro_slug||session?.resa_slug||session?.subscription_slug||"");
+            if(value)return value;
+          }
+          for(const key of SLUG_KEYS){
+            const value=normalizeSlug(read(storage,key));
+            if(value)return value;
+          }
+        }
+        return "";
+      }
+
+      function ficheData(){
+        const proSlug=internalSlug();
+        if(!proSlug)return null;
+        try{return parse(localStorage.getItem("DIGIY_RESA_FICHE_V2_"+proSlug))}catch(_){return null}
+      }
+
+      function businessData(){
+        try{return parse(localStorage.getItem("digiy_resa_stable_biz_v1"))}catch(_){return null}
+      }
+
+      function resolvePublicUrl(){
+        const direct=cleanHttps(read(localStorage,"digiy_resa_public_url"));
+        if(direct)return direct;
+
+        const fiche=ficheData()||{};
+        const reservation=cleanHttps(fiche.reservationUrl||fiche.reservation_url||"");
+        if(reservation)return reservation;
+
+        const publicFiche=cleanHttps(fiche.publicFicheUrl||fiche.fiche_url||"");
+        if(publicFiche)return publicFiche;
+
+        const business=businessData()||{};
+        const businessUrl=cleanHttps(business.publicLink||business.public_url||"");
+        if(businessUrl)return businessUrl;
+
+        return "";
+      }
+
+      shareButton.addEventListener("click",()=>{
+        const publicUrl=resolvePublicUrl();
+        if(!publicUrl){
+          setStatus("Prépare d’abord ta fiche établissement et son lien public.");
+          return;
+        }
+        const message="Bonjour, voici ma page de réservation DIGIY : "+publicUrl;
+        setStatus("Ouverture de WhatsApp…");
+        location.href="https://wa.me/?text="+encodeURIComponent(message);
+      });
+    })();
+  </script>
 </body>
 </html>
