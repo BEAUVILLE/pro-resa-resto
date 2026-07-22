@@ -1,1 +1,2343 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="refresh" content="0;url=./atelier.html#all"><title>RESA PRO — Réservations</title></head><body><main><h1>Réservations RESA</h1><p><a href="./atelier.html#all">Ouvrir les réservations</a></p></main></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Je réserve — Réservations RESA PRO</title>
+  <meta name="theme-color" content="#f4ead2"/>
+  <meta name="digiy-build" content="resa-session-cockpit-rail-clean-20260521"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <script>
+    window.DIGIY_SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY = "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON_KEY;
+    window.DIGIY_MODULE = "RESA";
+    window.DIGIY_LOGIN_URL = "./pin.html";
+  </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const BUILD_ID = "resa-cockpit-20260513-v3-pending-upcoming-mobile";
+      const BUILD_KEY = "DIGIY_RESA_COCKPIT_BUILD_ID";
+
+      function cleanBuildUrl(){
+        try{
+          const url = new URL(location.href);
+          let changed = false;
+
+          [
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "slug",
+            "resa_tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach((key) => {
+            if(url.searchParams.has(key)){
+              url.searchParams.delete(key);
+              changed = true;
+            }
+          });
+
+          if(changed){
+            history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+          }
+        }catch(_){}
+      }
+
+      function clearOldCachesOnce(){
+        try{
+          const previous = localStorage.getItem(BUILD_KEY);
+          if(previous === BUILD_ID) return;
+          localStorage.setItem(BUILD_KEY, BUILD_ID);
+
+          [
+            "digiy_resa_cockpit_cache",
+            "digiy_resa_bookings_cache",
+            "digiy_resa_old_ui",
+            "resa_cockpit_old_state"
+          ].forEach((key) => {
+            try{ localStorage.removeItem(key); }catch(_){}
+            try{ sessionStorage.removeItem(key); }catch(_){}
+          });
+
+          if("caches" in window){
+            caches.keys().then((keys) => {
+              keys
+                .filter((name) => /resa|pro-resa|digiy-resa/i.test(String(name || "")))
+                .forEach((name) => caches.delete(name));
+            }).catch(() => {});
+          }
+        }catch(_){}
+      }
+
+      cleanBuildUrl();
+      clearOldCachesOnce();
+
+      window.DIGIY_RESA_COCKPIT_BUILD_ID = BUILD_ID;
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./guard.js?v=resa-guard-20260531"></script>
+  <script src="./assets/js/digiy-module-bridge.js?v=resa-session-cockpit-rail-clean-20260521"></script>
+  <script src="./assets/js/digiy-resa-memory.js?v=resa-session-cockpit-rail-clean-20260521"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#061b14;
+      --card:#0b2a1f;
+      --card2:#0f3327;
+      --line:rgba(255,255,255,.12);
+      --text:#eafff1;
+      --muted:rgba(234,255,241,.72);
+      --gold:#facc15;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --accent:#38bdf8;
+      --shadow:0 18px 55px rgba(0,0,0,.35);
+      --radius:18px;
+      --fontA:"Outfit",system-ui,-apple-system,sans-serif;
+    }
+
+    *{box-sizing:border-box}
+
+    html,
+    body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--fontA);
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .wrap{
+      width:min(1180px,92vw);
+      margin:0 auto;
+      padding:18px 0 calc(104px + env(safe-area-inset-bottom,0px));
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+      font-weight:900;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(1.5rem,3.4vw,2.3rem);
+      line-height:1.05;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .actions-top{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg,#103428,#0c271e);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-family:var(--fontA);
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn.secondary{
+      background:#0c241b;
+    }
+
+    .btn.ghost{
+      background:rgba(255,255,255,.04);
+      border-style:dashed;
+      color:var(--muted);
+    }
+
+    .nav-rail{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      box-shadow:var(--shadow);
+    }
+
+    .nav-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .nav-link.active{
+      background:rgba(250,204,21,.12);
+      border-color:rgba(250,204,21,.34);
+      color:#fff1a8;
+    }
+
+    .hero{
+      background:linear-gradient(180deg,rgba(250,204,21,.12),rgba(56,189,248,.08));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:16px;
+    }
+
+    .hero h2{
+      margin:0 0 8px;
+      font-size:1.2rem;
+    }
+
+    .hero p{
+      margin:0 0 8px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .mini-card{
+      background:rgba(0,0,0,.14);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .mini-card strong{
+      display:block;
+      margin-bottom:8px;
+    }
+
+    .mode{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(250,204,21,.24);
+      background:rgba(250,204,21,.10);
+      color:#fff1a8;
+      font-size:.9rem;
+      font-weight:900;
+    }
+
+    .mode.live{
+      border-color:rgba(34,197,94,.24);
+      background:rgba(34,197,94,.10);
+      color:#b8ffd0;
+    }
+
+    .hero-cta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .hero-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.14);
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:900;
+    }
+
+    .grid-stats{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .stat{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:.88rem;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:1.8rem;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+
+    .panel-head h3{
+      margin:0;
+      font-size:1.05rem;
+    }
+
+    .filters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      border:1px solid var(--line);
+      background:#0b241b;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:800;
+      font-family:var(--fontA);
+    }
+
+    .chip.active{
+      background:#11392b;
+      border-color:rgba(250,204,21,.45);
+      color:#fff3b0;
+    }
+
+    .list{
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+
+    .booking{
+      background:var(--card2);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      display:grid;
+      gap:14px;
+    }
+
+    .booking-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .booking-main{
+      display:grid;
+      gap:6px;
+    }
+
+    .booking-name{
+      font-weight:900;
+      font-size:1.08rem;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:9px 12px;
+      font-weight:900;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+
+    .badge.pending{
+      background:rgba(245,158,11,.14);
+      color:#ffd38a;
+      border-color:rgba(245,158,11,.25);
+    }
+
+    .badge.confirmed{
+      background:rgba(34,197,94,.14);
+      color:#9ef2ba;
+      border-color:rgba(34,197,94,.25);
+    }
+
+    .badge.cancelled{
+      background:rgba(239,68,68,.14);
+      color:#ffb0b0;
+      border-color:rgba(239,68,68,.25);
+    }
+
+    .badge.done{
+      background:rgba(56,189,248,.14);
+      color:#b7ecff;
+      border-color:rgba(56,189,248,.25);
+    }
+
+    .badge.no_show{
+      background:rgba(250,204,21,.12);
+      color:#fff1a8;
+      border-color:rgba(250,204,21,.24);
+    }
+
+    .note{
+      border-left:3px solid rgba(250,204,21,.4);
+      padding-left:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .service-box{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .service-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:900;
+    }
+
+    .empty{
+      padding:28px 18px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .footer-note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.92rem;
+      text-align:center;
+    }
+
+    #bookingList,
+    #panelTitle{
+      scroll-margin-top:96px;
+    }
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:99990;
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));
+      background:rgba(6,27,20,.94);
+      border-top:1px solid rgba(255,255,255,.10);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .bottomNavInner{
+      width:min(100%,760px);
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:6px;
+    }
+
+    .bottomNav a{
+      min-height:58px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:3px;
+      color:rgba(234,255,241,.70);
+      font-size:11px;
+      font-weight:950;
+      text-align:center;
+      border:1px solid transparent;
+      text-decoration:none;
+    }
+
+    .bottomNav .ico{
+      font-size:18px;
+      line-height:1;
+    }
+
+    .bottomNav a.active{
+      color:#061b14;
+      background:linear-gradient(135deg,var(--gold),var(--ok));
+      border-color:rgba(250,204,21,.28);
+      box-shadow:0 12px 26px rgba(34,197,94,.18);
+    }
+
+    .mobileFastRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .mobileFastRow a{
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      text-decoration:none;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      box-shadow:var(--shadow);
+    }
+
+    .mobileFastRow a.primary{
+      background:linear-gradient(90deg,var(--ok),var(--gold));
+      color:#062015;
+      border:none;
+    }
+
+    .loading{
+      opacity:.72;
+      pointer-events:none;
+    }
+
+    @media(max-width:980px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid-stats{grid-template-columns:repeat(3,1fr)}
+    }
+
+    @media(max-width:640px){
+      .wrap{width:min(96vw,96vw)}
+      .grid-stats{grid-template-columns:repeat(2,1fr)}
+      .booking-top{flex-direction:column}
+      .actions-top,
+      .filters,
+      .hero-cta,
+      .nav-rail{
+        width:100%;
+      }
+      .actions-top > *,
+      .hero-cta > *,
+      .nav-rail > *{
+        flex:1 1 auto;
+      }
+      .mobileFastRow{grid-template-columns:1fr 1fr}
+      .nav-rail{display:none}
+      .actions-top{display:none}
+      .hero-cta{display:none}
+    }
+
+    /* =========================================================
+       DIGIY RESA — COCKPIT TERRAIN CLAIR + ANTI CACHE
+       Liste des réservations : lire vite, agir au clic.
+       ========================================================= */
+    :root{
+      --bg:#f4ead2;
+      --card:#fff7e6;
+      --card2:#fffaf0;
+      --line:rgba(83,58,26,.22);
+      --text:#1f2a1f;
+      --muted:#3d3324;
+      --gold:#facc15;
+      --ok:#16a34a;
+      --warn:#d97706;
+      --danger:#dc2626;
+      --accent:#4f46e5;
+      --shadow:0 12px 28px rgba(77,52,22,.16);
+    }
+
+    html,
+    body{
+      background:
+        radial-gradient(circle at top left,rgba(250,204,21,.20),transparent 34%),
+        radial-gradient(circle at bottom right,rgba(22,101,52,.09),transparent 28%),
+        linear-gradient(180deg,#f6edd8,#ead9b7 56%,#dfc99c) !important;
+      color:#1f2a1f !important;
+      font-size:17px;
+      font-weight:850;
+    }
+
+    .topbar,
+    .nav-rail,
+    .hero,
+    .mini-card,
+    .stat,
+    .panel,
+    .booking,
+    .bottomNavInner,
+    .draftPanel,
+    .audioPanel,
+    .clickGuide{
+      background:linear-gradient(160deg,rgba(255,250,238,.98),rgba(246,232,202,.96)) !important;
+      border:2px solid rgba(83,58,26,.22) !important;
+      color:#1f2a1f !important;
+      box-shadow:0 10px 24px rgba(77,52,22,.12) !important;
+    }
+
+    .bottomNav{
+      background:rgba(244,234,210,.92) !important;
+      border-top:1px solid rgba(83,58,26,.18) !important;
+    }
+
+    .eyebrow,
+    .panel-head h3,
+    h1,
+    .hero h2,
+    .stat .value,
+    .booking-name,
+    .mini-card strong,
+    .draftTitle,
+    .audioPanel strong,
+    .clickGuide h2{
+      color:#241a0d !important;
+      font-weight:900 !important;
+    }
+
+    .sub,
+    .hero p,
+    .stat .label,
+    .meta,
+    .note,
+    .footer-note,
+    #miniText,
+    .hero-pill,
+    .draftText,
+    .clickGuide p{
+      color:#3d3324 !important;
+      font-weight:900 !important;
+      line-height:1.55 !important;
+    }
+
+    .btn,
+    .btn.secondary,
+    .btn.ghost,
+    .nav-link,
+    .chip,
+    .service-pill,
+    .bottomNav a,
+    .actionBtn{
+      background:rgba(255,255,255,.70) !important;
+      color:#1f2a1f !important;
+      border:1px solid rgba(83,58,26,.22) !important;
+      font-weight:900 !important;
+      box-shadow:0 8px 18px rgba(77,52,22,.08) !important;
+    }
+
+    .nav-link.active,
+    .chip.active,
+    .bottomNav a.active,
+    .mobileFastRow a.primary,
+    .actionBtn.primary{
+      background:linear-gradient(135deg,#16a34a,#bbf7d0) !important;
+      color:#052215 !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .badge.pending{
+      background:rgba(254,243,199,.92) !important;
+      color:#6b4e09 !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .badge.confirmed{
+      background:rgba(220,252,231,.86) !important;
+      color:#14532d !important;
+      border-color:rgba(22,101,52,.28) !important;
+    }
+
+    .badge.cancelled{
+      background:rgba(254,226,226,.90) !important;
+      color:#9f1239 !important;
+      border-color:rgba(159,18,57,.28) !important;
+    }
+
+    .badge.done,
+    .badge.no_show{
+      background:rgba(255,255,255,.70) !important;
+      color:#1f2a1f !important;
+      border-color:rgba(83,58,26,.22) !important;
+    }
+
+    .mode,
+    .mode.live{
+      background:rgba(255,255,255,.72) !important;
+      color:#1f2a1f !important;
+      border-color:rgba(83,58,26,.22) !important;
+    }
+
+    .grid-stats{
+      gap:10px;
+    }
+
+    .stat{
+      min-height:105px;
+    }
+
+    .panel-head{
+      border-bottom:1px solid rgba(83,58,26,.20) !important;
+    }
+
+    .booking-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      border-top:1px solid rgba(83,58,26,.16);
+      padding-top:12px;
+    }
+
+    .actionBtn{
+      min-height:42px;
+      border-radius:999px;
+      padding:9px 12px;
+      cursor:pointer;
+      font-family:var(--fontA);
+      font-size:13px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+    }
+
+    .actionBtn.gold{
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .draftPanel,
+    .audioPanel,
+    .clickGuide{
+      margin-bottom:14px;
+      padding:16px;
+      border-radius:24px;
+    }
+
+    .draftPanel{
+      display:none;
+    }
+
+    .draftPanel.show{
+      display:block;
+    }
+
+    .draftTitle{
+      font-size:18px;
+      margin-bottom:8px;
+    }
+
+    .draftText{
+      white-space:pre-wrap;
+      font-size:15px;
+    }
+
+    .draftActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .audioPanel{
+      text-align:center;
+      display:grid;
+      gap:9px;
+      border-color:rgba(22,101,52,.24) !important;
+    }
+
+    .audioPanel span{
+      color:#3d3324;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:900;
+    }
+
+    .audioPanel .btn{
+      width:min(100%,360px);
+      margin:0 auto;
+      background:linear-gradient(135deg,#facc15,#fff3c4) !important;
+      color:#241a0d !important;
+      border-color:rgba(121,83,12,.28) !important;
+    }
+
+    .clickGuide{
+      display:grid;
+      gap:10px;
+    }
+
+    .clickGuide h2{
+      margin:0;
+      font-size:clamp(22px,4vw,34px);
+      line-height:1.08;
+      letter-spacing:-.035em;
+    }
+
+    .clickGuide p{
+      margin:0;
+      font-size:15px;
+    }
+
+    .clickGuideRow{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .guideMini{
+      border:1px solid rgba(83,58,26,.20);
+      border-radius:18px;
+      background:rgba(255,255,255,.66);
+      padding:13px;
+      display:grid;
+      gap:5px;
+    }
+
+    .guideMini strong{
+      color:#241a0d;
+      font-size:15px;
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .guideMini span{
+      color:#3d3324;
+      font-size:13px;
+      line-height:1.42;
+      font-weight:900;
+    }
+
+    @media(max-width:980px){
+      .clickGuideRow{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+
+    @media(max-width:640px){
+      body{font-size:18px}
+      .wrap{width:min(96vw,96vw)}
+      .clickGuideRow{grid-template-columns:1fr}
+      .actionBtn{flex:1 1 46%}
+      .draftActions .btn{flex:1 1 100%}
+    }
+
+
+    /* =========================================================
+       DIGIY RESA — LISIBILITÉ ANCIENS / TERRAIN EXTÉRIEUR
+       Écriture plus grande, plus grasse, mieux respirée.
+       ========================================================= */
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+
+    body{
+      font-size:19px !important;
+      font-weight:900 !important;
+      line-height:1.5 !important;
+    }
+
+    h1{
+      font-size:clamp(2.15rem,7.2vw,4.6rem) !important;
+      line-height:1.02 !important;
+      font-weight:900 !important;
+      letter-spacing:-.045em !important;
+    }
+
+    h2{
+      font-size:clamp(1.55rem,4.8vw,2.55rem) !important;
+      line-height:1.12 !important;
+      font-weight:900 !important;
+    }
+
+    h3,
+    .panelTitle,
+    .assistant-title,
+    .draftTitle,
+    .audioPanel strong,
+    .clickGuide h2,
+    .clickPanelHead h2,
+    .booking-name{
+      font-size:1.28rem !important;
+      line-height:1.18 !important;
+      font-weight:900 !important;
+    }
+
+    p,
+    .lead,
+    .sub,
+    .hero p,
+    .panelText,
+    .assistant-text,
+    .assistant-item span,
+    .muted,
+    .note,
+    .draftText,
+    .clickGuide p,
+    .clickPanelHead p,
+    .mini,
+    .meta,
+    .footer-note,
+    .foot,
+    .noteHelp,
+    .taskCard span,
+    .clickCard span,
+    .guideMini span,
+    .service-pill{
+      font-size:1rem !important;
+      line-height:1.62 !important;
+      font-weight:900 !important;
+    }
+
+    .btn,
+    .nav-link,
+    .chip,
+    .pill,
+    .hero-pill,
+    .assistant-pill,
+    .assistant-mode,
+    .noteChip,
+    .bottomNav a,
+    .actionBtn,
+    .resaCardAction,
+    .clickBadge,
+    .tag,
+    button,
+    a.btn{
+      font-size:1rem !important;
+      font-weight:900 !important;
+      line-height:1.22 !important;
+    }
+
+    .btn,
+    .nav-link,
+    .chip,
+    .noteChip,
+    .actionBtn,
+    .clickCard,
+    .quickCard{
+      min-height:54px !important;
+    }
+
+    .bottomNav a{
+      font-size:.88rem !important;
+      min-height:64px !important;
+    }
+
+    .bottomNav .ico{
+      font-size:1.35rem !important;
+    }
+
+    .stat .label,
+    .label,
+    .kicker,
+    .eyebrow,
+    .assistant-kicker{
+      font-size:.95rem !important;
+      font-weight:900 !important;
+      letter-spacing:.08em !important;
+    }
+
+    .stat .value,
+    .bigMoney,
+    .value{
+      font-size:clamp(2.05rem,7vw,3.5rem) !important;
+      font-weight:900 !important;
+      line-height:1 !important;
+    }
+
+    .booking,
+    .card,
+    .assistant-card,
+    .hero,
+    .panel,
+    .clickPanel,
+    .clickGuide,
+    .audioPanel,
+    .draftPanel{
+      padding:18px !important;
+    }
+
+    textarea,
+    input,
+    select{
+      font-size:1.08rem !important;
+      font-weight:900 !important;
+      line-height:1.55 !important;
+    }
+
+    @media(max-width:640px){
+      body{
+        font-size:20px !important;
+      }
+
+      h1{
+        font-size:clamp(2.35rem,12vw,3.55rem) !important;
+      }
+
+      h2{
+        font-size:1.75rem !important;
+      }
+
+      h3,
+      .panelTitle,
+      .assistant-title,
+      .booking-name{
+        font-size:1.35rem !important;
+      }
+
+      .btn,
+      .nav-link,
+      .chip,
+      .noteChip,
+      .actionBtn{
+        min-height:60px !important;
+        font-size:1.05rem !important;
+      }
+
+      .bottomNav a{
+        min-height:68px !important;
+        font-size:.92rem !important;
+      }
+
+      .booking-actions{
+        gap:10px !important;
+      }
+
+      .actionBtn{
+        flex:1 1 100% !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">JE RÉSERVE</div>
+        <h1>Réservations</h1>
+        <div class="sub" id="topSub">Chargement des réservations…</div>
+      </div>
+      <div class="actions-top">
+        <button class="btn secondary" id="btnReload" type="button">Recharger</button>
+        <a class="btn" id="btnPlanningTop" href="./planning.html">Planning</a>
+      </div>
+    </div>
+
+    <nav class="nav-rail" aria-label="Navigation Mes réservations">
+      <a class="nav-link active" id="navCockpit" href="./cockpit.html">Réserv.</a>
+      <a class="nav-link" id="navDashboard" href="./dashboard-pro.html">Accueil</a>
+      <a class="nav-link" id="navPlanning" href="./planning.html">Planning</a>
+      <a class="nav-link" id="navQr" href="./qr.html">QR</a>
+      <a class="nav-link" id="navAssistant" href="./claw.html">Aide</a>
+      <a class="nav-link" id="navSettings" href="./etablissement.html">Plus</a>
+      <a class="nav-link" id="navMoney" href="https://pro-pay.digiylyfe.com/admin.html">💰 Mon Argent</a>
+      <a class="nav-link" id="navHome" href="./index.html">Façade</a>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="mode" id="modeBadge">Aperçu</div>
+          <h2 id="heroName">JE RÉSERVE</h2>
+          <p id="heroDesc">Ici tu lis les réservations du jour, les clients, les statuts et les services demandés.</p>
+
+          <div class="hero-meta">
+            <div class="hero-pill" id="heroSession">Session : protégée</div>
+            <div class="hero-pill" id="heroCity">Ville : —</div>
+            <div class="hero-pill" id="heroType">Activité : —</div>
+          </div>
+
+          <div class="hero-cta" id="heroCta">
+            <a class="btn" id="heroPlanning" href="./planning.html">Planning</a>
+            <a class="btn ghost" href="#panelTitle">Voir la liste</a>
+          </div>
+
+          <div class="mobileFastRow">
+            <a class="primary" id="fastReserv" href="#panelTitle">📋 Réserv.</a>
+            <a id="fastPlanning" href="./planning.html">🗓️ Planning</a>
+            <a id="fastNotes" href="./planning.html#quickResaNote">✍️ Notes</a>
+            <a id="fastPlus" href="./etablissement.html">⚙️ Plus</a>
+            <a id="fastMoney" href="https://pro-pay.digiylyfe.com/admin.html">💰 Mon Argent</a>
+          </div>
+        </div>
+
+        <div class="mini-card">
+          <strong id="miniTitle">Ce qui demande attention</strong>
+          <div id="miniText" style="color:var(--muted);line-height:1.55;">
+            Ici tu vois les réservations, les services choisis et les statuts à suivre.
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="audioPanel" aria-label="Guide audio cockpit RESA">
+      <strong>🎧 Guide du cockpit RESA</strong>
+      <span>
+        Écoute DIGIY : cette page sert à lire les réservations, filtrer les statuts,
+        et préparer les actions du service au clic.
+      </span>
+      <button class="btn" id="btnResaCockpitAudio" type="button">🎧 Écouter DIGIY</button>
+    </section>
+
+    <section class="clickGuide" aria-label="Doctrine cockpit RESA">
+      <h2>Piloter le service sans se perdre.</h2>
+      <p>
+        Le cockpit n’est pas fait pour écrire long. Le pro lit la réservation,
+        puis touche : confirmer, arrivé, terminé, cuisine ou note.
+      </p>
+      <div class="clickGuideRow">
+        <div class="guideMini"><strong>📥 Reçu</strong><span>Une demande arrive, elle reste visible.</span></div>
+        <div class="guideMini"><strong>✅ Confirmé</strong><span>Le client reçoit une réponse claire.</span></div>
+        <div class="guideMini"><strong>🍽️ Cuisine</strong><span>Le service sait quoi anticiper.</span></div>
+        <div class="guideMini"><strong>🏁 Terminé</strong><span>La trace reste rangée dans RESA.</span></div>
+      </div>
+    </section>
+
+    <section class="draftPanel" id="resaActionDraft" aria-live="polite">
+      <div class="draftTitle">Action préparée</div>
+      <div class="draftText" id="resaActionText">—</div>
+      <div class="draftActions">
+        <button class="btn primary" id="btnCopyActionDraft" type="button">📋 Copier le message</button>
+        <a class="btn" id="btnDraftPlanning" href="./planning.html">🗓️ Ouvrir planning</a>
+        <a class="btn" id="btnDraftMoney" href="https://pro-pay.digiylyfe.com/admin.html">💳 Note vers Mon Argent</a>
+      </div>
+    </section>
+
+    <section class="grid-stats">
+      <div class="stat"><div class="label">Total</div><div class="value" id="sTotal">0</div></div>
+      <div class="stat"><div class="label">En attente</div><div class="value" id="sPending">0</div></div>
+      <div class="stat"><div class="label">Confirmées</div><div class="value" id="sConfirmed">0</div></div>
+      <div class="stat"><div class="label">Passées</div><div class="value" id="sDone">0</div></div>
+      <div class="stat"><div class="label">Absent</div><div class="value" id="sNoShow">0</div></div>
+      <div class="stat"><div class="label">Annulées</div><div class="value" id="sCancelled">0</div></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h3 id="panelTitle">Liste des réservations</h3>
+        <div class="filters" id="filters">
+          <button class="chip active" data-filter="all" type="button">Toutes</button>
+          <button class="chip" data-filter="pending" type="button">En attente</button>
+          <button class="chip" data-filter="confirmed" type="button">Confirmées</button>
+          <button class="chip" data-filter="done" type="button">Passées</button>
+          <button class="chip" data-filter="no_show" type="button">Absent</button>
+          <button class="chip" data-filter="cancelled" type="button">Annulées</button>
+        </div>
+      </div>
+      <div class="list" id="bookingList"></div>
+      <div class="empty" id="emptyState" style="display:none;">Aucune réservation pour l'instant.</div>
+    </section>
+
+    <div class="footer-note" id="footerNote">DIGIYLYFE · Mes réservations · gestion terrain.</div>
+  </div>
+
+  <nav class="bottomNav" aria-label="Navigation RESA">
+    <div class="bottomNavInner">
+      <a id="bottomHome" href="./dashboard-pro.html"><span class="ico">🏠</span><span>Accueil</span></a>
+      <a class="active" id="bottomReserv" href="./cockpit.html"><span class="ico">📋</span><span>Réserv.</span></a>
+      <a id="bottomPlanning" href="./planning.html"><span class="ico">🗓️</span><span>Planning</span></a>
+      <a id="bottomNotes" href="./planning.html#quickResaNote"><span class="ico">✍️</span><span>Notes</span></a>
+      <a id="bottomMore" href="./etablissement.html"><span class="ico">⚙️</span><span>Plus</span></a>
+    </div>
+  </nav>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const MODULE = "RESA";
+      const QR_PATH = "./qr.html";
+      const ASSISTANT_PATH = "./claw.html";
+      const DEFAULT_LOOKAHEAD_DAYS = 30;
+
+      const query = new URL(location.href).searchParams;
+      const queryDate = query.get("date") || "";
+
+      const $ = (id) => document.getElementById(id);
+
+      let sb = null;
+      let ALL_BOOKINGS = [];
+      let ACTIVE_FILTER = "all";
+      let PROFILE = null;
+      let RESOLVED_SLUG = "";
+      let ACTIVE_DATE = "";
+      let IS_RANGE_MODE = false;
+      let IS_PREVIEW = true;
+
+      function normalizeSlug(v){
+        return String(v || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
+      }
+
+      function escapeHtml(v){
+        return String(v ?? "")
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+
+      function safeJsonParse(v){
+        try{ return typeof v === "string" ? JSON.parse(v) : v; }catch{ return null; }
+      }
+
+      function storageGet(key){
+        try{ const s = sessionStorage.getItem(key); if(s) return s; }catch{}
+        try{ const l = localStorage.getItem(key); if(l) return l; }catch{}
+        return "";
+      }
+
+      function storageSet(key,value){
+        try{ sessionStorage.setItem(key,String(value ?? "")); }catch{}
+        try{ localStorage.setItem(key,String(value ?? "")); }catch{}
+      }
+
+      function cleanVisibleUrl(){
+        try{
+          const u = new URL(location.href);
+          const legacySlug = normalizeSlug(u.searchParams.get("slug") || "");
+          if(legacySlug){
+            storageSet("digiy_resa_slug", legacySlug);
+            storageSet("digiy_resa_last_slug", legacySlug);
+          }
+          [
+            "slug",
+            "phone",
+            "tel",
+            "owner_phone",
+            "owner_id",
+            "resa_"+"tel",
+            "resa_phone",
+            "business_phone",
+            "whatsapp",
+            "module",
+            "return",
+            "redirect",
+            "redirect_url",
+            "url",
+            "from",
+            "v"
+          ].forEach(k => u.searchParams.delete(k));
+          history.replaceState({}, document.title, u.pathname + u.search + u.hash);
+        }catch(_){}
+      }
+
+      function getSessionSlug(){
+        const direct =
+          safeJsonParse(storageGet("DIGIY_RESA_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_RESA_PIN_SESSION")) ||
+          safeJsonParse(storageGet("DIGIY_SESSION_RESA")) ||
+          safeJsonParse(storageGet("digiy_resa_session"));
+
+        if(direct?.module === MODULE && direct?.slug) return normalizeSlug(direct.slug);
+
+        const generic = safeJsonParse(storageGet("DIGIY_ACCESS"));
+        if(generic?.module === MODULE && generic?.slug) return normalizeSlug(generic.slug);
+
+        return "";
+      }
+
+      function getFallbackSlug(){
+        return normalizeSlug(
+          storageGet("digiy_resa_slug") ||
+          storageGet("digiy_resa_last_slug") ||
+          getSessionSlug() ||
+          ""
+        );
+      }
+
+      function fmtDate(v){
+        if(!v) return "—";
+        try{
+          const d = new Date(v);
+          if(Number.isNaN(d.getTime())) return String(v);
+          return d.toLocaleDateString("fr-FR",{year:"numeric",month:"2-digit",day:"2-digit"});
+        }catch{
+          return String(v);
+        }
+      }
+
+      function fmtDateTime(v){
+        if(!v) return "—";
+        try{
+          return new Date(v).toLocaleString("fr-FR",{
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+            hour:"2-digit",
+            minute:"2-digit"
+          });
+        }catch{
+          return String(v);
+        }
+      }
+
+      function normStatus(v){
+        const s = String(v || "pending").toLowerCase().trim();
+        if(["pending","confirmed","cancelled","done","no_show"].includes(s)) return s;
+        return "pending";
+      }
+
+      function statusLabel(v){
+        const s = normStatus(v);
+        if(s === "pending") return "En attente";
+        if(s === "confirmed") return "Confirmée";
+        if(s === "cancelled") return "Annulée";
+        if(s === "done") return "Passée";
+        if(s === "no_show") return "Absent";
+        return s;
+      }
+
+      function bookingIdOf(row){
+        return String(row?.id ?? row?.booking_id ?? row?.reservation_id ?? "");
+      }
+
+      function money(v){
+        if(v === null || v === undefined) return "";
+        const raw = String(v).trim();
+        if(raw === "" || raw.toLowerCase() === "null") return "";
+        const n = Number(raw);
+        if(!Number.isFinite(n) || n <= 0) return "";
+        return n.toLocaleString("fr-FR") + " FCFA";
+      }
+
+      function todayISO(){
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      }
+
+      function addDaysISO(days){
+        const d = new Date();
+        d.setDate(d.getDate() + Number(days || 0));
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      }
+
+      function panelTitleText(){
+        if(IS_RANGE_MODE){
+          return `Prochaines réservations · ${fmtDate(todayISO())} → ${fmtDate(addDaysISO(DEFAULT_LOOKAHEAD_DAYS))}`;
+        }
+        return `Réservations du ${fmtDate(ACTIVE_DATE)}`;
+      }
+
+      function normalizeRows(payload){
+        let rows = [];
+        if(Array.isArray(payload)) rows = payload;
+        else if(Array.isArray(payload?.rows)) rows = payload.rows;
+        else if(Array.isArray(payload?.bookings)) rows = payload.bookings;
+        else if(Array.isArray(payload?.data)) rows = payload.data;
+
+        return rows.map(r => ({
+          id: bookingIdOf(r),
+          status: normStatus(r.status),
+          status_note: r.status_note || "",
+          created_at: r.created_at || r.inserted_at || r.requested_at || null,
+          customer_name: r.customer_name || r.client_name || r.full_name || r.name || "Sans nom",
+          booking_date: r.booking_date || r.reservation_date || r.date || "",
+          booking_time: r.booking_time || r.reservation_time || r.time || "",
+          guests_count: r.guests_count ?? r.people_count ?? r.pax ?? r.covers ?? "",
+          service_id: r.service_id || "",
+          service_name: r.service_name || "",
+          duration_minutes: r.duration_minutes ?? "",
+          price_fcfa: r.price_fcfa ?? null,
+          note: r.note || r.note_text || r.message || r.special_request || ""
+        }));
+      }
+
+      function initClient(){
+        if(window.DIGIY_SB){
+          sb = window.DIGIY_SB;
+          return;
+        }
+
+        if(!window.supabase?.createClient) throw new Error("Supabase JS non chargé.");
+
+        sb = window.supabase.createClient(
+          window.DIGIY_SUPABASE_URL,
+          window.DIGIY_SUPABASE_ANON_KEY || window.DIGIY_SUPABASE_ANON,
+          {
+            auth:{
+              storageKey:"digiy-resa-cockpit-auth-token",
+              persistSession:false,
+              autoRefreshToken:false,
+              detectSessionInUrl:false,
+              storage:{
+                getItem:()=>null,
+                setItem:()=>{},
+                removeItem:()=>{}
+              }
+            }
+          }
+        );
+
+        window.DIGIY_SB = sb;
+      }
+
+      function buildSafeUrl(base, params){
+        const baseStr = (base == null ? "" : String(base)).trim();
+        if(!baseStr) return "./dashboard-pro.html";
+
+        let u;
+        try{
+          if(/^https?:\/\//i.test(baseStr)){
+            u = new URL(baseStr);
+          }else{
+            // Résoudre une base absolue fiable
+            const base = (typeof location !== "undefined" &&
+                          typeof location.href === "string" &&
+                          /^https?:\/\//i.test(location.href))
+                          ? location.href
+                          : (typeof document !== "undefined" && /^https?:\/\//i.test(document.baseURI || ""))
+                            ? document.baseURI
+                            : "https://pro-resa.digiylyfe.com/";
+            u = new URL(baseStr, base);
+          }
+        }catch(e){
+          return baseStr; // fallback silencieux — le lien reste valide
+        }
+
+        [
+          "slug",
+          "phone",
+          "tel",
+          "owner_phone",
+          "owner_id",
+          "resa_"+"tel",
+          "resa_phone",
+          "business_phone",
+          "whatsapp",
+          "module",
+          "return",
+          "redirect",
+          "redirect_url",
+          "url",
+          "from",
+          "v"
+        ].forEach(k => u.searchParams.delete(k));
+
+        try{
+          Object.entries(params || {}).forEach(([k,v]) => {
+            if(["slug","phone","tel","owner_phone","owner_id","resa_"+"tel","resa_phone","business_phone","whatsapp","return","redirect","redirect_url","url","from","v"].includes(k)) return;
+            if(v !== null && v !== undefined && String(v) !== "") u.searchParams.set(k,String(v));
+          });
+        }catch(e){}
+
+        if(u.origin === location.origin){
+          const file = u.pathname.split("/").pop() || "dashboard-pro.html";
+          return "./" + file + (u.search || "") + (u.hash || "");
+        }
+
+        return u.toString();
+      }
+
+      function cleanPath(path, extra = {}){
+        return buildSafeUrl(path, extra);
+      }
+
+      function setLinks(){
+        const dateParam = (!IS_RANGE_MODE && ACTIVE_DATE) ? {date: ACTIVE_DATE} : {};
+
+        const cockpitHref = cleanPath("./cockpit.html", dateParam);
+        const notesHref = cleanPath("./planning.html", dateParam) + "#quickResaNote";
+        const dashboardHref = cleanPath("./dashboard-pro.html");
+        const planningHref = cleanPath("./planning.html", dateParam);
+        const qrHref = cleanPath(QR_PATH);
+        const assistantHref = cleanPath(ASSISTANT_PATH);
+        const settingsHref = cleanPath("./etablissement.html");
+        const homeHref = cleanPath("./index.html");
+
+        const links = {
+          navCockpit: cockpitHref,
+          navDashboard: dashboardHref,
+          navPlanning: planningHref,
+          navQr: qrHref,
+          navAssistant: assistantHref,
+          navSettings: settingsHref,
+          navHome: homeHref,
+          btnPlanningTop: planningHref,
+          heroPlanning: planningHref,
+          fastPlanning: planningHref,
+          fastNotes: notesHref,
+          fastPlus: settingsHref,
+          bottomHome: dashboardHref,
+          bottomReserv: cockpitHref,
+          bottomPlanning: planningHref,
+          bottomNotes: notesHref,
+          bottomMore: settingsHref
+        };
+
+        Object.entries(links).forEach(([id, href]) => {
+          const el = $(id);
+          if(el) el.href = href;
+        });
+
+        const fastReserv = $("fastReserv");
+        if(fastReserv) fastReserv.href = "#panelTitle";
+      }
+
+      async function rpc(name,args){
+        if(!sb) throw new Error("supabase_unavailable");
+        const {data,error} = await sb.rpc(name,args);
+        if(error) throw error;
+        return data;
+      }
+
+      function resetStats(){
+        $("sTotal").textContent = "0";
+        $("sPending").textContent = "0";
+        $("sConfirmed").textContent = "0";
+        $("sDone").textContent = "0";
+        $("sNoShow").textContent = "0";
+        $("sCancelled").textContent = "0";
+      }
+
+      function resetView(){
+        $("emptyState").style.display = "none";
+        $("bookingList").innerHTML = "";
+        ALL_BOOKINGS = [];
+        PROFILE = null;
+      }
+
+      async function resolveGuardState(){
+        const fallbackSlug = getFallbackSlug();
+
+        if(!window.DIGIY_GUARD){
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_missing"};
+        }
+
+        try{
+          if(typeof window.DIGIY_GUARD.ready === "function"){
+            const st = await window.DIGIY_GUARD.ready();
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          if(window.DIGIY_GUARD.ready && typeof window.DIGIY_GUARD.ready.then === "function"){
+            const st = await window.DIGIY_GUARD.ready;
+            return {...(st || {}), slug:normalizeSlug(st?.slug || fallbackSlug || "")};
+          }
+
+          const st = window.DIGIY_GUARD.state || null;
+          if(!st) return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_empty"};
+
+          return {...st, slug:normalizeSlug(st.slug || fallbackSlug || "")};
+        }catch{
+          return {ok:false,preview:true,access_ok:false,slug:fallbackSlug,reason:"guard_error"};
+        }
+      }
+
+      function setHeroPills(city,type){
+        $("heroSession").textContent = "Session : 8h après code PIN";
+        $("heroCity").textContent = "Ville : " + (city || "—");
+        $("heroType").textContent = "Activité : " + (type || "—");
+      }
+
+      function setPreviewHero(message = ""){
+        $("modeBadge").className = "mode";
+        $("modeBadge").textContent = "Aperçu";
+        $("heroName").textContent = "JE RÉSERVE";
+        $("heroDesc").textContent = "Espace visible, mais session non ouverte. Aucune fausse réservation affichée.";
+        setHeroPills("—","Multi business");
+        $("topSub").textContent = message || "Aperçu sans données.";
+        $("panelTitle").textContent = panelTitleText();
+        $("footerNote").textContent = "Aperçu actif — aucune donnée de démonstration.";
+        $("miniTitle").textContent = "Espace vierge DIGIY";
+        $("miniText").textContent = "Ici, on garde une coquille propre : pas de fausses réservations, pas de brouillage. Les vraies données n'entrent que si l'accès est confirmé.";
+        setLinks();
+      }
+
+      function setLiveHero(){
+        $("modeBadge").className = "mode live";
+        $("modeBadge").textContent = "En direct";
+        $("topSub").textContent = "Espace chargé.";
+        $("panelTitle").textContent = panelTitleText();
+        $("footerNote").textContent = "Espace vivant branché sur les réservations réelles.";
+        $("miniTitle").textContent = "Ce qui demande attention";
+        $("miniText").textContent = "Ici tu vois les réservations, les services choisis et les statuts à suivre.";
+        setLinks();
+      }
+
+      async function loadProfile(){
+        const data = await rpc("resa_public_profile_by_slug",{p_slug:RESOLVED_SLUG});
+        if(!data?.ok) throw new Error(data?.error || "profile_not_found");
+
+        PROFILE = data.profile || {};
+        const title = PROFILE?.display_name || "Mon activité";
+        const city = PROFILE?.city || "—";
+        const type = PROFILE?.business_type || PROFILE?.category || "Multi business";
+
+        $("heroName").textContent = title;
+        $("heroDesc").textContent = PROFILE?.bio || "Lecture des réservations, suivi terrain, actions rapides.";
+        setHeroPills(city,type);
+      }
+
+      async function enrichBookingServices(rows){
+        const list = Array.isArray(rows) ? rows : [];
+        const ids = Array.from(new Set(list.map(row => String(row.service_id || "").trim()).filter(Boolean)));
+        if(!ids.length || !sb?.from) return list;
+
+        try{
+          const {data,error} = await sb
+            .from("digiy_resa_services")
+            .select("id,service_name,duration_minutes,price_fcfa")
+            .in("id", ids);
+
+          if(error) throw error;
+
+          const services = new Map((Array.isArray(data) ? data : []).map(s => [String(s.id), s]));
+
+          return list.map(row => {
+            const service = services.get(String(row.service_id || "")) || {};
+            const rawRowPrice = row.price_fcfa;
+            const rowPriceNumber = Number(rawRowPrice);
+            const servicePrice = service.price_fcfa;
+
+            return {
+              ...row,
+              service_name: row.service_name || service.service_name || "",
+              duration_minutes: row.duration_minutes || service.duration_minutes || "",
+              price_fcfa: Number.isFinite(rowPriceNumber) && rowPriceNumber > 0 ? rawRowPrice : (servicePrice ?? null)
+            };
+          });
+        }catch(e){
+          console.warn("[DIGIY RESA] enrichissement services ignoré", e?.message || e);
+          return list;
+        }
+      }
+
+
+      function readResaLocalMemoryRows(dateIso){
+        let rawRows = [];
+
+        try{
+          if(window.DIGIY_RESA_MEMORY && typeof window.DIGIY_RESA_MEMORY.readReservations === "function"){
+            rawRows = rawRows.concat(window.DIGIY_RESA_MEMORY.readReservations() || []);
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] mémoire officielle ignorée", e?.message || e);
+        }
+
+        [
+          "DIGIY_RESA_PRO_RESERVATIONS",
+          "DIGIY_RESA_RESERVATIONS",
+          "DIGIY_RESA_ACTION_RESERVATIONS"
+        ].forEach(key => {
+          try{
+            const rows = JSON.parse(localStorage.getItem(key) || "[]");
+            if(Array.isArray(rows)) rawRows = rawRows.concat(rows);
+          }catch(_){}
+        });
+
+        const map = new Map();
+
+        rawRows.forEach(r => {
+          if(!r) return;
+
+          const row = {
+            id: bookingIdOf(r),
+            status: normStatus(r.status || "pending"),
+            status_note: r.status_note || "",
+            created_at: r.created_at || r.updated_at || null,
+            customer_name: r.customer_name || r.client_name || r.client || r.full_name || r.name || "Client RESA",
+            booking_date: r.booking_date || r.checkin || r.date || r.arrival || "",
+            booking_time: r.booking_time || r.time || r.hour || r.heure || "",
+            guests_count: r.guests_count ?? r.guests ?? r.personnes ?? r.pax ?? r.covers ?? "",
+            service_id: r.service_id || "",
+            service_name: r.service_name || r.room || r.table || r.zone || "",
+            duration_minutes: r.duration_minutes ?? "",
+            price_fcfa: r.price_fcfa ?? r.amount ?? r.total ?? null,
+            note: r.note || r.note_text || r.message || r.raw_text || "",
+            source: r.source || "ACTION_RESA"
+          };
+
+          if(dateIso && row.booking_date && row.booking_date !== dateIso) return;
+
+          const key = String(row.id || row.customer_name + "-" + row.booking_date + "-" + row.booking_time);
+          map.set(key, Object.assign({}, map.get(key) || {}, row));
+        });
+
+        return Array.from(map.values());
+      }
+
+      function mergeResaRows(remoteRows, localRows){
+        const map = new Map();
+
+        (localRows || []).forEach(row => {
+          const key = String(row.id || row.customer_name + "-" + row.booking_date + "-" + row.booking_time);
+          map.set(key, row);
+        });
+
+        (remoteRows || []).forEach(row => {
+          const key = String(row.id || row.customer_name + "-" + row.booking_date + "-" + row.booking_time);
+          map.set(key, Object.assign({}, map.get(key) || {}, row));
+        });
+
+        return Array.from(map.values());
+      }
+
+
+      async function loadBookingsForDate(dateIso){
+        let remoteRows = [];
+
+        try{
+          const payload = await rpc("digiy_resa_get_bookings_by_day",{
+            p_slug:RESOLVED_SLUG,
+            p_date:dateIso
+          });
+
+          if(payload?.ok){
+            remoteRows = normalizeRows(payload.bookings || []).map(row => ({...row, booking_date: row.booking_date || dateIso}));
+          }else{
+            console.warn("[DIGIY RESA] RPC sans réservation", payload?.error || "bookings_not_found");
+          }
+        }catch(e){
+          console.warn("[DIGIY RESA] RPC ignorée, lecture mémoire locale", e?.message || e);
+        }
+
+        const localRows = readResaLocalMemoryRows(dateIso);
+        const rows = mergeResaRows(remoteRows, localRows);
+        return await enrichBookingServices(rows);
+      }
+
+      async function loadBookings(){
+        if(IS_RANGE_MODE){
+          const collected = [];
+
+          for(let i = 0; i <= DEFAULT_LOOKAHEAD_DAYS; i += 1){
+            const dateIso = addDaysISO(i);
+            try{
+              const rows = await loadBookingsForDate(dateIso);
+              collected.push(...rows);
+            }catch(e){
+              console.warn("[DIGIY RESA] lecture date ignorée", dateIso, e?.message || e);
+            }
+          }
+
+          ALL_BOOKINGS = collected
+            .filter(row => ["pending","confirmed"].includes(normStatus(row.status)))
+            .sort((a,b) => String(a.booking_date + " " + a.booking_time).localeCompare(String(b.booking_date + " " + b.booking_time)));
+
+          $("panelTitle").textContent = panelTitleText();
+          $("topSub").textContent = ALL_BOOKINGS.length
+            ? `${ALL_BOOKINGS.length} réservation(s) à venir chargée(s).`
+            : "Aucune réservation à venir sur les 30 prochains jours.";
+
+          renderStatsFromRows();
+          renderBookings();
+          return;
+        }
+
+        ALL_BOOKINGS = await loadBookingsForDate(ACTIVE_DATE);
+        $("panelTitle").textContent = panelTitleText();
+        renderStatsFromRows();
+        renderBookings();
+      }
+
+      function renderStatsFromRows(){
+        const rows = ALL_BOOKINGS || [];
+        $("sTotal").textContent = String(rows.length);
+        $("sPending").textContent = String(rows.filter(r => normStatus(r.status) === "pending").length);
+        $("sConfirmed").textContent = String(rows.filter(r => normStatus(r.status) === "confirmed").length);
+        $("sDone").textContent = String(rows.filter(r => normStatus(r.status) === "done").length);
+        $("sNoShow").textContent = String(rows.filter(r => normStatus(r.status) === "no_show").length);
+        $("sCancelled").textContent = String(rows.filter(r => normStatus(r.status) === "cancelled").length);
+      }
+
+      function filterRows(rows){
+        if(ACTIVE_FILTER === "all") return rows;
+        return rows.filter(r => normStatus(r.status) === ACTIVE_FILTER);
+      }
+
+      function serviceHtml(row){
+        const bits = [];
+
+        if(row.service_name){
+          bits.push(`<span class="service-pill">🧾 ${escapeHtml(row.service_name)}</span>`);
+        }else if(row.service_id){
+          bits.push(`<span class="service-pill">🧾 Service réservé</span>`);
+        }
+
+        if(row.duration_minutes) bits.push(`<span class="service-pill">⏱️ ${escapeHtml(String(row.duration_minutes))} min</span>`);
+
+        const priceLabel = money(row.price_fcfa);
+        if(priceLabel){
+          bits.push(`<span class="service-pill">💰 ${escapeHtml(priceLabel)}</span>`);
+        }
+
+        if(!bits.length) return "";
+
+        return `<div class="service-box">${bits.join("")}</div>`;
+      }
+
+      function renderBookings(){
+        const list = $("bookingList");
+        const empty = $("emptyState");
+        const rows = filterRows(ALL_BOOKINGS);
+
+        if(!rows.length){
+          list.innerHTML = "";
+          empty.style.display = "block";
+          empty.textContent = IS_PREVIEW
+            ? "Aucune donnée affichée en aperçu. Entre avec une session valide pour lire les vraies réservations."
+            : (IS_RANGE_MODE ? "Aucune réservation à venir sur les 30 prochains jours." : "Aucune réservation pour cette date.");
+          return;
+        }
+
+        empty.style.display = "none";
+
+        list.innerHTML = rows.map(row => {
+          const status = normStatus(row.status);
+
+          return `
+            <article class="booking">
+              <div class="booking-top">
+                <div class="booking-main">
+                  <div class="booking-name">${escapeHtml(row.customer_name)}</div>
+                  <div class="meta">
+                    <span>📅 ${escapeHtml(row.booking_date ? fmtDate(row.booking_date) : "—")}</span>
+                    <span>🕒 ${escapeHtml(row.booking_time || "—")}</span>
+                    <span>👥 ${escapeHtml(row.guests_count || "—")}</span>
+                    <span>🧾 ${escapeHtml(fmtDateTime(row.created_at))}</span>
+                  </div>
+                </div>
+                <div class="badge ${status}">${escapeHtml(statusLabel(status))}</div>
+              </div>
+              ${serviceHtml(row)}
+              ${row.note ? `<div class="note">"${escapeHtml(row.note)}"</div>` : ""}
+              <div class="booking-actions">
+                <button class="actionBtn primary" type="button" data-resa-action="confirm" data-booking-id="${escapeHtml(row.id)}">✅ Confirmer</button>
+                <button class="actionBtn" type="button" data-resa-action="arrived" data-booking-id="${escapeHtml(row.id)}">🚶 Arrivé</button>
+                <button class="actionBtn" type="button" data-resa-action="done" data-booking-id="${escapeHtml(row.id)}">🏁 Terminé</button>
+                <button class="actionBtn gold" type="button" data-resa-action="kitchen" data-booking-id="${escapeHtml(row.id)}">🍽️ Cuisine</button>
+                <button class="actionBtn" type="button" data-resa-action="note" data-booking-id="${escapeHtml(row.id)}">✍️ Note</button>
+              </div>
+            </article>`;
+        }).join("");
+      }
+
+      function initFilters(){
+        $("filters").querySelectorAll(".chip").forEach(chip => {
+          chip.addEventListener("click", () => {
+            $("filters").querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            ACTIVE_FILTER = chip.dataset.filter || "all";
+            renderBookings();
+          });
+        });
+      }
+
+
+      function findBookingById(id){
+        const clean = String(id || "");
+        return (ALL_BOOKINGS || []).find(row => String(row.id || "") === clean) || null;
+      }
+
+      function buildActionMessage(row, action){
+        const name = row?.customer_name || "Client";
+        const date = row?.booking_date ? fmtDate(row.booking_date) : "date à confirmer";
+        const time = row?.booking_time || "heure à confirmer";
+        const guests = row?.guests_count || "nombre à préciser";
+        const service = row?.service_name ? " · " + row.service_name : "";
+
+        const base =
+          "RESA DIGIY\\n" +
+          "Client : " + name + "\\n" +
+          "Date : " + date + "\\n" +
+          "Heure : " + time + "\\n" +
+          "Personnes : " + guests + service + "\\n\\n";
+
+        if(action === "confirm"){
+          return base + "Message prêt : Bonjour, votre réservation est bien confirmée. Merci de venir à l’heure indiquée. À bientôt.";
+        }
+
+        if(action === "arrived"){
+          return base + "Action service : le client est arrivé. La salle peut installer et la cuisine peut suivre le service.";
+        }
+
+        if(action === "done"){
+          return base + "Action service : réservation terminée. Le service peut être clôturé proprement.";
+        }
+
+        if(action === "kitchen"){
+          return base + "Message cuisine : réservation à préparer. Merci d’anticiper le service selon le nombre de personnes et la demande client.";
+        }
+
+        return base + "Note rapide : point à compléter par le responsable.";
+      }
+
+      function showActionDraft(row, action){
+        const panel = $("resaActionDraft");
+        const text = $("resaActionText");
+        const planning = $("btnDraftPlanning");
+        const money = $("btnDraftMoney");
+
+        if(!panel || !text) return;
+
+        const message = buildActionMessage(row, action);
+        text.textContent = message;
+        panel.classList.add("show");
+        panel.scrollIntoView({behavior:"smooth", block:"center"});
+
+        if(planning) planning.href = cleanPath("./planning.html", ACTIVE_DATE ? {date:ACTIVE_DATE} : {});
+
+        if(money){
+          const u = new URL("https://pro-pay.digiylyfe.com/admin.html");
+          u.searchParams.set("fromDraft", "1");
+          u.searchParams.set("intent", "quick_note");
+          u.searchParams.set("source_module", "RESA");
+          u.searchParams.set("source_id", "resa-cockpit-" + Date.now());
+          u.searchParams.set("scope", "pro");
+          u.searchParams.set("movement_date", new Date().toISOString().slice(0,10));
+          u.searchParams.set("direction", action === "done" || action === "confirm" ? "in" : "out");
+          u.searchParams.set("kind", action === "done" || action === "confirm" ? "sale" : "other");
+          u.searchParams.set("category", "booking");
+          u.searchParams.set("label", action === "kitchen" ? "Note cuisine réservation" : "Note réservation");
+          u.searchParams.set("note", message);
+          money.href = u.toString();
+        }
+
+        try{
+          sessionStorage.setItem("DIGIY_RESA_ACTION_DRAFT", JSON.stringify({
+            action,
+            booking_id: row?.id || "",
+            message,
+            created_at: new Date().toISOString()
+          }));
+        }catch(_){}
+      }
+
+      async function copyActionDraft(){
+        const text = $("resaActionText")?.textContent || "";
+        if(!text || text === "—") return;
+
+        try{
+          if(navigator.clipboard?.writeText){
+            await navigator.clipboard.writeText(text);
+          }else{
+            const input = document.createElement("textarea");
+            input.value = text;
+            input.style.position = "fixed";
+            input.style.left = "-9999px";
+            document.body.appendChild(input);
+            input.focus();
+            input.select();
+            document.execCommand("copy");
+            input.remove();
+          }
+          const btn = $("btnCopyActionDraft");
+          if(btn){
+            btn.textContent = "✅ Message copié";
+            setTimeout(() => btn.textContent = "📋 Copier le message", 1400);
+          }
+        }catch(_){}
+      }
+
+      function bindReservationActions(){
+        document.addEventListener("click", (ev) => {
+          const btn = ev.target.closest("[data-resa-action]");
+          if(!btn) return;
+
+          const action = btn.getAttribute("data-resa-action") || "note";
+          const id = btn.getAttribute("data-booking-id") || "";
+          const row = findBookingById(id);
+
+          if(!row) return;
+
+          showActionDraft(row, action);
+        });
+
+        $("btnCopyActionDraft")?.addEventListener("click", copyActionDraft);
+      }
+
+      function bindCockpitAudio(){
+        const btn = $("btnResaCockpitAudio");
+        if(!btn) return;
+
+        function canSpeak(){
+          return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+        }
+
+        function getFrenchVoice(){
+          try{
+            const voices = speechSynthesis.getVoices() || [];
+            return voices.find(v => /fr[-_]?fr/i.test(v.lang || "")) ||
+                   voices.find(v => /^fr/i.test(v.lang || "")) ||
+                   voices[0] ||
+                   null;
+          }catch(_){
+            return null;
+          }
+        }
+
+        function stop(){
+          try{ if(canSpeak()) speechSynthesis.cancel(); }catch(_){}
+          btn.textContent = "🎧 Écouter DIGIY";
+        }
+
+        function speak(){
+          if(!canSpeak()) return;
+
+          stop();
+
+          const audioText =
+            "Bienvenue dans le cockpit RESA by DIGIY. Ici, tu lis les réservations et tu agis vite. Les filtres montrent les demandes en attente, confirmées, passées, absentes ou annulées. Sur chaque réservation, tu peux préparer une action au clic : confirmer, client arrivé, terminé, cuisine ou note. DIGIY prépare le message pour le client, la salle ou la cuisine. Le professionnel ne doit pas écrire comme un secrétaire. Il lit, il clique, il valide. La réservation reste claire, le service reste organisé, et le terrain garde la main.";
+
+          const run = () => {
+            const u = new SpeechSynthesisUtterance(audioText);
+            const voice = getFrenchVoice();
+            if(voice) u.voice = voice;
+            u.lang = voice?.lang || "fr-FR";
+            u.rate = 0.86;
+            u.pitch = 1.04;
+            u.volume = 1;
+
+            btn.textContent = "⏹ Stop";
+
+            u.onend = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+            u.onerror = () => { btn.textContent = "🎧 Écouter DIGIY"; };
+
+            speechSynthesis.speak(u);
+          };
+
+          const voices = speechSynthesis.getVoices();
+          if(voices && voices.length) run();
+          else{
+            speechSynthesis.onvoiceschanged = run;
+            setTimeout(run, 650);
+          }
+        }
+
+        btn.addEventListener("click", () => {
+          if(canSpeak() && speechSynthesis.speaking) stop();
+          else speak();
+        });
+
+        window.addEventListener("pagehide", stop);
+        document.addEventListener("visibilitychange", () => {
+          if(document.hidden) stop();
+        });
+      }
+
+
+      async function boot(){
+        cleanVisibleUrl();
+        document.body.classList.add("loading");
+        resetView();
+        resetStats();
+        IS_RANGE_MODE = !queryDate;
+        ACTIVE_DATE = queryDate || todayISO();
+
+        try{
+          initClient();
+
+          const st = await resolveGuardState();
+          const stateModule = String(st?.module || st?.module_code || MODULE).toUpperCase();
+
+          if(st?.preview || !st?.access_ok || stateModule !== MODULE){
+            IS_PREVIEW = true;
+            RESOLVED_SLUG = normalizeSlug(st?.slug || getFallbackSlug() || "");
+            setPreviewHero("Session RESA non ouverte. Entre par ton code PIN pour lire les vraies réservations.");
+            renderBookings();
+            return;
+          }
+
+          IS_PREVIEW = false;
+          RESOLVED_SLUG = normalizeSlug(st.slug || getFallbackSlug() || "");
+
+          if(!RESOLVED_SLUG){
+            IS_PREVIEW = true;
+            setPreviewHero("Session ouverte, mais contexte RESA absent. Reviens par ton accès.");
+            renderBookings();
+            return;
+          }
+
+          storageSet("digiy_resa_last_slug",RESOLVED_SLUG);
+          storageSet("digiy_resa_slug",RESOLVED_SLUG);
+
+          // Câbler Mon Argent avec le slug
+          const _payBase = "https://pro-pay.digiylyfe.com/admin.html";
+          const _payUrl  = RESOLVED_SLUG ? _payBase + "?slug=" + encodeURIComponent(RESOLVED_SLUG) : _payBase;
+          ["navMoney","fastMoney"].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.href = _payUrl;
+          });
+
+          setLiveHero();
+          await loadProfile();
+          await loadBookings();
+        }catch(err){
+          console.error(err);
+          IS_PREVIEW = true;
+          RESOLVED_SLUG = getFallbackSlug();
+          setPreviewHero("Erreur de chargement. Aperçu affiché.");
+          renderBookings();
+        }finally{
+          document.body.classList.remove("loading");
+        }
+      }
+
+      $("btnReload").addEventListener("click",boot);
+      bindReservationActions();
+      bindCockpitAudio();
+      initFilters();
+      boot();
+    })();
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
