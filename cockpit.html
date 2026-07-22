@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
   <meta name="theme-color" content="#0e4226"/>
-  <meta name="digiy-build" content="resa-live-simple-mobile-20260722"/>
+  <meta name="digiy-build" content="resa-live-simple-mobile-clean-20260722"/>
   <meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate"/>
   <title>RESA PRO — Réservations</title>
   <script>
@@ -18,32 +18,107 @@
     window.DIGIY_SUPABASE_ANON=window.DIGIY_SUPABASE_ANON_KEY;
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-live-simple-mobile-20260722" onerror="location.replace('./pin.html')"></script>
+  <script src="./guard.js?v=resa-live-simple-mobile-clean-20260722" onerror="location.replace('./pin.html')"></script>
   <style>
-    :root{--bg:#0e4226;--bg2:#071d13;--card:#fff9e9;--ink:#172016;--muted:#655b49;--gold:#f3d17d;--green:#22c55e;--line:rgba(72,52,24,.20)}
+    :root{
+      --bg:#0e4226;
+      --bg2:#071d13;
+      --card:#fff9e9;
+      --ink:#172016;
+      --gold:#f3d17d;
+      --green:#22c55e;
+      --line:rgba(72,52,24,.20);
+    }
     *{box-sizing:border-box}
     html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-    body{margin:0;min-height:100dvh;padding:14px 12px calc(26px + env(safe-area-inset-bottom,0px));font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(700px 380px at 10% -8%,rgba(34,197,94,.24),transparent 58%),linear-gradient(180deg,var(--bg),var(--bg2));color:#fff;font-weight:850}
+    body{
+      margin:0;
+      min-height:100dvh;
+      padding:14px 12px calc(26px + env(safe-area-inset-bottom,0px));
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(700px 380px at 10% -8%,rgba(34,197,94,.24),transparent 58%),
+        linear-gradient(180deg,var(--bg),var(--bg2));
+      color:#fff;
+      font-weight:850;
+    }
     main{width:min(620px,100%);margin:auto}
     .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
-    .back,.reload{min-height:48px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:#fff;padding:0 14px;text-decoration:none;font:inherit;font-weight:1000;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+    .back,.reload{
+      min-height:48px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.09);
+      color:#fff;
+      padding:0 14px;
+      text-decoration:none;
+      font:inherit;
+      font-weight:1000;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
     .reload{background:linear-gradient(135deg,var(--gold),var(--green));color:#102014;border:0}
-    .hero{padding:20px;border-radius:28px;border:1px solid rgba(243,209,125,.28);background:rgba(255,255,255,.08);box-shadow:0 20px 52px rgba(0,0,0,.25)}
+    .hero{
+      padding:20px;
+      border-radius:28px;
+      border:1px solid rgba(243,209,125,.28);
+      background:rgba(255,255,255,.08);
+      box-shadow:0 20px 52px rgba(0,0,0,.25);
+    }
     .kicker{color:var(--gold);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:1000}
     h1{margin:7px 0 7px;font-size:clamp(38px,11vw,62px);line-height:.94;letter-spacing:-.05em}
     .lead{margin:0;color:rgba(255,255,255,.75);font-size:15px;line-height:1.45}
-    #status{margin:14px 0 0;padding:13px 14px;border-radius:17px;background:rgba(0,0,0,.20);border:1px solid rgba(255,255,255,.13);color:#fff1bd;line-height:1.45}
+    #status{
+      margin:14px 0 0;
+      padding:13px 14px;
+      border-radius:17px;
+      background:rgba(0,0,0,.20);
+      border:1px solid rgba(255,255,255,.13);
+      color:#fff1bd;
+      line-height:1.45;
+    }
+    #status[hidden]{display:none}
     .list{display:grid;gap:11px;margin-top:12px}
-    .booking{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+    .booking{
+      background:var(--card);
+      color:var(--ink);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px;
+      box-shadow:0 12px 28px rgba(0,0,0,.18);
+    }
     .bookingTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
     .name{font-size:21px;font-weight:1100;line-height:1.1}
-    .badge{flex:none;border-radius:999px;padding:7px 9px;background:#fff0b8;border:1px solid rgba(109,78,10,.20);font-size:12px;font-weight:1000}
+    .badge{
+      flex:none;
+      border-radius:999px;
+      padding:7px 9px;
+      background:#fff0b8;
+      border:1px solid rgba(109,78,10,.20);
+      font-size:12px;
+      font-weight:1000;
+    }
     .meta{display:grid;gap:5px;margin-top:10px;color:#3f382d;font-size:15px;line-height:1.35}
     .note{margin-top:10px;padding:10px 11px;border-radius:14px;background:#f0e5c9;color:#423a2d;line-height:1.4}
-    .empty{margin-top:12px;padding:24px 18px;border-radius:22px;background:var(--card);color:var(--ink);text-align:center;border:1px solid var(--line);line-height:1.5}
+    .empty{
+      margin-top:12px;
+      padding:24px 18px;
+      border-radius:22px;
+      background:var(--card);
+      color:var(--ink);
+      text-align:center;
+      border:1px solid var(--line);
+      line-height:1.5;
+    }
     .error{color:#ffd1d1!important;border-color:rgba(255,120,120,.28)!important}
-    .foot{text-align:center;margin:15px 0 0;color:rgba(255,255,255,.62);font-size:12px;line-height:1.45}
-    @media(max-width:430px){.back,.reload{min-height:46px;padding:0 12px}.hero{padding:18px}.booking{padding:14px}.name{font-size:19px}}
+    @media(max-width:430px){
+      .back,.reload{min-height:46px;padding:0 12px}
+      .hero{padding:18px}
+      .booking{padding:14px}
+      .name{font-size:19px}
+    }
   </style>
 </head>
 <body>
@@ -56,13 +131,12 @@
     <section class="hero">
       <div class="kicker">RESA PRO · données réelles</div>
       <h1 id="pageTitle">Réservations</h1>
-      <p class="lead" id="pageLead">Lecture simple des demandes clients enregistrées dans RESA.</p>
+      <p class="lead" id="pageLead">Les demandes clients prévues dans les 30 prochains jours.</p>
       <div id="status" role="status" aria-live="polite">Chargement…</div>
     </section>
 
     <section class="list" id="bookingList" aria-live="polite"></section>
-    <div class="empty" id="emptyState" hidden>Aucune réservation à venir sur les 30 prochains jours.</div>
-    <p class="foot">Aucun menu caché · aucun lien Mon Argent · retour direct au HUB.</p>
+    <div class="empty" id="emptyState" hidden></div>
   </main>
 
   <script>
@@ -76,18 +150,25 @@
       let client=null;
 
       function normalizeSlug(value){
-        return String(value||"").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,"");
+        return String(value||"").trim().toLowerCase()
+          .replace(/\s+/g,"-")
+          .replace(/[^a-z0-9-]/g,"")
+          .replace(/-+/g,"-")
+          .replace(/^-|-$/g,"");
       }
 
-      function safeParse(raw){try{return JSON.parse(raw||"null")}catch(_){return null}}
+      function safeParse(raw){
+        try{return JSON.parse(raw||"null")}catch(_){return null}
+      }
+
       function read(key){
-        try{const v=sessionStorage.getItem(key);if(v)return v}catch(_){}
+        try{const value=sessionStorage.getItem(key);if(value)return value}catch(_){}
         try{return localStorage.getItem(key)||""}catch(_){return ""}
       }
 
       function fallbackSlug(){
-        const sessionKeys=["DIGIY_RESA_SESSION","DIGIY_RESA_PIN_SESSION","DIGIY_SESSION_RESA","digiy_resa_session","DIGIY_ACCESS"];
-        for(const key of sessionKeys){
+        const keys=["DIGIY_RESA_SESSION","DIGIY_RESA_PIN_SESSION","DIGIY_SESSION_RESA","digiy_resa_session","DIGIY_ACCESS"];
+        for(const key of keys){
           const data=safeParse(read(key));
           if(String(data?.module||"").toUpperCase()===MODULE){
             const slug=normalizeSlug(data?.slug||data?.resa_slug||data?.pro_slug||"");
@@ -98,10 +179,10 @@
       }
 
       function isoDate(offset=0){
-        const d=new Date();
-        d.setHours(12,0,0,0);
-        d.setDate(d.getDate()+offset);
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        const date=new Date();
+        date.setHours(12,0,0,0);
+        date.setDate(date.getDate()+offset);
+        return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
       }
 
       function escapeHtml(value){
@@ -110,16 +191,18 @@
 
       function formatDate(value){
         if(!value)return "Date à confirmer";
-        const d=new Date(String(value)+"T12:00:00");
-        return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
+        const date=new Date(String(value)+"T12:00:00");
+        return Number.isNaN(date.getTime())
+          ? String(value)
+          : date.toLocaleDateString("fr-FR",{weekday:"short",day:"2-digit",month:"short"});
       }
 
       function statusLabel(value){
-        const s=String(value||"pending").toLowerCase();
-        if(s==="confirmed")return "Confirmée";
-        if(s==="cancelled")return "Annulée";
-        if(s==="done")return "Terminée";
-        if(s==="no_show")return "Absent";
+        const status=String(value||"pending").toLowerCase();
+        if(status==="confirmed")return "Confirmée";
+        if(status==="cancelled")return "Annulée";
+        if(status==="done")return "Terminée";
+        if(status==="no_show")return "Absent";
         return "En attente";
       }
 
@@ -127,7 +210,6 @@
         const source=Array.isArray(payload)?payload:(payload?.bookings||payload?.rows||payload?.data||[]);
         if(!Array.isArray(source))return [];
         return source.map(row=>({
-          id:String(row?.id||row?.booking_id||row?.reservation_id||""),
           customer_name:row?.customer_name||row?.client_name||row?.full_name||row?.name||"Client",
           booking_date:row?.booking_date||row?.reservation_date||row?.date||date,
           booking_time:row?.booking_time||row?.reservation_time||row?.time||"",
@@ -159,10 +241,11 @@
         for(let start=0;start<=LOOKAHEAD_DAYS;start+=5){
           const offsets=[];
           for(let i=start;i<Math.min(start+5,LOOKAHEAD_DAYS+1);i++)offsets.push(i);
-          const batch=await Promise.all(offsets.map(async offset=>{
-            try{return await loadDay(slug,isoDate(offset))}catch(error){console.warn("RESA date ignorée",isoDate(offset),error);return []}
+          const batches=await Promise.all(offsets.map(async offset=>{
+            try{return await loadDay(slug,isoDate(offset))}
+            catch(error){console.warn("RESA date ignorée",isoDate(offset),error);return []}
           }));
-          batch.forEach(rows=>all.push(...rows));
+          batches.forEach(rows=>all.push(...rows));
         }
         return all
           .filter(row=>!["cancelled","done","no_show"].includes(String(row.status||"").toLowerCase()))
@@ -173,18 +256,25 @@
         const list=$("bookingList");
         const empty=$("emptyState");
         list.innerHTML="";
+
         if(!rows.length){
           empty.hidden=false;
-          empty.textContent=todayMode?"Aucune réservation aujourd’hui.":"Aucune réservation à venir sur les 30 prochains jours.";
+          empty.textContent=todayMode
+            ? "Aucune réservation aujourd’hui."
+            : "Aucune réservation à venir sur les 30 prochains jours.";
           return;
         }
+
         empty.hidden=true;
         list.innerHTML=rows.map(row=>{
           const guests=row.guests_count!==""?` · ${escapeHtml(row.guests_count)} personne(s)`:"";
           const service=row.service_name?`<div>Service : ${escapeHtml(row.service_name)}</div>`:"";
           const note=row.note?`<div class="note">${escapeHtml(row.note)}</div>`:"";
           return `<article class="booking">
-            <div class="bookingTop"><div class="name">${escapeHtml(row.customer_name)}</div><span class="badge">${escapeHtml(statusLabel(row.status))}</span></div>
+            <div class="bookingTop">
+              <div class="name">${escapeHtml(row.customer_name)}</div>
+              <span class="badge">${escapeHtml(statusLabel(row.status))}</span>
+            </div>
             <div class="meta">
               <div>${escapeHtml(formatDate(row.booking_date))} · ${escapeHtml(row.booking_time||"Heure à confirmer")}${guests}</div>
               ${service}
@@ -195,12 +285,16 @@
       }
 
       async function boot(){
-        $("status").classList.remove("error");
-        $("status").textContent="Chargement des réservations réelles…";
+        const status=$("status");
+        status.hidden=false;
+        status.classList.remove("error");
+        status.textContent="Chargement des réservations…";
         $("bookingList").innerHTML="";
         $("emptyState").hidden=true;
         $("pageTitle").textContent=todayMode?"Planning du jour":"Réservations";
-        $("pageLead").textContent=todayMode?"Les réservations prévues aujourd’hui.":"Les demandes clients prévues dans les 30 prochains jours.";
+        $("pageLead").textContent=todayMode
+          ? "Les réservations prévues aujourd’hui."
+          : "Les demandes clients prévues dans les 30 prochains jours.";
 
         try{
           const state=await guardState();
@@ -209,16 +303,25 @@
             location.replace("./pin.html");
             return;
           }
+
           const slug=normalizeSlug(state?.slug||state?.resa_slug||state?.pro_slug||fallbackSlug());
           if(!slug)throw new Error("Contexte RESA absent.");
-          client=window.supabase.createClient(window.DIGIY_SUPABASE_URL,window.DIGIY_SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+
+          client=window.supabase.createClient(
+            window.DIGIY_SUPABASE_URL,
+            window.DIGIY_SUPABASE_ANON_KEY,
+            {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}
+          );
+
           const rows=await loadRows(slug);
           render(rows);
-          $("status").textContent=rows.length?`${rows.length} réservation(s) chargée(s).`:(todayMode?"Aucune réservation aujourd’hui.":"Aucune réservation à venir sur les 30 prochains jours.");
+          status.textContent="";
+          status.hidden=true;
         }catch(error){
           console.error(error);
-          $("status").classList.add("error");
-          $("status").textContent="Impossible de charger les réservations. Retourne au HUB puis réessaie.";
+          status.hidden=false;
+          status.classList.add("error");
+          status.textContent="Impossible de charger les réservations. Retourne au HUB puis réessaie.";
         }
       }
 
