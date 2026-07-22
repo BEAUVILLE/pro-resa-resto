@@ -1,149 +1,165 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" style="visibility:hidden">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Je réserve — Ma fiche établissement</title>
-  <meta name="theme-color" content="#1e7a46"/>
-  <meta name="robots" content="noindex,nofollow"/>
-  <meta name="description" content="DIGIY RESA PRO — fiche établissement gérée côté pro avec QR réservation."/>
-  <meta name="digiy-build" content="resa-fiche-pro-qr-integre-20260618"/>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="theme-color" content="#155a34">
+  <meta name="digiy-build" content="resa-fiche-cloud-rpc-v4-20260722">
+  <title>PRO RESA — Ma fiche établissement</title>
+  <meta name="description" content="Fiche établissement PRO RESA enregistrée et publiée dans Supabase.">
   <script>
-    window.DIGIY_SUPABASE_URL = window.DIGIY_SUPABASE_URL || "https://wesqmwjjtsefyjnluosj.supabase.co";
-    window.DIGIY_SUPABASE_ANON_KEY = window.DIGIY_SUPABASE_ANON_KEY || "sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
-    window.DIGIY_SUPABASE_ANON = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
-    window.DIGIY_MODULE = "RESA";
-    window.DIGIY_LOGIN_URL = "./pin.html";
-    window.DIGIY_PUBLIC_BASE_URL = window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/";
+    window.DIGIY_MODULE="RESA";
+    window.DIGIY_ABOS_MODULE="RESA";
+    window.DIGIY_MODULE_LABEL="Je réserve";
+    window.DIGIY_LOGIN_URL="./pin.html";
+    window.DIGIY_PUBLIC_BASE_URL="https://resa-table-resto.digiylyfe.com/";
+    window.DIGIY_SUPABASE_URL="https://wesqmwjjtsefyjnluosj.supabase.co";
+    window.DIGIY_SUPABASE_ANON_KEY="sb_publishable_tGHItRgeWDmGjnd0CK1DVQ_BIep4Ug3";
+    window.DIGIY_SUPABASE_ANON=window.DIGIY_SUPABASE_ANON_KEY;
   </script>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-guard-20260531"></script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet"/>
-
+  <script src="./guard.js?v=resa-guard-strict-pin-v4-20260716" onerror="location.replace('./pin.html')"></script>
   <style>
-    :root{
-      --bg:#1e7a46;--bg2:#155a34;--bg3:#0e4226;--bar:rgba(8,50,24,.96);
-      --gold:#c4973f;--gold2:#fff0a8;--green:#22c55e;--blue:#38bdf8;--red:#fb7185;
-      --text:#f0fff5;--muted:rgba(240,255,245,.76);--line:rgba(255,255,255,.18);
-      --card:rgba(255,255,255,.09);--shadow:0 16px 40px rgba(0,0,0,.22);
-      --r:18px;--max:1040px;--hdrH:52px;--barH:78px;
-    }
+    :root{--bg:#0e4226;--bg2:#071d13;--gold:#f4d27a;--green:#22c55e;--ink:#f3fff7;--muted:rgba(243,255,247,.74);--line:rgba(255,255,255,.15);--bad:#fecaca}
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-    body{
-      margin:0;min-height:100dvh;color:var(--text);
-      font-family:Outfit,system-ui,-apple-system,"Segoe UI",sans-serif;
-      font-size:19px;font-weight:950;
-      background:
-        radial-gradient(600px 390px at 16% 0%,rgba(74,222,128,.18),transparent 58%),
-        radial-gradient(420px 280px at 92% 8%,rgba(196,151,63,.15),transparent 52%),
-        linear-gradient(180deg,var(--bg) 0%,var(--bg2) 60%,var(--bg3) 100%);
-      padding:calc(var(--hdrH) + 14px) 12px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 18px);
-    }
-    a{color:inherit;text-decoration:none}
-    button,input,textarea,select{font:inherit}
-    button{color:inherit;cursor:pointer}
-    .topHeader{
-      position:fixed;top:0;left:0;right:0;height:var(--hdrH);z-index:100;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:0 14px;background:var(--bar);border-bottom:1px solid rgba(196,151,63,.26);
-      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-    }
-    .hdrBack{min-height:36px;display:inline-flex;align-items:center;justify-content:center;color:rgba(240,255,245,.72);font-size:14px;font-weight:1000;white-space:nowrap}
-    .hdrTitle{font-size:12px;font-weight:1000;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);white-space:nowrap}
-    .hdrPill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--muted);font-size:12px;font-weight:1000;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis}
-    .hdrPill.ok{color:#bbf7d0;border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.12)}
-    .hdrPill.warn{color:#fde68a;border-color:rgba(245,158,11,.38);background:rgba(245,158,11,.12)}
-    .wrap{width:min(var(--max),100%);margin:0 auto;display:grid;gap:16px}
-    .hero{padding:2px 2px 4px}
-    .eyebrow{color:#fff0a8;font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:1000;margin-bottom:8px}
-    h1{margin:0 0 8px;font-size:clamp(34px,8.5vw,54px);font-weight:1000;line-height:.94;letter-spacing:-.05em}
-    .sub{color:var(--muted);font-size:17px;font-weight:1000;line-height:1.38;max-width:860px}
-    .rule{margin-top:10px;padding:12px 14px;border-radius:18px;border:1px dashed rgba(255,255,255,.22);background:rgba(5,31,17,.32);color:rgba(240,255,245,.90);font-size:14px;font-weight:1000;line-height:1.35}
-    .rule b{color:#fff0a8}
-    .grid{display:grid;grid-template-columns:1fr .86fr;gap:14px;align-items:start}
-    .card{border:1px solid rgba(255,255,255,.15);background:var(--card);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
-    .cardHead{padding:15px;border-bottom:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-    .cardTitle{font-size:22px;font-weight:1000;line-height:1.06;color:#fff}
-    .cardSub{margin-top:5px;color:var(--muted);font-size:14px;font-weight:1000;line-height:1.35}
-    .tag{min-height:30px;display:inline-flex;align-items:center;justify-content:center;padding:6px 9px;border-radius:999px;border:1px solid rgba(196,151,63,.35);background:rgba(196,151,63,.12);color:#fff0a8;font-size:10px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
-    .form{padding:15px;display:grid;gap:13px}
-    .formGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .field{display:grid;gap:7px}
-    .field label{color:#fff;font-size:14px;font-weight:1000}
-    .field input,.field textarea,.field select{width:100%;min-height:54px;border-radius:17px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);color:var(--text);padding:13px 14px;outline:none;font-size:16px;font-weight:950}
-    .field textarea{min-height:108px;resize:vertical;line-height:1.45}
-    .field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(250,204,21,.46);box-shadow:0 0 0 4px rgba(250,204,21,.10)}
-    .hint{color:rgba(240,255,245,.62);font-size:12.5px;font-weight:900;line-height:1.35}
-    .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:2px}
-    .btn{min-height:56px;border-radius:18px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text);font-size:16px;font-weight:1000;text-align:center;box-shadow:0 10px 24px rgba(0,0,0,.13)}
-    .btn.primary{color:#052215;border-color:rgba(34,197,94,.38);background:linear-gradient(135deg,#22c55e,#bbf7d0)}
-    .btn.gold{color:#241a0d;border-color:rgba(196,151,63,.38);background:linear-gradient(135deg,#c4973f,#fff0a8)}
-    .btn.blue{border-color:rgba(56,189,248,.32);background:rgba(56,189,248,.12)}
-    .btn.danger{border-color:rgba(251,113,133,.34);background:rgba(251,113,133,.10);color:#fecaca}
-    .preview{display:grid;gap:12px;padding:15px}
-    .photoBox{min-height:240px;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:radial-gradient(400px 180px at 30% 0%,rgba(250,204,21,.18),transparent 60%),linear-gradient(135deg,rgba(34,197,94,.20),rgba(0,0,0,.20));position:relative;display:grid;place-items:center;text-align:center;color:rgba(240,255,245,.78);font-size:17px;font-weight:1000;padding:18px}
-    .photoBox img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-    .photoBadge{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap;z-index:2}
-    .pill{min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:rgba(5,31,17,.70);color:#fff;font-size:12px;font-weight:1000;backdrop-filter:blur(8px)}
-    .publicCard{border-radius:24px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);padding:15px;display:grid;gap:10px}
-    .publicName{color:#fff;font-size:29px;font-weight:1000;line-height:.98;letter-spacing:-.04em}
-    .publicMeta,.publicBio{color:var(--muted);font-size:15px;font-weight:1000;line-height:1.42;white-space:pre-wrap}
-    .linkGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-    .publicLink{min-height:48px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:1000;color:var(--text);text-align:center;padding:10px;overflow:hidden;text-overflow:ellipsis}
-    .qrBox{border-radius:24px;border:1px solid rgba(196,151,63,.32);background:rgba(196,151,63,.10);padding:15px;display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:center}
-    .qrImg{width:132px;height:132px;border-radius:18px;background:#fff;padding:8px;object-fit:contain}
-    .qrText{display:grid;gap:6px}.qrTitle{color:#fff;font-size:19px;font-weight:1000;line-height:1.1}.qrUrl{color:var(--muted);font-size:13px;font-weight:900;line-height:1.35;word-break:break-word}
-    .note{display:none;padding:13px 14px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--muted);font-size:14px;font-weight:1000;line-height:1.45;white-space:pre-wrap}
-    .note.show{display:block}.note.ok{border-color:rgba(34,197,94,.32);background:rgba(34,197,94,.11);color:#bbf7d0}.note.warn{border-color:rgba(245,158,11,.32);background:rgba(245,158,11,.11);color:#fde68a}.note.bad{border-color:rgba(251,113,133,.32);background:rgba(251,113,133,.11);color:#fecaca}
-    .bottomBar{position:fixed;left:0;right:0;bottom:0;height:var(--barH);z-index:100;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(6,38,18,.97);border-top:1px solid rgba(196,151,63,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-    .bottomInner{width:min(100%,760px);height:100%;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.bottomInner a{min-height:58px;border-radius:16px;display:grid;place-items:center;align-content:center;gap:3px;color:rgba(240,255,245,.56);font-size:11px;font-weight:1000;text-align:center;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04)}.bottomInner a.active{color:#052215;background:linear-gradient(135deg,#22c55e,#fff0a8);border-color:rgba(34,197,94,.32)}.bottomInner .bi{font-size:19px;line-height:1}
-    @media(max-width:900px){.grid{grid-template-columns:1fr}}@media(max-width:620px){body{padding:calc(var(--hdrH) + 12px) 10px calc(var(--barH) + env(safe-area-inset-bottom,0px) + 16px);font-size:19px}.topHeader{padding:0 10px;gap:7px}.hdrBack{font-size:13px}.hdrTitle{font-size:11px;letter-spacing:.12em}.hdrPill{font-size:11px;padding:6px 8px;max-width:36vw}h1{font-size:34px}.sub{font-size:16px}.formGrid{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.linkGrid{grid-template-columns:1fr}.qrBox{grid-template-columns:1fr;text-align:center}.qrImg{margin:0 auto}.cardTitle{font-size:20px}}
+    body{margin:0;min-height:100dvh;padding:14px 12px calc(30px + env(safe-area-inset-bottom,0px));font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(760px 430px at 8% -8%,rgba(244,210,122,.17),transparent 60%),linear-gradient(180deg,#1e7a46,var(--bg2))}
+    .wrap{width:min(980px,100%);margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.top a,.top button{min-height:46px;padding:9px 13px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:#fff;text-decoration:none;font:inherit;font-weight:950}
+    .hero,.card{border:1px solid rgba(244,210,122,.25);border-radius:26px;background:rgba(255,255,255,.065);box-shadow:0 18px 46px rgba(0,0,0,.24)}.hero{padding:20px}.card{padding:17px}.kicker{color:var(--gold);font-size:12px;font-weight:1000;letter-spacing:.12em;text-transform:uppercase}h1{margin:7px 0 7px;font-size:clamp(38px,9vw,62px);line-height:.94;letter-spacing:-.05em}.lead,.muted{color:var(--muted);font-weight:800;line-height:1.48}.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:14px;margin-top:14px}.form{display:grid;gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field label{font-size:13px;font-weight:1000;color:#fff}.field input,.field textarea{width:100%;min-height:52px;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.20);color:#fff;padding:12px 13px;font:inherit;font-weight:850;outline:none}.field textarea{min-height:112px;resize:vertical;line-height:1.45}.field input:focus,.field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(244,210,122,.12)}.hint{color:var(--muted);font-size:12px;font-weight:800;line-height:1.35}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions button,.actions a{min-height:52px;border-radius:17px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 13px;color:#fff;text-decoration:none;font:inherit;font-weight:1000;background:rgba(255,255,255,.075)}.actions .main{background:linear-gradient(135deg,var(--gold),var(--green));color:#07150f;border:0}.actions button:disabled{opacity:.55}
+    .notice{display:none;margin-top:12px;padding:12px 14px;border-radius:16px;border:1px solid rgba(244,210,122,.27);background:rgba(0,0,0,.18);color:#fde68a;font-weight:900;line-height:1.45;white-space:pre-wrap}.notice.show{display:block}.notice.ok{border-color:rgba(34,197,94,.35);color:#bbf7d0}.notice.bad{border-color:rgba(239,68,68,.35);color:var(--bad)}
+    .preview{display:grid;gap:12px}.photo{min-height:230px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(244,210,122,.18),rgba(34,197,94,.13));display:grid;place-items:center;overflow:hidden;position:relative}.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.name{font-size:29px;font-weight:1000;line-height:1}.meta{color:var(--gold);font-weight:900;line-height:1.45}.bio{color:var(--muted);font-weight:800;line-height:1.55;white-space:pre-wrap}.links{display:grid;grid-template-columns:1fr 1fr;gap:8px}.links a{min-height:46px;border-radius:15px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;text-decoration:none;font-weight:950;padding:9px}.qr{background:#fff;border-radius:22px;padding:12px;width:min(280px,100%);margin:auto}.qr img{display:block;width:100%;height:auto}.qrUrl{color:var(--muted);font-size:12px;font-weight:800;word-break:break-all;text-align:center}.foot{text-align:center;margin-top:14px;color:var(--muted);font-size:12px;font-weight:800}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}.two,.actions,.links{grid-template-columns:1fr}.hero,.card{border-radius:22px}}
   </style>
 </head>
-
 <body>
-  <header class="topHeader"><a class="hdrBack" id="hdrBack" href="./index.html">← RESA</a><div class="hdrTitle">RESA · Ma fiche</div><div class="hdrPill warn" id="sessionPill">session…</div></header>
-  <main class="wrap"><section class="hero"><div class="eyebrow">📅 JE RÉSERVE</div><h1>Ma fiche établissement.</h1><div class="sub">Ici le professionnel prépare la fiche utile : nom, activité, horaires, téléphone public, slug client et QR de réservation intégré.</div><div class="rule"><b>Côté PRO :</b> si le slug/session RESA n’est pas trouvé, retour PIN. <b>Côté client :</b> seul le slug public propre part dans le lien.</div></section>
-    <section class="grid"><section class="card" aria-label="Réglages de la fiche RESA"><div class="cardHead"><div><div class="cardTitle">📝 Renseignements établissement</div><div class="cardSub">Moule neutre : aucune entreprise écrite en dur. La donnée vient du PIN, de Supabase ou du téléphone.</div></div><span class="tag" id="proSlugTag">RESA</span></div>
-        <div class="form"><div class="formGrid"><div class="field"><label for="businessName">Nom visible</label><input id="businessName" autocomplete="organization" placeholder="Nom de l’établissement"/></div><div class="field"><label for="activity">Activité</label><input id="activity" placeholder="Restaurant, table, salon, activité…"/></div></div><div class="formGrid"><div class="field"><label for="city">Ville / zone</label><input id="city" placeholder="Ville, quartier ou zone"/></div><div class="field"><label for="hours">Horaires</label><input id="hours" placeholder="Jours et heures utiles"/></div></div><div class="field"><label for="address">Adresse / repère</label><input id="address" placeholder="Repère utile pour trouver l’établissement"/></div><div class="formGrid"><div class="field"><label for="whatsapp">WhatsApp / téléphone client</label><input id="whatsapp" inputmode="tel" placeholder="Indicatif + numéro public"/><div class="hint">Le téléphone peut être dans la donnée. Il n’est pas mis dans l’URL QR.</div></div><div class="field"><label for="publicSlug">Slug public client</label><input id="publicSlug" placeholder="ex : digiylyfe"/><div class="hint">Slug propre visible dans l’URL client. Pas un numéro.</div></div></div><div class="formGrid"><div class="field"><label for="reservationUrl">Lien public réservation</label><input id="reservationUrl" inputmode="url" placeholder="https://.../reserver.html?slug=..."/></div><div class="field"><label for="publicFicheUrl">Lien fiche / clip public</label><input id="publicFicheUrl" inputmode="url" placeholder="https://.../fiche.html?slug=..."/></div></div><div class="formGrid"><div class="field"><label for="logoUrl">Logo URL</label><input id="logoUrl" inputmode="url" placeholder="https://..."/></div><div class="field"><label for="coverUrl">Photo / visuel URL</label><input id="coverUrl" inputmode="url" placeholder="https://..."/></div></div><div class="field"><label for="summary">Présentation courte</label><textarea id="summary" placeholder="Présente l’établissement en deux phrases simples."></textarea></div><div class="actions"><button class="btn primary" id="btnSave" type="button">💾 Enregistrer local</button><button class="btn gold" id="btnCopy" type="button">📋 Copier résumé</button><button class="btn blue" id="btnOpenResa" type="button">📅 Ouvrir réservation</button><button class="btn" id="btnOpenQr" type="button">🔳 Ouvrir QR</button><button class="btn" id="btnReloadSql" type="button">🔎 Relire SQL</button><button class="btn danger" id="btnReset" type="button">🧹 Vider local</button></div><div class="note" id="notice"></div></div></section>
-      <aside class="card" aria-label="Aperçu fiche RESA"><div class="cardHead"><div><div class="cardTitle">👁️ Aperçu client</div><div class="cardSub">Ce que le client comprend vite avant de réserver.</div></div><span class="tag">QR intégré</span></div><div class="preview"><div class="photoBox" id="photoBox"><span id="photoFallback">📅 Photo établissement</span><div class="photoBadge"><span class="pill" id="pvCityPill">Ville</span><span class="pill" id="pvActivityPill">Activité</span></div></div><div class="publicCard"><div class="publicName" id="pvName">Mon établissement</div><div class="publicMeta" id="pvMeta">Ville · activité · horaires</div><div class="publicBio" id="pvBio">Présentation courte de l’établissement.</div><div class="linkGrid" id="linksBox"></div></div><div class="qrBox"><img class="qrImg" id="qrImg" alt="QR réservation RESA"/><div class="qrText"><div class="qrTitle">QR réservation</div><div class="qrUrl" id="qrUrl">Lien en préparation.</div><button class="btn gold" id="btnCopyUrl" type="button">🔗 Copier lien QR</button></div></div></div></aside></section>
-  </main>
-  <nav class="bottomBar" aria-label="Navigation rapide RESA"><div class="bottomInner"><a href="./index.html"><span class="bi">🏠</span><span>Index</span></a><a href="./qr.html"><span class="bi">🔳</span><span>QR</span></a><a href="./cockpit.html"><span class="bi">📋</span><span>Réserv.</span></a><a class="active" href="./fiche.html"><span class="bi">🪪</span><span>Fiche</span></a><a href="./session.html"><span class="bi">🛡️</span><span>Session</span></a></div></nav>
+<main class="wrap">
+  <div class="top"><a href="./hub.html">← Accueil RESA</a><button id="reload" type="button">Relire le cloud</button></div>
+  <section class="hero">
+    <div class="kicker">PRO RESA · fiche cloud</div>
+    <h1>Ma fiche établissement</h1>
+    <p class="lead">Enregistrement Supabase, publication publique et QR individuel. Le moule ne contient aucune identité partenaire en dur.</p>
+  </section>
 
-  <script>
-    (() => {
-      "use strict";
-      const MODULE = "RESA";const TABLE = "digiy_resa_public_fiches";const PUBLIC_BASE = String(window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/");const LOGIN_URL = String(window.DIGIY_LOGIN_URL || "./pin.html");
-      const SENSITIVE_URL_KEYS = ["phone","tel","p_phone","owner_phone","owner_id","slug","resa_phone","resa_tel","business_phone","whatsapp","msisdn","subscription_phone","checkout_phone","subscription_slug","pro_slug","source_slug","pin","pin4","token","session_token","module","return","redirect","redirect_url","url","from","v"];
-      const FIELDS = ["businessName","activity","city","hours","address","whatsapp","publicSlug","reservationUrl","publicFicheUrl","logoUrl","coverUrl","summary"];
-      const $ = id => document.getElementById(id);let proSlug = "";
-      function safe(v){ return String(v || "").trim(); }function normalizeSlug(v){return String(v || "").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,"");}function isPublicSlugSensitive(v){const s = safe(v);if(!s) return true;if(/\d{7,}/.test(s)) return true;if(/token|session|pin|phone|tel|whatsapp/i.test(s)) return true;return false;}function cleanHttps(v){const raw = safe(v);if(!raw) return "";if(!/^https:\/\//i.test(raw)) return "";return raw;}function normPhone(v){return String(v || "").replace(/[^\d+]/g,"").trim();}function esc(v){return String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}function publicUrl(page, slug){const s=normalizeSlug(slug);if(!s || isPublicSlugSensitive(s)) return "";const u=new URL(page,PUBLIC_BASE);u.searchParams.set("slug",s);return u.toString();}function qrUrl(target){return "https://api.qrserver.com/v1/create-qr-code/?size=360x360&margin=12&data=" + encodeURIComponent(target || PUBLIC_BASE);}function storageKey(){return "DIGIY_RESA_FICHE_V2_" + (proSlug || "NO_SLUG");}
-      function show(msg,type){const el=$("notice");if(!el)return;el.className="note show " + (type || "warn");el.textContent=msg || "";}function goPin(reason){try{sessionStorage.setItem("DIGIY_RESA_RETURN_AFTER_PIN","fiche.html");if(reason)sessionStorage.setItem("DIGIY_RESA_PIN_REASON",reason);}catch(_){}document.body.innerHTML='<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#0e4226;color:#f0fff5;font-family:system-ui,sans-serif;text-align:center"><div><h1>🔐 Retour PIN</h1><p style="font-weight:800">Session ou slug RESA absent. On repasse par le coffre.</p></div></main>';setTimeout(()=>{location.replace(LOGIN_URL);},250);}function cleanVisibleUrl(){try{const url=new URL(location.href);let changed=false;SENSITIVE_URL_KEYS.forEach(key=>{if(url.searchParams.has(key)){url.searchParams.delete(key);changed=true;}});if(changed)history.replaceState({},document.title,url.pathname+url.search+url.hash);}catch(_){}}
-      function cleanInternalLinks(){try{document.querySelectorAll("a[href]").forEach(link=>{const href=link.getAttribute("href")||"";if(!href||href.startsWith("#")||href.startsWith("mailto:")||href.startsWith("tel:"))return;const url=new URL(href,location.href);if(url.origin!==location.origin)return;SENSITIVE_URL_KEYS.forEach(key=>url.searchParams.delete(key));const file=url.pathname.split("/").pop()||"index.html";link.setAttribute("href","./"+file+(url.search||"")+(url.hash||""));});}catch(_){}}
-      async function waitGuard(){try{const guard=window.DIGIY_GUARD;if(!guard)return {};if(typeof guard.ready==="function"){const out=guard.ready({redirect:false,preserve_validation:true});if(out&&typeof out.then==="function")await out;}else if(guard.ready&&typeof guard.ready.then==="function"){await guard.ready;}if(typeof guard.getSession==="function")return guard.getSession()||guard.state||{};return guard.state||{};}catch(e){console.warn("[RESA FICHE] guard",e);return {};}}
-      function collectLocalSlug(){try{return normalizeSlug(localStorage.getItem("digiy_resa_slug")||localStorage.getItem("digiy_resa_last_slug")||localStorage.getItem("resa_slug")||localStorage.getItem("DIGIY_RESA_SLUG")||localStorage.getItem("digiy_abos_slug")||"");}catch(_){return "";}}
-      function resolveProSlug(state){const st=state||{};const candidates=[st.slug,st.resa_slug,st.internal_slug,st.pro_slug,st.subscription_slug,st.public_slug,st.business_slug,st.etablissement_slug,st.payload&&st.payload.slug,st.payload&&st.payload.resa_slug,st.payload&&st.payload.internal_slug,collectLocalSlug()];for(const c of candidates){const s=normalizeSlug(c);if(s)return s;}return "";}
-      function setPill(state){const el=$("sessionPill");const module=String((state&&state.module)||MODULE).toUpperCase();const ok=!!proSlug&&(!module||module===MODULE||module==="RESA");if(ok){el.textContent="slug : "+proSlug;el.className="hdrPill ok";$("proSlugTag").textContent=proSlug;}else{el.textContent="PIN requis";el.className="hdrPill warn";}}
-      function getData(){const d={};FIELDS.forEach(id=>d[id]=safe($(id)?.value));d.whatsapp=normPhone(d.whatsapp);d.publicSlug=normalizeSlug(d.publicSlug);d.logoUrl=cleanHttps(d.logoUrl);d.coverUrl=cleanHttps(d.coverUrl);if(d.publicSlug&&!isPublicSlugSensitive(d.publicSlug)){d.reservationUrl=cleanHttps(d.reservationUrl)||publicUrl("reserver.html",d.publicSlug);d.publicFicheUrl=cleanHttps(d.publicFicheUrl)||publicUrl("fiche.html",d.publicSlug);}else{d.reservationUrl=cleanHttps(d.reservationUrl);d.publicFicheUrl=cleanHttps(d.publicFicheUrl);}return d;}
-      function setForm(d){d=d||{};$("businessName").value=d.businessName||d.business_name||d.name||"";$("activity").value=d.activity||"";$("city").value=d.city||d.zone||"";$("hours").value=d.hours||d.horaires||"";$("address").value=d.address||"";$("whatsapp").value=d.whatsapp||d.phone||"";$("publicSlug").value=normalizeSlug(d.publicSlug||d.public_slug||d.slug||"");$("reservationUrl").value=d.reservationUrl||d.reservation_url||"";$("publicFicheUrl").value=d.publicFicheUrl||d.fiche_url||"";$("logoUrl").value=d.logoUrl||d.logo_url||"";$("coverUrl").value=d.coverUrl||d.cover_url||"";$("summary").value=d.summary||d.description||"";}
-      function link(label,url,icon){if(!url)return "";return `<a class="publicLink" href="${esc(url)}" target="_blank" rel="noopener">${esc(icon||"🔗")} ${esc(label)}</a>`;}
-      function render(){const d=getData();const publicSlugOk=d.publicSlug&&!isPublicSlugSensitive(d.publicSlug);const name=d.businessName||"Mon établissement";const activity=d.activity||"Réservation";const city=d.city||"Ville / zone";const hours=d.hours||"Horaires à préciser";const address=d.address||"Adresse / repère";const summary=d.summary||"Présentation courte de l’établissement.";$("pvName").textContent=name;$("pvMeta").textContent=[city,activity,hours,address].filter(Boolean).join(" · ");$("pvBio").textContent=summary;$("pvCityPill").textContent=city;$("pvActivityPill").textContent=activity;const photoBox=$("photoBox");const oldImg=photoBox.querySelector("img");if(oldImg)oldImg.remove();const imgUrl=d.coverUrl||d.logoUrl;if(imgUrl){const img=document.createElement("img");img.src=imgUrl;img.alt=name;img.onerror=()=>img.remove();photoBox.prepend(img);}const whats=d.whatsapp?"https://wa.me/"+encodeURIComponent(d.whatsapp.replace(/^\+/,"")):"";$("linksBox").innerHTML=[link("WhatsApp",whats,"💬"),link("Réserver",d.reservationUrl,"📅"),link("Fiche / clip",d.publicFicheUrl,"🎬")].filter(Boolean).join("")||`<div class="publicMeta">Ajoute WhatsApp ou slug public pour activer les boutons client.</div>`;if(publicSlugOk&&!cleanHttps($("reservationUrl").value))$("reservationUrl").value=publicUrl("reserver.html",d.publicSlug);if(publicSlugOk&&!cleanHttps($("publicFicheUrl").value))$("publicFicheUrl").value=publicUrl("fiche.html",d.publicSlug);const target=getData().reservationUrl||"";$("qrUrl").textContent=target||"Renseigne un slug public propre pour préparer le QR.";$("qrImg").src=qrUrl(target||PUBLIC_BASE);}
-      async function findSqlRow(slug){if(!slug||!window.supabase?.createClient)return null;const client=window.supabase.createClient(window.DIGIY_SUPABASE_URL,window.DIGIY_SUPABASE_ANON_KEY);const cols=["internal_slug","resa_slug","slug","public_slug"];for(const col of cols){try{const {data,error}=await client.from(TABLE).select("*").eq("module",MODULE).eq("is_active",true).in("status",["published","active"]).eq(col,slug).limit(1).maybeSingle();if(error)continue;if(data)return data;}catch(_){}}return null;}
-      function loadLocal(){try{const raw=localStorage.getItem(storageKey());if(!raw)return false;const d=JSON.parse(raw);setForm(d);show("✅ Fiche locale retrouvée pour : "+proSlug,"ok");return true;}catch(_){return false;}}
-      function saveLocal(){const d=getData();if(!d.businessName){show("Ajoute au moins le nom visible de l’établissement.","warn");$("businessName")?.focus();return;}if(!d.publicSlug||isPublicSlugSensitive(d.publicSlug)){show("Ajoute un slug public propre. Exemple : digiylyfe. Pas de téléphone dans le slug public.","warn");$("publicSlug")?.focus();return;}try{localStorage.setItem(storageKey(),JSON.stringify(d));localStorage.setItem("digiy_resa_slug",proSlug);localStorage.setItem("digiy_resa_last_slug",proSlug);localStorage.setItem("digiy_resa_public_slug",d.publicSlug);localStorage.setItem("digiy_resa_last_public_slug",d.publicSlug);localStorage.setItem("digiy_resa_public_url",d.reservationUrl);}catch(_){}show("✅ Fiche RESA gardée sur cet appareil. QR et liens prêts.","ok");render();}
-      async function loadSql(){show("🔎 Lecture Supabase en cours…","warn");const row=await findSqlRow(proSlug);if(!row){show("Aucune fiche SQL trouvée pour ce slug RESA. Tu peux remplir ici, puis garder localement.","warn");return false;}setForm(row);try{localStorage.setItem(storageKey(),JSON.stringify(getData()));localStorage.setItem("digiy_resa_slug",proSlug);localStorage.setItem("digiy_resa_last_slug",proSlug);localStorage.setItem("digiy_resa_public_slug",getData().publicSlug);localStorage.setItem("digiy_resa_last_public_slug",getData().publicSlug);}catch(_){}render();show("✅ Fiche SQL chargée et reliée au slug PRO : "+proSlug,"ok");return true;}
-      async function copyText(text){try{if(navigator.clipboard?.writeText)return navigator.clipboard.writeText(text);}catch(_){}const ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.left="-9999px";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy");}catch(_){}ta.remove();if(!ok)throw new Error("copy_failed");}
-      function summary(){const d=getData();return ["FICHE RESA","Slug PRO : "+(proSlug||"—"),"Slug public : "+(d.publicSlug||"—"),"Établissement : "+(d.businessName||"—"),"Activité : "+(d.activity||"—"),"Ville / zone : "+(d.city||"—"),"Adresse : "+(d.address||"—"),"Horaires : "+(d.hours||"—"),"WhatsApp : "+(d.whatsapp?"renseigné":"—"),"Réservation : "+(d.reservationUrl||"—"),"Fiche / clip : "+(d.publicFicheUrl||"—"),"","Présentation :",d.summary||"—"].join("\n");}
-      function resetLocal(){try{localStorage.removeItem(storageKey());}catch(_){}FIELDS.forEach(id=>{if($(id))$(id).value="";});show("Fiche locale vidée. Le SQL n’est pas touché.","warn");render();}
-      async function boot(){cleanVisibleUrl();cleanInternalLinks();const state=await waitGuard();proSlug=resolveProSlug(state);setPill(state);if(!proSlug){goPin("slug RESA absent");return;}FIELDS.forEach(id=>{const el=$(id);if(!el)return;el.addEventListener("input",render);el.addEventListener("change",render);});$("btnSave")?.addEventListener("click",saveLocal);$("btnReset")?.addEventListener("click",resetLocal);$("btnReloadSql")?.addEventListener("click",loadSql);$("btnOpenQr")?.addEventListener("click",()=>{location.href="./qr.html";});$("btnOpenResa")?.addEventListener("click",()=>{const url=getData().reservationUrl;if(!url){show("Renseigne d’abord un slug public propre.","warn");return;}window.open(url,"_blank","noopener,noreferrer");});$("btnCopy")?.addEventListener("click",async()=>{try{await copyText(summary());show("✅ Résumé fiche copié.","ok");}catch(_){show(summary(),"warn");}});$("btnCopyUrl")?.addEventListener("click",async()=>{const url=getData().reservationUrl;if(!url){show("Renseigne d’abord un slug public propre.","warn");return;}try{await copyText(url);show("✅ Lien QR copié.","ok");}catch(_){show("Impossible de copier automatiquement. Le lien est visible sous le QR.","warn");}});const foundLocal=loadLocal();render();if(!foundLocal)await loadSql();cleanVisibleUrl();cleanInternalLinks();}
-      boot();
-    })();
-  </script>
+  <section class="grid">
+    <section class="card">
+      <form class="form" id="profileForm">
+        <div class="two">
+          <div class="field"><label for="businessName">Nom visible</label><input id="businessName" autocomplete="organization" placeholder="Nom de l’établissement" required></div>
+          <div class="field"><label for="activity">Activité</label><input id="activity" placeholder="Restaurant, salon, visite…"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="city">Ville / zone</label><input id="city" placeholder="Ville, quartier ou zone"></div>
+          <div class="field"><label for="capacity">Capacité</label><input id="capacity" type="number" inputmode="numeric" min="0" placeholder="Nombre de personnes"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="hours">Horaires</label><input id="hours" placeholder="Jours et heures utiles"></div>
+          <div class="field"><label for="address">Adresse / repère</label><input id="address" placeholder="Repère utile"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="whatsapp">WhatsApp public</label><input id="whatsapp" inputmode="tel" placeholder="Indicatif + numéro public"><div class="hint">Le numéro reste dans la donnée, jamais dans l’URL.</div></div>
+          <div class="field"><label for="publicSlug">Slug public client</label><input id="publicSlug" placeholder="exemple : chez-aminata"><div class="hint">Pas de numéro, PIN ou token dans ce slug.</div></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="logoUrl">Logo URL</label><input id="logoUrl" inputmode="url" placeholder="https://..."></div>
+          <div class="field"><label for="coverUrl">Photo URL</label><input id="coverUrl" inputmode="url" placeholder="https://..."></div>
+        </div>
+        <div class="field"><label for="summary">Présentation courte</label><textarea id="summary" placeholder="Présente l’établissement en deux phrases simples."></textarea></div>
+        <div class="actions">
+          <button class="main" id="save" type="submit">Enregistrer et publier</button>
+          <button id="copy" type="button">Copier le lien public</button>
+          <a id="openPublic" href="#" target="_blank" rel="noopener noreferrer">Ouvrir la réservation</a>
+          <a href="./qr.html">Ouvrir mon QR</a>
+        </div>
+        <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <aside class="card preview">
+      <div class="photo" id="photo"><span>📅 Photo établissement</span></div>
+      <div class="name" id="pvName">Mon établissement</div>
+      <div class="meta" id="pvMeta">Ville · activité · horaires</div>
+      <div class="bio" id="pvBio">Présentation courte de l’établissement.</div>
+      <div class="links" id="pvLinks"></div>
+      <div class="qr"><img id="qrImg" alt="QR réservation RESA"></div>
+      <div class="qrUrl" id="qrUrl">Ajoute un slug public propre.</div>
+    </aside>
+  </section>
+  <p class="foot">Session PIN 8 h · paiement direct au professionnel · 0 % commission DIGIY</p>
+</main>
+
+<script>
+(async()=>{
+"use strict";
+const MODULE="RESA";
+const TABLE="digiy_resa_public_fiches";
+const PUBLIC_BASE=window.DIGIY_PUBLIC_BASE_URL;
+const $=id=>document.getElementById(id);
+let session=null,proSlug="",client=null;
+
+const safe=v=>String(v??"").trim();
+const phone=v=>String(v||"").replace(/[^\d+]/g,"").trim();
+const slug=v=>safe(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").replace(/-+/g,"-").replace(/^-|-$/g,"");
+const badSlug=v=>!slug(v)||/\d{7,}/.test(slug(v))||/pin|token|session|phone|tel|whatsapp/i.test(slug(v));
+const https=v=>/^https:\/\//i.test(safe(v))?safe(v):"";
+const esc=v=>String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const publicUrl=(page,s)=>{const x=slug(s);if(badSlug(x))return"";const u=new URL(page,PUBLIC_BASE);u.searchParams.set("slug",x);return u.toString()};
+const qrUrl=v=>"https://api.qrserver.com/v1/create-qr-code/?size=520x520&margin=18&data="+encodeURIComponent(v||PUBLIC_BASE);
+const cacheKey=()=>`DIGIY_RESA_FICHE_V3_${proSlug||"NO_SLUG"}`;
+
+function show(message,type="warn"){const n=$("notice");n.textContent=message||"";n.className="notice show "+type}
+function cleanVisibleUrl(){try{const u=new URL(location.href);let changed=false;["slug","phone","tel","owner_phone","whatsapp","pin","code","token","session","module","return","redirect"].forEach(k=>{if(u.searchParams.has(k)){u.searchParams.delete(k);changed=true}});if(changed)history.replaceState({},document.title,u.pathname+u.search+u.hash)}catch(_){}}
+function getClient(){if(client)return client;if(!window.supabase?.createClient)throw new Error("Supabase indisponible");client=window.supabase.createClient(window.DIGIY_SUPABASE_URL,window.DIGIY_SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});return client}
+function values(){const d={businessName:safe($("businessName").value),activity:safe($("activity").value),city:safe($("city").value),capacity:Number($("capacity").value||0)||0,hours:safe($("hours").value),address:safe($("address").value),whatsapp:phone($("whatsapp").value),publicSlug:slug($("publicSlug").value),logoUrl:https($("logoUrl").value),coverUrl:https($("coverUrl").value),summary:safe($("summary").value)};d.reservationUrl=publicUrl("reserver.html",d.publicSlug);d.publicFicheUrl=publicUrl("fiche.html",d.publicSlug);return d}
+function profilePayload(d){return{
+  module:MODULE,
+  internal_slug:proSlug,
+  resa_slug:proSlug,
+  pro_slug:proSlug,
+  public_slug:d.publicSlug,
+  slug:d.publicSlug,
+  display_name:d.businessName,
+  business_name:d.businessName,
+  name:d.businessName,
+  business_type:d.activity,
+  activity:d.activity,
+  city:d.city,
+  zone:d.city,
+  zones_text:d.city,
+  address_text:d.address,
+  address:d.address,
+  capacity:d.capacity,
+  opening_hours_text:d.hours,
+  hours:d.hours,
+  whatsapp:d.whatsapp,
+  phone:d.whatsapp,
+  bio:d.summary,
+  summary:d.summary,
+  description:d.summary,
+  photo_url:d.logoUrl,
+  logo_url:d.logoUrl,
+  cover_url:d.coverUrl,
+  reservation_url:d.reservationUrl,
+  fiche_url:d.publicFicheUrl,
+  public_url:d.reservationUrl,
+  priority:0,
+  is_active:true,
+  is_published:true,
+  status:"published"
+}}
+function fill(row={}){$("businessName").value=row.businessName||row.display_name||row.business_name||row.name||"";$("activity").value=row.activity||row.business_type||"";$("city").value=row.city||row.zone||row.zones_text||"";$("capacity").value=row.capacity||"";$("hours").value=row.hours||row.opening_hours_text||row.horaires||"";$("address").value=row.address||row.address_text||"";$("whatsapp").value=row.whatsapp||row.phone||"";$("publicSlug").value=slug(row.publicSlug||row.public_slug||((row.slug&&row.slug!==proSlug)?row.slug:""))||"";$("logoUrl").value=row.logoUrl||row.logo_url||row.photo_url||"";$("coverUrl").value=row.coverUrl||row.cover_url||"";$("summary").value=row.summary||row.bio||row.description||"";render()}
+function render(){const d=values();$("pvName").textContent=d.businessName||"Mon établissement";$("pvMeta").textContent=[d.city||"Ville",d.activity||"Réservation",d.hours||"Horaires à préciser"].filter(Boolean).join(" · ");$("pvBio").textContent=d.summary||"Présentation courte de l’établissement.";const box=$("photo"),old=box.querySelector("img");if(old)old.remove();const src=d.coverUrl||d.logoUrl;if(src){const img=document.createElement("img");img.src=src;img.alt=d.businessName||"Établissement";img.onerror=()=>img.remove();box.prepend(img)}const wa=d.whatsapp?"https://wa.me/"+d.whatsapp.replace(/^\+/,""):"";$("pvLinks").innerHTML=[wa?`<a href="${esc(wa)}" target="_blank" rel="noopener">WhatsApp direct</a>`:"",d.reservationUrl?`<a href="${esc(d.reservationUrl)}" target="_blank" rel="noopener">Réserver</a>`:""].filter(Boolean).join("")||'<span class="muted">Ajoute WhatsApp ou un slug public.</span>';$("openPublic").href=d.reservationUrl||"#";$("qrImg").src=qrUrl(d.reservationUrl||PUBLIC_BASE);$("qrUrl").textContent=d.reservationUrl||"Ajoute un slug public propre."}
+function saveCache(d){try{localStorage.setItem(cacheKey(),JSON.stringify(d));localStorage.setItem("digiy_resa_slug",proSlug);localStorage.setItem("digiy_resa_last_slug",proSlug);localStorage.setItem("digiy_resa_public_slug",d.publicSlug);localStorage.setItem("digiy_resa_last_public_slug",d.publicSlug);localStorage.setItem("digiy_resa_public_url",d.reservationUrl)}catch(_){}}
+function loadCache(){try{const raw=localStorage.getItem(cacheKey())||localStorage.getItem(`DIGIY_RESA_FICHE_V2_${proSlug}`);if(!raw)return false;fill(JSON.parse(raw));return true}catch(_){return false}}
+function rowFrom(value){if(!value)return null;if(Array.isArray(value))return value[0]||null;return value.profile||value.data?.profile||value.data||value.row||value}
+async function findCloud(){const s=getClient();for(const col of ["internal_slug","resa_slug","pro_slug","public_slug","slug"]){try{const{data,error}=await s.from(TABLE).select("*").eq(col,proSlug).limit(1).maybeSingle();if(!error&&data)return data}catch(_){}}return null}
+async function loadCloud(){show("Lecture de la fiche cloud…");const row=await findCloud();if(row){fill(row);saveCache(values());show("Fiche Supabase chargée.","ok");return true}if(loadCache()){show("Aucune fiche cloud trouvée. Cache local chargé en secours.");return false}fill({});show("Nouvelle fiche RESA : remplis puis enregistre et publie.");return false}
+async function saveCloud(event){event.preventDefault();const d=values();if(!d.businessName){show("Ajoute le nom visible de l’établissement.","bad");$("businessName").focus();return}if(badSlug(d.publicSlug)){show("Ajoute un slug public propre, sans numéro, PIN ni token.","bad");$("publicSlug").focus();return}const button=$("save");button.disabled=true;show("Sauvegarde Supabase en cours…");try{const s=getClient();const args={p_slug:proSlug,p_profile:profilePayload(d)};let{data,error}=await s.rpc("resa_upsert_profile_by_slug",args);if(error){const fallback=await s.rpc("resa_save_profile_by_slug",args);data=fallback.data;error=fallback.error}if(error)throw error;if(data?.ok===false)throw new Error(data.message||data.error||"Sauvegarde refusée");const published=await s.rpc("resa_set_publish_by_slug",{p_slug:proSlug,p_is_published:true});if(published.error)throw published.error;if(published.data?.ok===false)throw new Error(published.data.message||published.data.error||"Publication refusée");const row=rowFrom(data)||profilePayload(d);fill(row);saveCache(d);render();show("✅ Fiche RESA enregistrée dans Supabase et publiée. Le QR individuel est prêt.","ok")}catch(error){console.error("[RESA FICHE CLOUD]",error);show("❌ Sauvegarde cloud impossible : "+(error?.message||error),"bad")}finally{button.disabled=false}}
+async function copyPublic(){const url=values().reservationUrl;if(!url){show("Ajoute d’abord un slug public propre.","bad");return}try{await navigator.clipboard.writeText(url);show("Lien public copié.","ok")}catch(_){show(url)}}
+
+cleanVisibleUrl();
+try{session=await window.DIGIY_GUARD.requireSession({redirect:true,to:"./pin.html"});if(!session)return;proSlug=slug(session.slug||session.resa_slug||session.pro_slug||"");if(!proSlug)throw new Error("Identifiant RESA absent");document.documentElement.style.visibility="";["businessName","activity","city","capacity","hours","address","whatsapp","publicSlug","logoUrl","coverUrl","summary"].forEach(id=>{$(id).addEventListener("input",render);$(id).addEventListener("change",render)});$("profileForm").addEventListener("submit",saveCloud);$("reload").addEventListener("click",loadCloud);$("copy").addEventListener("click",copyPublic);await loadCloud()}catch(error){console.error("[RESA FICHE BOOT]",error);location.replace("./pin.html")}
+})();
+</script>
 </body>
 </html>
