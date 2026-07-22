@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0e4226"/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
   <meta name="description" content="Accueil sécurisé DIGIY RESA PRO : réservations clients réelles, ajout manuel, fiche, QR, PRO CARNET et partage."/>
-  <meta name="digiy-resa" content="resa-pro-live-cockpit-carnet-20260722"/>
+  <meta name="digiy-resa" content="resa-pro-carnet-direct-signup-pin-20260722"/>
 
   <script>
     window.DIGIY_MODULE="RESA";
@@ -52,7 +52,8 @@
     }
     a.live{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#052215;border:0}
     a.manual{background:rgba(34,197,94,.17);border-color:rgba(34,197,94,.40)}
-    a.carnet{background:linear-gradient(135deg,#f4d27a,#22c55e);color:#092116;border:0}
+    a.carnet-signup{background:linear-gradient(135deg,#f4d27a,#22c55e);color:#092116;border:0}
+    a.carnet-pin{background:rgba(244,210,122,.12);border-color:rgba(244,210,122,.38);color:#fff0a8}
     button{background:linear-gradient(135deg,#22c55e,#bbf7d0);color:#052215;border:0}
     #status{margin:14px 0 0;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,240,168,.28);background:rgba(0,0,0,.18);color:var(--gold2);text-align:center;line-height:1.4;font-size:14px;font-weight:900}
     #status[hidden]{display:none}
@@ -62,7 +63,7 @@
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-live-cockpit-carnet-20260722" onerror="location.replace('./pin.html')"></script>
+  <script src="./guard.js?v=resa-carnet-direct-20260722" onerror="location.replace('./pin.html')"></script>
 
   <main>
     <div class="brand"><span>📅</span><span>DIGIY RESA PRO</span></div>
@@ -75,7 +76,8 @@
         <a class="manual" href="./atelier.html#add">Ajouter manuellement</a>
         <a href="./fiche.html">Ma fiche établissement</a>
         <a href="./qr.html">Mon QR public</a>
-        <a class="carnet" href="./inscription-carnet.html">PRO CARNET — s’inscrire ou ouvrir</a>
+        <a class="carnet-signup" href="https://digiy-carnet-pro.digiylyfe.com/inscription-pay.html">PRO CARNET — s’inscrire</a>
+        <a class="carnet-pin" href="https://digiy-carnet-pro.digiylyfe.com/pin.html">J’ai déjà PRO CARNET — accès PIN</a>
         <button id="shareWhatsApp" type="button">Partager sur WhatsApp</button>
       </nav>
       <p id="status" role="status" aria-live="polite" hidden></p>
