@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#07140f" />
   <title>DIGIY RESA — QR réservation</title>
-  <meta name="digiy-build" content="resa-qr-dedie-sans-fiche-pro-20260618"/>
+  <meta name="digiy-build" content="resa-qr-public-sans-telephone-20260722"/>
 
   <script>
     window.DIGIY_MODULE       = "RESA";
@@ -19,7 +19,7 @@
     window.DIGIY_SUPABASE_ANON     = window.DIGIY_SUPABASE_ANON || window.DIGIY_SUPABASE_ANON_KEY;
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-guard-20260531"></script>
+  <script src="./guard.js?v=resa-guard-20260716"></script>
 
   <style>
     body{margin:0;font-family:Arial,system-ui,sans-serif;background:#07140f;color:#ecfff4;padding:16px;text-align:center;font-weight:800}
@@ -27,7 +27,7 @@
     h1{font-size:34px;margin:10px 0;line-height:1}.top{color:#facc15;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:900}
     p{color:rgba(236,255,244,.75);line-height:1.5}.qr{background:white;border-radius:22px;padding:18px;margin:18px auto;color:#07140f}
     .qr img{width:100%;max-width:340px;border-radius:16px}.btn{display:block;margin:10px 0;padding:15px;border-radius:18px;background:#22c55e;color:#041b12;font-weight:900;text-decoration:none;border:0;width:100%;box-sizing:border-box;font-size:16px}
-    .btn.gold{background:#facc15;color:#241a00}.btn.blue{background:#38bdf8;color:#061826}.btn.dark{background:rgba(255,255,255,.08);color:#ecfff4;border:1px solid rgba(255,255,255,.14)}
+    .btn.gold{background:#facc15;color:#241a00}.btn.dark{background:rgba(255,255,255,.08);color:#ecfff4;border:1px solid rgba(255,255,255,.14)}
     .small{font-size:13px;color:rgba(236,255,244,.65);word-break:break-all}.pill{display:inline-block;margin:4px 3px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);font-size:12px;color:#fff0a8}
     .note{display:none;margin-top:12px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:#fde68a;font-size:14px;line-height:1.45;white-space:pre-wrap;text-align:left}
     .note.ok{display:block;color:#bbf7d0;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.10)}.note.warn{display:block}.note.bad{display:block;color:#fecaca;border-color:rgba(251,113,133,.25);background:rgba(251,113,133,.10)}
@@ -38,10 +38,10 @@
   <main class="card">
     <div class="top">DIGIY RESA · QR TERRAIN</div>
     <h1 id="title">QR réservation</h1>
-    <p id="subtitle">Scanne le QR pour ouvrir directement la demande de réservation. Le client voit un slug public propre, jamais le téléphone dans l’URL.</p>
+    <p>Scanne le QR pour ouvrir directement la demande de réservation. Le téléphone du professionnel ne doit jamais servir d’identifiant public.</p>
 
     <div class="pillRow">
-      <span class="pill" id="sessionPill">session…</span>
+      <span class="pill" id="sessionPill">session RESA…</span>
       <span class="pill" id="publicPill">slug public…</span>
     </div>
 
@@ -54,7 +54,7 @@
     <a class="btn" id="openResa" href="#" target="_blank" rel="noopener">📅 Ouvrir réservation client</a>
     <button class="btn gold" id="printBtn" type="button">🖨️ Imprimer le QR</button>
     <button class="btn gold" id="copyBtn" type="button">📋 Copier lien réservation</button>
-    <a class="btn dark" href="./index.html#admin">← Retour admin RESA</a>
+    <a class="btn dark" href="./hub.html">← Retour au HUB RESA</a>
     <p class="small" id="targetUrl"></p>
     <div class="note warn" id="note"></div>
   </main>
@@ -67,7 +67,6 @@
       const TABLE = "digiy_resa_public_fiches";
       const PUBLIC_BASE = String(window.DIGIY_PUBLIC_BASE_URL || "https://resa-table-resto.digiylyfe.com/");
       const LOGIN_URL = String(window.DIGIY_LOGIN_URL || "./pin.html");
-
       const $ = id => document.getElementById(id);
 
       function safe(v){ return String(v || "").trim(); }
@@ -98,6 +97,26 @@
         u.searchParams.set("slug", s);
         return u.toString();
       }
+      function safeReservationUrl(value, publicSlug){
+        const fallback = publicUrl("reserver.html", publicSlug);
+        const raw = safe(value);
+        if(!raw) return fallback;
+        try{
+          const u = new URL(raw, PUBLIC_BASE);
+          if(u.protocol !== "https:") return fallback;
+          const visible = decodeURIComponent(u.toString());
+          if(/\d{7,}/.test(visible)) return fallback;
+          for(const key of ["phone","tel","owner_phone","p_phone","resa_phone","whatsapp","pin","code","token","session"]){
+            if(u.searchParams.has(key)) return fallback;
+          }
+          const slug = normalizeSlug(u.searchParams.get("slug") || publicSlug);
+          if(!slug || isPublicSlugSensitive(slug)) return fallback;
+          u.searchParams.set("slug", slug);
+          return u.toString();
+        }catch(_){
+          return fallback;
+        }
+      }
       function qrApi(value, size){
         const s = Math.max(160, Number(size) || 520);
         return "https://api.qrserver.com/v1/create-qr-code/?size=" + s + "x" + s + "&margin=18&data=" + encodeURIComponent(value);
@@ -107,7 +126,7 @@
           sessionStorage.setItem("DIGIY_RESA_RETURN_AFTER_PIN", "qr.html");
           if(reason) sessionStorage.setItem("DIGIY_RESA_PIN_REASON", reason);
         }catch(_){}
-        document.body.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#07140f;color:#ecfff4;font-family:system-ui,sans-serif;text-align:center"><div><h1>🔐 Retour PIN</h1><p style="font-weight:800">Session ou slug RESA absent. On repasse par le coffre.</p></div></main>';
+        document.body.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#07140f;color:#ecfff4;font-family:system-ui,sans-serif;text-align:center"><div><h1>🔐 Retour PIN</h1><p style="font-weight:800">Session ou contexte RESA absent. On repasse par le coffre.</p></div></main>';
         setTimeout(() => { location.replace(LOGIN_URL); }, 250);
       }
       async function waitGuard(){
@@ -214,14 +233,15 @@
       }
 
       const state = await waitGuard();
+      const stateModule = String(state?.module || state?.module_code || "").toUpperCase();
       const proSlug = resolveProSlug(state);
 
-      if(!proSlug){
-        goPin("slug RESA absent");
+      if(!state?.access_ok || stateModule !== MODULE || !proSlug){
+        goPin("session RESA invalide");
         return;
       }
 
-      $("sessionPill").textContent = "slug PRO : " + proSlug;
+      $("sessionPill").textContent = "session RESA sécurisée";
 
       const local = getLocalFiche(proSlug);
       const row = await findSqlRow(proSlug);
@@ -230,14 +250,24 @@
       if(!publicSlug){
         $("publicPill").textContent = "slug public absent";
         $("qrImg").src = qrApi(PUBLIC_BASE, 520);
-        $("openResa").href = "./index.html#admin";
-        $("targetUrl").textContent = "Slug public absent. Retourne dans Admin RESA pour renseigner le lien/slug public.";
-        note("⚠️ Session PRO trouvée, mais aucun slug public propre n’est disponible. Retourne dans Admin RESA, renseigne le slug ou lien public, puis reviens ici.", "warn");
+        $("openResa").href = "./fiche.html";
+        $("targetUrl").textContent = "Slug public absent. Prépare d’abord la fiche établissement.";
+        note("⚠️ Aucun identifiant public propre n’est disponible. Le téléphone interne n’est pas utilisé comme remplacement. Prépare la fiche publique, puis reviens ici.", "warn");
         return;
       }
 
       const businessName = safe((row && (row.business_name || row.name)) || local.businessName || "Mon établissement");
-      const reservationUrl = safe((row && row.reservation_url) || local.reservationUrl) || publicUrl("reserver.html", publicSlug);
+      const storedReservationUrl = safe((row && row.reservation_url) || local.reservationUrl);
+      const reservationUrl = safeReservationUrl(storedReservationUrl, publicSlug);
+
+      if(!reservationUrl){
+        $("publicPill").textContent = "lien public invalide";
+        $("qrImg").src = qrApi(PUBLIC_BASE, 520);
+        $("openResa").href = "./fiche.html";
+        $("targetUrl").textContent = "Lien public invalide. Aucun QR nominatif n’a été généré.";
+        note("⚠️ Le lien enregistré contient une donnée sensible ou n’est pas utilisable. Corrige la fiche publique avant impression.", "bad");
+        return;
+      }
 
       try{
         localStorage.setItem("digiy_resa_slug", proSlug);
@@ -253,7 +283,7 @@
       $("targetUrl").textContent = reservationUrl;
       $("openResa").href = reservationUrl;
       $("qrImg").src = qrApi(reservationUrl, 520);
-      note("✅ QR réservation prêt. Teste-le sur téléphone avant impression.", "ok");
+      note("✅ QR public prêt, sans téléphone dans l’adresse. Teste-le sur un second téléphone avant impression.", "ok");
 
       $("printBtn").addEventListener("click", function(){ window.print(); });
       $("copyBtn").addEventListener("click", async function(){
