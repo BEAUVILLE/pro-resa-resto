@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
+  <meta name="theme-color" content="#07150f"/>
+  <title>Demander PRO CARNET · DIGIYLYFE</title>
+  <meta name="digiy-build" content="resa-carnet-signup-door-20260722"/>
+  <script>
+    window.DIGIY_MODULE="RESA";
+    window.DIGIY_LOGIN_URL="./pin.html";
+  </script>
+  <style>
+    :root{--bg:#07150f;--green:#22c55e;--gold:#f4d27a;--ink:#fff8e8;--muted:rgba(255,248,232,.72);--line:rgba(255,255,255,.13)}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100dvh;padding:20px 14px calc(30px + env(safe-area-inset-bottom,0px));font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(700px 420px at 10% -5%,rgba(34,197,94,.22),transparent 60%),linear-gradient(180deg,#123724,var(--bg));font-weight:850}
+    main{width:min(620px,100%);margin:auto}
+    .card{border:1px solid rgba(244,210,122,.25);border-radius:30px;background:rgba(255,255,255,.07);padding:22px;box-shadow:0 22px 60px rgba(0,0,0,.28)}
+    .brand{text-align:center;color:var(--gold);font-size:13px;font-weight:1000;letter-spacing:.12em;text-transform:uppercase}
+    h1{text-align:center;margin:10px 0 8px;font-size:clamp(34px,9vw,56px);line-height:.95;letter-spacing:-.04em}
+    .lead{text-align:center;margin:0 0 18px;color:var(--muted);line-height:1.5}
+    .plans{display:grid;gap:10px}
+    .plan{border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.07);padding:16px}
+    .plan h2{margin:0;color:var(--gold);font-size:21px}
+    .price{margin:4px 0;font-size:27px;font-weight:1100}
+    .plan p{margin:0 0 12px;color:var(--muted);line-height:1.45;font-size:14px}
+    a,button{width:100%;min-height:54px;border:0;border-radius:17px;padding:12px 14px;display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;font:inherit;font-weight:1000;cursor:pointer}
+    .request{background:linear-gradient(135deg,var(--gold),var(--green));color:#092116}
+    .open{margin-top:12px;background:rgba(255,255,255,.09);border:1px solid var(--line);color:var(--ink)}
+    .back{margin-top:10px;background:transparent;border:1px solid var(--line);color:var(--muted)}
+    #status{margin-top:12px;padding:12px;border-radius:16px;background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--gold);text-align:center;display:none}
+    .foot{text-align:center;color:var(--muted);font-size:12px;margin:16px 0 0;line-height:1.4}
+  </style>
+</head>
+<body>
+  <script src="./guard.js?v=resa-carnet-signup-20260722" onerror="location.replace('./pin.html')"></script>
+  <main>
+    <section class="card">
+      <div class="brand">📒 DIGIYLYFE · Option séparée</div>
+      <h1>PRO CARNET</h1>
+      <p class="lead">RESA reste ton outil de réservation. PRO CARNET est un abonnement distinct pour suivre l’argent de l’activité.</p>
+
+      <div class="plans">
+        <article class="plan">
+          <h2>Essentiel</h2>
+          <div class="price">4 900 FCFA / mois</div>
+          <p>Encaissements, dépenses et réserve simple.</p>
+          <button class="request" data-plan="PRO CARNET Essentiel — 4 900 FCFA/mois">Demander Essentiel</button>
+        </article>
+
+        <article class="plan">
+          <h2>Pro</h2>
+          <div class="price">9 900 FCFA / mois</div>
+          <p>Preuves, dettes clients et suivi renforcé.</p>
+          <button class="request" data-plan="PRO CARNET Pro — 9 900 FCFA/mois">Demander Pro</button>
+        </article>
+
+        <article class="plan">
+          <h2>Business</h2>
+          <div class="price">24 900 FCFA / mois</div>
+          <p>Lecture renforcée pour activité dense.</p>
+          <button class="request" data-plan="PRO CARNET Business — 24 900 FCFA/mois">Demander Business</button>
+        </article>
+      </div>
+
+      <a class="open" href="https://pro-carnet.digiylyfe.com/" rel="noopener">J’ai déjà PRO CARNET — ouvrir</a>
+      <a class="back" href="./hub.html">← Retour au HUB RESA</a>
+      <div id="status" role="status" aria-live="polite"></div>
+    </section>
+    <p class="foot">Paiement direct · aucune commission DIGIY · le professionnel garde la main.</p>
+  </main>
+
+  <script>
+    (()=>{
+      "use strict";
+      const DIGIY_PHONE="221771342889";
+      const status=document.getElementById("status");
+
+      function sessionPhone(){
+        try{
+          const s=window.DIGIY_GUARD?.getSession?.()||window.DIGIY_GUARD?.state||{};
+          return String(s.phone||"").replace(/\D/g,"");
+        }catch(_){return ""}
+      }
+
+      document.querySelectorAll("[data-plan]").forEach(button=>{
+        button.addEventListener("click",()=>{
+          const plan=button.dataset.plan||"PRO CARNET";
+          const phone=sessionPhone();
+          const message=[
+            "DEMANDE PRO CARNET — DIGIYLYFE",
+            "Module d'origine : RESA",
+            "Formule choisie : "+plan,
+            phone ? "Téléphone du professionnel : "+phone : "Téléphone du professionnel : à confirmer",
+            "Je souhaite recevoir les étapes d'activation."
+          ].join("\n");
+          status.style.display="block";
+          status.textContent="Ouverture de la demande PRO CARNET…";
+          location.href="https://wa.me/"+DIGIY_PHONE+"?text="+encodeURIComponent(message);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
