@@ -6,8 +6,8 @@
   <title>DIGIY RESA PRO — Accueil</title>
   <meta name="theme-color" content="#0e4226"/>
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
-  <meta name="description" content="Accueil simple DIGIY RESA PRO : réservation, planning, fiche, QR et partage WhatsApp."/>
-  <meta name="digiy-resa" content="resa-pro-accueil-simple-20260716"/>
+  <meta name="description" content="Accueil sécurisé DIGIY RESA PRO : réservations clients réelles, ajout manuel, fiche, QR et partage."/>
+  <meta name="digiy-resa" content="resa-pro-live-cockpit-20260722"/>
 
   <script>
     window.DIGIY_MODULE="RESA";
@@ -40,7 +40,8 @@
     .brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px;color:var(--gold2);font-weight:1000;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
     .brand span:first-child{width:46px;height:46px;border-radius:17px;display:grid;place-items:center;background:linear-gradient(135deg,#22c55e,var(--gold2));color:#052215;font-size:24px;letter-spacing:0}
     .card{padding:24px;border:1px solid rgba(255,240,168,.24);border-radius:32px;background:rgba(255,255,255,.085);box-shadow:0 24px 60px rgba(0,0,0,.24);backdrop-filter:blur(12px)}
-    h1{margin:0 0 20px;text-align:center;font-size:clamp(42px,10vw,72px);line-height:.95;letter-spacing:-.055em;font-weight:1000}
+    h1{margin:0 0 8px;text-align:center;font-size:clamp(42px,10vw,72px);line-height:.95;letter-spacing:-.055em;font-weight:1000}
+    .lead{margin:0 0 20px;text-align:center;color:var(--muted);font-size:14px;font-weight:850;line-height:1.45}
     nav{display:grid;gap:10px}
     a,button{
       width:100%;min-height:64px;border-radius:20px;border:1px solid var(--line);
@@ -49,26 +50,28 @@
       padding:12px 16px;font:inherit;font-size:17px;font-weight:1000;cursor:pointer;
       -webkit-tap-highlight-color:transparent;
     }
-    a:first-child{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#052215;border:0}
-    a:nth-child(2){background:rgba(34,197,94,.17);border-color:rgba(34,197,94,.40)}
+    a.live{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#052215;border:0}
+    a.manual{background:rgba(34,197,94,.17);border-color:rgba(34,197,94,.40)}
     button{background:linear-gradient(135deg,#22c55e,#bbf7d0);color:#052215;border:0}
     #status{margin:14px 0 0;padding:12px 14px;border-radius:16px;border:1px solid rgba(255,240,168,.28);background:rgba(0,0,0,.18);color:var(--gold2);text-align:center;line-height:1.4;font-size:14px;font-weight:900}
     #status[hidden]{display:none}
     .foot{margin:16px 0 0;text-align:center;color:var(--muted);font-size:12px;font-weight:850;line-height:1.45}
-    @media(max-width:480px){.card{padding:18px;border-radius:26px}a,button{min-height:60px;font-size:16px}h1{margin-bottom:17px}}
+    @media(max-width:480px){.card{padding:18px;border-radius:26px}a,button{min-height:60px;font-size:16px}}
   </style>
 </head>
 <body>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./guard.js?v=resa-simple-home-20260716" onerror="location.replace('./pin.html')"></script>
+  <script src="./guard.js?v=resa-live-cockpit-20260722" onerror="location.replace('./pin.html')"></script>
 
   <main>
     <div class="brand"><span>📅</span><span>DIGIY RESA PRO</span></div>
     <section class="card">
       <h1>Bonjour.</h1>
+      <p class="lead">Les réservations clients réelles restent séparées des ajouts manuels de l’établissement.</p>
       <nav aria-label="Actions RESA PRO">
-        <a href="./atelier.html#add">Nouvelle réservation</a>
-        <a href="./atelier.html#planning">Mon planning</a>
+        <a class="live" href="./cockpit.html">Réservations clients réelles</a>
+        <a class="live" href="./cockpit.html">Mon planning réel</a>
+        <a class="manual" href="./atelier.html#add">Ajouter manuellement</a>
         <a href="./fiche.html">Ma fiche établissement</a>
         <a href="./qr.html">Mon QR</a>
         <button id="shareWhatsApp" type="button">Partager sur WhatsApp</button>
@@ -84,10 +87,9 @@
 
       const shareButton=document.getElementById("shareWhatsApp");
       const statusBox=document.getElementById("status");
-
       const SESSION_KEYS=[
         "digiy_resa_session","digiy_resa_guard_session","digiy_guard_resa_session",
-        "DIGIY_RESA_SESSION","DIGIY_RESA_ACCESS","DIGIY_MODULE_ACCESS"
+        "DIGIY_RESA_PIN_SESSION","DIGIY_RESA_SESSION","DIGIY_RESA_ACCESS","DIGIY_MODULE_ACCESS"
       ];
       const SLUG_KEYS=[
         "digiy_resa_slug","digiy_resa_last_slug","resa_slug","DIGIY_RESA_SLUG",
@@ -159,10 +161,7 @@
         if(publicFiche)return publicFiche;
 
         const business=businessData()||{};
-        const businessUrl=cleanHttps(business.publicLink||business.public_url||"");
-        if(businessUrl)return businessUrl;
-
-        return "";
+        return cleanHttps(business.publicLink||business.public_url||"");
       }
 
       shareButton.addEventListener("click",()=>{
