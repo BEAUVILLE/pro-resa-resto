@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Mes clients • DIGIY RESA PRO</title>
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet"/>
+  <meta name="theme-color" content="#0e4226"/>
+  <meta name="digiy-build" content="resa-clients-v1-20260807"/>
+
+  <script>
+    window.DIGIY_MODULE="RESA";
+    window.DIGIY_ABOS_MODULE="RESA";
+    window.DIGIY_MODULE_LABEL="Je réserve";
+    window.DIGIY_LOGIN_URL="./pin.html";
+  </script>
+  <script src="./guard.js?v=resa-guard-strict-pin-v4-20260716"></script>
+
+  <style>
+    :root{--bg:#1e7a46;--bg2:#155a34;--bg3:#0e4226;--gold:#c4973f;--gold2:#fff0a8;--text:#f0fff5;--muted:rgba(240,255,245,.74);--line:rgba(255,255,255,.17);--card:rgba(255,255,255,.085);--ok:#bbf7d0;--danger:#fecaca}
+    *{box-sizing:border-box}html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{margin:0;min-height:100dvh;padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(28px + env(safe-area-inset-bottom,0px));color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(600px 380px at 10% 0%,rgba(34,197,94,.20),transparent 62%),radial-gradient(480px 320px at 100% 0%,rgba(196,151,63,.16),transparent 60%),linear-gradient(180deg,var(--bg),var(--bg2) 56%,var(--bg3))}
+    a{color:inherit;text-decoration:none}button,input,textarea{font:inherit}button{cursor:pointer}.shell{width:min(640px,100%);margin:auto}.top{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center}.back,.session{min-height:42px;padding:9px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);font-weight:900;display:inline-flex;align-items:center;justify-content:center}.title{text-align:center;font-weight:1000;letter-spacing:.04em}.session{font-size:11px;color:var(--ok);border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.10)}
+    .hero{padding:30px 2px 18px}.eyebrow{color:var(--gold2);font-size:12px;font-weight:1000;letter-spacing:.14em;text-transform:uppercase}h1{margin:7px 0 0;font-size:clamp(38px,11vw,58px);line-height:.95;letter-spacing:-.045em}.intro{margin:14px 0 0;color:var(--muted);font-size:16px;font-weight:800;line-height:1.45}.privacy{margin:0 0 14px;padding:12px 14px;border-radius:17px;border:1px solid rgba(255,240,168,.28);background:rgba(255,240,168,.07);color:var(--gold2);font-size:13px;font-weight:900;line-height:1.4}
+    .toolbar{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}.search,.field input,.field textarea{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.075);color:var(--text);border-radius:16px;outline:none;font-weight:800}.search{min-height:54px;padding:13px 15px;font-size:16px}.search::placeholder,.field input::placeholder,.field textarea::placeholder{color:rgba(240,255,245,.43)}.search:focus,.field input:focus,.field textarea:focus{border-color:rgba(34,197,94,.65);box-shadow:0 0 0 3px rgba(34,197,94,.10)}
+    .btn{min-height:54px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);padding:12px 15px;font-weight:1000;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.primary{border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.16);color:#c8fbd8}.btn.danger{border-color:rgba(248,113,113,.30);background:rgba(248,113,113,.08);color:var(--danger)}.btn.small{min-height:44px;padding:9px 11px;font-size:14px}
+    .formCard,.client{border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:0 18px 46px rgba(0,0,0,.23)}.formCard{display:none;padding:16px;margin-bottom:14px}.formCard.open{display:block}.formHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.formHead b{font-size:21px}.field{display:grid;gap:7px;margin-bottom:12px}.field label{font-size:13px;color:var(--muted);font-weight:1000}.inputRow{display:grid;grid-template-columns:1fr auto;gap:8px}.field input{min-height:52px;padding:12px 14px;font-size:16px}.field textarea{min-height:92px;padding:12px 14px;font-size:16px;resize:vertical}.mic{width:52px;min-height:52px;padding:0;font-size:22px}.hint{margin-top:4px;color:rgba(240,255,245,.52);font-size:12px;font-weight:800;line-height:1.35}.formActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+    .status{min-height:24px;margin:8px 2px 12px;color:var(--muted);font-size:13px;font-weight:900}.status.ok{color:var(--ok)}.status.warn{color:#fde68a}.status.bad{color:var(--danger)}.list{display:grid;gap:10px}.client{padding:14px}.clientName{font-size:21px;font-weight:1000}.clientPhone{margin-top:4px;color:#c8fbd8;font-size:15px;font-weight:900}.clientMeta{margin-top:9px;color:var(--muted);font-size:14px;font-weight:800;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}.clientActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.clientActions.secondary{margin-top:8px}.empty{padding:30px 16px;text-align:center;color:var(--muted);font-weight:900;line-height:1.5;border:1px solid var(--line);border-radius:22px;background:var(--card)}footer{padding:24px 4px 4px;text-align:center;color:rgba(240,255,245,.44);font-size:12px;font-weight:800}[hidden]{display:none!important}
+    @media(max-width:390px){.session{display:none}.top{grid-template-columns:auto 1fr}.toolbar{grid-template-columns:1fr}.formActions,.clientActions{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><a class="back" href="./hub.html">← ACCUEIL</a><div class="title">👥 MES CLIENTS</div><div class="session">● session</div></header>
+    <section class="hero"><div class="eyebrow">Répertoire professionnel RESA</div><h1>Mes clients.</h1><p class="intro">Nom, téléphone, zone et une petite note. Le répertoire reste simple, séparé des réservations.</p></section>
+    <div class="privacy">🔐 Ce répertoire RESA PRO reste séparé du carnet personnel du téléphone. Aucun contact personnel n’est importé automatiquement.</div>
+
+    <section class="toolbar"><input class="search" id="search" type="search" inputmode="search" autocomplete="off" placeholder="🔎 Rechercher un client"/><button class="btn primary" id="addBtn" type="button">＋ Ajouter</button></section>
+
+    <section class="formCard" id="formCard">
+      <div class="formHead"><b id="formTitle">Nouveau client</b><button class="btn small" id="closeForm" type="button">✕</button></div>
+      <form id="clientForm">
+        <input type="hidden" id="clientId"/>
+        <div class="field"><label for="clientName">Nom</label><div class="inputRow"><input id="clientName" maxlength="80" autocomplete="off" placeholder="Ex. Fatou" required/><button class="btn mic" type="button" data-dictate="clientName" aria-label="Dicter le nom">🎙️</button></div></div>
+        <div class="field"><label for="clientPhone">Téléphone / WhatsApp</label><input id="clientPhone" type="tel" inputmode="tel" maxlength="30" autocomplete="off" placeholder="Ex. 77 123 45 67" required/></div>
+        <div class="field"><label for="clientZone">Zone <span style="opacity:.6">(facultatif)</span></label><div class="inputRow"><input id="clientZone" maxlength="100" autocomplete="off" placeholder="Ex. Saly, Mbour"/><button class="btn mic" type="button" data-dictate="clientZone" aria-label="Dicter la zone">🎙️</button></div></div>
+        <div class="field"><label for="clientNote">Petite note <span style="opacity:.6">(facultatif)</span></label><div class="inputRow"><textarea id="clientNote" maxlength="500" placeholder="Ex. Préfère une table calme, vient souvent le soir"></textarea><button class="btn mic" type="button" data-dictate="clientNote" aria-label="Dicter la note">🎙️</button></div><div class="hint">Si la dictée DIGIY n’est pas disponible, utilise le micro du clavier du téléphone.</div></div>
+        <div class="formActions"><button class="btn" id="cancelBtn" type="button">Annuler</button><button class="btn primary" type="submit">✅ Enregistrer</button></div>
+      </form>
+    </section>
+
+    <div class="status" id="status" aria-live="polite"></div>
+    <section class="list" id="clientList"></section>
+    <footer>Répertoire professionnel RESA PRO · séparé des réservations et des contacts personnels</footer>
+  </main>
+
+<script>
+(()=>{
+  "use strict";
+  const $=id=>document.getElementById(id);
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+  const digits=v=>String(v||"").replace(/\D/g,"");
+  const normPhone=v=>{const d=digits(v);if(d.length===9)return"221"+d;return d};
+  const normSlug=v=>String(v||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g,"-").replace(/[^a-z0-9._-]/g,"").replace(/-+/g,"-").replace(/^[-_.]+|[-_.]+$/g,"");
+  let owner="",clients=[];
+
+  function key(){return owner?"DIGIY_RESA_CLIENTS_V1::"+owner:""}
+  function read(){try{const rows=JSON.parse(localStorage.getItem(key())||"[]");return Array.isArray(rows)?rows:[]}catch(_){return[]}}
+  function write(rows){localStorage.setItem(key(),JSON.stringify(rows))}
+  function uid(){try{return crypto.randomUUID()}catch(_){return"c_"+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}}
+  function setStatus(text,kind=""){const el=$("status");el.textContent=text||"";el.className="status "+kind}
+  function openForm(row=null){$("formCard").classList.add("open");$("formTitle").textContent=row?"Modifier le client":"Nouveau client";$("clientId").value=row?.id||"";$("clientName").value=row?.name||"";$("clientPhone").value=row?.phone||"";$("clientZone").value=row?.zone||"";$("clientNote").value=row?.note||"";setTimeout(()=>$("clientName").focus(),50)}
+  function closeForm(){$("formCard").classList.remove("open");$("clientForm").reset();$("clientId").value=""}
+  function wa(phone){const p=normPhone(phone);return p?"https://wa.me/"+encodeURIComponent(p):"#"}
+  function render(){
+    const q=String($("search").value||"").trim().toLowerCase();
+    const rows=clients.filter(r=>!q||[r.name,r.phone,r.zone,r.note].some(v=>String(v||"").toLowerCase().includes(q)));
+    const box=$("clientList");
+    if(!rows.length){box.innerHTML='<div class="empty">'+(q?'Aucun client trouvé.':'Aucun client pour le moment. Ajoute ton premier client.')+'</div>';return}
+    box.innerHTML=rows.map(r=>`<article class="client" data-id="${esc(r.id)}"><div class="clientName">${esc(r.name)}</div><div class="clientPhone">${esc(r.phone)}</div>${(r.zone||r.note)?`<div class="clientMeta">${r.zone?'📍 '+esc(r.zone):''}${r.zone&&r.note?'\n':''}${r.note?'📝 '+esc(r.note):''}</div>`:''}<div class="clientActions"><a class="btn small" href="tel:${esc(digits(r.phone))}">📞 Appeler</a><a class="btn small primary" href="${wa(r.phone)}">WhatsApp</a></div><div class="clientActions secondary"><button class="btn small edit" type="button">Modifier</button><button class="btn small danger del" type="button">Supprimer</button></div></article>`).join("");
+    box.querySelectorAll(".client").forEach(card=>{const id=card.dataset.id;card.querySelector(".edit")?.addEventListener("click",()=>openForm(clients.find(r=>r.id===id)));card.querySelector(".del")?.addEventListener("click",()=>{if(!confirm("Supprimer ce client du répertoire RESA ?"))return;clients=clients.filter(r=>r.id!==id);write(clients);render();setStatus("Client supprimé.","ok")})});
+  }
+
+  function dictate(targetId){
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    const field=$(targetId);
+    if(!SR){field?.focus();setStatus("Utilise le micro du clavier pour dicter.","warn");return}
+    const rec=new SR();rec.lang="fr-FR";rec.interimResults=false;rec.maxAlternatives=1;
+    rec.onresult=e=>{const text=e.results?.[0]?.[0]?.transcript||"";if(field){field.value=field.value?(field.value+" "+text):text}}
+    rec.onerror=()=>{field?.focus();setStatus("Dictée indisponible ici. Utilise le micro du clavier.","warn")};
+    try{rec.start();setStatus("🎙️ J’écoute…","ok")}catch(_){field?.focus()}
+  }
+
+  async function boot(){
+    const guard=window.DIGIY_GUARD;
+    const state=guard&&typeof guard.ready==="function"?await guard.ready({redirect:true}):null;
+    if(!state?.access_ok)return;
+    const phone=digits(state.phone||guard?.getPhone?.()||"");
+    const slug=normSlug(state.slug||guard?.getSlug?.()||"");
+    owner=phone?"phone:"+phone:(slug?"slug:"+slug:"");
+    if(!owner){setStatus("Compte RESA non reconnu. Rouvre ton accès PIN.","bad");$("addBtn").disabled=true;return}
+    clients=read();render();setStatus(clients.length?clients.length+" client(s) dans ce répertoire.":"Répertoire prêt.","ok");
+  }
+
+  $("addBtn").addEventListener("click",()=>openForm());$("closeForm").addEventListener("click",closeForm);$("cancelBtn").addEventListener("click",closeForm);$("search").addEventListener("input",render);
+  document.querySelectorAll("[data-dictate]").forEach(btn=>btn.addEventListener("click",()=>dictate(btn.dataset.dictate)));
+  $("clientForm").addEventListener("submit",e=>{e.preventDefault();if(!owner){setStatus("Session RESA non reconnue.","bad");return}const name=$("clientName").value.trim(),phone=$("clientPhone").value.trim(),zone=$("clientZone").value.trim(),note=$("clientNote").value.trim();if(!name){setStatus("Ajoute le nom du client.","warn");return}if(digits(phone).length<8){setStatus("Numéro de téléphone incomplet.","warn");return}const id=$("clientId").value||uid(),now=new Date().toISOString(),old=clients.find(r=>r.id===id);const row={id,name,phone,zone,note,created_at:old?.created_at||now,updated_at:now};clients=old?clients.map(r=>r.id===id?row:r):[row,...clients];write(clients);closeForm();render();setStatus(old?"Client modifié ✅":"Client enregistré ✅","ok")});
+  boot().catch(err=>{console.error("[RESA CLIENTS]",err);setStatus("Ouverture du répertoire impossible.","bad")});
+})();
+</script>
+</body>
+</html>
